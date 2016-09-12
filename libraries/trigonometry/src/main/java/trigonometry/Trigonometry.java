@@ -1,13 +1,6 @@
 package trigonometry;
 
 
-/**
- *  V 1.0
- * 
- * 
- * @author nicolas
- *
- */
 public class Trigonometry {
   /**
    *  V 1.0
@@ -44,7 +37,10 @@ public class Trigonometry {
       return Math.abs( (p2.y-p1.y)*x - (p2.x-p1.x)*y + p2.x*p1.y - p2.y*p1.x) / 
         Math.sqrt((p2.y-p1.y)*(p2.y-p1.y) + (p2.x-p1.x)*(p2.x-p1.x));
     }
-
+    Vector sub(Point p2) {
+      return new Vector(x-p2.x, y-p2.y);
+    }
+    
     @Override
     public int hashCode() {
       final int prime = 31;

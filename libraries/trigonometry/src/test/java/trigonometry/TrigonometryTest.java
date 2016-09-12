@@ -2,7 +2,7 @@ package trigonometry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.closeTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -34,6 +34,13 @@ public class TrigonometryTest {
     assertThat(result, is (exceptedPoint));
   }
 
+  @Test
+  public void point_sub() {
+    Point p1 = new Point(1,2);
+    Point p2 = new Point(7,5);
+    
+    assertThat(p2.sub(p1), is(new Vector(6,3)));
+  }
   @Test
   public void point_hash() throws Exception {
     assertThat(new Point(0,0).hashCode(), is(new Point(0,0).hashCode()));
