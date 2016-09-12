@@ -81,7 +81,13 @@ public class Trigonometry {
     public String toString() {
       return "V("+vx+","+vy+")";
     }
-
+    Vector normalize() {
+      return new Vector(vx / length(), vy / length());
+    }
+    Vector rotate(double angle) {
+      return new Vector(vx*Math.cos(angle) - vy*Math.sin(angle),
+          vx*Math.sin(angle) + vy*Math.cos(angle));
+    }
     Vector add(Vector v) {
       return new Vector(vx+v.vx, vy+v.vy);
     }

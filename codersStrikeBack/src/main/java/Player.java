@@ -41,6 +41,8 @@ class Player {
     }
   }
   class Pod {
+    static final int SLOWDOWN_DISTANCE= 3000;
+
     Point lastPosition = new Point(0,0);
     Point position = lastPosition;
     Vector speed = new Vector(0,0);
@@ -52,14 +54,15 @@ class Player {
     int boostLeft = 0;
     
     String getOutputCommand(Game game) {
-      String result = "";
-      if (shouldBoost()) {
+      double thrust = calculateThrust();
+      String result;
+      if (thrust <= 0) {
+        result = "0";
+      } else if (thrust > 100) {
         result = "BOOST";
         boostLeft--;
-      } else if (shouldFullBreak()) {
-        result = "0";
       } else {
-        result = calculateThrust();
+        result = ""+(int)thrust;
       }
       return (int)(nextCheckpoint.x) + " " + (int)(nextCheckpoint.y) + " " + result;
     }
@@ -73,21 +76,29 @@ class Player {
       return (nextCheckpointAngle > 120 || nextCheckpointAngle < -120);
     }
 
-    private String calculateThrust() {
-      int thrust = 100;
-      int slowdownDistance = 1000;
-      if (nextCheckpointDist - slowdownDistance < 0) {
-        double ratio = (1.0 * (slowdownDistance - nextCheckpointDist)) / slowdownDistance;
-        ratio = Math.pow(ratio, 1);
-        thrust = 75 + (int) (25 * ratio);
+    private double calculateThrust() {
+      if (shouldFullBreak()) {
+        return 0;
+      } else if (shouldBoost()) {
+        return 101;
       }
-      return "" + thrust;
+      
+      int thrust = 100;
+      if (nextCheckpointDist - SLOWDOWN_DISTANCE < 0) {
+        double ratio = (1.0 * nextCheckpointDist) / SLOWDOWN_DISTANCE;
+        ratio = Math.pow(ratio, 1.2);
+        thrust = (int) (100 * ratio);
+      }
+      return thrust;
     }
 
-    public String doPrediction() {
+    public void debug() {
       Point nextPosition = position.add(speed);
       Vector nextSpeed = speed.dot(0.85);
-      return "P: "+nextPosition.toString()+",S: "+nextSpeed.toString();
+
+      System.err.println("direction : "+pod.direction.toString());
+      System.err.println("P: "+nextPosition.toString()+",S: "+nextSpeed.toString());
+      System.err.println("distance to Target : "+nextCheckpointDist);
     }
 
     boolean firstGameInput = true;
@@ -106,6 +117,7 @@ class Player {
       } else {
         speed = position.sub(lastPosition);
       }
+      direction = nextCheckpoint.sub(position).rotate(angle * Math.PI / 180.0).normalize();
     }
   }
 
@@ -135,7 +147,7 @@ class Player {
       readGameInput();
       String output = pod.getOutputCommand(game);
       
-      System.err.println("prediction: "+pod.doPrediction());
+      pod.debug();
       //System.err.println("currentSpeed : "+pod.speed.length()+" "+pod.speed.toString());
       System.out.println(output);
     }
@@ -220,7 +232,13 @@ class Player {
     public String toString() {
       return "V("+vx+","+vy+")";
     }
-
+    Vector rotate(double angle) {
+      return new Vector(vx*Math.cos(angle) - vy*Math.sin(angle),
+          vx*Math.sin(angle) + vy*Math.cos(angle));
+    }
+    Vector normalize() {
+      return new Vector(vx / length(), vy / length());
+    }
     Vector add(Vector v) {
       return new Vector(vx+v.vx, vy+v.vy);
     }
