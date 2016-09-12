@@ -35,12 +35,17 @@ class Player {
       }
       return false;
     }
+    public void update(Point opponentPosition, Point nextCk) {
+      this.opponentPosition = opponentPosition;
+      updateCheckPoints(nextCk);
+    }
   }
   class Pod {
     Point lastPosition = new Point(0,0);
     Point position = lastPosition;
     Vector speed = new Vector(0,0);
-
+    Vector direction;
+    
     Point nextCheckpoint;
     int nextCheckpointDist; // distance to the next checkpoint
     int nextCheckpointAngle; // angle between your pod orientation and the direction of the next checkpoint
@@ -50,13 +55,13 @@ class Player {
       String result = "";
       if (shouldBoost()) {
         result = "BOOST";
-        pod.boostLeft--;
+        boostLeft--;
       } else if (shouldFullBreak()) {
         result = "0";
       } else {
         result = calculateThrust();
       }
-      return (int)(pod.nextCheckpoint.x) + " " + (int)(pod.nextCheckpoint.y) + " " + result;
+      return (int)(nextCheckpoint.x) + " " + (int)(nextCheckpoint.y) + " " + result;
     }
     
     private boolean shouldBoost() {
@@ -84,6 +89,24 @@ class Player {
       Vector nextSpeed = speed.dot(0.85);
       return "P: "+nextPosition.toString()+",S: "+nextSpeed.toString();
     }
+
+    boolean firstGameInput = true;
+    
+    public void update(Point point, Point ckPoint, int dist, int angle) {
+      lastPosition = position;
+      
+      position = point;
+      nextCheckpoint = ckPoint;
+      nextCheckpointDist = dist; // distance to the next checkpoint
+      nextCheckpointAngle = angle; // angle between your pod orientation
+
+      if (firstGameInput) {
+        lastPosition = position;
+        firstGameInput = false;
+      } else {
+        speed = position.sub(lastPosition);
+      }
+    }
   }
 
   Game game = new Game();
@@ -93,24 +116,15 @@ class Player {
     new Player().play();
   }
 
-  boolean firstGameInput = true;
   void readGameInput() {
-    pod.lastPosition = pod.position;
+    Point point = new Point(in.nextInt(), in.nextInt());
+    Point nextCk = new Point(in.nextInt(), in.nextInt());
+    int dist = in.nextInt();
+    int angle = in.nextInt();
+    Point opponentPosition = new Point(in.nextInt(), in.nextInt());
     
-    pod.position = new Point(in.nextInt(), in.nextInt());
-    pod.nextCheckpoint = new Point(in.nextInt(), in.nextInt());
-    pod.nextCheckpointDist = in.nextInt(); // distance to the next checkpoint
-    pod.nextCheckpointAngle = in.nextInt(); // angle between your pod orientation
-    game.opponentPosition = new Point(in.nextInt(), in.nextInt());
-
-    if (firstGameInput) {
-      pod.lastPosition = pod.position;
-      firstGameInput = false;
-    } else {
-      pod.speed = pod.position.sub(pod.lastPosition);
-    }
-
-    game.updateCheckPoints(pod.nextCheckpoint);
+    pod.update(point,nextCk,dist,angle);
+    game.update(opponentPosition, nextCk);
   }
 
   void play() {
