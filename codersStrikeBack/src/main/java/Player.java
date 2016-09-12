@@ -41,8 +41,7 @@ class Player {
     }
   }
   class Pod {
-    static final int SLOWDOWN_DISTANCE= 3000;
-
+    static final int SLOWDOWN_DISTANCE= 2000;
     Point lastPosition = new Point(0,0);
     Point position = lastPosition;
     Vector speed = new Vector(0,0);
@@ -51,7 +50,7 @@ class Player {
     Point nextCheckpoint;
     int nextCheckpointDist; // distance to the next checkpoint
     int nextCheckpointAngle; // angle between your pod orientation and the direction of the next checkpoint
-    int boostLeft = 0;
+    int boostLeft = 1;
     
     String getOutputCommand(Game game) {
       double thrust = calculateThrust();
@@ -84,10 +83,13 @@ class Player {
       }
       
       int thrust = 100;
+      if (nextCheckpointAngle > 10 && nextCheckpointAngle<-10) {
+        thrust = 75; // try to recover from bad angle
+      }
       if (nextCheckpointDist - SLOWDOWN_DISTANCE < 0) {
         double ratio = (1.0 * nextCheckpointDist) / SLOWDOWN_DISTANCE;
-        ratio = Math.pow(ratio, 1.2);
-        thrust = (int) (100 * ratio);
+        ratio = Math.pow(ratio, 1.0);
+        thrust = (int) (thrust * ratio);
       }
       return thrust;
     }
