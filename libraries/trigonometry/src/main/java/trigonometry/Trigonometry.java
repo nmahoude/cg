@@ -9,7 +9,9 @@ package trigonometry;
  *
  */
 public class Trigonometry {
-
+  /**
+   *  V 1.0
+   */
   static class Point {
     double x,y;
 

@@ -10,7 +10,6 @@ import java.util.Scanner;
  * according to the problem statement.
  **/
 class Player {
-
   Scanner in;
 
   private Point currentPosition;
@@ -29,8 +28,8 @@ class Player {
   }
 
   boolean isKnownCheckpoint(Point p) {
-    for (Point pp : checkpoints) {
-      if (pp.equals(p)) {
+    for (Point checkpoint : checkpoints) {
+      if (checkpoint.equals(p)) {
         return true;
       }
     }
@@ -42,17 +41,15 @@ class Player {
       return;
     }
     if (!isKnownCheckpoint(nextCheckpoint)) {
-      // System.err.println("Add checkpoint : "+p.print());
       checkpoints.add(nextCheckpoint);
     } else {
       if (checkpoints.size() > 1 && nextCheckpoint.equals(checkpoints.get(0))) {
-        // System.err.println("All checkpoint discovered");
         allCheckpointsDiscovered = true;
       }
     }
   }
 
-  void updateGameInput() {
+  void readGameInput() {
     currentPosition = new Point(in.nextInt(), in.nextInt());
     nextCheckpoint = new Point(in.nextInt(), in.nextInt());
     nextCheckpointDist = in.nextInt(); // distance to the next checkpoint
@@ -86,11 +83,10 @@ class Player {
     in = new Scanner(System.in);
 
     // game loop
-    int lastDistance = -1;
-    boolean boostDone = false;
     while (true) {
-      updateGameInput();
+      readGameInput();
 
+      
       String result = "";
       if (shouldBoost()) {
         result = "BOOST";
@@ -101,7 +97,7 @@ class Player {
         result = calculateThrust();
       }
 
-      System.out.println(nextCheckpoint.toString() + " " + result);
+      System.out.println((int)(nextCheckpoint.x) + " " + (int)(nextCheckpoint.y) + " " + result);
     }
   }
 }
