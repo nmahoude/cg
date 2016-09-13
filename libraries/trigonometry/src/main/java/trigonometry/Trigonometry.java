@@ -185,4 +185,25 @@ public class Trigonometry {
       this.position = engine.getNewPosition(this);
     }
   }
+  
+  static class BezierCurve {
+    Point p0, p1, p2;
+    
+    void calculateToPassThrough(Point p) {
+      // simple case : t = 0.5
+      p1 = new Point(
+          2*p.x - p0.x/2.0 - p2.x/2.0,
+          2*p.y - p0.y/2.0 - p2.y/2.0
+          );
+    }
+    Point f(double t) {
+      double coef1 = (1-t)*(1-t);
+      double coef2 = 2*t*(1-t);
+      double coef3 = t*t;
+      return new Point(
+          coef1 * p0.x + coef2*p1.x + coef3*p2.x,
+          coef1 * p0.y + coef2*p1.y + coef3*p2.y
+          );
+    }
+  }
 }
