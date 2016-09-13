@@ -125,6 +125,7 @@ class Player {
 
   Game game = new Game();
   Pod pod = new Pod();
+  private TurnSolution lastBestSolution;
   
   public static void main(String args[]) {
     new Player().play();
@@ -147,13 +148,79 @@ class Player {
     // game loop
     while (true) {
       readGameInput();
-      String output = pod.getOutputCommand(game);
       
-      pod.debug();
-      //System.err.println("currentSpeed : "+pod.speed.length()+" "+pod.speed.toString());
+      TurnSolution bestSolution = simulate(pod, pod.nextCheckpoint);
+      
+      
+      String output = ""+(int)(bestSolution.predictedPosition.x)+" "+(int)(bestSolution.predictedPosition.y)+" "+(int)(bestSolution.thrust);
+      
+      // String output = pod.getOutputCommand(game);
+      //System.err.print("Best solution: ");
+      //bestSolution.debug(pod);
+      //pod.debug();
+      if (lastBestSolution != null) {
+        System.err.println("Simulation error:");
+        System.err.println(lastBestSolution.predictedPosition);
+        System.err.println(pod.position);
+        System.err.println("error :"+pod.position.distTo(lastBestSolution.predictedPosition));
+      }
       System.out.println(output);
+      lastBestSolution = bestSolution;
     }
   }
+  
+  static TurnSolution simulate(Pod pod, Point target) {
+    if (target == null) {
+      return new TurnSolution(100, 0, 
+            pod.position, pod.direction, pod.speed);
+    }
+    List<TurnSolution> solutions = new ArrayList<TurnSolution>();
+    double thrusts[] = { 0.0, 50.0, 100.0};
+    double angles[] = {-Math.toRadians(18), -Math.toRadians(9), 0, 
+        Math.toRadians(9), Math.toRadians(18)};
+
+    for (double thrust : thrusts) {
+      for (double angle : angles) {
+        TurnSolution solution = new TurnSolution(thrust, angle, 
+            pod.position, pod.direction, pod.speed);
+        solutions.add(solution);
+      }
+    }
+    double minDist = Integer.MAX_VALUE;
+    TurnSolution bestSolution = null;
+    for (TurnSolution solution : solutions) {
+      double distance = target.distTo(solution.predictedPosition);
+      if ( distance < minDist) {
+        minDist = distance;
+        bestSolution  = solution;
+      }
+    }
+    return bestSolution;
+  }
+  static class TurnSolution {
+    double steering; // from -18 to 18
+    double thrust; // 0 to 100
+    Point predictedPosition;
+    Vector predictedSpeed;
+    Vector predictedDir;
+    
+    public TurnSolution(double thrust, double angle, Point position, Vector direction, Vector speed) {
+      this.steering = angle;
+      this.thrust = thrust;
+      predictedDir = direction.rotate(angle);
+      predictedSpeed = speed.dot(0.85).add(direction.dot(thrust));
+      predictedPosition = position.add(predictedSpeed);
+    }
+
+    public void debug(Pod pod) {
+      System.err.println("steering="+steering+", thrust="+thrust);
+      System.err.println("preSpeed:"+predictedSpeed+", preDir:"+predictedDir);
+      System.err.println("prePos:"+predictedPosition+", distToTarget:"+pod.nextCheckpoint.distTo(predictedPosition));
+    }
+  }
+  
+  
+  
   /**
    *  Trigonometry _ V 1.0
    */
