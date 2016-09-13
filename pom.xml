@@ -8,6 +8,7 @@
   <modules>
     <module>libraries/trigonometry</module>
     <module>codersStrikeBack</module>
+    <module>SkynetV1</module>
   </modules>
   
   <dependencies>
