@@ -16,7 +16,6 @@ import trigonometry.Trigonometry.Vector;
 
 public class TrigonometryTest {
 
-  private static final double PRECISION = 0.001;
   @Test
   public void createPoint() throws Exception {
     Point p = new Point(1,2);
@@ -57,8 +56,8 @@ public class TrigonometryTest {
     Vector v = new Vector(1,0);
     Vector rotateV = v.rotate(Math.PI/2);
 
-    assertThat(rotateV.vx, closeTo(0, PRECISION));
-    assertThat(rotateV.vy, closeTo(1, PRECISION));
+    assertThat(rotateV.vx, closeTo(0, Trigonometry.PRECISION));
+    assertThat(rotateV.vy, closeTo(1, Trigonometry.PRECISION));
   }
   
   @Test
@@ -66,8 +65,8 @@ public class TrigonometryTest {
     Vector v = new Vector(1,0);
     Vector rotateV = v.rotate(-Math.PI/2);
 
-    assertThat(rotateV.vx, closeTo(0, PRECISION));
-    assertThat(rotateV.vy, closeTo(-1, PRECISION));
+    assertThat(rotateV.vx, closeTo(0, Trigonometry.PRECISION));
+    assertThat(rotateV.vy, closeTo(-1, Trigonometry.PRECISION));
   }
 
   @Test
@@ -75,8 +74,8 @@ public class TrigonometryTest {
     Vector v = new Vector(1,0);
     Vector rotateV = v.rotate(Math.PI);
 
-    assertThat(rotateV.vx, closeTo(-1, PRECISION));
-    assertThat(rotateV.vy, closeTo(0, PRECISION));
+    assertThat(rotateV.vx, closeTo(-1, Trigonometry.PRECISION));
+    assertThat(rotateV.vy, closeTo(0, Trigonometry.PRECISION));
   }
 
   @Test
@@ -111,7 +110,7 @@ public class TrigonometryTest {
     Point p1 = new Point(10,10);
     Point p2 = new Point(20,20);
 
-    assertThat(p1.distTo(p2), closeTo(14.142, PRECISION));
+    assertThat(p1.distTo(p2), closeTo(14.142, Trigonometry.PRECISION));
   }
 
   @Test

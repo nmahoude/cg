@@ -155,10 +155,11 @@ class Player {
     }
   }
   /**
-   *  V 1.0
+   *  Trigonometry _ V 1.0
    */
+  static final double PRECISION = 0.001;
   static class Point {
-    double x,y;
+    final double x,y;
 
     public Point(double x, double y) {
       super();
@@ -170,10 +171,6 @@ class Player {
       return "P("+x+","+y+")";
     }
     
-    Vector sub(Point p2) {
-      return new Vector(x-p2.x, y-p2.y);
-    }
-
     Point add(Point addedPoint) {
       return new Point(x+addedPoint.x, y+addedPoint.y);
     }
@@ -193,7 +190,10 @@ class Player {
       return Math.abs( (p2.y-p1.y)*x - (p2.x-p1.x)*y + p2.x*p1.y - p2.y*p1.x) / 
         Math.sqrt((p2.y-p1.y)*(p2.y-p1.y) + (p2.x-p1.x)*(p2.x-p1.x));
     }
-
+    Vector sub(Point p2) {
+      return new Vector(x-p2.x, y-p2.y);
+    }
+    
     @Override
     public int hashCode() {
       final int prime = 31;
@@ -225,7 +225,7 @@ class Player {
   }
   
   static class Vector {
-    double vx, vy;
+    final double vx, vy;
     public Vector(double vx, double vy) {
       this.vx = vx;
       this.vy = vy;
@@ -234,12 +234,12 @@ class Player {
     public String toString() {
       return "V("+vx+","+vy+")";
     }
+    Vector normalize() {
+      return new Vector(vx / length(), vy / length());
+    }
     Vector rotate(double angle) {
       return new Vector(vx*Math.cos(angle) - vy*Math.sin(angle),
           vx*Math.sin(angle) + vy*Math.cos(angle));
-    }
-    Vector normalize() {
-      return new Vector(vx / length(), vy / length());
     }
     Vector add(Vector v) {
       return new Vector(vx+v.vx, vy+v.vy);
@@ -285,9 +285,8 @@ class Player {
   }
   
   static class Circle {
-    private static final double PRECISION = 0.001;
-    Point center;
-    double radius;
+    final Point center;
+    final double radius;
     
     Circle(Point center, double radius) {
       this.center = center;

@@ -3,10 +3,11 @@ package trigonometry;
 
 public class Trigonometry {
   /**
-   *  V 1.0
+   *  Trigonometry _ V 1.0
    */
+  static final double PRECISION = 0.001;
   static class Point {
-    double x,y;
+    final double x,y;
 
     public Point(double x, double y) {
       super();
@@ -72,7 +73,7 @@ public class Trigonometry {
   }
   
   static class Vector {
-    double vx, vy;
+    final double vx, vy;
     public Vector(double vx, double vy) {
       this.vx = vx;
       this.vy = vy;
@@ -132,9 +133,8 @@ public class Trigonometry {
   }
   
   static class Circle {
-    private static final double PRECISION = 0.001;
-    Point center;
-    double radius;
+    final Point center;
+    final double radius;
     
     Circle(Point center, double radius) {
       this.center = center;
