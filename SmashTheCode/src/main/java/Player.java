@@ -11,7 +11,7 @@ import java.math.*;
  * according to the problem statement.
  **/
 class Player {
-  private static final int MAX_ITERATIONS = 8;
+  private static final int MAX_ITERATIONS = 4;
   private static Scanner in;
 
   static class P {

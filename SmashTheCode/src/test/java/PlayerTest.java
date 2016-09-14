@@ -308,14 +308,19 @@ public class PlayerTest {
     board.updateRow(0,  "......");
     board.updateRow(1,  "......");
     board.updateRow(2,  "......");
-    board.updateRow(3,  "......");
-    board.updateRow(4,  "11....");
-    board.updateRow(5,  "44....");
+    board.updateRow(3,  "4.4...");
+    board.updateRow(4,  "4.4...");
+    board.updateRow(5,  "221133");
     
-    Player.Block[] blocks = new Player.Block[] { new Player.Block(4, 4)};
-    int bestCol[] = board.getBestChoice(blocks, 1);
+    Player.Block[] blocks = new Player.Block[] { 
+        new Player.Block(4, 4), 
+        new Player.Block(4, 4),
+        new Player.Block(3, 3),
+        new Player.Block(5, 5),
+        };
+    int bestCol[] = board.getBestChoice(blocks, 4);
 
-    assertThat(bestCol[1], is(2));
+    assertThat(bestCol[1], is(1));
     assertThat(bestCol[2], is(1));
   }
 }
