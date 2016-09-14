@@ -1,6 +1,7 @@
 import java.util.*;
 
 import javax.lang.model.type.ArrayType;
+import javax.naming.PartialResultException;
 
 import java.io.*;
 import java.math.*;
@@ -12,6 +13,38 @@ import java.math.*;
 class Player {
   private static Scanner in;
 
+  static class P {
+    final int x;
+    final int y;
+    P(int x, int y) {
+      this.x = x;
+      this.y = y;
+    }
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + x;
+      result = prime * result + y;
+      return result;
+    }
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null || getClass() != obj.getClass())
+        return false;
+      P other = (P) obj;
+      if (x != other.x || y != other.y)
+        return false;
+      return true;
+    }
+    @Override
+    public String toString() {
+      return "("+x+","+y+")";
+    }
+  }
+  
   public static class Block {
     final int color1;
     final int color2;
@@ -22,7 +55,8 @@ class Player {
     }
   }
   public static class Board {
-    private static final int EMPTY = -1;
+    private static final int EMPTY = 0;
+    private static final int SKULL = 9;
     final int WIDTH;
     final int HEIGHT;
     int[][] board ;
@@ -43,8 +77,10 @@ class Player {
     }
     public void updateRow(int rowIndex, String row) {
       for (int i=0;i<WIDTH;i++) {
-        if (row.charAt(i) >= '0' && row.charAt(i) <= '5') {
+        if (row.charAt(i) >= '1' && row.charAt(i) <= '5') {
           board[i][rowIndex] = row.charAt(i) - '0';
+        } else if (row.charAt(i) == '0'){
+          board[i][rowIndex] = SKULL;
         } else {
           board[i][rowIndex] = EMPTY; // empty
         }
@@ -95,20 +131,86 @@ class Player {
       
       return 0;
     }
-    public int getScore(int col, Block block) {
+   
+
+    public int simulate(int col, Block block) {
       if (board[col][0] != EMPTY) {
-        return 0;
+        return -1;
       }
       Board fBoard = new Board(this);
-      fBoard.put(col, block);
+      fBoard.putBlock(col, block);
       int score = fBoard.destroyBlocks();
-      return 1;
+      return score;
     }
     
     private int destroyBlocks() {
-      return 0;
+      int score = 0;
+      int partialScore = 0;
+      do {
+        partialScore = 0;
+        for (int y=0;y<HEIGHT;y++) {
+          for (int x=0;x<WIDTH;x++) {
+            int col = board[x][y];
+            if (col > 0 && col < 6) {
+              int voisins = countNeighbours(x,y);
+              if (voisins >= 4) {
+                partialScore +=10*destroyNeighbours(col, x,y);
+              }
+            }
+          }
+        }
+        score+=partialScore;
+        update();
+      } while (partialScore > 0);
+      return score;
     }
-    public void put(int col, Block block) {
+    
+    int destroyNeighbours(int col, int x, int y) {
+      if (x < 0 || x >= WIDTH || y< 0 || y>=HEIGHT) {
+        return 0;
+      }
+      if (board[x][y] != col) {
+        return 0;
+      }
+      board[x][y] = EMPTY;
+      int count = 1;
+      count+=destroyNeighbours(col, x-1, y);
+      count+=destroyNeighbours(col, x+1, y);
+      count+=destroyNeighbours(col, x, y+1);
+      count+=destroyNeighbours(col, x, y-1);
+      return count;
+    }
+    int countNeighbours(int x, int y) {
+      /**
+       * TODO optimization needed ?
+       * Possibilite d'amélioration : copier le board et supprimer les entités comptées plutot que le SET
+       */
+      Set<P> alreadyCounted = new HashSet<>();
+      int col = board[x][y];
+      int count = countNeighbours(alreadyCounted, col, x, y);
+      return count;
+    }
+    
+    int countNeighbours(Set<P> alreadyCounted, int col, int x, int y) {
+      if (x < 0 || x >= WIDTH || y< 0 || y>=HEIGHT) {
+        return 0;
+      }
+      if (alreadyCounted.contains(new P(x,y))) {
+        return 0;
+      }
+      if (board[x][y] != col) {
+        return 0;
+      }
+      alreadyCounted.add(new P(x,y));
+      int count = 1;
+      count+=countNeighbours(alreadyCounted, col, x-1, y);
+      count+=countNeighbours(alreadyCounted, col, x+1, y);
+      count+=countNeighbours(alreadyCounted, col, x, y+1);
+      count+=countNeighbours(alreadyCounted, col, x, y-1);
+      return count;
+    }
+    
+    public void putBlock(int col, Block block) {
       int pos = getFuturePos(col);
       board[col][pos-1] = block.color1;
       board[col][pos] = block.color2;
@@ -120,6 +222,32 @@ class Player {
         futurePos+=1;
       }
       return futurePos-1;// precedent was empty, not the found one !
+    }
+    public String row(int row) {
+      String result="";
+      for (int i=0;i<WIDTH;i++) {
+        if (board[i][row] == EMPTY) {
+          result+=".";
+        } else  {
+          result+=""+board[i][row];
+        }
+      }
+      return result;
+    }
+    
+    public void update() {
+      for (int x=0;x<WIDTH;x++) {
+        int[] col = new int[WIDTH];
+        int current=0;
+        for (int y=HEIGHT-1;y>=0;y--) {
+          if (board[x][y] != EMPTY) {
+            col[current++] = board[x][y];
+          }
+        }
+        for (int y=HEIGHT-1;y>=0;y--) {
+          board[x][y] = col[(HEIGHT-1)-y];
+        }
+      }
     }
   }
   
@@ -137,21 +265,7 @@ class Player {
   private void play() {
     // game loop
     while (true) {
-      blocks.clear();
-      for (int i = 0; i < 8; i++) {
-        Block block = new Block(in.nextInt(), in.nextInt());
-        blocks.addLast(block);
-      }
-      score1 = in.nextInt();
-      for (int i = 0; i < 12; i++) {
-        String row = in.next();
-        board.updateRow(i, row);
-      }
-      score2 = in.nextInt();
-      for (int i = 0; i < 12; i++) {
-        String row = in.next(); // One line of the map ('.' = empty, '0' = skull
-                                // block, '1' to '5' = colored block)
-      }
+      updateReadings();
 
       // Write an action using System.out.println()
       // To debug: System.err.println("Debug messages...");
@@ -160,6 +274,24 @@ class Player {
       int bestCol = getBestCol(nextBlock);
       System.err.println("bestCol: "+bestCol+" for block: "+nextBlock.color1);
       System.out.println("" + bestCol);
+    }
+  }
+
+  private void updateReadings() {
+    blocks.clear();
+    for (int i = 0; i < 8; i++) {
+      Block block = new Block(in.nextInt(), in.nextInt());
+      blocks.addLast(block);
+    }
+    score1 = in.nextInt();
+    for (int i = 0; i < 12; i++) {
+      String row = in.next();
+      board.updateRow(i, row);
+    }
+    score2 = in.nextInt();
+    for (int i = 0; i < 12; i++) {
+      String row = in.next(); // One line of the map ('.' = empty, '0' = skull
+                              // block, '1' to '5' = colored block)
     }
   }
 
