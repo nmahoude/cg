@@ -10,6 +10,7 @@
     <module>codersStrikeBack</module>
     <module>SkynetV1</module>
     <module>NetworkCabling</module>
+    <module>SmashTheCode</module>
   </modules>
   
   <dependencies>
