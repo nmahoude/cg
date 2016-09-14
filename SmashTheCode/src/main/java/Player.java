@@ -1,4 +1,7 @@
 import java.util.*;
+
+import javax.lang.model.type.ArrayType;
+
 import java.io.*;
 import java.math.*;
 
@@ -9,7 +12,7 @@ import java.math.*;
 class Player {
   private static Scanner in;
 
-  class Block {
+  public static class Block {
     final int color1;
     final int color2;
 
@@ -18,7 +21,7 @@ class Player {
       color2 = c2;
     }
   }
-  class Board {
+  public static class Board {
     private static final int EMPTY = -1;
     final int WIDTH;
     final int HEIGHT;
@@ -28,6 +31,15 @@ class Player {
       WIDTH = W;
       HEIGHT = H;
       board = new int [WIDTH][HEIGHT];
+    }
+    public Board(Board b) {
+      this(b.WIDTH, b.HEIGHT);
+      // copy board
+      for (int y=0;y<HEIGHT;y++) {
+        for (int x=0;x<WIDTH;x++) {
+          board[x][y] = b.board[x][y];
+        }
+      }
     }
     public void updateRow(int rowIndex, String row) {
       for (int i=0;i<WIDTH;i++) {
@@ -83,11 +95,31 @@ class Player {
       
       return 0;
     }
-    public int getScore(int col) {
+    public int getScore(int col, Block block) {
       if (board[col][0] != EMPTY) {
         return 0;
       }
+      Board fBoard = new Board(this);
+      fBoard.put(col, block);
+      int score = fBoard.destroyBlocks();
       return 1;
+    }
+    
+    private int destroyBlocks() {
+      return 0;
+    }
+    public void put(int col, Block block) {
+      int pos = getFuturePos(col);
+      board[col][pos-1] = block.color1;
+      board[col][pos] = block.color2;
+    }
+    
+    public int getFuturePos(int col) {
+      int futurePos = 1; // can't be zero
+      while (futurePos < HEIGHT && board[col][futurePos] == EMPTY) {
+        futurePos+=1;
+      }
+      return futurePos-1;// precedent was empty, not the found one !
     }
   }
   
