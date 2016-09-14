@@ -1,6 +1,8 @@
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,26 +14,35 @@ public class PlayerTest {
     player = new Player();
   }
   
+  
   @Test
-  public void notAFreeSpot_Minus1() throws Exception {
-    Player.Board board = new Player.Board(6, 3);
-    board.updateRow(0,  ".33333");
-    board.updateRow(1,  ".33333");
-    board.updateRow(2,  "333333");
+  public void put_vertical() {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "......");
+    board.updateRow(3,  "......");
     
-    int score = board.simulate(1, new Player.Block(4,4));
-    assertThat(score , is(-1));
+    board.putBlock(0, new Player.Block(3,3), 1);
+    assertThat(board.row(0), is("......"));
+    assertThat(board.row(1), is("......"));
+    assertThat(board.row(2), is("3....."));
+    assertThat(board.row(3), is("3....."));
   }
 
   @Test
-  public void freeSpot_Zero() throws Exception {
-    Player.Board board = new Player.Board(6, 3);
-    board.updateRow(0,  ".34343");
-    board.updateRow(1,  ".34343");
-    board.updateRow(2,  "134343");
+  public void put_horizontal() {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "......");
+    board.updateRow(3,  "......");
     
-    int score = board.simulate(0, new Player.Block(4,4));
-    assertThat(score , is(0));
+    board.putBlock(0, new Player.Block(3,3), 0);
+    assertThat(board.row(0), is("......"));
+    assertThat(board.row(1), is("......"));
+    assertThat(board.row(2), is("......"));
+    assertThat(board.row(3), is("33...."));
   }
 
   @Test
@@ -126,7 +137,7 @@ public class PlayerTest {
     board.updateRow(2,  "......");
     board.updateRow(3,  "......");
     
-    int score = board.destroyNeighbours(4, 0,0);
+    int[] score = board.destroyNeighbours(4, 0,0);
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
     assertThat(board.row(2), is("......"));
@@ -141,7 +152,7 @@ public class PlayerTest {
     board.updateRow(2,  "4.....");
     board.updateRow(3,  "4.....");
     
-    int score = board.destroyNeighbours(4, 0,0);
+    int[] score = board.destroyNeighbours(4, 0,0);
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
     assertThat(board.row(2), is("......"));
@@ -156,13 +167,28 @@ public class PlayerTest {
     board.updateRow(2,  "......");
     board.updateRow(3,  "......");
     
-    int score = board.destroyNeighbours(4, 0,0);
+    int[] score = board.destroyNeighbours(4, 0,0);
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
     assertThat(board.row(2), is("......"));
     assertThat(board.row(3), is("......"));
   }
   
+  @Test
+  public void destroy_square_withSkulls() {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "440...");
+    board.updateRow(1,  "440...");
+    board.updateRow(2,  "......");
+    board.updateRow(3,  "......");
+    
+    int[] score = board.destroyNeighbours(4, 0,0);
+    assertThat(board.row(0), is("......"));
+    assertThat(board.row(1), is("......"));
+    assertThat(board.row(2), is("......"));
+    assertThat(board.row(3), is("......"));
+  }
+
   @Test
   public void updateBoard_easy() {
     Player.Board board = new Player.Board(6, 4);
@@ -209,17 +235,6 @@ public class PlayerTest {
   }
   
   @Test
-  public void score_simpleSquareGive40Points() throws Exception {
-    Player.Board board = new Player.Board(6, 3);
-    board.updateRow(0,  ".43434");
-    board.updateRow(1,  ".43434");
-    board.updateRow(2,  "313434");
-    
-    int score = board.simulate(0, new Player.Block(4,4));
-    assertThat(score, is(40));
-  }
-
-  @Test
   public void bestCol_easy() {
     Player.Board board = new Player.Board(6, 4);
     board.updateRow(0,  "......");
@@ -227,9 +242,10 @@ public class PlayerTest {
     board.updateRow(2,  "3.....");
     board.updateRow(3,  "3.....");
     
-    int bestCol = board.getBestCol(new Player.Block(3,3));
+    Player.Block[] blocks = new Player.Block[] { new Player.Block(3,3) };
+    int bestCol[] = board.getBestChoice(blocks, 1);
     
-    assertThat(bestCol, is(0));
+    assertThat(bestCol[1], is(0));
   }
 
   @Test
@@ -242,8 +258,64 @@ public class PlayerTest {
     board.updateRow(2,  "3.4333");
     board.updateRow(3,  "3.4222");
     
-    int bestCol = board.getBestCol(new Player.Block(5,5));
+    Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5) };
+    int bestCol[] = board.getBestChoice(blocks, 1);
+
+    assertThat(bestCol[1], is(1));
+    assertThat(bestCol[2], is(1));
+  }
+
+  @Test
+  public void bestCol_mediumCase_2Iter() {
+    Player.Board board = new Player.Board(6, 6);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "......");
+    board.updateRow(3,  "......");
+    board.updateRow(2,  "..5...");
+    board.updateRow(3,  "..5...");
     
-    assertThat(bestCol, is(1));
+    Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5), new Player.Block(5, 5) };
+    int bestCol[] = board.getBestChoice(blocks, 2);
+
+    assertThat(bestCol[1], is(0));
+  }
+  
+  
+  /***
+   * DEBUG
+   */
+
+  @Test
+  public void debug_AOOB1() {
+    Player.Board board = new Player.Board(6, 6);
+    board.updateRow(0,  ".3....");
+    board.updateRow(1,  "34....");
+    board.updateRow(2,  "44....");
+    board.updateRow(3,  "33....");
+    board.updateRow(4,  "444...");
+    board.updateRow(5,  "3322..");
+    
+    Player.Block[] blocks = new Player.Block[] { new Player.Block(3, 3), new Player.Block(5, 5) };
+    int bestCol[] = board.getBestChoice(blocks, 1);
+
+    assertThat(bestCol[1], is(2));
+  }
+  
+  @Test
+  public void debug_reallyBestChoice() {
+    Player.Board board = new Player.Board(6, 6);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "......");
+    board.updateRow(3,  "......");
+    board.updateRow(4,  "11....");
+    board.updateRow(5,  "44....");
+    
+    Player.Block[] blocks = new Player.Block[] { new Player.Block(4, 4)};
+    int bestCol[] = board.getBestChoice(blocks, 1);
+
+    assertThat(bestCol[1], is(2));
+    assertThat(bestCol[2], is(1));
   }
 }
