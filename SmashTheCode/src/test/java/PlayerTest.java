@@ -219,4 +219,31 @@ public class PlayerTest {
     assertThat(score, is(40));
   }
 
+  @Test
+  public void bestCol_easy() {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "3.....");
+    board.updateRow(3,  "3.....");
+    
+    int bestCol = board.getBestCol(new Player.Block(3,3));
+    
+    assertThat(bestCol, is(0));
+  }
+
+  @Test
+  public void bestCol_ifNoBlockPossibleChooseAMinimumColumn() {
+    Player.Board board = new Player.Board(6, 6);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "1..111");
+    board.updateRow(3,  "2.4222");
+    board.updateRow(2,  "3.4333");
+    board.updateRow(3,  "3.4222");
+    
+    int bestCol = board.getBestCol(new Player.Block(5,5));
+    
+    assertThat(bestCol, is(1));
+  }
 }

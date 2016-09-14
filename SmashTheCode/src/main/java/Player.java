@@ -97,42 +97,6 @@ class Player {
       System.err.println("--------");
     }
 
-
-    int findOnTop(int color1) {
-      for (int x=0;x<WIDTH;x++) {
-        int y=2;
-        while (y<HEIGHT) {
-          if (board[x][y] == color1) {
-            return x;
-          }
-          y++;
-        }
-      }
-      return -1;
-    }
-    int findFreeSpot() {
-      for (int x=0;x<WIDTH;x++) {
-        for (int y=0;y<2;y++) {
-          if (board[x][y] == EMPTY) {
-            return x;
-          }
-        }
-      }
-      return -1;
-    }
-    public int findColWithColor(int color1) {
-      int col = findOnTop(color1);
-      if (col == -1) {
-        col = findFreeSpot();
-      }
-      return col;
-    }
-    public int findOnSide(int i) {
-      
-      return 0;
-    }
-   
-
     public int simulate(int col, Block block) {
       if (board[col][0] != EMPTY) {
         return -1;
@@ -237,7 +201,7 @@ class Player {
     
     public void update() {
       for (int x=0;x<WIDTH;x++) {
-        int[] col = new int[WIDTH];
+        int[] col = new int[HEIGHT];
         int current=0;
         for (int y=HEIGHT-1;y>=0;y--) {
           if (board[x][y] != EMPTY) {
@@ -248,6 +212,29 @@ class Player {
           board[x][y] = col[(HEIGHT-1)-y];
         }
       }
+    }
+    int getBestCol(Block block) {
+      int bestCol = 0;
+      int bestScore = -1;
+      for (int i=0;i<WIDTH;i++) {
+        int score = simulate(i, block);
+        if (score > bestScore) {
+          bestScore = score;
+          bestCol = i;
+        }
+      }
+      if (bestScore == 0) {
+        // choose the lower col
+        int bestSize = 0;
+        for (int i=0;i<WIDTH;i++) {
+          int size = getFuturePos(i);
+          if (size > bestSize) {
+            bestSize = size;
+            bestCol = i;
+          }
+        }
+      }
+      return bestCol;
     }
   }
   
@@ -271,7 +258,7 @@ class Player {
       // To debug: System.err.println("Debug messages...");
       //board.debug();
       Block nextBlock = blocks.peekFirst();
-      int bestCol = getBestCol(nextBlock);
+      int bestCol = board.getBestCol(nextBlock);
       System.err.println("bestCol: "+bestCol+" for block: "+nextBlock.color1);
       System.out.println("" + bestCol);
     }
@@ -293,15 +280,6 @@ class Player {
       String row = in.next(); // One line of the map ('.' = empty, '0' = skull
                               // block, '1' to '5' = colored block)
     }
-  }
-
-  int getBestCol(Block block) {
-    int bestCol = board.findColWithColor(block.color1);
-    if (bestCol == -1) {
-      col = (col + 1) % 6;
-      return col;
-    } 
-    return bestCol;
   }
 
 }
