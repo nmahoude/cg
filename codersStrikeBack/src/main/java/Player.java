@@ -18,6 +18,10 @@ class Player {
         int checkPointY= in.nextInt();
         game.addCheckPoint(new Point(checkPointX, checkPointY));
       }
+      for (int i=0;i<4;i++) {
+        pods[i] = new Pod();
+        pods[i].index = i;
+      }
     }
     
     public void addCheckPoint(Point point) {
@@ -30,8 +34,9 @@ class Player {
     }
   }
   class Pod {
+    public int index;
     static final int SLOWDOWN_DISTANCE= 2000;
-    TurnSolution lastBestSolution;
+    Solution lastBestSolution;
     Point lastPosition = new Point(0,0);
     Point position = lastPosition;
     Vector speed = new Vector(0,0);
@@ -99,7 +104,7 @@ class Player {
       
       for (int podIndex=0;podIndex<2;podIndex++) {
         Pod currentPod = game.pods[podIndex];
-        TurnSolution bestSolution = simulate(currentPod, currentPod.nextCheckpoint);
+        Solution bestSolution = simulate(currentPod, currentPod.nextCheckpoint);
         if (debugBestSolution) {
           System.err.print("Best solution: ");
           bestSolution.debug(currentPod);
@@ -107,7 +112,12 @@ class Player {
         Point target = currentPod.position.add(
             bestSolution.predictedDir.dot(1000)
             );
-        String output = ""+(int)(target.x)+" "+(int)(target.y)+" "+(int)(bestSolution.thrust);
+        String output;
+        if (bestSolution instanceof BoostSolution) {
+          output = ""+(int)(target.x)+" "+(int)(target.y)+" BOOST";
+        } else {
+          output = ""+(int)(target.x)+" "+(int)(target.y)+" "+(int)(bestSolution.thrust);
+        }
         System.out.println(output);
         currentPod.lastBestSolution = bestSolution;
       
@@ -124,45 +134,52 @@ class Player {
     }
   }
 
-  static TurnSolution simulate(Pod pod, Point target) {
+  static Solution simulate(Pod pod, Point target) {
     if (target == null) {
       return new TurnSolution(100, 0, 
             pod.position, pod.direction, pod.speed);
     }
-    List<TurnSolution> solutions = new ArrayList<TurnSolution>();
+    List<Solution> solutions = new ArrayList<>();
     double thrusts[] = { 0.0, 50.0, 100.0};
     double angles[] = {-Math.toRadians(18), -Math.toRadians(9), 0, 
         Math.toRadians(9), Math.toRadians(18)};
 
-    for (double thrust : thrusts) {
-      for (double angle : angles) {
-        TurnSolution solution = new TurnSolution(thrust, angle, 
+    for (double angle : angles) {
+      for (double thrust : thrusts) {
+        Solution solution = new TurnSolution(thrust, angle, 
             pod.position, pod.direction, pod.speed);
         solutions.add(solution);
       }
+      // consider boost only if some left
+      if (pod.boostLeft > 0) {
+        solutions.add(new BoostSolution(650, angle, 
+            pod.position, pod.direction, pod.speed));
+      }
     }
+    // fitnesse value is only distance ATM (TODO)
     double minDist = Integer.MAX_VALUE;
-    TurnSolution bestSolution = null;
-    for (TurnSolution solution : solutions) {
+    Solution bestSolution = null;
+    for (Solution solution : solutions) {
       double distance = target.distTo(solution.predictedPosition);
       if ( distance < minDist) {
         minDist = distance;
         bestSolution  = solution;
       }
     }
-    if (minDist < 2000) {
+    // force to slowdone near CP(TODO should be handle by fitnesse method ?)
+    if (minDist < 2000 && bestSolution.thrust < 100) {
       bestSolution.thrust *=0.85;
     }
     return bestSolution;
   }
-  static class TurnSolution {
+  static abstract class Solution {
     double steering; // from -18 to 18
     double thrust; // 0 to 100
     Point predictedPosition;
     Vector predictedSpeed;
     Vector predictedDir;
     
-    public TurnSolution(double thrust, double angle, Point position, Vector direction, Vector speed) {
+    public Solution(double thrust, double angle, Point position, Vector direction, Vector speed) {
       this.steering = angle;
       this.thrust = thrust;
       predictedDir = direction.rotate(angle);
@@ -175,6 +192,30 @@ class Player {
       System.err.println("preSpeed:"+predictedSpeed+", preDir:"+predictedDir);
       System.err.println("prePos:"+predictedPosition+", distToTarget:"+pod.nextCheckpoint.distTo(predictedPosition));
     }
+
+    public abstract String output();
+  }
+  static class TurnSolution extends Solution {
+ 
+    public TurnSolution(double thrust, double angle, Point position, Vector direction, Vector speed) {
+      super(thrust, angle, position, direction, speed);
+    }
+    @Override
+    public String output() {
+      return null;
+    }
+  }
+  static class BoostSolution extends Solution {
+
+    public BoostSolution(double thrust, double angle, Point position, Vector direction, Vector speed) {
+      super(thrust, angle, position, direction, speed);
+    }
+
+    @Override
+    public String output() {
+      return null;
+    }
+    
   }
   
   

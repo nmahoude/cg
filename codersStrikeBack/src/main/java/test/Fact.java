@@ -1,8 +1,8 @@
-package test;
-
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Fact {
+class Solution {
 
   
   public static void main(String[] args) {
@@ -11,10 +11,25 @@ public class Fact {
     
     System.out.println(""+A+","+B);
     int pow = 0;
-
+    
+    List<BigInteger> primes = new ArrayList<BigInteger>();
+    
     BigInteger fact = BigInteger.valueOf(1);
     for (int i = 2; i <= B; i++) {
-        fact = fact.multiply(BigInteger.valueOf(i));
+        BigInteger value = BigInteger.valueOf(i);
+        if (value.isProbablePrime(1)) {
+          if (! A.divideAndRemainder(value)[1].equals(BigInteger.ZERO)) {
+            primes.add(value);
+            System.err.println("adding prime:"+i);
+          }
+        }
+        fact = fact.multiply(value);
+        for (BigInteger prime : primes) {
+          BigInteger[] result = fact.divideAndRemainder(prime);
+          if (result[1].equals(BigInteger.ZERO)) {
+            fact = result[0];
+          }
+        }
         System.out.println("fact: "+fact.toString());
         
         boolean cont = true;
