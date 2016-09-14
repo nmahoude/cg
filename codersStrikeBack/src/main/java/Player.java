@@ -2,46 +2,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * Auto-generated code below aims at helping you parse the standard input
- * according to the problem statement.
- **/
 class Player {
   Scanner in;
 
   class Game {
-    Point opponentPosition;
-    boolean allCheckpointsDiscovered = false;
+    Pod pods[] = new Pod[4];
     List<Point> checkpoints = new ArrayList<Point>();
+    public int laps;
     
-    void updateCheckPoints(Point checkPoint) {
-      if (allCheckpointsDiscovered) {
-        return;
+    public void init() {
+      game.laps = in.nextInt();
+      int checkPointCount = in.nextInt();
+      for (int i=0;i<checkPointCount;i++) {
+        int checkPointX= in.nextInt();
+        int checkPointY= in.nextInt();
+        game.addCheckPoint(new Point(checkPointX, checkPointY));
       }
-      if (!isKnownCheckpoint(checkPoint)) {
-        checkpoints.add(checkPoint);
-      } else {
-        if (checkpoints.size() > 1 && checkPoint.equals(checkpoints.get(0))) {
-          allCheckpointsDiscovered = true;
-        }
-      }
+    }
+    
+    public void addCheckPoint(Point point) {
+      checkpoints.add(point);
     }
 
-    boolean isKnownCheckpoint(Point p) {
-      for (Point checkpoint : checkpoints) {
-        if (checkpoint.equals(p)) {
-          return true;
-        }
-      }
-      return false;
-    }
-    public void update(Point opponentPosition, Point nextCk) {
-      this.opponentPosition = opponentPosition;
-      updateCheckPoints(nextCk);
+    public void update() {
+      // TODO Auto-generated method stub
+      
     }
   }
   class Pod {
     static final int SLOWDOWN_DISTANCE= 2000;
+    TurnSolution lastBestSolution;
     Point lastPosition = new Point(0,0);
     Point position = lastPosition;
     Vector speed = new Vector(0,0);
@@ -52,128 +42,88 @@ class Player {
     int nextCheckpointAngle; // angle between your pod orientation and the direction of the next checkpoint
     int boostLeft = 1;
     
-    String getOutputCommand(Game game) {
-      double thrust = calculateThrust();
-      String result;
-      if (thrust <= 0) {
-        result = "0";
-      } else if (thrust > 100) {
-        result = "BOOST";
-        boostLeft--;
-      } else {
-        result = ""+(int)thrust;
-      }
-      return (int)(nextCheckpoint.x) + " " + (int)(nextCheckpoint.y) + " " + result;
-    }
-    
-    private boolean shouldBoost() {
-      return boostLeft > 0
-          && (nextCheckpointDist > 4000 && Math.abs(nextCheckpointAngle) < 10);
-    }
-
-    private boolean shouldFullBreak() {
-      return (nextCheckpointAngle > 120 || nextCheckpointAngle < -120);
-    }
-
-    private double calculateThrust() {
-      if (shouldFullBreak()) {
-        return 0;
-      } else if (shouldBoost()) {
-        return 101;
-      }
-      
-      int thrust = 100;
-      if (nextCheckpointAngle > 10 && nextCheckpointAngle<-10) {
-        thrust = 75; // try to recover from bad angle
-      }
-      if (nextCheckpointDist - SLOWDOWN_DISTANCE < 0) {
-        double ratio = (1.0 * nextCheckpointDist) / SLOWDOWN_DISTANCE;
-        ratio = Math.pow(ratio, 1.0);
-        thrust = (int) (thrust * ratio);
-      }
-      return thrust;
-    }
-
     public void debug() {
       Point nextPosition = position.add(speed);
       Vector nextSpeed = speed.dot(0.85);
 
-      System.err.println("direction : "+pod.direction.toString());
+      System.err.println("direction : "+direction.toString());
       System.err.println("P: "+nextPosition.toString()+",S: "+nextSpeed.toString());
       System.err.println("distance to Target : "+nextCheckpointDist);
     }
 
     boolean firstGameInput = true;
-    
-    public void update(Point point, Point ckPoint, int dist, int angle) {
+    public void update(Point pos,Vector speed, Point ckPoint, int angle) {
       lastPosition = position;
       
-      position = point;
+      position = pos;
+      this.speed = speed;
       nextCheckpoint = ckPoint;
-      nextCheckpointDist = dist; // distance to the next checkpoint
       nextCheckpointAngle = angle; // angle between your pod orientation
 
       if (firstGameInput) {
         lastPosition = position;
         firstGameInput = false;
       } else {
-        speed = position.sub(lastPosition);
       }
       direction = nextCheckpoint.sub(position).normalize();
     }
   }
 
   Game game = new Game();
-  Pod pod = new Pod();
-  private TurnSolution lastBestSolution;
+  
   
   public static void main(String args[]) {
     new Player().play();
   }
 
   void readGameInput() {
-    Point point = new Point(in.nextInt(), in.nextInt());
-    Point nextCk = new Point(in.nextInt(), in.nextInt());
-    int dist = in.nextInt();
-    int angle = in.nextInt();
-    Point opponentPosition = new Point(in.nextInt(), in.nextInt());
-    
-    pod.update(point,nextCk,dist,angle);
-    game.update(opponentPosition, nextCk);
+    for (int i=0;i<4;i++) {
+      Point position = new Point(in.nextInt(), in.nextInt());
+      Vector speed = new Vector(in.nextInt(), in.nextInt());
+      int angle = in.nextInt();
+      Point nextCheckPoint = game.checkpoints.get(in.nextInt());
+      
+      game.pods[i].update(position,speed, nextCheckPoint,angle);
+    }
+    game.update();
   }
 
   void play() {
     in = new Scanner(System.in);
-
+    game.init();
+    
     // game loop
     boolean debugBestSolution = false;
     while (true) {
       readGameInput();
       
-      TurnSolution bestSolution = simulate(pod, pod.nextCheckpoint);
-      if (debugBestSolution) {
-        System.err.print("Best solution: ");
-        bestSolution.debug(pod);
-      }
-      Point target = pod.position.add(
-          bestSolution.predictedDir.dot(1000)
-          );
-      String output = ""+(int)(target.x)+" "+(int)(target.y)+" "+(int)(bestSolution.thrust);
-      System.out.println(output);
+      for (int podIndex=0;podIndex<2;podIndex++) {
+        Pod currentPod = game.pods[podIndex];
+        TurnSolution bestSolution = simulate(currentPod, currentPod.nextCheckpoint);
+        if (debugBestSolution) {
+          System.err.print("Best solution: ");
+          bestSolution.debug(currentPod);
+        }
+        Point target = currentPod.position.add(
+            bestSolution.predictedDir.dot(1000)
+            );
+        String output = ""+(int)(target.x)+" "+(int)(target.y)+" "+(int)(bestSolution.thrust);
+        System.out.println(output);
+        currentPod.lastBestSolution = bestSolution;
       
-      // **** DEBUG messages
-      // String output = pod.getOutputCommand(game);
-      //pod.debug();
-      if (debugBestSolution && lastBestSolution != null) {
-        System.err.println("Simulation error:");
-        System.err.println(lastBestSolution.predictedPosition);
-        System.err.println(pod.position);
-        System.err.println("error :"+pod.position.distTo(lastBestSolution.predictedPosition));
+        // **** DEBUG messages
+        // String output = pod.getOutputCommand(game);
+        //pod.debug();
+        if (debugBestSolution && currentPod.lastBestSolution != null) {
+          System.err.println("Simulation error:");
+          System.err.println(currentPod.lastBestSolution.predictedPosition);
+          System.err.println(currentPod.position);
+          System.err.println("error :"+currentPod.position.distTo(currentPod.lastBestSolution.predictedPosition));
+        }
       }
-      lastBestSolution = bestSolution;
     }
   }
-  
+
   static TurnSolution simulate(Pod pod, Point target) {
     if (target == null) {
       return new TurnSolution(100, 0, 
@@ -181,8 +131,8 @@ class Player {
     }
     List<TurnSolution> solutions = new ArrayList<TurnSolution>();
     double thrusts[] = { 0.0, 50.0, 100.0};
-    double angles[] = {-Math.toRadians(36), -Math.toRadians(18), 0, 
-        Math.toRadians(18), Math.toRadians(36)};
+    double angles[] = {-Math.toRadians(18), -Math.toRadians(9), 0, 
+        Math.toRadians(9), Math.toRadians(18)};
 
     for (double thrust : thrusts) {
       for (double angle : angles) {
