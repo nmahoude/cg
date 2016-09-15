@@ -199,23 +199,36 @@ class Player {
     }
 
     public void putBlock(int col, Block block, int rotation) {
-      if (rotation == 1) {
+      if (rotation == 1 || rotation == 3) {
         int pos = getFuturePos(col);
         if (pos == 0) {
           // FIXME don't even call in this case !
           return; // no block put
         }
-        board[col][pos - 1] = block.color1;
-        board[col][pos] = block.color2;
+        if (rotation == 1) {
+          board[col][pos - 1] = block.color2;
+          board[col][pos] = block.color1;
+        } else {
+          board[col][pos - 1] = block.color1;
+          board[col][pos] = block.color2;
+        }
       } else {
+        if (col == WIDTH-1) {
+          return; //
+        }
         int pos1 = getFuturePos(col);
         int pos2 = getFuturePos(col + 1);
         if (pos1 == -1 || pos2 == -1) {
           // FIXME don't even call in this case !
           return; // no block put
         }
-        board[col][pos1] = block.color1;
-        board[col + 1][pos2] = block.color2;
+        if (rotation == 0) {
+          board[col][pos1] = block.color1;
+          board[col + 1][pos2] = block.color2;
+        } else {
+          board[col][pos1] = block.color2;
+          board[col + 1][pos2] = block.color1;
+        }
       }
     }
 
@@ -271,7 +284,7 @@ class Player {
       int bestScore = -1;
       int bestRotation = 0;
       Block currentBlock = blocks[step];
-      for (int rotation = 1; rotation >=0; rotation--) {
+      for (int rotation = 3; rotation >=0; rotation--) {
         for (int i = 0; i < WIDTH; i++) {
           if (!this.canPutBlock(i, currentBlock, rotation)) {
             continue;

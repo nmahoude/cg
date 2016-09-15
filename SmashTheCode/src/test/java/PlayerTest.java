@@ -31,6 +31,66 @@ public class PlayerTest {
   }
 
   @Test
+  public void put2Color_rotation0() {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "......");
+    board.updateRow(3,  "......");
+    
+    board.putBlock(0, new Player.Block(1,4), 0);
+    assertThat(board.row(0), is("......"));
+    assertThat(board.row(1), is("......"));
+    assertThat(board.row(2), is("......"));
+    assertThat(board.row(3), is("14...."));
+  }
+
+  @Test
+  public void put2Color_rotation1() {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "......");
+    board.updateRow(3,  "......");
+    
+    board.putBlock(0, new Player.Block(1,4), 1);
+    assertThat(board.row(0), is("......"));
+    assertThat(board.row(1), is("......"));
+    assertThat(board.row(2), is("4....."));
+    assertThat(board.row(3), is("1....."));
+  }
+
+  @Test
+  public void put2Color_rotation2() {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "......");
+    board.updateRow(3,  "......");
+    
+    board.putBlock(0, new Player.Block(1,4), 2);
+    assertThat(board.row(0), is("......"));
+    assertThat(board.row(1), is("......"));
+    assertThat(board.row(2), is("......"));
+    assertThat(board.row(3), is("41...."));
+  }
+
+  @Test
+  public void put2Color_rotation3() {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "......");
+    board.updateRow(3,  "......");
+    
+    board.putBlock(0, new Player.Block(1,4), 3);
+    assertThat(board.row(0), is("......"));
+    assertThat(board.row(1), is("......"));
+    assertThat(board.row(2), is("1....."));
+    assertThat(board.row(3), is("4....."));
+  }
+
+  @Test
   public void put_horizontal() {
     Player.Board board = new Player.Board(6, 4);
     board.updateRow(0,  "......");
@@ -334,7 +394,7 @@ public class PlayerTest {
     int bestCol[] = board.getBestChoice(blocks, 1);
 
     assertThat(bestCol[1], is(1));
-    assertThat(bestCol[2], is(1));
+    assertThat(bestCol[2], is(3));
   }
 
   @Test
