@@ -11,6 +11,7 @@
     <module>SkynetV1</module>
     <module>NetworkCabling</module>
     <module>SmashTheCode</module>
+    <module>Winamax</module>
   </modules>
   
   <dependencies>
