@@ -1,13 +1,13 @@
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class PlayerTest {
+  private static final boolean debug_performance = true;
   Player player = new Player();
 
   @Before 
@@ -377,7 +377,7 @@ public class PlayerTest {
     Player.Block[] blocks = new Player.Block[] { new Player.Block(3,3) };
     int bestCol[] = board.getBestChoice(blocks, 1);
     
-    assertThat(bestCol[1], is(0));
+    assertThat(bestCol[1], is(1));
   }
 
   @Test
@@ -387,8 +387,8 @@ public class PlayerTest {
     board.updateRow(1,  "......");
     board.updateRow(2,  "1..111");
     board.updateRow(3,  "2.4222");
-    board.updateRow(2,  "3.4333");
-    board.updateRow(3,  "3.4222");
+    board.updateRow(4,  "3.4333");
+    board.updateRow(5,  "3.4222");
     
     Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5) };
     int bestCol[] = board.getBestChoice(blocks, 1);
@@ -404,8 +404,8 @@ public class PlayerTest {
     board.updateRow(1,  "......");
     board.updateRow(2,  "......");
     board.updateRow(3,  "......");
-    board.updateRow(2,  "..5...");
-    board.updateRow(3,  "..5...");
+    board.updateRow(4,  "..5...");
+    board.updateRow(5,  "..5...");
     
     Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5), new Player.Block(5, 5) };
     int bestCol[] = board.getBestChoice(blocks, 2);
@@ -455,7 +455,6 @@ public class PlayerTest {
     assertThat(bestCol[2], is(2));
     assertThat(bestCol[1], is(1));
   }
-
   
   @Test
   @Ignore
@@ -480,5 +479,75 @@ public class PlayerTest {
     assertThat(bestCol[2], is(1));
   }
   
+  @Test
+  public void debug_performanceTimeOut1() throws Exception {
+    if (!debug_performance) return;
+    Player.Board board = new Player.Board(6, 12);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "......");
+    board.updateRow(3,  "...35.");
+    board.updateRow(4,  "1.445.");
+    board.updateRow(5,  "2.154.");
+    board.updateRow(6,  "2.151.");
+    board.updateRow(7,  "3.544.");
+    board.updateRow(8,  "5.534.");
+    board.updateRow(9,  "1.1112");
+    board.updateRow(10, "132442");
+    board.updateRow(11, "124251");
+    
+    Player.Block[] blocks = new Player.Block[] { 
+        new Player.Block(3, 4), 
+        new Player.Block(1, 5),
+        new Player.Block(5, 4),
+        new Player.Block(5, 2),
+        new Player.Block(3, 3), 
+        new Player.Block(5, 5),
+        new Player.Block(3, 4),
+        new Player.Block(3, 4),
+        };
+    long millis1 = System.currentTimeMillis();
+    int bestCol[] = board.getBestChoice(blocks, 4);
+    long millis2 = System.currentTimeMillis();
+    
+    //best is 1.6
+    assertThat(millis2-millis1 , lessThan(1500L));
+  }
   
+  @Test
+  public void debug_performanceTimeOut2() throws Exception {
+    if (!debug_performance) return;
+    Player.Board board = new Player.Board(6, 12);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "......");
+    board.updateRow(3,  "......");
+    board.updateRow(4,  "......");
+    board.updateRow(5,  "......");
+    board.updateRow(6,  "......");
+    board.updateRow(7,  "......");
+    board.updateRow(8,  "......");
+    board.updateRow(9,  "......");
+    board.updateRow(10, "......");
+    board.updateRow(11, "......");
+    
+    Player.Block[] blocks = new Player.Block[] { 
+        new Player.Block(4,3),
+        new Player.Block(2,2),
+        new Player.Block(3,3),
+        new Player.Block(5,3), 
+        new Player.Block(4,1),
+        new Player.Block(2,5),
+        new Player.Block(1,3),
+        };
+    board.putBlock(0, new Player.Block(4,5), 3);
+
+    long millis1 = System.currentTimeMillis();
+    int bestCol[] = board.getBestChoice(blocks, 4);
+    long millis2 = System.currentTimeMillis();
+    
+    //best is 1.6
+    assertThat(millis2-millis1 , lessThan(100L));
+  }
+
 }
