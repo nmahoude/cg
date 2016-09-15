@@ -2,8 +2,6 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
-import javax.transaction.InvalidTransactionException;
-
 class Player {
   private static final int MAX_ITERATIONS = 3;
   private static Scanner in;
@@ -86,7 +84,8 @@ class Player {
       this(b.WIDTH, b.HEIGHT);
       // copy board
       for (int x = 0; x < WIDTH; x++) {
-        for (int y = 0; y <= b.heights[x]; y++) {
+        int height = Math.min(HEIGHT-1,b.heights[x]);
+        for (int y = 0; y <= height; y++) {
           board[x][y] = b.board[x][y];
         }
         heights[x] = b.heights[x];
@@ -94,48 +93,182 @@ class Player {
     }
 
     public void updateRow(int rowIndex, String row) {
-      rowIndex = (HEIGHT-1)-rowIndex;
-      for (int i = 0; i < WIDTH; i++) {
-        if (row.charAt(i) >= '1' && row.charAt(i) <= '5') {
-          board[i][rowIndex] = row.charAt(i) - '0';
-          heights[i] = Math.max(heights[i], rowIndex);
-        } else if (row.charAt(i) == '0') {
-          board[i][rowIndex] = SKULL;
-          heights[i] = Math.max(heights[i], rowIndex);
+      int y = (HEIGHT-1)-rowIndex;
+
+      for (int x = 0; x < WIDTH; x++) {
+        if (row.charAt(x) >= '1' && row.charAt(x) <= '5') {
+          board[x][y] = row.charAt(x) - '0';
+          heights[x] = Math.max(heights[x], Math.min(y+1, HEIGHT));
+        } else if (row.charAt(x) == '0') {
+          board[x][y] = SKULL;
+          heights[x] = Math.max(heights[x], Math.min(y+1, HEIGHT));
         } else {
-          board[i][rowIndex] = EMPTY; // empty
+          board[x][y] = EMPTY; // empty
         }
       }
     }
+
+    int score;
+    Board bestSubBoard;
+    int bestRotation;
+    int bestColumn;
 
     int B=0;  // block destroyed
     int CP=0; // chain power
     int CB=0; // color blocks
     int GB=0; // group blocks
+    
+    int points;
     int nuisancePoints = 0;
     
     boolean colorDestroyed[] = new boolean[6];
-    private int points;
-    void simulate(Block[] blocks, int step) {
-      CP = 0;
-      while (destroyGroups());
-      
-      for (int i=0;i<6;i++) {
-        CB+= colorDestroyed[i] ? 1 : 0;
-      }
-      points = (10 * B) * (CP + CB + GB);
-      nuisancePoints = (int)(points / 70);
-      if (step >= MAX_ITERATIONS) {
-        return;
-      }
-      
+    
+
+    int getPoints() {
+      return (10 * B) * Math.min(999, Math.max(1, CP + CB + GB));
+    }
+
+    void simulate(Block[] blocks, int iter) {
+      simulate(blocks, 0, iter);
     }
     
+    void simulate(Block[] blocks, int step, int iter) {
+      if (step >= iter) {
+        return;
+      } else {
+        Board bestBoard = null;
+        int bestScore = -1;
+        for (int x=0;x<WIDTH;x++) {
+          for (int rotation=0;rotation<4;rotation++) {
+            Board board = prepareBoardFor(blocks[step], x,rotation);
+            if (board != null) {
+              board.CP = 0;
+              while (board.destroyGroups());
+              board.update();
+              board.updateCB();
+              board.points = board.getPoints();
+              board.nuisancePoints = (int)(board.points / 70);
+
+              board.simulate(blocks, step+1, iter);
+              
+              int score = board.points + (HEIGHT-board.highestCol());
+              if (score > bestScore) {
+                bestScore = score;
+                bestBoard = board;
+                bestRotation = rotation;
+                bestColumn = x;
+              }
+            }
+          }
+        }
+        if (bestBoard != null) {
+          this.score += bestBoard.score;
+          this.points += bestBoard.points;
+          this.bestSubBoard = bestBoard;
+        }
+      }
+    }
+
+    int highestCol() {
+      int high = 0;
+      for (int i=0;i<WIDTH;i++) {
+        high = Math.max(high, heights[i]);
+      }
+      return high;
+    }
+
+    void updateCB() {
+      CB = 1;
+      for (int i=0;i<6;i++) {
+        CB*= colorDestroyed[i] ? 2 : 1;
+      }
+      if (CB <= 2) {
+        CB = 0;
+      } else {
+        CB/=2;
+      }
+    }
+    int futurePos(int x) {
+      return heights[x];
+    }
+    Board prepareBoardFor(Block block, int x, int rotation) {
+      if (!canPlaceBlock(block, x, rotation)) {
+        return null;
+      }
+      Board board = new Board(this);
+      board.placeBlock(block, x, rotation);
+      return board;
+    }
+
+    void placeBlock(Block block, int x, int rotation) {
+      int y = heights[x];
+      if (rotation == 1 || rotation == 3) {
+        if (rotation == 1) {
+          board[x][y+1] = block.color2;
+          board[x][y] = block.color1;
+        } else {
+          board[x][y+1] = block.color1;
+          board[x][y] = block.color2;
+        }
+        heights[x]+=2;
+      } else {
+        if (rotation == 0) {
+          int y2 = heights[x+1];
+          board[x][y] = block.color1;
+          board[x + 1][y2] = block.color2;
+
+          heights[x]+=1;
+          heights[x+1]+=1;
+        } else {
+          int y2 = heights[x-1];
+          board[x][y] = block.color1;
+          board[x - 1][y2] = block.color2;
+
+          heights[x]+=1;
+          heights[x-1]+=1;
+        }
+      }
+    }
+
+    boolean canPlaceBlock(Block block, int x, int rotation) {
+      if (rotation == 1 || rotation == 3) {
+        if (board[x][(HEIGHT-1)-1] != EMPTY) {
+          return false;
+        }
+      } else {
+        if (rotation == 0) {
+          if (x+1 > WIDTH-1 || board[x][HEIGHT-1] != EMPTY || board[x+1][HEIGHT-1] != EMPTY) {
+            return false;
+          }
+        } else {
+          if (x-1 < 0 || board[x-1][HEIGHT-1] != EMPTY || board[x][HEIGHT-1] != EMPTY) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    
+    void update() {
+      for (int x=0;x<WIDTH;x++) {
+        int current = 0;
+        for (int y=0;y<heights[x];y++) {
+          if (board[x][y] != EMPTY) {
+            board[x][current++] = board[x][y];
+          }
+        }
+        heights[x] = current;
+        for (int y=current;y<HEIGHT;y++) {
+          board[x][y] = EMPTY;
+        }
+      }
+    }
+
     boolean destroyGroups() {
       boolean someDestroyed = false;
       for (int x=0;x<WIDTH;x++) {
-        for (int y=0;y<HEIGHT;y++) {
-          int neighbours = countNeigbours(x,y);
+        for (int y=0;y<heights[x];y++) {
+          int neighbours = countNeighbours(x,y);
           if (neighbours >= 4) {
             someDestroyed = true;
             int color = board[x][y];
@@ -169,9 +302,9 @@ class Player {
       }
     }
 
-    private int countNeigbours(int x, int y) {
+    int countNeighbours(int x, int y) {
       int color = board[x][y];
-      if (color <0 || color > 6) {
+      if (color <1 || color > 6) {
         return 0; 
       }
       Set<P> alreadyCounted = new HashSet<>();
@@ -197,187 +330,6 @@ class Player {
       return count;
     }
 
-//    public int[] destroyFromOneBlock(int x, int y, int[] colorBlocksCleared) {
-//      int GB = 0;
-//      int col = board[x][y];
-//      int partialScore = 0;
-//      if (col > 0 && col < 6) {
-//        int voisins = countNeighbours(x, y);
-//        if (voisins >= 4) {
-//          GB += voisins >= 11 ? 8 : voisins -4;
-//          colorBlocksCleared[col]+=voisins;
-//          int[] result = destroyNeighbours(col, x, y);
-//          partialScore += result[0];
-//        }
-//      }
-//      return new int[]{partialScore, GB};
-//    }
-//    
-//    public int destroyBlocks() {
-//      return destroyBlocksFrom(null, null);
-//    }
-//
-//    private int destroyBlocksFrom(P p1, P p2) {
-//      int score = 0;
-//      int partialScore;
-//      boolean updateDone;
-//      int[] colorBlocksCleared = new int[6];
-//      int GB = 0;
-//      int step = 0;
-//      do {
-//        partialScore = 0;
-//        if (p1 == null) {
-//          for (int y = 0; y < HEIGHT; y++) {
-//            for (int x = 0; x < WIDTH; x++) {
-//              int[] result = destroyFromOneBlock(x,y,colorBlocksCleared);
-//              partialScore+=result[0];
-//              GB+=result[1];
-//            }
-//          }
-//        } else {
-//          int[] result = destroyFromOneBlock(p1.x,p1.y,colorBlocksCleared);
-//          partialScore+=result[0];
-//          GB+=result[1];
-//
-//          result = destroyFromOneBlock(p2.x,p2.y,colorBlocksCleared);
-//          partialScore+=result[0];
-//          GB+=result[1];
-//        }
-//        if (partialScore > 0) { // only do if we destroyed something
-//          int CB = calculateColorBonus(colorBlocksCleared);
-//          int CP = 8*step;
-//          int bonus = Math.min(Math.max(1, CP + CB + GB), 999);
-//          score += (10 * partialScore) * bonus;
-//          updateDone = update();
-//          p1 = null; // reset targetted search
-//        } else {
-//          updateDone = false;
-//        }
-//      } while (updateDone);
-//      return score;
-//    }
-//
-//    private int calculateColorBonus(int[] colorBlocksCleared) {
-//      int colorBonus = 1;
-//      for (int i=0;i<WIDTH;i++) {
-//        if (colorBlocksCleared[i] > 0) {
-//          colorBonus*=2;
-//        }
-//      }
-//      return colorBonus <= 2 ? 0 : colorBonus / 2;
-//    }
-//
-//    int[] destroyNeighbours(int col, int x, int y) {
-//      int[] result = new int[2];
-//      if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) {
-//        return result;
-//      }
-//      if (board[x][y] != col && board[x][y] != SKULL) {
-//        return result;
-//      }
-//      if (board[x][y] == SKULL) {
-//        board[x][y] = EMPTY;
-//        result[1]++;
-//        return result;
-//      }
-//      board[x][y] = EMPTY;
-//      result[0] = 1;
-//      int[] mx = destroyNeighbours(col, x - 1, y);
-//      int[] px = destroyNeighbours(col, x + 1, y);
-//      int[] py = destroyNeighbours(col, x, y + 1);
-//      int[] my = destroyNeighbours(col, x, y - 1);
-//      
-//      result[0] += mx[0]+px[0]+py[0]+my[0];
-//      result[1] += mx[1]+px[1]+py[1]+my[1];
-//      return result;
-//    }
-//
-//    int countNeighbours(int x, int y) {
-//      /**
-//       * TODO optimization needed ? Possibilite d'amélioration : copier le board
-//       * et supprimer les entités comptées plutot que le SET
-//       */
-//      Set<P> alreadyCounted = new HashSet<>();
-//      int col = board[x][y];
-//      int count = countNeighbours(alreadyCounted, col, x, y);
-//      return count;
-//    }
-//
-//    int countNeighbours(Set<P> alreadyCounted, int col, int x, int y) {
-//      if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) {
-//        return 0;
-//      }
-//      if (alreadyCounted.contains(new P(x, y))) {
-//        return 0;
-//      }
-//      if (board[x][y] != col) {
-//        return 0;
-//      }
-//      alreadyCounted.add(new P(x, y));
-//      int count = 1;
-//      count += countNeighbours(alreadyCounted, col, x - 1, y);
-//      count += countNeighbours(alreadyCounted, col, x + 1, y);
-//      count += countNeighbours(alreadyCounted, col, x, y + 1);
-//      count += countNeighbours(alreadyCounted, col, x, y - 1);
-//      return count;
-//    }
-//
-//    public P putBall(int column, int color) {
-//      int y = getFuturePos(column);
-//      if (y==-1) {
-//        return null;
-//      }
-//      board[column][y] = color;
-//      heights[column]--;
-//      return new P(column,y);
-//    }
-//
-//    public int getColumnFromBlock(Ball ball, Block block, int rotation) {
-//      if (rotation == 1 || rotation == 3) {
-//          return 0; 
-//      } else {
-//        if (rotation == 0) {
-//          return ball == Ball.BALL1 ? 0 : 1;
-//        } else {
-//          return ball == Ball.BALL1 ? 0 : -1;
-//        }
-//      }
-//    }
-//    
-//    public void putBlock(int col, Block block, int rotation) {
-//      if (rotation == 1 || rotation == 3) {
-//        int pos = getFuturePos(col);
-//        if (rotation == 1) {
-//          board[col][pos - 1] = block.color2;
-//          board[col][pos] = block.color1;
-//        } else {
-//          board[col][pos - 1] = block.color1;
-//          board[col][pos] = block.color2;
-//        }
-//      } else {
-//        if (rotation == 0) {
-//          int pos1 = getFuturePos(col);
-//          int pos2 = getFuturePos(col + 1);
-//          board[col][pos1] = block.color1;
-//          board[col + 1][pos2] = block.color2;
-//        } else {
-//          if (col == 0) { return; /**/ }
-//          int pos1 = getFuturePos(col);
-//          int pos2 = getFuturePos(col - 1);
-//          board[col][pos1] = block.color1;
-//          board[col - 1][pos2] = block.color2;
-//        }
-//      }
-//    }
-//
-//    public int getFuturePos(int col) {
-//      int futurePos = 0; // can't be zero
-//      while (futurePos < HEIGHT && board[col][futurePos] == EMPTY) {
-//        futurePos += 1;
-//      }
-//      return futurePos - 1;// precedent was empty, not the found one !
-//    }
-
     public String row(int rowIndex) {
       rowIndex = (HEIGHT-1)-rowIndex;
       String result = "";
@@ -392,112 +344,6 @@ class Player {
       }
       return result;
     }
-
-//    public boolean update() {
-//      boolean moveDone = false;
-//      for (int x = 0; x < WIDTH; x++) {
-//        int[] col = new int[HEIGHT];
-//        int current = 0;
-//        for (int y = HEIGHT - 1; y >= 0; y--) {
-//          if (board[x][y] != EMPTY) {
-//            col[current++] = board[x][y];
-//          } else {
-//            moveDone = true;
-//          }
-//        }
-//        heights[x] = (HEIGHT ) - current;
-//        for (int y = HEIGHT - 1; y >= 0; y--) {
-//          board[x][y] = col[(HEIGHT - 1) - y];
-//        }
-//      }
-//      return moveDone;
-//    }
-//
-//    int[] simulateOneStep(Block[] blocks, int step, int maxIteration) {
-//      if (step >= maxIteration) {
-//        // calculate a score based on resulting height
-//        int heightScore = HEIGHT;
-//        for (int hcol=0;hcol<WIDTH;hcol++) {
-//          heightScore = Math.min(heightScore,getFuturePos(hcol));
-//        }
-//        return new int[] { heightScore, 0, 0 };
-//      }
-//      int bestCol = 0;
-//      int bestScore = -1;
-//      int bestRotation = 0;
-//      Block currentBlock = blocks[step];
-//      for (int rotation = 3; rotation >=0; rotation--) {
-//        for (int i = 0; i < WIDTH; i++) {
-//          Board newBoard = new Board(this);
-//          int columnFromBlock1 = i+getColumnFromBlock(Ball.BALL1, currentBlock, rotation);
-//          if (!newBoard.legalColumn(columnFromBlock1)) {
-//            continue;
-//          }
-//          P p1 = newBoard.putBall(columnFromBlock1, currentBlock.color1);
-//          int columnFromBlock2 = i+getColumnFromBlock(Ball.BALL2, currentBlock, rotation);
-//          if (!newBoard.legalColumn(columnFromBlock2)) {
-//            continue;
-//          }
-//          P p2 = newBoard.putBall(columnFromBlock2, currentBlock.color2);
-//          
-//          int score = newBoard.destroyBlocksFrom(p1, p2);
-//          int[] bestChild = newBoard.simulateOneStep(blocks, step + 1, maxIteration);
-//          if (bestChild[0] > 0) {
-//            score += bestChild[0];
-//          }
-//          if (score > bestScore) {
-//            bestScore = score;
-//            bestCol = i;
-//            bestRotation = rotation;
-//          }
-//        }
-//      }
-//      return new int[] { bestScore, bestCol, bestRotation };
-//    }
-//
-//    private boolean legalColumn(int columnFromBlock1) {
-//      return columnFromBlock1 >= 0 
-//          && columnFromBlock1 < WIDTH
-//          && board[columnFromBlock1][0] == EMPTY;
-//    }
-//
-//    private boolean canPutBlock(int i, Block currentBlock, int rotation) {
-//      switch (rotation) {
-//        case 0:
-//          return (i < WIDTH - 1)
-//              && (board[i][0] == EMPTY)
-//              && (board[i + 1][0] == EMPTY);
-//        case 2:
-//          return (i > 0)
-//              && (board[i][0] == EMPTY)
-//              && (board[i - 1][0] == EMPTY);
-//        case 1:
-//        case 3:
-//          return (i < WIDTH ) 
-//              && (board[i][0] == EMPTY)
-//              && (board[i][1] == EMPTY);
-//        default:
-//          return false;
-//      }
-//    }
-//
-//    int[] getBestChoice(Block[] blocks, int maxIteration) {
-//
-//      int[] best = simulateOneStep(blocks, 0, maxIteration);
-//      if (best[0] == -1) {
-//        // choose the lower col
-//        int bestSize = 0;
-//        for (int i = 0; i < WIDTH; i++) {
-//          int size = getFuturePos(i);
-//          if (size > bestSize) {
-//            bestSize = size;
-//            best[0] = i;
-//          }
-//        }
-//      }
-//      //System.err.println("Best choice : " + best[0] + "," + best[1] + "," + best[2]);
-//      return best;
-//    }
 
     public void resetHeights() {
       for (int i=0;i<WIDTH;i++) {
@@ -523,8 +369,8 @@ class Player {
     // game loop
     while (true) {
       updateReadings();
-      int[] bestSolution = board.getBestChoice(blocks, MAX_ITERATIONS);
-      System.out.println("" + (bestSolution[1]) + " " + bestSolution[2]);
+      board.simulate(blocks, MAX_ITERATIONS);
+      System.out.println("" + board.bestColumn + " " + board.bestRotation);
     }
   }
 
@@ -540,8 +386,7 @@ class Player {
     }
     score2 = in.nextInt();
     for (int i = 0; i < 12; i++) {
-      String row = in.next(); // One line of the map ('.' = empty, '0' = skull
-                              // block, '1' to '5' = colored block)
+      String row = in.next(); 
     }
   }
 
