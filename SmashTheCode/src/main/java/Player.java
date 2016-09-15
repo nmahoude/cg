@@ -201,10 +201,6 @@ class Player {
     public void putBlock(int col, Block block, int rotation) {
       if (rotation == 1 || rotation == 3) {
         int pos = getFuturePos(col);
-        if (pos == 0) {
-          // FIXME don't even call in this case !
-          return; // no block put
-        }
         if (rotation == 1) {
           board[col][pos - 1] = block.color2;
           board[col][pos] = block.color1;
@@ -213,21 +209,17 @@ class Player {
           board[col][pos] = block.color2;
         }
       } else {
-        if (col == WIDTH-1) {
-          return; //
-        }
-        int pos1 = getFuturePos(col);
-        int pos2 = getFuturePos(col + 1);
-        if (pos1 == -1 || pos2 == -1) {
-          // FIXME don't even call in this case !
-          return; // no block put
-        }
         if (rotation == 0) {
+          int pos1 = getFuturePos(col);
+          int pos2 = getFuturePos(col + 1);
           board[col][pos1] = block.color1;
           board[col + 1][pos2] = block.color2;
         } else {
-          board[col][pos1] = block.color2;
-          board[col + 1][pos2] = block.color1;
+          if (col == 0) { return; /**/ }
+          int pos1 = getFuturePos(col);
+          int pos2 = getFuturePos(col - 1);
+          board[col][pos1] = block.color1;
+          board[col - 1][pos2] = block.color2;
         }
       }
     }
@@ -307,14 +299,22 @@ class Player {
     }
 
     private boolean canPutBlock(int i, Block currentBlock, int rotation) {
-      if (rotation == 0) {
-        return (i < WIDTH - 1)
-            && (board[i][0] == EMPTY)
-            && (board[i + 1][0] == EMPTY);
-      } else {
-        return (i < WIDTH ) 
-            && (board[i][0] == EMPTY)
-            && (board[i][1] == EMPTY);
+      switch (rotation) {
+        case 0:
+          return (i < WIDTH - 1)
+              && (board[i][0] == EMPTY)
+              && (board[i + 1][0] == EMPTY);
+        case 2:
+          return (i > 0)
+              && (board[i][0] == EMPTY)
+              && (board[i - 1][0] == EMPTY);
+        case 1:
+        case 3:
+          return (i < WIDTH ) 
+              && (board[i][0] == EMPTY)
+              && (board[i][1] == EMPTY);
+        default:
+          return false;
       }
     }
 
@@ -359,7 +359,7 @@ class Player {
       // To debug: System.err.println("Debug messages...");
       // board.debug();
       int[] bestSolution = board.getBestChoice(blocks, MAX_ITERATIONS);
-      System.out.println("" + bestSolution[1] + " " + bestSolution[2]);
+      System.out.println("" + (bestSolution[1]) + " " + bestSolution[2]);
     }
   }
 

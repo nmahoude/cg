@@ -68,7 +68,7 @@ public class PlayerTest {
     board.updateRow(2,  "......");
     board.updateRow(3,  "......");
     
-    board.putBlock(0, new Player.Block(1,4), 2);
+    board.putBlock(1, new Player.Block(1,4), 2);
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
     assertThat(board.row(2), is("......"));
@@ -435,6 +435,29 @@ public class PlayerTest {
   }
   
   @Test
+  public void debug_colIs0_isBad() {
+    Player.Board board = new Player.Board(6, 6);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "......");
+    board.updateRow(3,  "......");
+    board.updateRow(4,  "......");
+    board.updateRow(5,  "....44");
+    
+    Player.Block[] blocks = new Player.Block[] { 
+        new Player.Block(3, 3), 
+        new Player.Block(2, 1),
+        new Player.Block(3, 4),
+        new Player.Block(1, 3),
+        };
+    int bestCol[] = board.getBestChoice(blocks, 1);
+
+    assertThat(bestCol[2], is(2));
+    assertThat(bestCol[1], is(1));
+  }
+
+  
+  @Test
   @Ignore
   public void debug_reallyBestChoice() {
     Player.Board board = new Player.Board(6, 6);
@@ -456,4 +479,6 @@ public class PlayerTest {
     assertThat(bestCol[1], is(1));
     assertThat(bestCol[2], is(1));
   }
+  
+  
 }
