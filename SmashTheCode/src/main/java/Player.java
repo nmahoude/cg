@@ -1,17 +1,9 @@
-import java.util.*;
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
 
-import javax.lang.model.type.ArrayType;
-import javax.naming.PartialResultException;
-
-import java.io.*;
-import java.math.*;
-
-/**
- * Auto-generated code below aims at helping you parse the standard input
- * according to the problem statement.
- **/
 class Player {
-  private static final int MAX_ITERATIONS = 4;
+  private static final int MAX_ITERATIONS = 3;
   private static Scanner in;
 
   static class P {
@@ -66,8 +58,7 @@ class Player {
     final int WIDTH;
     final int HEIGHT;
     int[][] board;
-    private boolean result;
-
+    
     Board(int W, int H) {
       WIDTH = W;
       HEIGHT = H;
@@ -106,9 +97,13 @@ class Player {
       System.err.println("--------");
     }
 
-    private int destroyBlocks() {
+    public int destroyBlocks() {
       int score = 0;
-      int partialScore = 0;
+      int partialScore;
+      boolean updateDone;
+      int[] colorBlocksCleared = new int[6];
+      int GB = 0;
+      int step = 0;
       do {
         partialScore = 0;
         for (int y = 0; y < HEIGHT; y++) {
@@ -117,16 +112,35 @@ class Player {
             if (col > 0 && col < 6) {
               int voisins = countNeighbours(x, y);
               if (voisins >= 4) {
+                GB += voisins >= 11 ? 8 : voisins -4;
+                colorBlocksCleared[col]+=voisins;
                 int[] result = destroyNeighbours(col, x, y);
-                partialScore += 10 * result[0];
+                partialScore += result[0];
               }
             }
           }
         }
-        score += partialScore;
-        update();
-      } while (partialScore > 0);
+        if (partialScore > 0) { // only do if we destroyed something
+          int CB = calculateColorBonus(colorBlocksCleared);
+          int CP = 8*step;
+          int bonus = Math.min(Math.max(1, CP + CB + GB), 999);
+          score += (10 * partialScore) * bonus;
+          updateDone = update();
+        } else {
+          updateDone = false;
+        }
+      } while (updateDone);
       return score;
+    }
+
+    private int calculateColorBonus(int[] colorBlocksCleared) {
+      int colorBonus = 1;
+      for (int i=0;i<WIDTH;i++) {
+        if (colorBlocksCleared[i] > 0) {
+          colorBonus*=2;
+        }
+      }
+      return colorBonus <= 2 ? 0 : colorBonus / 2;
     }
 
     int[] destroyNeighbours(int col, int x, int y) {
@@ -149,8 +163,8 @@ class Player {
       int[] py = destroyNeighbours(col, x, y + 1);
       int[] my = destroyNeighbours(col, x, y - 1);
       
-      result[0] = mx[0]+px[0]+py[0]+my[0];
-      result[1] = mx[1]+px[1]+py[1]+my[1];
+      result[0] += mx[0]+px[0]+py[0]+my[0];
+      result[1] += mx[1]+px[1]+py[1]+my[1];
       return result;
     }
 
@@ -225,19 +239,23 @@ class Player {
       return result;
     }
 
-    public void update() {
+    public boolean update() {
+      boolean moveDone = false;
       for (int x = 0; x < WIDTH; x++) {
         int[] col = new int[HEIGHT];
         int current = 0;
         for (int y = HEIGHT - 1; y >= 0; y--) {
           if (board[x][y] != EMPTY) {
             col[current++] = board[x][y];
+          } else {
+            moveDone = true;
           }
         }
         for (int y = HEIGHT - 1; y >= 0; y--) {
           board[x][y] = col[(HEIGHT - 1) - y];
         }
       }
+      return moveDone;
     }
 
     int[] simulateOneStep(Block[] blocks, int step, int maxIteration) {
@@ -301,7 +319,7 @@ class Player {
           }
         }
       }
-      System.err.println("Best choice : " + best[0] + "," + best[1] + "," + best[2]);
+      //System.err.println("Best choice : " + best[0] + "," + best[1] + "," + best[2]);
       return best;
     }
   }

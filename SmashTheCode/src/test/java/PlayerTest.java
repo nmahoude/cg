@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class PlayerTest {
@@ -13,7 +14,6 @@ public class PlayerTest {
   public void setup() {
     player = new Player();
   }
-  
   
   @Test
   public void put_vertical() {
@@ -190,6 +190,78 @@ public class PlayerTest {
   }
 
   @Test
+  public void destroy_emptyBoard() throws Exception {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "......");
+    board.updateRow(2,  "......");
+    board.updateRow(3,  "......");
+    
+    int score = board.destroyBlocks();
+    assertThat(score, is(0));
+  }
+  
+  @Test
+  public void destroy_fullBoardWithoutMatch() throws Exception {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "133113");
+    board.updateRow(1,  "134513");
+    board.updateRow(2,  "124523");
+    board.updateRow(3,  "224522");
+    
+    int score = board.destroyBlocks();
+    assertThat(score, is(0));
+  }  
+
+  @Test
+  public void destroy_squareGive40Points() throws Exception {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "..33..");
+    board.updateRow(2,  "..33..");
+    board.updateRow(3,  "......");
+    
+    int score = board.destroyBlocks();
+    assertThat(score, is(40));
+  }  
+  
+  @Test
+  public void destroy_6x2Give40Points() throws Exception {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "..333.");
+    board.updateRow(2,  "..333.");
+    board.updateRow(3,  "......");
+    
+    int score = board.destroyBlocks();
+    assertThat(score, is(120));
+  } 
+
+  @Test
+  public void destroy_BigBlockLimitedToGB8() throws Exception {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  "333333");
+    board.updateRow(2,  "333333");
+    board.updateRow(3,  "......");
+    
+    int score = board.destroyBlocks();
+    assertThat(score, is(960));
+  } 
+  
+  @Test
+  public void destroy_2colorsSimple() throws Exception {
+    Player.Board board = new Player.Board(6, 4);
+    board.updateRow(0,  "......");
+    board.updateRow(1,  ".4433.");
+    board.updateRow(2,  ".4433.");
+    board.updateRow(3,  "......");
+    
+    int score = board.destroyBlocks();
+    assertThat(score, is(160));
+  }
+  
+  @Test
   public void updateBoard_easy() {
     Player.Board board = new Player.Board(6, 4);
     board.updateRow(0,  "......");
@@ -278,7 +350,7 @@ public class PlayerTest {
     Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5), new Player.Block(5, 5) };
     int bestCol[] = board.getBestChoice(blocks, 2);
 
-    assertThat(bestCol[1], is(0));
+    assertThat(bestCol[0], is(125)); // 120 points + 5 bonus for height cleared
   }
   
   
@@ -303,6 +375,7 @@ public class PlayerTest {
   }
   
   @Test
+  @Ignore
   public void debug_reallyBestChoice() {
     Player.Board board = new Player.Board(6, 6);
     board.updateRow(0,  "......");
