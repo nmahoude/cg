@@ -419,6 +419,23 @@ public class PlayerTest {
     assertThat(board.points, is(120));
   }
 
+  @Test
+  public void testChain() {
+    Player.Board board = new Player.Board(6, 6);
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        ".4....",
+        "55....",
+        "444...");
+
+    Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5), new Player.Block(5, 5) };
+    board.simulate(blocks, 1);
+
+    assertThat(board.points, is(40+320));
+  }
+  
   //
   //
   // /***
@@ -464,27 +481,27 @@ public class PlayerTest {
   // assertThat(bestCol[1], is(1));
   // }
   //
-  @Test
-  public void debug_reallyBestChoice() {
-    Player.Board board = new Player.Board(6, 6);
-    board.updateRow(0, "......");
-    board.updateRow(1, "......");
-    board.updateRow(2, "......");
-    board.updateRow(3, "4.4...");
-    board.updateRow(4, "4.4...");
-    board.updateRow(5, "221133");
-
-    Player.Block[] blocks = new Player.Block[] {
-        new Player.Block(4, 4),
-        new Player.Block(4, 4),
-        new Player.Block(3, 3),
-        new Player.Block(5, 5),
-    };
-   board.simulate(blocks, 2);
-  
-   assertThat(board.bestColumn, is(1));
-   assertThat(board.bestColumn, is(1));
-   }
+//  @Test
+//  public void debug_reallyBestChoice() {
+//    Player.Board board = new Player.Board(6, 6);
+//    board.updateRow(0, "......");
+//    board.updateRow(1, "......");
+//    board.updateRow(2, "......");
+//    board.updateRow(3, "4.4...");
+//    board.updateRow(4, "4.4...");
+//    board.updateRow(5, "221133");
+//
+//    Player.Block[] blocks = new Player.Block[] {
+//        new Player.Block(4, 4),
+//        new Player.Block(4, 4),
+//        new Player.Block(3, 3),
+//        new Player.Block(5, 5),
+//    };
+//   board.simulate(blocks, 2);
+//  
+//   assertThat(board.bestColumn, is(1));
+//   assertThat(board.bestColumn, is(1));
+//   }
   
   // @Test
   // public void debug_performanceTimeOut1() throws Exception {

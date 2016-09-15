@@ -3,7 +3,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 class Player {
-  private static final int MAX_ITERATIONS = 3;
+  private static final int MAX_ITERATIONS = 4;
   private static Scanner in;
 
   enum Ball {
@@ -119,7 +119,7 @@ class Player {
     int GB=0; // group blocks
     
     int points;
-    int nuisancePoints = 0;
+    double nuisancePoints = 0;
     
     boolean colorDestroyed[] = new boolean[6];
     
@@ -143,11 +143,15 @@ class Player {
             Board board = prepareBoardFor(blocks[step], x,rotation);
             if (board != null) {
               board.CP = 0;
-              while (board.destroyGroups());
-              board.update();
+              while (board.destroyGroups()) {
+                board.points += board.getPoints();
+                board.CP = (board.CP == 0) ? 8 : 2*board.CP;
+                board.update();
+                board.B = 0;
+                board.GB = 0;
+              }
               board.updateCB();
-              board.points = board.getPoints();
-              board.nuisancePoints = (int)(board.points / 70);
+              board.nuisancePoints = 1.0 * board.points / 70;
 
               board.simulate(blocks, step+1, iter);
               
