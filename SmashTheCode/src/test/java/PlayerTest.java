@@ -1,5 +1,5 @@
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -436,12 +436,62 @@ public class PlayerTest {
     assertThat(board.points, is(40+320));
   }
   
-  //
-  //
-  // /***
-  // * DEBUG
-  // */
-  //
+  @Test
+  public void case1_iter1() {
+    Player.Board board = new Player.Board(6, 12);
+
+    case1(board, 1);
+    
+    assertThat(board.points, is (40));
+    assertThat(board.bestColumn, is(3));
+    assertThat(board.bestRotation, is(0));
+  }
+
+  @Test
+  public void case1_iter2_bestDecisionIsDifferentThanIter1() {
+    Player.Board board = new Player.Board(6, 12);
+
+    case1(board, 2);
+    
+    assertThat(board.points, is (50));
+    assertThat(board.bestColumn, is(5));
+    assertThat(board.bestRotation, is(1));
+    assertThat(board.bestSubBoard.bestColumn, is(3));
+    assertThat(board.bestSubBoard.bestRotation, is(0));
+  }
+
+  private void case1(Player.Board board, int iter) {
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "..1...",
+        "3544..",
+        "10400.",
+        "400000",
+        "000000",
+        "020110",
+        "011242",
+        "212521");
+
+    Player.Block[] blocks = new Player.Block[] { 
+        new Player.Block(3,4), 
+        new Player.Block(5,4), 
+        new Player.Block(5,3), 
+        new Player.Block(1,1), 
+        new Player.Block(3,5), 
+        new Player.Block(3,5), 
+        new Player.Block(2,2), 
+        new Player.Block(5,1) 
+    };
+    board.simulate(blocks, iter);
+  }
+  
+   /***
+   * DEBUG
+   */
+ 
   // @Test
   // public void debug_AOOB1() {
   // Player.Board board = new Player.Board(6, 6);

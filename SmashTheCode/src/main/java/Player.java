@@ -166,7 +166,7 @@ class Player {
               
               int score = board.points
                         + (HEIGHT-board.highestCol()) 
-                        + skullsDestroyed*500;
+                        + board.skullsDestroyed*200;
               if (score > bestScore) {
                 bestScore = score;
                 bestBoard = board;
@@ -306,12 +306,13 @@ class Player {
       if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) {
         return;
       }
-      if (board[x][y] != color && board[x][y] != SKULL) {
+      int colorToKill = board[x][y];
+      if (colorToKill != color && colorToKill != SKULL) {
         return;
       }
 
       board[x][y] = EMPTY;
-      if (board[x][y] == SKULL) {
+      if (colorToKill == SKULL) {
         skullsDestroyed++;
         return;
       } else {
