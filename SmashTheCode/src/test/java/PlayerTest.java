@@ -179,7 +179,7 @@ public class PlayerTest {
         "......",
         "4444..");
 
-    board.destroyGroups();
+    board.destroyGroups(false);
 
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
@@ -196,7 +196,7 @@ public class PlayerTest {
         "4.....",
         "4.....");
 
-    board.destroyGroups();
+    board.destroyGroups(false);
 
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
@@ -213,7 +213,7 @@ public class PlayerTest {
         ".44...",
         "......");
 
-    board.destroyGroups();
+    board.destroyGroups(false);
 
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
@@ -221,6 +221,51 @@ public class PlayerTest {
     assertThat(board.row(3), is("......"));
   }
 
+  @Test
+  public void destroyFirst_DontDestroyNotPlacedBlocks() {
+    Player.Board board = new Player.Board(6, 4);
+    prepareBoard(board,
+        "......",
+        ".44...",
+        ".44...",
+        "......");
+
+    board.placedBlockX1 = 0;
+    board.placedBlockY1 = 0;
+    board.placedBlockX2 = 0;
+    board.placedBlockY2 = 1;
+    
+    board.destroyGroups(true);
+
+    assertThat(board.row(0), is("......"));
+    assertThat(board.row(1), is(".44..."));
+    assertThat(board.row(2), is(".44..."));
+    assertThat(board.row(3), is("......"));
+  }
+  
+  @Test
+  public void destroyFirst_destroyPlacedBlocks() {
+    Player.Board board = new Player.Board(6, 4);
+    prepareBoard(board,
+        "......",
+        ".44...",
+        ".44...",
+        "......");
+
+    board.placedBlockX1 = 1;
+    board.placedBlockY1 = 2;
+    board.placedBlockX2 = 0;
+    board.placedBlockY2 = 0;
+    
+    board.destroyGroups(true);
+
+    assertThat(board.row(0), is("......"));
+    assertThat(board.row(1), is("......"));
+    assertThat(board.row(2), is("......"));
+    assertThat(board.row(3), is("......"));
+  }
+ 
+  
   @Test
   public void destroy_square_withSkulls() {
     Player.Board board = new Player.Board(6, 4);
@@ -246,7 +291,7 @@ public class PlayerTest {
         "......",
         "......");
 
-    board.destroyGroups();
+    board.destroyGroups(false);
 
     assertThat(board.getPoints(), is(0));
   }
@@ -260,7 +305,7 @@ public class PlayerTest {
         "124523",
         "224522");
 
-    board.destroyGroups();
+    board.destroyGroups(false);
 
     assertThat(board.getPoints(), is(0));
   }
@@ -274,7 +319,7 @@ public class PlayerTest {
         "..33..",
         "......");
 
-    board.destroyGroups();
+    board.destroyGroups(false);
 
     assertThat(board.getPoints(), is(40));
   }
@@ -288,7 +333,7 @@ public class PlayerTest {
         "..333.",
         "......");
 
-    board.destroyGroups();
+    board.destroyGroups(false);
     assertThat(board.getPoints(), is(120));
   }
 
@@ -301,7 +346,7 @@ public class PlayerTest {
         "333333",
         "......");
 
-    board.destroyGroups();
+    board.destroyGroups(false);
     assertThat(board.getPoints(), is(960));
   }
 
@@ -314,7 +359,7 @@ public class PlayerTest {
         ".4433.",
         "......");
 
-    board.destroyGroups();
+    board.destroyGroups(false);
     board.updateCB();
     assertThat(board.getPoints(), is(160));
   }
@@ -449,11 +494,24 @@ public class PlayerTest {
 
   @Test
   public void case1_iter2_bestDecisionIsDifferentThanIter1() {
-    int MAX = 100;
+    Player.Board board = new Player.Board(6, 12);
+
+    case1(board, 2);
+    
+    assertThat(board.points, is (50));
+    assertThat(board.bestColumn, is(5));
+    assertThat(board.bestRotation, is(1));
+    assertThat(board.bestSubBoard.bestColumn, is(3));
+    assertThat(board.bestSubBoard.bestRotation, is(0));
+  }
+
+  @Test
+  public void case1_iter4_bestDecisionIsDifferentThanIter1() {
+    int MAX = 1;
     for (int i=0;i<MAX;i++) {
       Player.Board board = new Player.Board(6, 12);
   
-      case1(board, 2);
+      case1(board, 4);
       
       assertThat(board.points, is (50));
       assertThat(board.bestColumn, is(5));

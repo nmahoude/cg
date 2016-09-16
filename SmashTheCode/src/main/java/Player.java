@@ -3,7 +3,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 class Player {
-  private static final int MAX_ITERATIONS = 3;
+  private static final int MAX_ITERATIONS = 4;
   private static Scanner in;
   
   static int score1;
@@ -130,6 +130,10 @@ class Player {
     
     boolean colorDestroyed[] = new boolean[6];
     int skullsDestroyed;
+    int placedBlockX1;
+    int placedBlockY1;
+    int placedBlockX2;
+    int placedBlockY2;
     
 
     int getPoints() {
@@ -152,7 +156,10 @@ class Player {
             Board board = prepareBoardFor(blocks[step], x,rotation);
             if (board != null) {
               board.CP = 0;
-              while (board.destroyGroups()) {
+              boolean firstTime = true;
+              while (board.destroyGroups(firstTime)) {
+                firstTime = false;
+                
                 board.points += board.getPoints();
                 board.CP = (board.CP == 0) ? 8 : 2*board.CP;
                 board.update();
@@ -223,30 +230,31 @@ class Player {
       int y = heights[x];
       if (rotation == 1 || rotation == 3) {
         if (rotation == 1) {
-          board[x][y+1] = block.color2;
-          board[x][y] = block.color1;
+          placedBlockX1 = x; placedBlockY1 = y;
+          placedBlockX2 = x; placedBlockY2 = y+1;
         } else {
-          board[x][y+1] = block.color1;
-          board[x][y] = block.color2;
+          placedBlockX1 = x; placedBlockY1 = y+1;
+          placedBlockX2 = x; placedBlockY2 =  y;
         }
         heights[x]+=2;
       } else {
         if (rotation == 0) {
           int y2 = heights[x+1];
-          board[x][y] = block.color1;
-          board[x + 1][y2] = block.color2;
-
+          placedBlockX1 = x; placedBlockY1 = y;
+          placedBlockX2 = x+1; placedBlockY2 =  y2;
           heights[x]+=1;
           heights[x+1]+=1;
         } else {
           int y2 = heights[x-1];
-          board[x][y] = block.color1;
-          board[x - 1][y2] = block.color2;
-
+          placedBlockX1 = x; placedBlockY1 = y;
+          placedBlockX2 = x-1; placedBlockY2 =  y2;
           heights[x]+=1;
           heights[x-1]+=1;
         }
       }
+      board[placedBlockX1][placedBlockY1] = block.color1;
+      board[placedBlockX2][placedBlockY2] = block.color2;
+
     }
 
     boolean canPlaceBlock(Block block, int x, int rotation) {
@@ -283,21 +291,32 @@ class Player {
       }
     }
 
-    boolean destroyGroups() {
+    boolean destroyGroups(boolean firstTime) {
       boolean someDestroyed = false;
-      for (int x=0;x<WIDTH;x++) {
-        for (int y=0;y<heights[x];y++) {
-          int neighbours = countNeighbours(x,y);
-          if (neighbours >= 4) {
-            someDestroyed = true;
-            int color = board[x][y];
-            colorDestroyed[color] = true;
-            killNeighbours(color, x,y);
-
-            B+=neighbours;
-            GB += neighbours >= 11 ? 8 : neighbours -4;
+      if (firstTime) {
+        // optimisation : the firsttime, we know which blocks to assess
+        someDestroyed = destroyNeighbours(someDestroyed, placedBlockX1, placedBlockY1);
+        someDestroyed |= destroyNeighbours(someDestroyed, placedBlockX2, placedBlockY2);
+      } else {
+        for (int x=0;x<WIDTH;x++) {
+          for (int y=0;y<heights[x];y++) {
+            someDestroyed = destroyNeighbours(someDestroyed, x, y);
           }
         }
+      }
+      return someDestroyed;
+    }
+
+    private boolean destroyNeighbours(boolean someDestroyed, int x, int y) {
+      int neighbours = countNeighbours(x,y);
+      if (neighbours >= 4) {
+        someDestroyed = true;
+        int color = board[x][y];
+        colorDestroyed[color] = true;
+        killNeighbours(color, x,y);
+
+        B+=neighbours;
+        GB += neighbours >= 11 ? 8 : neighbours -4;
       }
       return someDestroyed;
     }
