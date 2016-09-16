@@ -21,6 +21,13 @@ public class PlayerTest {
   }
 
   @Test
+  public void updateScore_370() {
+    Player.updateOponentScore(370);
+    
+    assertThat(Player.currentSkulls, is(5));
+  }
+  
+  @Test
   public void put2Color_rotation0() {
     Player.Board board = new Player.Board(6, 4);
     board.updateRow(0, "......");
@@ -552,7 +559,43 @@ public class PlayerTest {
    /***
    * DEBUG
    */
- 
+  @Test
+  public void whyDontYouCloseTheBlock() {
+      Player.Board board = new Player.Board(6, 12);
+      prepareBoard(board,
+          "......",
+          "......",
+          "......",
+          "......",
+          "......",
+          "......",
+          "......",
+          "......",
+          "...53.",
+          "34253.",
+          "000500",
+          "043044");
+      
+      Player.Block[] blocks = new Player.Block[] { 
+          new Player.Block(4,4), 
+          new Player.Block(5,5), 
+          new Player.Block(2,1), 
+          new Player.Block(5,5), 
+          new Player.Block(3,5), 
+          new Player.Block(2,2), 
+          new Player.Block(5,1) 
+      };
+      Player.currentSkulls = 4;
+      
+      board.simulate(blocks, 3);
+      System.out.println("for block: ["+blocks[0].color1+","+blocks[0].color2+"]");
+      board.debug();
+      System.out.println("for block: ["+blocks[1].color1+","+blocks[1].color2+"]");
+      board.bestSubBoard.debug();
+      System.out.println("for block: ["+blocks[2].color1+","+blocks[2].color2+"]");
+      board.bestSubBoard.bestSubBoard.debug();
+  }
+
   // @Test
   // public void debug_AOOB1() {
   // Player.Board board = new Player.Board(6, 6);

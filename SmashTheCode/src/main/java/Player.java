@@ -1,15 +1,37 @@
-import java.util.HashSet;
 import java.util.Scanner;
-import java.util.Set;
 
 class Player {
-  private static final int MAX_ITERATIONS = 4;
+  private static final int MAX_ITERATIONS = 3;
   private static Scanner in;
   
   static int score1;
-  static int score2;
+  
+  static int lastScore2 = 0;
+  static int score2 = 0;
+  static int currentSkulls;
+  static int currentPoints;
+  static int fearFactor = 0 ;
+  
+  static void updateOponentScore(int currentOpponentPoints) {
+    fearFactor = 0; // reset fearFactor
+    lastScore2 = score2;
+    score2 = currentOpponentPoints;
 
-  int fearFactor = 0 ;
+    int points = score2 - lastScore2;
+
+    System.err.println("Points : (new): "+score2+" (last): "+lastScore2+" (delta): "+points);
+    
+    if (points < 0) {
+      return;
+    }
+    
+    points +=currentPoints;
+    currentSkulls += (int)(points / 70);
+    currentPoints = points % 70;    
+    currentSkulls = currentSkulls % 6; // too late for the others, there's already in
+    fearFactor = currentSkulls;
+    System.err.println("Current skulls (calculated) : "+currentSkulls);
+  }
   
   enum Ball {
     BALL1, BALL2;
@@ -130,6 +152,7 @@ class Player {
     
     boolean colorDestroyed[] = new boolean[6];
     int skullsDestroyed;
+    int skullsDestroyedPoints;
     int placedBlockX1;
     int placedBlockY1;
     int placedBlockX2;
@@ -171,9 +194,10 @@ class Player {
 
               board.simulate(blocks, step+1, iter);
               
+              board.skullsDestroyedPoints = board.skullsDestroyed * 10 / (step+1);
               int score = board.points
                         + (HEIGHT-board.highestCol()) 
-                        + board.skullsDestroyed*400;
+                        + board.skullsDestroyedPoints;
               if (score > bestScore) {
                 bestScore = score;
                 bestBoard = board;
@@ -185,10 +209,10 @@ class Player {
         }
         if (bestBoard != null) {
           this.skullsDestroyed +=bestBoard.skullsDestroyed;
+          this.skullsDestroyedPoints += bestBoard.skullsDestroyedPoints;
           
           // fear
-          int fear = step + skullCount/4 + highestCol() + score2/70;
-          this.score += bestBoard.score * Math.pow(0.95, fear);
+          this.score += bestBoard.score * Math.pow(0.5, step);
           this.points += bestBoard.points;
           this.bestSubBoard = bestBoard;
         }
@@ -388,6 +412,26 @@ class Player {
         heights[i] = 0;
       }
     }
+
+    public void debug() {
+      System.out.println("bestCol : "+bestColumn);
+      System.out.println("bestRot : "+bestRotation);
+      System.out.println("Score : "+score+" from "+points+" points");
+      System.out.println("------");
+      for (int y=HEIGHT-1;y>=0;y--) {
+        for (int x=0;x<WIDTH;x++) {
+          if (board[x][y] == EMPTY) {
+            System.out.print(" ");
+          } else if (board[x][y] == SKULL) {
+            System.out.print("@");
+          } else {
+            System.out.print(board[x][y]);
+          }
+        }
+        System.out.println("");
+      }
+      System.out.println("------");
+    }
   }
 
   Board board = new Board(6, 12);
@@ -419,7 +463,7 @@ class Player {
       String row = in.next();
       board.updateRow(i, row);
     }
-    score2 = in.nextInt();
+    updateOponentScore(in.nextInt());
     for (int i = 0; i < 12; i++) {
       String row = in.next(); 
     }
