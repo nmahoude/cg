@@ -6,6 +6,9 @@ class Player {
   private static final int MAX_ITERATIONS = 3;
   private static Scanner in;
   
+  static int score1;
+  static int score2;
+
   int fearFactor = 0 ;
   
   enum Ball {
@@ -112,7 +115,7 @@ class Player {
       }
     }
 
-    int score;
+    double score;
     Board bestSubBoard;
     int bestRotation;
     int bestColumn;
@@ -161,7 +164,9 @@ class Player {
 
               board.simulate(blocks, step+1, iter);
               
-              int score = board.points + (HEIGHT-board.highestCol()) + skullsDestroyed*500;
+              int score = board.points
+                        + (HEIGHT-board.highestCol()) 
+                        + skullsDestroyed*500;
               if (score > bestScore) {
                 bestScore = score;
                 bestBoard = board;
@@ -173,7 +178,10 @@ class Player {
         }
         if (bestBoard != null) {
           this.skullsDestroyed +=bestBoard.skullsDestroyed;
-          this.score += bestBoard.score;
+          
+          // fear
+          int fear = step + skullCount/4 + highestCol() + score2/70;
+          this.score += bestBoard.score * Math.pow(0.95, fear);
           this.points += bestBoard.points;
           this.bestSubBoard = bestBoard;
         }
@@ -367,9 +375,6 @@ class Player {
   Board board = new Board(6, 12);
   Block[] blocks = new Block[8];
 
-  private int score1;
-  private int score2;
-
   public static void main(String args[]) {
     in = new Scanner(System.in);
     new Player().play();
@@ -378,15 +383,10 @@ class Player {
   int col = 0;
 
   private void play() {
-    int iterationsForFearFactor[] = new int[16];
-    for (int i =0;i<16;i++) {
-      iterationsForFearFactor[i] = MAX_ITERATIONS - i/4;
-    }
     // game loop
     while (true) {
       updateReadings();
-      fearFactor = (int)(board.skullCount / 16);
-      board.simulate(blocks, iterationsForFearFactor[fearFactor]);
+      board.simulate(blocks, MAX_ITERATIONS);
       System.out.println("" + board.bestColumn + " " + board.bestRotation);
     }
   }
