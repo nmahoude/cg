@@ -3,9 +3,11 @@ import java.util.Scanner;
 import java.util.Set;
 
 class Player {
-  private static final int MAX_ITERATIONS = 4;
+  private static final int MAX_ITERATIONS = 3;
   private static Scanner in;
-
+  
+  int fearFactor = 0 ;
+  
   enum Ball {
     BALL1, BALL2;
   }
@@ -72,6 +74,7 @@ class Player {
     final int HEIGHT;
     int[][] board;
     int[] heights;
+    int skullCount = 0;
     
     Board(int W, int H) {
       WIDTH = W;
@@ -102,6 +105,7 @@ class Player {
         } else if (row.charAt(x) == '0') {
           board[x][y] = SKULL;
           heights[x] = Math.max(heights[x], Math.min(y+1, HEIGHT));
+          skullCount++;
         } else {
           board[x][y] = EMPTY; // empty
         }
@@ -122,6 +126,7 @@ class Player {
     double nuisancePoints = 0;
     
     boolean colorDestroyed[] = new boolean[6];
+    int skullsDestroyed;
     
 
     int getPoints() {
@@ -138,8 +143,9 @@ class Player {
       } else {
         Board bestBoard = null;
         int bestScore = -1;
+        int maxRotation = blocks[step].color1 == blocks[step].color2 ? 2 : 4;
         for (int x=0;x<WIDTH;x++) {
-          for (int rotation=0;rotation<4;rotation++) {
+          for (int rotation=0;rotation<maxRotation;rotation++) {
             Board board = prepareBoardFor(blocks[step], x,rotation);
             if (board != null) {
               board.CP = 0;
@@ -155,7 +161,7 @@ class Player {
 
               board.simulate(blocks, step+1, iter);
               
-              int score = board.points + (HEIGHT-board.highestCol());
+              int score = board.points + (HEIGHT-board.highestCol()) + skullsDestroyed*500;
               if (score > bestScore) {
                 bestScore = score;
                 bestBoard = board;
@@ -166,6 +172,7 @@ class Player {
           }
         }
         if (bestBoard != null) {
+          this.skullsDestroyed +=bestBoard.skullsDestroyed;
           this.score += bestBoard.score;
           this.points += bestBoard.points;
           this.bestSubBoard = bestBoard;
@@ -297,6 +304,7 @@ class Player {
 
       board[x][y] = EMPTY;
       if (board[x][y] == SKULL) {
+        skullsDestroyed++;
         return;
       } else {
         killNeighbours(color, x - 1, y);
@@ -370,10 +378,15 @@ class Player {
   int col = 0;
 
   private void play() {
+    int iterationsForFearFactor[] = new int[16];
+    for (int i =0;i<16;i++) {
+      iterationsForFearFactor[i] = MAX_ITERATIONS - i/4;
+    }
     // game loop
     while (true) {
       updateReadings();
-      board.simulate(blocks, MAX_ITERATIONS);
+      fearFactor = (int)(board.skullCount / 16);
+      board.simulate(blocks, iterationsForFearFactor[fearFactor]);
       System.out.println("" + board.bestColumn + " " + board.bestRotation);
     }
   }
