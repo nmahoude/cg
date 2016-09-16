@@ -449,15 +449,18 @@ public class PlayerTest {
 
   @Test
   public void case1_iter2_bestDecisionIsDifferentThanIter1() {
-    Player.Board board = new Player.Board(6, 12);
-
-    case1(board, 2);
-    
-    assertThat(board.points, is (50));
-    assertThat(board.bestColumn, is(5));
-    assertThat(board.bestRotation, is(1));
-    assertThat(board.bestSubBoard.bestColumn, is(3));
-    assertThat(board.bestSubBoard.bestRotation, is(0));
+    int MAX = 100;
+    for (int i=0;i<MAX;i++) {
+      Player.Board board = new Player.Board(6, 12);
+  
+      case1(board, 2);
+      
+      assertThat(board.points, is (50));
+      assertThat(board.bestColumn, is(5));
+      assertThat(board.bestRotation, is(1));
+      assertThat(board.bestSubBoard.bestColumn, is(3));
+      assertThat(board.bestSubBoard.bestRotation, is(0));
+    }
   }
 
   private void case1(Player.Board board, int iter) {

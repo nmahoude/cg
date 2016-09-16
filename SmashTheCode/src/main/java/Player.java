@@ -166,7 +166,7 @@ class Player {
               
               int score = board.points
                         + (HEIGHT-board.highestCol()) 
-                        + board.skullsDestroyed*200;
+                        + board.skullsDestroyed*400;
               if (score > bestScore) {
                 bestScore = score;
                 bestBoard = board;
@@ -328,26 +328,24 @@ class Player {
       if (color <1 || color > 6) {
         return 0; 
       }
-      Set<P> alreadyCounted = new HashSet<>();
-      int count = countNeighbours(alreadyCounted, color, x, y);
+      Board b = new Board(this);
+      int count = countNeighbours(b, color, x, y);
       return count;
     }
-    int countNeighbours(Set<P> alreadyCounted, int color, int x, int y) {
+    
+    int countNeighbours(Board b, int color, int x, int y) {
       if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) {
         return 0;
       }
-      if (alreadyCounted.contains(new P(x, y))) {
+      if (b.board[x][y] != color) {
         return 0;
       }
-      if (board[x][y] != color) {
-        return 0;
-      }
-      alreadyCounted.add(new P(x, y));
+      b.board[x][y] = - color;
       int count = 1;
-      count += countNeighbours(alreadyCounted, color, x - 1, y);
-      count += countNeighbours(alreadyCounted, color, x + 1, y);
-      count += countNeighbours(alreadyCounted, color, x, y + 1);
-      count += countNeighbours(alreadyCounted, color, x, y - 1);
+      count += countNeighbours(b, color, x - 1, y);
+      count += countNeighbours(b, color, x + 1, y);
+      count += countNeighbours(b, color, x, y + 1);
+      count += countNeighbours(b, color, x, y - 1);
       return count;
     }
 
