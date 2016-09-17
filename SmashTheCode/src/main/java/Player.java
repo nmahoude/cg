@@ -19,8 +19,6 @@ class Player {
 
     int points = score2 - lastScore2;
 
-    System.err.println("Points : (new): "+score2+" (last): "+lastScore2+" (delta): "+points);
-    
     if (points < 0) {
       return;
     }
@@ -30,7 +28,6 @@ class Player {
     currentPoints = points % 70;    
     currentSkulls = currentSkulls % 6; // too late for the others, there's already in
     fearFactor = currentSkulls;
-    System.err.println("Current skulls (calculated) : "+currentSkulls);
   }
   
   enum Ball {
@@ -212,7 +209,7 @@ class Player {
           this.skullsDestroyedPoints += bestBoard.skullsDestroyedPoints;
           
           // fear
-          this.score += bestBoard.score * Math.pow(0.5, step);
+          this.score += bestBoard.score * Math.pow(0.75, step+highestCol());
           this.points += bestBoard.points;
           this.bestSubBoard = bestBoard;
         }
