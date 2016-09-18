@@ -91,7 +91,116 @@ class Player {
       }
     }
   }
+  public static class CalculationResult {
+    int points;
+  }
+  
+  public static class Simulation {
+    private StepSimulation zeroThStep; // this is the 0'th step, nothing to get from it !
+    
+    public Simulation(Board board, Block[] blocks, int maxIterations) {
+      zeroThStep = new StepSimulation(board, blocks, 0, maxIterations, -1, -1);
+      zeroThStep.simulate();
+    }
 
+    StepSimulation firstStep() {
+      return zeroThStep.bestSS;
+    }
+    StepSimulation simulatedResult() {
+      StepSimulation preLast = zeroThStep, last = zeroThStep;
+      while (last != null) {
+        preLast = last;
+        last = last.bestSS;
+      }
+      return preLast;
+    }
+
+  }
+
+  public static class StepSimulation {
+    boolean successful = false;
+    Player.Board board;
+    Block[] blocks;
+    int step;
+    int maxIterations;
+    int column;
+    int rotation;
+    private P[] positionnedBlocks;
+
+    int points;
+    int totalPoints;
+    double score; // only output is a score
+    public StepSimulation bestSS;
+    
+    public StepSimulation(Player.Board board, Block[] blocks, int step, int maxIterations, int column, int rotation) {
+      this.board = board;
+      this.blocks = blocks;
+      this.step = step;
+      this.maxIterations = maxIterations;
+      this.column = column;
+      this.rotation = rotation;
+    }
+    
+    StepSimulation nextStep() {
+      return bestSS;
+    }
+    private void simulate() {
+      Block currentBlock;
+      if (step > 0) {
+        currentBlock = blocks[step-1];
+        positionnedBlocks = board.placeBlock(currentBlock, column, rotation);
+        board.calculate(this);
+      }
+      
+      bestSS = null;
+      double bestScore = -10000;
+
+      // do one step further
+      if (step < maxIterations) {
+        currentBlock = blocks[step];
+        int maxRotation = currentBlock.color1 == currentBlock.color2 ? 2 : 4;
+        for (int x=0;x<board.WIDTH;x++) {
+          for (int rotation=0;rotation<maxRotation;rotation++) {
+            if (!board.canPlaceBlock(currentBlock, x, rotation)) {
+              continue;
+            }
+            StepSimulation ss = new StepSimulation(new Board(board), blocks, step+1, maxIterations, x, rotation);
+            ss.simulate();
+            if (ss.score > bestScore) {
+              bestScore = ss.score;
+              bestSS = ss;
+            }
+          }
+        }
+      }
+      //TODO calculate score from simulation data & heuristics
+      updatePoints();
+      calculateScoreFromHeuristics();
+    }
+    void updatePoints() {
+      points = board.points;
+      if (bestSS != null) {
+        totalPoints+=score + bestSS.score;
+      }
+    }
+    
+    private void calculateScoreFromHeuristics() {
+      totalPoints = points;
+      score = points 
+          - board.highestCol()
+          - board.skullCount
+          ;
+      if (positionnedBlocks != null) { score += nextToNeighbours(); }
+      if (bestSS != null) { score += 0.5*bestSS.score; }
+    }
+
+    private int nextToNeighbours() {
+      int neighbours = board.countNeighbours(positionnedBlocks[0].x, positionnedBlocks[0].y);
+      neighbours += board.countNeighbours(positionnedBlocks[1].x, positionnedBlocks[1].y);
+      return neighbours;
+    }
+  }
+  
   public static class Board {
     private static final int EMPTY = 0;
     private static final int SKULL = 9;
@@ -107,6 +216,26 @@ class Player {
       HEIGHT = H;
       board = new int[WIDTH][HEIGHT];
       heights = new int[WIDTH];
+    }
+
+    public void calculate(StepSimulation stepSimulation) {
+      List<P> pointsToCheck = Arrays.asList(stepSimulation.positionnedBlocks[0],
+          stepSimulation.positionnedBlocks[1]);
+      CP = 0;
+      B = 0;
+      points = 0;
+      while (destroyGroups(pointsToCheck)) {
+        CB = getCB();
+        points += getPoints();
+        // reset some values
+        B = 0;
+        GB = 0;
+        CB = 0;
+        CP = (CP == 0) ? 8 : 2*CP;
+        pointsToCheck = update();
+      }
+      
+      nuisancePoints = 1.0 * points / 70;
     }
 
     public Board(Board b) {
@@ -138,14 +267,6 @@ class Player {
       }
     }
 
-    double score;
-
-    Board bestSubBoard;
-    int bestRotation;
-    int bestColumn;
-    double bestTotalScore;
-    int bestTotalPoints;
-
     int B=0;  // block destroyed
     int CP=0; // chain power
     int CB=0; // color blocks
@@ -163,25 +284,15 @@ class Player {
     int placedBlockY2;
     
 
-    int getPoints() {
-      return (10 * B) * Math.min(999, Math.max(1, CP + CB + GB));
-    }
 
-    void simulate(Block[] blocks, int iter) {
-      simulate(blocks, 0, iter);
-    }
-    
     double H_POINTS = 1;
     double H_SKULLSDESTROYED = 100;
     double H_HEIGHT = -10;
     double H_BESTCHILD = 0.9 ;
     double H_SKULLTHREAT = 2;
 
-    double scoreHeuristic() {
-      return H_POINTS * points 
-          + H_SKULLSDESTROYED * skullsDestroyed
-          + H_HEIGHT * highestCol();
-      
+    int getPoints() {
+      return (10 * B) * Math.min(999, Math.max(1, CP + CB + GB));
     }
     
     private void playBoard() {
@@ -197,44 +308,8 @@ class Player {
       }
       update();
       
-      updateCB();
+      CB = getCB();
       nuisancePoints = 1.0 * points / 70;
-      bestTotalPoints = points;
-      score = scoreHeuristic();
-    }
-
-    void simulate(Block[] blocks, int step, int iter) {
-      if (step != 0) {
-        playBoard();
-      }
-      
-      if (step >= iter) {
-        return;
-      } else {
-        double bestScore = -50000000;
-        
-        Block currentBlock = blocks[step];
-        int maxRotation = currentBlock.color1 == currentBlock.color2 ? 2 : 4;
-        for (int x=0;x<WIDTH;x++) {
-          for (int rotation=0;rotation<maxRotation;rotation++) {
-            Board board = prepareBoardFor(currentBlock, x,rotation);
-            if (board != null) {
-              board.simulate(blocks, step+1, iter);
-              if (board.score > bestScore) {
-                bestScore = board.score;
-                bestSubBoard = board;
-                bestColumn = x;
-                bestRotation = rotation;
-              }
-            }
-          }
-        }
-        if (bestSubBoard != null) {
-          
-          score += Math.pow(H_BESTCHILD, H_SKULLTHREAT * (currentThreatSkulls+1)) *bestSubBoard.score;
-          bestTotalPoints+=bestSubBoard.bestTotalPoints;
-        }
-      }
     }
 
     int highestCol() {
@@ -245,30 +320,26 @@ class Player {
       return high;
     }
 
-    void updateCB() {
-      CB = 1;
+    int getCB() {
+      int CB = 1;
       for (int i=0;i<6;i++) {
         CB*= colorDestroyed[i] ? 2 : 1;
+        colorDestroyed[i] = false; // reset color destroyed
       }
       if (CB <= 2) {
         CB = 0;
       } else {
         CB/=2;
       }
+      return CB;
     }
+    
     int futurePos(int x) {
       return heights[x];
     }
-    Board prepareBoardFor(Block block, int x, int rotation) {
-      if (!canPlaceBlock(block, x, rotation)) {
-        return null;
-      }
-      Board board = new Board(this);
-      board.placeBlock(block, x, rotation);
-      return board;
-    }
 
-    void placeBlock(Block block, int x, int rotation) {
+    P[] placeBlock(Block block, int x, int rotation) {
+      P[] ps = new P[2];
       int y = heights[x];
       if (rotation == 1 || rotation == 3) {
         if (rotation == 1) {
@@ -296,7 +367,9 @@ class Player {
       }
       board[placedBlockX1][placedBlockY1] = block.color1;
       board[placedBlockX2][placedBlockY2] = block.color2;
-
+      ps[0] = new P(placedBlockX1, placedBlockY1);
+      ps[1] = new P(placedBlockX2, placedBlockY2);
+      return ps;
     }
 
     boolean canPlaceBlock(Block block, int x, int rotation) {
@@ -435,9 +508,6 @@ class Player {
     }
 
     public void debug() {
-      System.out.println("bestCol : "+bestColumn);
-      System.out.println("bestRot : "+bestRotation);
-      System.out.println("Score : "+score+" from "+points+" points");
       System.out.println("------");
       for (int y=HEIGHT-1;y>=0;y--) {
         for (int x=0;x<WIDTH;x++) {
@@ -469,8 +539,8 @@ class Player {
     // game loop
     while (true) {
       updateReadings();
-      board.simulate(blocks, MAX_ITERATIONS);
-      System.out.println("" + board.bestColumn + " " + board.bestRotation);
+      Simulation s = new Simulation(board, blocks, MAX_ITERATIONS);
+      System.out.println("" + s.firstStep().column + " " + s.firstStep().rotation);
     }
   }
 

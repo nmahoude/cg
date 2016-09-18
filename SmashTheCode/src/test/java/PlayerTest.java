@@ -348,8 +348,11 @@ public class PlayerTest {
         "......");
 
     board.destroyGroups(Arrays.asList(new Player.P(1,1), new Player.P(3, 1)));
-    board.updateCB();
-    assertThat(board.getPoints(), is(160));
+
+    assertThat(board.row(0), is("......"));
+    assertThat(board.row(1), is("......"));
+    assertThat(board.row(2), is("......"));
+    assertThat(board.row(3), is("......"));
   }
 
   @Test
@@ -428,9 +431,13 @@ public class PlayerTest {
         "3.....");
 
     Player.Block[] blocks = new Player.Block[] { new Player.Block(3, 3) };
-    board.simulate(blocks, 1);
+    
+    Player.Simulation s = new Player.Simulation(board, blocks, 1);
 
-    assertThat(board.bestSubBoard.points, is(40));
+    assertThat(s.simulatedResult().board.row(0), is("......"));
+    assertThat(s.simulatedResult().board.row(1), is("......"));
+    assertThat(s.simulatedResult().board.row(2), is("......"));
+    assertThat(s.simulatedResult().board.row(3), is("......"));
   }
 
   @Test
@@ -443,28 +450,14 @@ public class PlayerTest {
         "3.....");
 
     Player.Block[] blocks = new Player.Block[] { new Player.Block(3, 3) };
-    board.simulate(blocks, 1);
+    Player.Simulation s = new Player.Simulation(board, blocks, 1);
 
-    assertThat(board.bestSubBoard.points, is(40));
+    assertThat(s.simulatedResult().board.row(0), is("......"));
+    assertThat(s.simulatedResult().board.row(1), is("......"));
+    assertThat(s.simulatedResult().board.row(2), is("......"));
+    assertThat(s.simulatedResult().board.row(3), is("4....."));
   }
   
-  @Test
-  public void bestCol_ifNoBlockPossibleChooseAMinimumColumn() {
-    Player.Board board = new Player.Board(6, 6);
-    prepareBoard(board,
-        "......",
-        "......",
-        "1..111",
-        "2.4222",
-        "3.4333",
-        "3.4222");
-
-    Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5) };
-    board.simulate(blocks, 1);
-
-    assertThat(board.bestColumn, is(1));
-  }
-
   @Test
   public void bestCol_mediumCase_2Iter() {
     Player.Board board = new Player.Board(6, 6);
@@ -477,9 +470,12 @@ public class PlayerTest {
         "..5...");
 
     Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5), new Player.Block(5, 5) };
-    board.simulate(blocks, 2);
+    Player.Simulation s = new Player.Simulation(board, blocks, 1);
 
-    assertThat(board.bestTotalPoints, is(120));
+    assertThat(board.row(0), is("......"));
+    assertThat(board.row(1), is("......"));
+    assertThat(board.row(2), is("......"));
+    assertThat(board.row(3), is("......"));
   }
 
   @Test
@@ -494,33 +490,40 @@ public class PlayerTest {
         "444...");
 
     Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5), new Player.Block(5, 5) };
-    board.simulate(blocks, 1);
+    Player.Simulation s = new Player.Simulation(board, blocks, 1);
 
-    assertThat(board.bestSubBoard.points, is(40+320));
+    assertThat(s.simulatedResult().board.row(0), is("......"));
+    assertThat(s.simulatedResult().board.row(1), is("......"));
+    assertThat(s.simulatedResult().board.row(2), is("......"));
+    assertThat(s.simulatedResult().board.row(3), is("......"));
+    assertThat(s.simulatedResult().board.row(4), is("......"));
+    assertThat(s.simulatedResult().board.row(5), is("......"));
   }
   
   @Test
   public void case1_iter1() {
     Player.Board board = new Player.Board(6, 12);
-
-    case1(board, 1);
     
-    assertThat(board.bestSubBoard.points, is (40));
-    assertThat(board.bestColumn, is(3));
-    assertThat(board.bestRotation, is(0));
+    Player.Simulation s = case1(board, 2);
+    
+    board.debug();
+    s.firstStep().board.debug();
+    s.firstStep().nextStep().board.debug();
+
+    assertThat(s.firstStep().column, is(3));
+    assertThat(s.firstStep().rotation, is(0));
   }
 
   @Test
   public void case1_iter2_bestDecisionIsDifferentThanIter1() {
     Player.Board board = new Player.Board(6, 12);
 
-    case1(board, 2);
+    Player.Simulation case1 = case1(board, 2);
     
-    assertThat(board.bestSubBoard.points, is (50));
-    assertThat(board.bestColumn, is(5));
-    assertThat(board.bestRotation, is(1));
-    assertThat(board.bestSubBoard.bestColumn, is(3));
-    assertThat(board.bestSubBoard.bestRotation, is(0));
+    assertThat(case1.firstStep().column, is(5));
+    assertThat(case1.firstStep().rotation, is(1));
+    assertThat(case1.firstStep().nextStep().column, is(3));
+    assertThat(case1.firstStep().nextStep().rotation, is(0));
   }
 
   @Test
@@ -530,20 +533,19 @@ public class PlayerTest {
       Player.Board board = new Player.Board(6, 12);
   
       long time1 = System.currentTimeMillis();
-      case1(board, 4);
+      Player.Simulation case1 = case1(board, 4);
       long time2 = System.currentTimeMillis();
       
       assertThat(time2-time1, lessThan(100L));
       
-      assertThat(board.bestSubBoard.points, is (50));
-      assertThat(board.bestColumn, is(5));
-      assertThat(board.bestRotation, is(1));
-      assertThat(board.bestSubBoard.bestColumn, is(3));
-      assertThat(board.bestSubBoard.bestRotation, is(0));
+      assertThat(case1.firstStep().column, is(5));
+      assertThat(case1.firstStep().rotation, is(1));
+      assertThat(case1.firstStep().nextStep().column, is(3));
+      assertThat(case1.firstStep().nextStep().rotation, is(0));
     }
   }
 
-  private void case1(Player.Board board, int iter) {
+  private Player.Simulation case1(Player.Board board, int iter) {
     prepareBoard(board,
         "......",
         "......",
@@ -568,7 +570,8 @@ public class PlayerTest {
         new Player.Block(2,2), 
         new Player.Block(5,1) 
     };
-    board.simulate(blocks, iter);
+    Player.Simulation s = new Player.Simulation(board, blocks, iter);
+    return s;
   }
   
    /***
@@ -602,13 +605,11 @@ public class PlayerTest {
       };
       Player.currentThreatSkulls = 4;
       
-      board.simulate(blocks, 3);
+      Player.Simulation s = new Player.Simulation(board, blocks, 2);
       System.out.println("for block: ["+blocks[0].color1+","+blocks[0].color2+"]");
-      board.debug();
+      s.firstStep().board.debug();
       System.out.println("for block: ["+blocks[1].color1+","+blocks[1].color2+"]");
-      board.bestSubBoard.debug();
-      System.out.println("for block: ["+blocks[2].color1+","+blocks[2].color2+"]");
-      board.bestSubBoard.bestSubBoard.debug();
+      s.firstStep().bestSS.board.debug();
   }
 
   // @Test
