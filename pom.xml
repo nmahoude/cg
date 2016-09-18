@@ -12,6 +12,7 @@
     <module>NetworkCabling</module>
     <module>SmashTheCode</module>
     <module>Winamax</module>
+    <module>VoxCodei</module>
   </modules>
   
   <dependencies>
