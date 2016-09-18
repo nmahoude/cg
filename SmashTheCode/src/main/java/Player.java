@@ -191,7 +191,8 @@ class Player {
           - board.skullCount
           ;
       if (positionnedBlocks != null) { score += nextToNeighbours(); }
-      if (bestSS != null) { score += 0.5*bestSS.score; }
+      double takeFutureStepIntoAccount = Math.pow(0.7, fearFactor);
+      if (bestSS != null) { score += takeFutureStepIntoAccount*bestSS.score; }
     }
 
     private int nextToNeighbours() {
