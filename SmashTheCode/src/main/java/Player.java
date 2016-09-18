@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 class Player {
@@ -8,7 +11,7 @@ class Player {
   
   static int lastScore2 = 0;
   static int score2 = 0;
-  static int currentSkulls;
+  static int currentThreatSkulls;
   static int currentPoints;
   static int fearFactor = 0 ;
   
@@ -24,10 +27,10 @@ class Player {
     }
     
     points +=currentPoints;
-    currentSkulls += (int)(points / 70);
+    currentThreatSkulls += (int)(points / 70);
     currentPoints = points % 70;    
-    currentSkulls = currentSkulls % 6; // too late for the others, there's already in
-    fearFactor = currentSkulls;
+    currentThreatSkulls = currentThreatSkulls % 6; // too late for the others, there's already in
+    fearFactor = currentThreatSkulls;
   }
   
   enum Ball {
@@ -92,6 +95,7 @@ class Player {
   public static class Board {
     private static final int EMPTY = 0;
     private static final int SKULL = 9;
+    
     final int WIDTH;
     final int HEIGHT;
     int[][] board;
@@ -135,9 +139,12 @@ class Player {
     }
 
     double score;
+
     Board bestSubBoard;
     int bestRotation;
     int bestColumn;
+    double bestTotalScore;
+    int bestTotalPoints;
 
     int B=0;  // block destroyed
     int CP=0; // chain power
@@ -164,54 +171,68 @@ class Player {
       simulate(blocks, 0, iter);
     }
     
+    double H_POINTS = 1;
+    double H_SKULLSDESTROYED = 100;
+    double H_HEIGHT = -10;
+    double H_BESTCHILD = 0.9 ;
+    double H_SKULLTHREAT = 2;
+
+    double scoreHeuristic() {
+      return H_POINTS * points 
+          + H_SKULLSDESTROYED * skullsDestroyed
+          + H_HEIGHT * highestCol();
+      
+    }
+    
+    private void playBoard() {
+      List<P> pointsToCheck = Arrays.asList(
+          new P(placedBlockX1, placedBlockY1), 
+          new P(placedBlockX2, placedBlockY2));
+      while (destroyGroups(pointsToCheck)) {
+        points += getPoints();
+        CP = (CP == 0) ? 8 : 2*CP;
+        pointsToCheck = update();
+        B = 0;
+        GB = 0;
+      }
+      update();
+      
+      updateCB();
+      nuisancePoints = 1.0 * points / 70;
+      bestTotalPoints = points;
+      score = scoreHeuristic();
+    }
+
     void simulate(Block[] blocks, int step, int iter) {
+      if (step != 0) {
+        playBoard();
+      }
+      
       if (step >= iter) {
         return;
       } else {
-        Board bestBoard = null;
-        int bestScore = -1;
-        int maxRotation = blocks[step].color1 == blocks[step].color2 ? 2 : 4;
+        double bestScore = -50000000;
+        
+        Block currentBlock = blocks[step];
+        int maxRotation = currentBlock.color1 == currentBlock.color2 ? 2 : 4;
         for (int x=0;x<WIDTH;x++) {
           for (int rotation=0;rotation<maxRotation;rotation++) {
-            Board board = prepareBoardFor(blocks[step], x,rotation);
+            Board board = prepareBoardFor(currentBlock, x,rotation);
             if (board != null) {
-              board.CP = 0;
-              boolean firstTime = true;
-              while (board.destroyGroups(firstTime)) {
-                firstTime = false;
-                
-                board.points += board.getPoints();
-                board.CP = (board.CP == 0) ? 8 : 2*board.CP;
-                board.update();
-                board.B = 0;
-                board.GB = 0;
-              }
-              board.updateCB();
-              board.nuisancePoints = 1.0 * board.points / 70;
-
               board.simulate(blocks, step+1, iter);
-              
-              board.skullsDestroyedPoints = board.skullsDestroyed * 10 / (step+1);
-              int score = board.points
-                        + (HEIGHT-board.highestCol()) 
-                        + board.skullsDestroyedPoints;
-              if (score > bestScore) {
-                bestScore = score;
-                bestBoard = board;
-                bestRotation = rotation;
+              if (board.score > bestScore) {
+                bestScore = board.score;
+                bestSubBoard = board;
                 bestColumn = x;
+                bestRotation = rotation;
               }
             }
           }
         }
-        if (bestBoard != null) {
-          this.skullsDestroyed +=bestBoard.skullsDestroyed;
-          this.skullsDestroyedPoints += bestBoard.skullsDestroyedPoints;
+        if (bestSubBoard != null) {
           
-          // fear
-          this.score += bestBoard.score * Math.pow(0.75, step+highestCol());
-          this.points += bestBoard.points;
-          this.bestSubBoard = bestBoard;
+          score += Math.pow(H_BESTCHILD, H_SKULLTHREAT * (currentThreatSkulls+1)) *bestSubBoard.score;
+          bestTotalPoints+=bestSubBoard.bestTotalPoints;
         }
       }
     }
@@ -297,12 +318,21 @@ class Player {
       return true;
     }
     
-    void update() {
+     List<P> update() {
+      boolean lastWasEmpty = false;
+      List<P> pointsToCheck = new ArrayList<>();
       for (int x=0;x<WIDTH;x++) {
         int current = 0;
         for (int y=0;y<heights[x];y++) {
           if (board[x][y] != EMPTY) {
-            board[x][current++] = board[x][y];
+            if (lastWasEmpty) {
+              lastWasEmpty = false;
+              pointsToCheck.add(new P(x, current));
+            }
+            board[x][current] = board[x][y];
+            current++;
+          } else {
+            lastWasEmpty = true;
           }
         }
         heights[x] = current;
@@ -310,28 +340,22 @@ class Player {
           board[x][y] = EMPTY;
         }
       }
+      return pointsToCheck;
     }
 
-    boolean destroyGroups(boolean firstTime) {
+    boolean destroyGroups(List<P> pointsToCheck) {
       boolean someDestroyed = false;
-      if (firstTime) {
-        // optimisation : the firsttime, we know which blocks to assess
-        someDestroyed = destroyNeighbours(someDestroyed, placedBlockX1, placedBlockY1);
-        someDestroyed |= destroyNeighbours(someDestroyed, placedBlockX2, placedBlockY2);
-      } else {
-        for (int x=0;x<WIDTH;x++) {
-          for (int y=0;y<heights[x];y++) {
-            someDestroyed = destroyNeighbours(someDestroyed, x, y);
-          }
-        }
+      for (P p : pointsToCheck) {
+        someDestroyed |= destroyNeighbours(p.x, p.y);
       }
       return someDestroyed;
     }
 
-    private boolean destroyNeighbours(boolean someDestroyed, int x, int y) {
+    private boolean destroyNeighbours(int x, int y) {
       int neighbours = countNeighbours(x,y);
+      boolean someDestroyed = false;
       if (neighbours >= 4) {
-        someDestroyed = true;
+        someDestroyed  = true;
         int color = board[x][y];
         colorDestroyed[color] = true;
         killNeighbours(color, x,y);
