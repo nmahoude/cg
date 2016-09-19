@@ -528,7 +528,7 @@ public class PlayerTest {
 
   @Test
   public void case1_iter4_bestDecisionIsDifferentThanIter1() {
-    int MAX = 0;
+    int MAX = 10;
     for (int i=0;i<MAX;i++) {
       Player.Board board = new Player.Board(6, 12);
   
@@ -577,6 +577,34 @@ public class PlayerTest {
    /***
    * DEBUG
    */
+  @Test
+  public void calcOpponentPoints() {
+    Player.Board board = new Player.Board(6, 12);
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "..2...",
+        ".22415",
+        "333445");
+
+
+    Player.Block[] blocks = new Player.Block[] { 
+        new Player.Block(3,4), 
+        new Player.Block(5,1)
+        };
+    Player.Simulation s = new Player.Simulation(board, blocks, 1);
+
+    assertThat(s.firstStep().totalPoints, is(120));
+  }
+
+  
   @Test
   public void whyDontYouCloseTheBlock() {
       Player.Board board = new Player.Board(6, 12);

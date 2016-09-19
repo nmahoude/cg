@@ -1,5 +1,7 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
 import java.util.Scanner;
 
@@ -8,7 +10,6 @@ class Player {
   private static Scanner in;
   
   static int score1;
-  
   static int lastScore2 = 0;
   static int score2 = 0;
   static int currentThreatSkulls;
@@ -177,18 +178,20 @@ class Player {
       updatePoints();
       calculateScoreFromHeuristics();
     }
+
     void updatePoints() {
       points = board.points;
+      totalPoints=points;
       if (bestSS != null) {
-        totalPoints+=score + bestSS.score;
+        totalPoints+=bestSS.totalPoints;
       }
     }
     
     private void calculateScoreFromHeuristics() {
-      totalPoints = points;
       score = points 
           - board.highestCol()
           - board.skullCount
+          + (step != 1 ? 0 : Player.urgeToDoSomething * (points > 70*6 ? 100 : 0))
           ;
       if (positionnedBlocks != null) { score += nextToNeighbours(); }
       double takeFutureStepIntoAccount = Math.pow(0.7, fearFactor);
@@ -208,14 +211,14 @@ class Player {
     
     final int WIDTH;
     final int HEIGHT;
-    int[][] board;
+    int[] board;
     int[] heights;
     int skullCount = 0;
     
     Board(int W, int H) {
       WIDTH = W;
       HEIGHT = H;
-      board = new int[WIDTH][HEIGHT];
+      board = new int[WIDTH*HEIGHT];
       heights = new int[WIDTH];
     }
 
@@ -240,13 +243,13 @@ class Player {
     }
 
     public Board(Board b) {
-      this(b.WIDTH, b.HEIGHT);
+      WIDTH = b.WIDTH;
+      HEIGHT = b.HEIGHT;
+      heights = new int[WIDTH];
       // copy board
+      board = b.board.clone();
+      //System.arraycopy(b.board, 0, board, 0, b.board.length);
       for (int x = 0; x < WIDTH; x++) {
-        int height = Math.min(HEIGHT-1,b.heights[x]);
-        for (int y = 0; y <= height; y++) {
-          board[x][y] = b.board[x][y];
-        }
         heights[x] = b.heights[x];
       }
     }
@@ -256,14 +259,14 @@ class Player {
 
       for (int x = 0; x < WIDTH; x++) {
         if (row.charAt(x) >= '1' && row.charAt(x) <= '5') {
-          board[x][y] = row.charAt(x) - '0';
+          board[x+WIDTH*y] = row.charAt(x) - '0';
           heights[x] = Math.max(heights[x], Math.min(y+1, HEIGHT));
         } else if (row.charAt(x) == '0') {
-          board[x][y] = SKULL;
+          board[x+WIDTH*y] = SKULL;
           heights[x] = Math.max(heights[x], Math.min(y+1, HEIGHT));
           skullCount++;
         } else {
-          board[x][y] = EMPTY; // empty
+          board[x+WIDTH*y] = EMPTY; // empty
         }
       }
     }
@@ -366,30 +369,19 @@ class Player {
           heights[x-1]+=1;
         }
       }
-      board[placedBlockX1][placedBlockY1] = block.color1;
-      board[placedBlockX2][placedBlockY2] = block.color2;
+      board[placedBlockX1+WIDTH*placedBlockY1] = block.color1;
+      board[placedBlockX2+WIDTH*placedBlockY2] = block.color2;
       ps[0] = new P(placedBlockX1, placedBlockY1);
       ps[1] = new P(placedBlockX2, placedBlockY2);
       return ps;
     }
 
     boolean canPlaceBlock(Block block, int x, int rotation) {
-      if (rotation == 1 || rotation == 3) {
-        if (board[x][(HEIGHT-1)-1] != EMPTY) {
-          return false;
-        }
-      } else {
-        if (rotation == 0) {
-          if (x+1 > WIDTH-1 || board[x][HEIGHT-1] != EMPTY || board[x+1][HEIGHT-1] != EMPTY) {
-            return false;
-          }
-        } else {
-          if (x-1 < 0 || board[x-1][HEIGHT-1] != EMPTY || board[x][HEIGHT-1] != EMPTY) {
-            return false;
-          }
-        }
-      }
-      return true;
+      return (rotation % 2 == 1 && board[x+WIDTH*((HEIGHT-1)-1)] == EMPTY)
+          ||
+          (rotation == 0 && x+1 <= WIDTH-1 && board[x+WIDTH*(HEIGHT-1)] == EMPTY && board[x+1+WIDTH*(HEIGHT-1)] == EMPTY)
+          || 
+          (rotation == 2 && x-1 >= 0 && board[x-1+WIDTH*(HEIGHT-1)] == EMPTY && board[x+WIDTH*(HEIGHT-1)] == EMPTY);
     }
     
      List<P> update() {
@@ -398,12 +390,12 @@ class Player {
       for (int x=0;x<WIDTH;x++) {
         int current = 0;
         for (int y=0;y<heights[x];y++) {
-          if (board[x][y] != EMPTY) {
+          if (board[x+WIDTH*y] != EMPTY) {
             if (lastWasEmpty) {
               lastWasEmpty = false;
               pointsToCheck.add(new P(x, current));
             }
-            board[x][current] = board[x][y];
+            board[x+WIDTH*current] = board[x+WIDTH*y];
             current++;
           } else {
             lastWasEmpty = true;
@@ -411,7 +403,7 @@ class Player {
         }
         heights[x] = current;
         for (int y=current;y<HEIGHT;y++) {
-          board[x][y] = EMPTY;
+          board[x+WIDTH*y] = EMPTY;
         }
       }
       return pointsToCheck;
@@ -430,7 +422,7 @@ class Player {
       boolean someDestroyed = false;
       if (neighbours >= 4) {
         someDestroyed  = true;
-        int color = board[x][y];
+        int color = board[x+WIDTH*y];
         colorDestroyed[color] = true;
         killNeighbours(color, x,y);
 
@@ -444,12 +436,12 @@ class Player {
       if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) {
         return;
       }
-      int colorToKill = board[x][y];
+      int colorToKill = board[x+WIDTH*y];
       if (colorToKill != color && colorToKill != SKULL) {
         return;
       }
 
-      board[x][y] = EMPTY;
+      board[x+WIDTH*y] = EMPTY;
       if (colorToKill == SKULL) {
         skullsDestroyed++;
         return;
@@ -461,8 +453,8 @@ class Player {
       }
     }
 
-    int countNeighbours(int x, int y) {
-      int color = board[x][y];
+    final int countNeighbours(final int x, final int y) {
+      int color = board[x+WIDTH*y];
       if (color <1 || color > 6) {
         return 0; 
       }
@@ -475,10 +467,10 @@ class Player {
       if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) {
         return 0;
       }
-      if (b.board[x][y] != color) {
+      if (b.board[x+WIDTH*y] != color) {
         return 0;
       }
-      b.board[x][y] = - color;
+      b.board[x+WIDTH*y] = - color;
       int count = 1;
       count += countNeighbours(b, color, x - 1, y);
       count += countNeighbours(b, color, x + 1, y);
@@ -491,12 +483,12 @@ class Player {
       rowIndex = (HEIGHT-1)-rowIndex;
       String result = "";
       for (int i = 0; i < WIDTH; i++) {
-        if (board[i][rowIndex] == EMPTY) {
+        if (board[i+WIDTH*rowIndex] == EMPTY) {
           result += ".";
-        } else if (board[i][rowIndex] == SKULL) {
+        } else if (board[i+WIDTH*rowIndex] == SKULL) {
           result +="0";
         } else {
-          result += "" + board[i][rowIndex];
+          result += "" + board[i+WIDTH*rowIndex];
         }
       }
       return result;
@@ -512,12 +504,12 @@ class Player {
       System.out.println("------");
       for (int y=HEIGHT-1;y>=0;y--) {
         for (int x=0;x<WIDTH;x++) {
-          if (board[x][y] == EMPTY) {
+          if (board[x+WIDTH*y] == EMPTY) {
             System.out.print(" ");
-          } else if (board[x][y] == SKULL) {
+          } else if (board[x+WIDTH*y] == SKULL) {
             System.out.print("@");
           } else {
-            System.out.print(board[x][y]);
+            System.out.print(board[x+WIDTH*y]);
           }
         }
         System.out.println("");
@@ -526,6 +518,7 @@ class Player {
     }
   }
 
+  Board oBoard = new Board(6, 12);
   Board board = new Board(6, 12);
   Block[] blocks = new Block[8];
 
@@ -535,11 +528,27 @@ class Player {
   }
 
   int col = 0;
+  static int urgeToDoSomething;
 
   private void play() {
     // game loop
     while (true) {
       updateReadings();
+     
+      // opponent simulation
+      urgeToDoSomething = 0;
+      Simulation opponentSimulation = new Simulation(oBoard, blocks, 2);
+      int futurePoints = currentPoints + opponentSimulation.firstStep().totalPoints;
+      System.err.println("Opponent futurePoints (est) : "+futurePoints);
+      if ( futurePoints>= 70*6) {
+        System.err.println("Opponent can do a combo of "+(int)(futurePoints/(70*6))+" lines");
+        // opponent will be able to make a line in at least 2 runs
+        urgeToDoSomething = 1;
+      } else {
+        urgeToDoSomething = 0;
+      }
+      
+      // my simulation
       Simulation s = new Simulation(board, blocks, MAX_ITERATIONS);
       System.out.println("" + s.firstStep().column + " " + s.firstStep().rotation);
     }
@@ -558,6 +567,7 @@ class Player {
     updateOponentScore(in.nextInt());
     for (int i = 0; i < 12; i++) {
       String row = in.next(); 
+      oBoard.updateRow(i, row);
     }
   }
 
