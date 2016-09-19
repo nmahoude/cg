@@ -1,5 +1,5 @@
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 
@@ -24,6 +24,19 @@ public class PlayerTest {
     assertThat(player.grid.getRow(1), is(".."));
   }
 
+  @Test
+  public void update_decreaseBombTimer() {
+    player = new Player(2,2,Arrays.asList(
+        "..", 
+        ".."));
+    player.grid.placeBomb(0, 0);
+    
+    player.grid.udpate();
+    
+    assertThat(player.grid.getRow(0), is("2."));
+    assertThat(player.grid.getRow(1), is(".."));
+  }
+  
   @Test
   public void explodeAll() throws Exception {
     player = new Player(7,7,Arrays.asList(
@@ -54,25 +67,47 @@ public class PlayerTest {
         ".."));
     
     player.grid.placeBomb(0, 0);
-    Player.Simulation s = new Player.Simulation();
+    player.bombsLeft = 1;
+    player.leftRounds = 1;
+    
+    Player.SimulationRoot s = new Player.SimulationRoot();
     Player.SimulationStep ss = s.simulate(player);
     
-    assertThat(ss.x, is(0));
-    assertThat(ss.y, is(1));
+    assertThat(ss.next.x, is(0));
+    assertThat(ss.next.y, is(1));
   }
   
   @Test
   public void cc_test1() {
     player = new Player(4,3,Arrays.asList(
-        "....", 
         ".@..", 
+        "....", 
         "...."));
+    player.bombsLeft = 1;
+    player.leftRounds = 15;
     
-    player.grid.placeBomb(0, 0);
-    Player.Simulation s = new Player.Simulation();
+    Player.SimulationRoot s = new Player.SimulationRoot();
     Player.SimulationStep ss = s.simulate(player);
     
-    assertThat(ss.x, is(0));
-    assertThat(ss.y, is(1));
+    assertThat(ss.next.command, is(Player.SimulationStep.Command.BOMB));
+    assertThat(ss.next.x, is(0));
+    assertThat(ss.next.y, is(0));
+  }
+  
+  @Test
+  public void oneBombFourSentinels() {
+    player = new Player(4,3,Arrays.asList(
+        ".@..", 
+        "@.@.", 
+        ".@.."));
+    player.bombsLeft = 1;
+    player.leftRounds = 15;
+    
+    Player.SimulationRoot s = new Player.SimulationRoot();
+    Player.SimulationStep ss = s.simulate(player);
+    
+    assertThat(ss.next.command, is(Player.SimulationStep.Command.BOMB));
+    assertThat(ss.next.x, is(1));
+    assertThat(ss.next.y, is(1));
   }
 }
