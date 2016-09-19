@@ -1,11 +1,7 @@
-import java.util.*;
-import java.io.*;
-import java.math.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
-/**
- * Auto-generated code below aims at helping you parse the standard input
- * according to the problem statement.
- **/
 class Player {
   static Scanner in = new Scanner(System.in);
 
@@ -21,56 +17,66 @@ class Player {
     
   }
 
-  public static class Simulation {
-    // where to place bomb
+  public static class SimulationStep {
+    Grid grid;
     int x;
     int y;
-    Grid grid;
+    int step;
+    double score = 0;
     
-    void simulate(Player player) {
-      grid = player.grid;
-      if (grid.surveillanceNodes.size() == 0) {
-        return;
-      }
-      // find surveillance node
-      P p = grid.surveillanceNodes.remove(0);
-      findAFreePlaceFor(p.x, p.y);
+    public SimulationStep(Grid grid, int step, int x, int y) {
+      this.grid = new Grid(grid);
+      this.step = step;
+      this.x = x;
+      this.y = y;
     }
 
-    boolean findAFreePlaceFor(int px, int py) {
-      for (int x=1;x<4;x++) {
-        if (grid.valueOf(px+x,py) == '.') {
-          this.x = px+x;
-          this.y = py;
-          return true;
+    void simulate() {
+      if (grid.valueOf(x, y) != Grid.EMPTY) {
+        score = -10000;
+        return;
+      }
+      
+      int sentinels = 0;
+      for (int rot=0;rot<4;rot++) {
+        for (int d=1;d<4;d++) {
+          int ppx = x + d*(int)Math.cos(rot * Math.PI/2);
+          int ppy = y + d*(int)Math.sin(rot * Math.PI/2);
+          if (grid.valueOf(ppx, ppy) == grid.SURVEILLANCE_NODE) {
+            sentinels++;
+          }
         }
       }
-      for (int x=-4;x<-1;x++) {
-        if (grid.valueOf(px+x,py) == '.') {
-          this.x = px+x;
-          this.y = py;
-          return true;
+      score = sentinels;
+    }
+  }
+  public static class Simulation {
+    // where to place bomb
+    Grid grid;
+    
+    SimulationStep simulate(Player player) {
+      grid = player.grid;
+      
+      double bestScore = -10000;
+      SimulationStep bestSS = null;
+      
+      for (int x=0;x<grid.width;x++) {
+        for(int y=0;y<grid.height;y++) {
+          if (grid.board[x][y] == Grid.EMPTY) {
+            SimulationStep ss = new SimulationStep(grid, 0, x, y);
+            ss.simulate();
+            if (ss.score > bestScore) {
+              bestScore = ss.score;
+              bestSS = ss;
+            }
+          }
         }
       }
-      for (int y=1;y<4;y++) {
-        if (grid.valueOf(px,py+y) == '.') {
-          this.x = px;
-          this.y = py+y;
-          return true;
-        }
-      }
-      for (int y=-4;y<-1;y++) {
-        if (grid.valueOf(px,py+y) == '.') {
-          this.x = px;
-          this.y = py+y;
-          return true;
-        }
-      }
-      return false;
+      return bestSS;
     }
   }
   
-  class P {
+  static class P {
     public P(int x, int y) {
       this.x = x;
       this.y = y;
@@ -78,8 +84,10 @@ class Player {
 
     int x, y;
   }
-  class Grid {
+  static class Grid {
+    public final static char EMPTY = '.';
     public final static char SURVEILLANCE_NODE = '@';
+    public final static char EXPLODED_SURVEILLANCE_NODE = 'e';
     public final static char STATIC_NODE = '#';
     
     private int width;
@@ -92,14 +100,20 @@ class Player {
       this.height = height;
       init(rows);
     }
+    public Grid(Grid grid) {
+      this.width = grid.width;
+      this.height = grid.height;
+      this.board = grid.board.clone();
+    }
     void init(List<String> rows) {
       board = new int[width][height];
       int y=0;
       for (String row : rows) {
         for (int x=0;x<row.length();x++) {
           if (row.charAt(x) == '.') {
-            board[x][y] = '.';
+            board[x][y] = EMPTY;
           }  else if (row.charAt(x) == SURVEILLANCE_NODE) {
+            board[x][y] = row.charAt(x);
             surveillanceNodes.add(new P(x,y));
           } else {
             board[x][y] = row.charAt(x);
@@ -148,30 +162,18 @@ class Player {
       if (valueOf(x,y) == STATIC_NODE) {
         return false;
       }
-      setValue(0, x,y);
+      setValue(EMPTY, x,y);
       return true;
     }
-    void explode(int px, int py) {
-      for (int x=1;x<4;x++) {
-        if (!explodeOne(px+x,py)) {
-          break;
+    void explode(int x, int y) {
+      for (int rot=0;rot<4;rot++) {
+        for (int d=1;d<4;d++) {
+          int ppx = x + d*(int)Math.cos(rot * Math.PI/2);
+          int ppy = y + d*(int)Math.sin(rot * Math.PI/2);
+          explodeOne(ppx, ppy);
         }
       }
-      for (int x=-4;x<-1;x++) {
-        if (!explodeOne(px+x,py)) {
-          break;
-        }
-      }
-      for (int y=1;y<4;y++) {
-        if (!explodeOne(px,py+y)) {
-          break;
-        }
-      }
-      for (int y=-4;y<-1;y++) {
-        if (!explodeOne(px,py+y)) {
-          break;
-        }
-      }
+
     }
     
     public String getRow(int row) {
@@ -207,9 +209,14 @@ class Player {
       leftRounds = in.nextInt();
       bombsLeft = in.nextInt();
       
-      udpate();
-      s.simulate(this);
-      System.out.println(""+s.x+" "+s.y);
+      if (bombsLeft > 0) {
+        udpate();
+        SimulationStep ss = s.simulate(this);
+        grid.explode(ss.x, ss.y);
+        System.out.println(""+ss.x+" "+ss.y);
+      } else {
+        System.out.println("WAIT");
+      }
     }
   }
 
