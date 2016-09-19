@@ -42,6 +42,9 @@ class Player {
         for (int d=1;d<4;d++) {
           int ppx = x + d*(int)Math.cos(rot * Math.PI/2);
           int ppy = y + d*(int)Math.sin(rot * Math.PI/2);
+          if (grid.valueOf(ppx, ppy) == grid.STATIC_NODE) {
+            break;
+          }
           if (grid.valueOf(ppx, ppy) == grid.SURVEILLANCE_NODE) {
             sentinels++;
           }
