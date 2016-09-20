@@ -20,7 +20,7 @@ public class PlayerTest {
     
     player.grid.placeBomb(0, 0);
     
-    assertThat(player.grid.getRow(0), is("3."));
+    assertThat(player.grid.getRow(0), is("2."));
     assertThat(player.grid.getRow(1), is(".."));
   }
 
@@ -33,7 +33,7 @@ public class PlayerTest {
     
     player.grid.udpate();
     
-    assertThat(player.grid.getRow(0), is("2."));
+    assertThat(player.grid.getRow(0), is("1."));
     assertThat(player.grid.getRow(1), is(".."));
   }
   
@@ -66,7 +66,6 @@ public class PlayerTest {
         "@.", 
         ".."));
     
-    player.grid.placeBomb(0, 0);
     player.bombsLeft = 1;
     player.leftRounds = 1;
     
@@ -126,5 +125,50 @@ public class PlayerTest {
     assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
     assertThat(ss.x, is(1));
     assertThat(ss.y, is(1));
+  }
+  
+  @Test
+  public void bigBoard() {
+    player = new Player(12,9,Arrays.asList(
+        "@...@.......",
+        ".......@...@",
+        "............",
+        "...@.....@..",
+        "............",
+        ".@..........",
+        "......@.....",
+        ".........@..",
+        "............"
+        ));
+    player.bombsLeft = 9;
+    player.leftRounds = 14;
+    
+    Player.SimulationRoot s = new Player.SimulationRoot();
+    Player.SimulationStep ss = s.simulate(player);
+    
+    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
+  }
+  @Test
+  public void undestrucctible() {
+    player = new Player(12,9,Arrays.asList(
+        "............",
+        "..##....##..",
+        ".#@@#..#@@#.",
+        "............",
+        ".#@@#..#@@#.",
+        "..##....##..",
+        "............",
+        "............",
+        "............"
+        ));
+    player.bombsLeft = 4;
+    player.leftRounds = 15;
+    
+    Player.SimulationRoot s = new Player.SimulationRoot();
+    Player.SimulationStep ss = s.simulate(player);
+    
+    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
+    assertThat(ss.x, is(2));
+    assertThat(ss.y, is(3));
   }
 }
