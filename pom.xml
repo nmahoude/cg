@@ -13,6 +13,7 @@
     <module>SmashTheCode</module>
     <module>Winamax</module>
     <module>VoxCodei</module>
+    <module>Teads</module>
   </modules>
   
   <dependencies>
