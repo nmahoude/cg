@@ -73,8 +73,8 @@ public class PlayerTest {
     Player.SimulationRoot s = new Player.SimulationRoot();
     Player.SimulationStep ss = s.simulate(player);
     
-    assertThat(ss.next.x, is(0));
-    assertThat(ss.next.y, is(1));
+    assertThat(ss.x, is(0));
+    assertThat(ss.y, is(1));
   }
   
   @Test
@@ -89,9 +89,9 @@ public class PlayerTest {
     Player.SimulationRoot s = new Player.SimulationRoot();
     Player.SimulationStep ss = s.simulate(player);
     
-    assertThat(ss.next.command, is(Player.SimulationStep.Command.BOMB));
-    assertThat(ss.next.x, is(0));
-    assertThat(ss.next.y, is(0));
+    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
+    assertThat(ss.x, is(0));
+    assertThat(ss.y, is(0));
   }
   
   @Test
@@ -101,13 +101,30 @@ public class PlayerTest {
         "@.@.", 
         ".@.."));
     player.bombsLeft = 1;
+    player.leftRounds = 4;
+    
+    Player.SimulationRoot s = new Player.SimulationRoot();
+    Player.SimulationStep ss = s.simulate(player);
+    
+    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
+    assertThat(ss.x, is(1));
+    assertThat(ss.y, is(1));
+  }
+  
+  @Test
+  public void oneBombSentinelsOnLine() {
+    player = new Player(4,3,Arrays.asList(
+        "....", 
+        "@.@@", 
+        "...."));
+    player.bombsLeft = 3;
     player.leftRounds = 15;
     
     Player.SimulationRoot s = new Player.SimulationRoot();
     Player.SimulationStep ss = s.simulate(player);
     
-    assertThat(ss.next.command, is(Player.SimulationStep.Command.BOMB));
-    assertThat(ss.next.x, is(1));
-    assertThat(ss.next.y, is(1));
+    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
+    assertThat(ss.x, is(1));
+    assertThat(ss.y, is(1));
   }
 }

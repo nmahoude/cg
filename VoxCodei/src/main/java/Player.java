@@ -36,21 +36,20 @@ class Player {
 
     private boolean canWait;
 
-    public SimulationStep(Grid grid, boolean canWait, int step, int bombsCount, Command command, int x, int y) {
+    private int iteration;
+
+    public SimulationStep(Grid grid, boolean canWait, int iteration, int turnsLeft, int bombsCount, Command command, int x, int y) {
       this.canWait = canWait;
+      this.iteration = iteration;
       this.bombsLeft = bombsCount;
       this.command = command;
       this.grid = new Grid(grid);
-      this.turnsLeft = step;
+      this.turnsLeft = turnsLeft;
       this.x = x;
       this.y = y;
     }
 
     void simulate() {
-      if (shouldStopSimulation()) {
-        score = 0;
-        return;
-      }
       if (!isFirstStep()) {
         grid.udpate(); // tick bombs (and explode)
 
@@ -63,16 +62,16 @@ class Player {
             bombsLeft--;
           }
         }
-        if (grid.countAliveSentinels()+grid.countSentinelsToBeDestroyed() == 0) {
-          score = 1;
-          return;
-        }
+        score = 100-grid.countAliveSentinels();
       }
-      
-      next = getBestNextSimulationStep();
-      
-      if (next != null) {
-        score = score + next.score;
+      if (shouldStopSimulation()) {
+        return;
+      } else {
+        // one step further
+        next = getBestNextSimulationStep();
+        if (next != null) {
+          score = score + next.score;
+        }
       }
     }
 
@@ -84,11 +83,12 @@ class Player {
         for (int newX = 0; newX < grid.width; newX++) {
           for (int newY = 0; newY < grid.height; newY++) {
             if (grid.board[newX+grid.width*newY] == Grid.EMPTY) {
-              SimulationStep ss = new SimulationStep(grid, true, turnsLeft - 1, bombsLeft, Command.BOMB, newX, newY);
+              SimulationStep ss = new SimulationStep(grid, true, iteration--, turnsLeft - 1, bombsLeft, Command.BOMB, newX, newY);
               ss.simulate();
               if (ss.score > bestScore) {
                 bestScore = ss.score;
                 bestSS = ss;
+                this.command = Command.BOMB;
                 this.x = newX;
                 this.y = newY;
               }
@@ -98,11 +98,14 @@ class Player {
       }
       if (canWait) {
         // don't forget to try WAIT !
-        SimulationStep ss = new SimulationStep(grid, canWait, turnsLeft - 1, bombsLeft, Command.WAIT, 0,0);
+        SimulationStep ss = new SimulationStep(grid, canWait, iteration--, turnsLeft - 1, bombsLeft, Command.WAIT, 0,0);
         ss.simulate();
         if (ss.score > bestScore) {
           bestScore = ss.score;
           bestSS = ss;
+          this.command = Command.WAIT;
+          this.x = 0;
+          this.y = 0;
         }
       }
       return bestSS;
@@ -117,7 +120,7 @@ class Player {
     }
 
     private boolean shouldStopSimulation() {
-      return turnsLeft < 0;
+      return turnsLeft < 0 || iteration == 0;
     }
   }
 
@@ -129,7 +132,7 @@ class Player {
     SimulationStep simulate(Player player) {
       grid = player.grid;
 
-      SimulationStep base = new SimulationStep(grid, false, player.leftRounds, player.bombsLeft, SimulationStep.Command.WAIT, -1, -1);
+      SimulationStep base = new SimulationStep(grid, false, 4, player.leftRounds, player.bombsLeft, SimulationStep.Command.WAIT, -1, -1);
       base.simulate();
       return base;
     }
@@ -284,6 +287,12 @@ class Player {
       }
       return result;
     }
+
+    public void debug() {
+      for (int y=0;y<height;y++) {
+        System.err.println(getRow(y));
+      }
+    }
   }
 
   public static void main(String args[]) {
@@ -301,16 +310,16 @@ class Player {
   }
 
   private void play() {
-    SimulationRoot s = null;
+    SimulationRoot s = new SimulationRoot();
     SimulationStep currentSS = null;
+    
     while (true) {
       leftRounds = in.nextInt();
       bombsLeft = in.nextInt();
       
-      if (s == null) {
-        s = new SimulationRoot();
-        currentSS = s.simulate(this).next;
-      }
+      currentSS = s.simulate(this);
+      s.grid.debug();
+      System.err.println("l/b: " + leftRounds+" --  "+bombsLeft);
       if (currentSS.command == SimulationStep.Command.WAIT) {
         System.out.println("WAIT");
       } else {
