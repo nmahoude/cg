@@ -20,7 +20,7 @@ public class PlayerTest {
     
     player.grid.placeBomb(0, 0);
     
-    assertThat(player.grid.getRow(0), is("2."));
+    assertThat(player.grid.getRow(0), is("3."));
     assertThat(player.grid.getRow(1), is(".."));
   }
 
@@ -33,7 +33,7 @@ public class PlayerTest {
     
     player.grid.udpate();
     
-    assertThat(player.grid.getRow(0), is("1."));
+    assertThat(player.grid.getRow(0), is("2."));
     assertThat(player.grid.getRow(1), is(".."));
   }
   
@@ -72,6 +72,7 @@ public class PlayerTest {
     Player.SimulationRoot s = new Player.SimulationRoot();
     Player.SimulationStep ss = s.simulate(player);
     
+    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
     assertThat(ss.x, is(0));
     assertThat(ss.y, is(1));
   }
@@ -170,5 +171,23 @@ public class PlayerTest {
     assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
     assertThat(ss.x, is(2));
     assertThat(ss.y, is(3));
+  }
+  
+  @Test
+  public void forseeFuture() {
+    player = new Player(5,5,Arrays.asList(
+        ".....",
+        "...@.",
+        "2eee@",
+        "...@.",
+        "....."
+        ));
+    player.bombsLeft = 1;
+    player.leftRounds = 15;
+    
+    Player.SimulationRoot s = new Player.SimulationRoot();
+    Player.SimulationStep ss = s.simulate(player);
+    
+    assertThat(ss.command, is(Player.SimulationStep.Command.WAIT));
   }
 }
