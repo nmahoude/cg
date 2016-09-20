@@ -14,6 +14,7 @@
     <module>Winamax</module>
     <module>VoxCodei</module>
     <module>Teads</module>
+    <module>weekly</module>
   </modules>
   
   <dependencies>
