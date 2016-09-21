@@ -190,4 +190,27 @@ public class PlayerTest {
     
     assertThat(ss.command, is(Player.SimulationStep.Command.WAIT));
   }
+  
+  @Test
+  public void betterForseeFuture() {
+    player = new Player(8,5,Arrays.asList(
+        "........",
+        "......@.",
+        "@@@.@@@@",
+        "......@.",
+        "........"
+        ));
+    player.bombsLeft = 2;
+    player.leftRounds = 15;
+    
+    Player.SimulationRoot s = new Player.SimulationRoot();
+    Player.SimulationStep ss = s.simulate(player);
+    
+    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
+    assertThat(ss.x, is(3));
+    assertThat(ss.y, is(2));
+
+    assertThat(ss.next.command, is(Player.SimulationStep.Command.WAIT));
+    assertThat(ss.next.next.command, is(Player.SimulationStep.Command.WAIT));
+  }
 }

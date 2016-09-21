@@ -60,8 +60,16 @@ class Player {
             bombsLeft--;
             aliveAfter = grid.countAliveSentinels(); 
           }
+          if (aliveAfter == aliveBefore) {
+            score = -1000;
+            return;
+          }
         }
-        score = aliveBefore - aliveAfter;
+        if (aliveAfter > 0 && bombsLeft == 0) {
+          score = -1000;
+        } else {
+          score = aliveBefore - aliveAfter;
+        }
       }
       if (shouldStopSimulation()) {
         return;
@@ -69,7 +77,7 @@ class Player {
         // one step further
         next = getBestNextSimulationStep();
         if (next != null) {
-          score = score + next.score;
+          score = score + 0.999*next.score;
         }
       }
     }
