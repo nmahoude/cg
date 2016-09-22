@@ -126,7 +126,7 @@ public class PlayerTest {
         "44....",
         "44....");
 
-    int nCount = board.countNeighbours(0, 0);
+    int nCount = board.getCacheNeighbours(0, 0);
     assertThat(nCount, is(4));
   }
 
@@ -139,7 +139,7 @@ public class PlayerTest {
         "...44.",
         "......");
 
-    int nCount = board.countNeighbours(3, 1);
+    int nCount = board.getCacheNeighbours(3, 1);
     assertThat(nCount, is(4));
 
   }
@@ -153,7 +153,7 @@ public class PlayerTest {
         ".4444.",
         "......");
 
-    int nCount = board.countNeighbours(3, 2);
+    int nCount = board.getCacheNeighbours(3, 2);
     assertThat(nCount, is(8));
   }
 
@@ -166,7 +166,7 @@ public class PlayerTest {
         "..444.",
         "444.4.");
 
-    int nCount = board.countNeighbours(3, 1);
+    int nCount = board.getCacheNeighbours(3, 1);
     assertThat(nCount, is(13));
   }
 
@@ -179,7 +179,7 @@ public class PlayerTest {
         "444444",
         "444444");
 
-    int nCount = board.countNeighbours(3, 2);
+    int nCount = board.getCacheNeighbours(3, 2);
     assertThat(nCount, is(24));
   }
 

@@ -515,7 +515,7 @@ class Player {
       return someDestroyed;
     }
     
-    private int getCacheNeighbours(int x, int y) {
+    int getCacheNeighbours(int x, int y) {
       return neighboursGrid[groupsGrid[x][y]];
     }
 
@@ -538,33 +538,6 @@ class Player {
         killNeighbours(color, x, y + 1);
         killNeighbours(color, x, y - 1);
       }
-    }
-
-    final int countNeighbours(final int x, final int y) {
-      int color = colorGrid[x+WIDTH*y];
-      if (color <1 || color > 6) {
-        return 0; 
-      }
-      Board b = new Board(this);
-      int count = countNeighbours(b, color, x, y);
-      return count;
-    }
-    
-    int countNeighbours(Board b, int color, int x, int y) {
-      if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) {
-        return 0;
-      }
-      int position = x+WIDTH*y;
-      if (b.colorGrid[position] != color) {
-        return 0;
-      }
-      b.colorGrid[position] = - color;
-      int count = 1;
-      count += countNeighbours(b, color, x - 1, y);
-      count += countNeighbours(b, color, x + 1, y);
-      count += countNeighbours(b, color, x, y + 1);
-      count += countNeighbours(b, color, x, y - 1);
-      return count;
     }
 
     public String row(int rowIndex) {

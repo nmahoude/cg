@@ -15,6 +15,7 @@
     <module>VoxCodei</module>
     <module>Teads</module>
     <module>weekly</module>
+    <module>medium</module>
   </modules>
   
   <dependencies>
