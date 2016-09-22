@@ -95,12 +95,46 @@ class Player {
     int points;
   }
   
+  public static class SimulationWeight {
+    final double pointsWeights;
+    final double highestColWeights;
+    final double skullCountWeight;
+    final double nextIterWeight;
+    final double nextToNeighboursWeight;
+
+    public SimulationWeight(double pointsWeights, double highestColWeights, double skullCountWeight, double nextIterWeight, double nextToNeighboursWeight) {
+      super();
+      
+      double norm = Math.sqrt(pointsWeights*pointsWeights
+          + highestColWeights*highestColWeights
+          + skullCountWeight *skullCountWeight 
+          + nextIterWeight * nextIterWeight
+          + nextToNeighboursWeight * nextToNeighboursWeight);
+      
+      
+      this.pointsWeights = pointsWeights / norm;
+      this.highestColWeights = highestColWeights / norm;
+      this.skullCountWeight = skullCountWeight / norm;
+      this.nextIterWeight = nextIterWeight / norm;
+      this.nextToNeighboursWeight = nextToNeighboursWeight / norm;
+    }
+
+    public void debug() {
+      System.out.println("  weights : ("
+          + pointsWeights+","
+          + highestColWeights+","
+          + skullCountWeight +","
+          + nextIterWeight +","
+          + nextToNeighboursWeight 
+          + ")");      
+    }
+  }
   public static class Simulation {
     private StepSimulation zeroThStep; // this is the 0'th step, nothing to get from it !
     
-    public Simulation(Board board, Block[] blocks, int maxIterations) {
+    public Simulation(SimulationWeight weights, Board board, Block[] blocks, int maxIterations) {
       zeroThStep = new StepSimulation(board, blocks, 0, maxIterations, -1, -1);
-      zeroThStep.simulate();
+      zeroThStep.simulate(weights);
     }
 
     StepSimulation firstStep() {
@@ -144,11 +178,10 @@ class Player {
     StepSimulation nextStep() {
       return bestSS;
     }
-    private void simulate() {
+    private void simulate(SimulationWeight weights) {
       Block currentBlock;
       if (step > 0) {
         currentBlock = blocks[step-1];
-//        board.play(currentBlock, column, rotation);
         positionnedBlocks = board.placeBlock(currentBlock, column, rotation);
         board.putBlocksAndUpdate(this);
       }
@@ -166,7 +199,7 @@ class Player {
               continue;
             }
             StepSimulation ss = new StepSimulation(new Board(board), blocks, step+1, maxIterations, x, rotation);
-            ss.simulate();
+            ss.simulate(weights);
             if (ss.score > bestScore) {
               bestScore = ss.score;
               bestSS = ss;
@@ -176,7 +209,7 @@ class Player {
       }
       //TODO calculate score from simulation data & heuristics
       updatePoints();
-      calculateScoreFromHeuristics();
+      fitnesseScore(weights);
     }
 
     void updatePoints() {
@@ -187,15 +220,14 @@ class Player {
       }
     }
     
-    private void calculateScoreFromHeuristics() {
-      score = points 
-          - board.highestCol()
-          - board.skullCount
-          + (step != 1 ? 0 : Player.urgeToDoSomething * (points > 70*6 ? 100 : 0))
-          ;
-      if (positionnedBlocks != null) { score += nextToNeighbours(); }
-      double takeFutureStepIntoAccount = Math.pow(0.7, fearFactor);
-      if (bestSS != null) { score += takeFutureStepIntoAccount*bestSS.score; }
+    private void fitnesseScore(SimulationWeight weight) {
+      score = weight.pointsWeights * points 
+          + weight.highestColWeights * board.highestCol()
+          + weight.skullCountWeight * board.skullCount;
+      if (positionnedBlocks != null) { 
+        score += weight.nextToNeighboursWeight * nextToNeighbours(); 
+      }
+      if (bestSS != null) { score += weight.nextIterWeight*bestSS.score; }
     }
 
     private int nextToNeighbours() {
@@ -592,13 +624,21 @@ class Player {
   static int urgeToDoSomething;
 
   private void play() {
+    SimulationWeight weights = new SimulationWeight(
+        0.05155573996806658,
+        -0.029070106316135238,
+        -0.6862672830543053,
+        0.4985775244278643,
+        0.5262647650562959
+        );
+    
     // game loop
     while (true) {
       updateReadings();
      
       // opponent simulation
       urgeToDoSomething = 0;
-      Simulation opponentSimulation = new Simulation(oBoard, blocks, 2);
+      Simulation opponentSimulation = new Simulation(weights, oBoard, blocks, 2);
       int futurePoints = currentPoints + opponentSimulation.firstStep().totalPoints;
       System.err.println("Opponent futurePoints (estim) : "+futurePoints);
       if ( futurePoints>= 70*6) {
@@ -610,7 +650,7 @@ class Player {
       }
       
       // my simulation
-      Simulation s = new Simulation(board, blocks, MAX_ITERATIONS);
+      Simulation s = new Simulation(weights, board, blocks, MAX_ITERATIONS);
       System.out.println("" + s.firstStep().column + " " + s.firstStep().rotation);
     }
   }
