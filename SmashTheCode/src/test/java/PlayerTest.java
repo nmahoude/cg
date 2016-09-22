@@ -12,10 +12,19 @@ import org.junit.Test;
 public class PlayerTest {
   private static final boolean debug_performance = true;
   Player player = new Player();
+  private Player.SimulationWeight weights;
 
   @Before
   public void setup() {
     player = new Player();
+    
+    weights = new Player.SimulationWeight(
+        1,
+        -1,
+        -1,
+        1,
+        1
+        );
   }
 
   private void prepareBoard(Player.Board board, String... rows) {
@@ -166,7 +175,7 @@ public class PlayerTest {
         "..444.",
         "444.4.");
 
-    int nCount = board.getCacheNeighbours(3, 1);
+    int nCount = board.countNeighbours(3, 1);
     assertThat(nCount, is(13));
   }
 
@@ -433,7 +442,7 @@ public class PlayerTest {
 
     Player.Block[] blocks = new Player.Block[] { new Player.Block(3, 3) };
     
-    Player.Simulation s = new Player.Simulation(board, blocks, 1);
+    Player.Simulation s = new Player.Simulation(weights, board, blocks, 1);
 
     assertThat(s.simulatedResult().board.row(0), is("......"));
     assertThat(s.simulatedResult().board.row(1), is("......"));
@@ -451,7 +460,7 @@ public class PlayerTest {
         "3.....");
 
     Player.Block[] blocks = new Player.Block[] { new Player.Block(3, 3) };
-    Player.Simulation s = new Player.Simulation(board, blocks, 1);
+    Player.Simulation s = new Player.Simulation(weights, board, blocks, 1);
 
     assertThat(s.simulatedResult().board.row(0), is("......"));
     assertThat(s.simulatedResult().board.row(1), is("......"));
@@ -471,7 +480,7 @@ public class PlayerTest {
         "..5...");
 
     Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5), new Player.Block(5, 5) };
-    Player.Simulation s = new Player.Simulation(board, blocks, 1);
+    Player.Simulation s = new Player.Simulation(weights, board, blocks, 1);
 
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
@@ -491,7 +500,7 @@ public class PlayerTest {
         "444...");
 
     Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5), new Player.Block(5, 5) };
-    Player.Simulation s = new Player.Simulation(board, blocks, 1);
+    Player.Simulation s = new Player.Simulation(weights, board, blocks, 1);
 
     assertThat(s.simulatedResult().board.row(0), is("......"));
     assertThat(s.simulatedResult().board.row(1), is("......"));
@@ -562,7 +571,7 @@ public class PlayerTest {
         new Player.Block(2,2), 
         new Player.Block(5,1) 
     };
-    Player.Simulation s = new Player.Simulation(board, blocks, iter);
+    Player.Simulation s = new Player.Simulation(weights, board, blocks, iter);
     return s;
   }
   
@@ -591,7 +600,7 @@ public class PlayerTest {
         new Player.Block(3,4), 
         new Player.Block(5,1)
         };
-    Player.Simulation s = new Player.Simulation(board, blocks, 1);
+    Player.Simulation s = new Player.Simulation(weights, board, blocks, 1);
 
     assertThat(s.firstStep().totalPoints, is(360));
   }
@@ -625,7 +634,7 @@ public class PlayerTest {
       };
       Player.currentThreatSkulls = 4;
       
-      Player.Simulation s = new Player.Simulation(board, blocks, 2);
+      Player.Simulation s = new Player.Simulation(weights, board, blocks, 2);
   }
 
   // @Test

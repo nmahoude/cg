@@ -71,6 +71,7 @@ class Player {
     public String toString() {
       return "(" + x + "," + y + ")";
     }
+    
   }
 
   public static class Block {
@@ -127,6 +128,16 @@ class Player {
           + nextIterWeight +","
           + nextToNeighboursWeight 
           + ")");      
+    }
+
+    public SimulationWeight mutate(SimulationWeight ow) {
+      return new SimulationWeight(
+          this.pointsWeights + ow.pointsWeights,
+          this.highestColWeights + ow.highestColWeights,
+          this.skullCountWeight + ow.skullCountWeight,
+          this.nextIterWeight + ow.nextIterWeight,
+          this.nextToNeighboursWeight + ow.nextToNeighboursWeight
+          );
     }
   }
   public static class Simulation {
@@ -231,8 +242,8 @@ class Player {
     }
 
     private int nextToNeighbours() {
-      int neighbours = board.getCacheNeighbours(positionnedBlocks[0].x, positionnedBlocks[0].y);
-      neighbours += board.getCacheNeighbours(positionnedBlocks[1].x, positionnedBlocks[1].y);
+      int neighbours = board.countNeighbours(positionnedBlocks[0].x, positionnedBlocks[0].y);
+      neighbours += board.countNeighbours(positionnedBlocks[1].x, positionnedBlocks[1].y);
       return neighbours;
     }
   }
@@ -259,6 +270,33 @@ class Player {
       heights = new int[WIDTH];
     }
 
+    final int countNeighbours(final int x, final int y) { 
+      int color = colorGrid[x+WIDTH*y]; 
+      if (color <1 || color > 6) { 
+        return 0;  
+      } 
+      Board b = new Board(this); 
+      int count = countNeighbours(b, color, x, y); 
+      return count; 
+    } 
+    
+    int countNeighbours(Board b, int color, int x, int y) { 
+      if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) { 
+        return 0; 
+      } 
+      int position = x+WIDTH*y; 
+      if (b.colorGrid[position] != color) { 
+        return 0; 
+      } 
+      b.colorGrid[position] = - color; 
+      int count = 1; 
+      count += countNeighbours(b, color, x - 1, y); 
+      count += countNeighbours(b, color, x + 1, y); 
+      count += countNeighbours(b, color, x, y + 1); 
+      count += countNeighbours(b, color, x, y - 1); 
+      return count; 
+    } 
+    
     void updateNeighboursCache(int color, int x, int y) {
       int groupsToMerge[] = new int[4];
       int index = 0;
@@ -529,8 +567,7 @@ class Player {
     }
 
     private boolean destroyNeighbours(int x, int y) {
-//      int neighbours = countNeighbours(x,y);
-      int neighbours = getCacheNeighbours(x,y);
+      int neighbours = countNeighbours(x,y);
       boolean someDestroyed = false;
       if (neighbours >= 4) {
         someDestroyed  = true;
@@ -625,11 +662,11 @@ class Player {
 
   private void play() {
     SimulationWeight weights = new SimulationWeight(
-        0.05155573996806658,
-        -0.029070106316135238,
-        -0.6862672830543053,
-        0.4985775244278643,
-        0.5262647650562959
+        0.0395941534020874,
+        -0.039134807544185114,
+        -0.3239394470974496,
+        0.5776550471952032,
+        0.7471804674367216
         );
     
     // game loop
@@ -637,18 +674,17 @@ class Player {
       updateReadings();
      
       // opponent simulation
-      urgeToDoSomething = 0;
+      /*
+       urgeToDoSomething = 0;
       Simulation opponentSimulation = new Simulation(weights, oBoard, blocks, 2);
       int futurePoints = currentPoints + opponentSimulation.firstStep().totalPoints;
-      System.err.println("Opponent futurePoints (estim) : "+futurePoints);
       if ( futurePoints>= 70*6) {
-        System.err.println("Opponent can do a combo of "+(int)(futurePoints/(70*6))+" lines");
         // opponent will be able to make a line in at least 2 runs
         urgeToDoSomething = 1;
       } else {
         urgeToDoSomething = 0;
       }
-      
+      */
       // my simulation
       Simulation s = new Simulation(weights, board, blocks, MAX_ITERATIONS);
       System.out.println("" + s.firstStep().column + " " + s.firstStep().rotation);
