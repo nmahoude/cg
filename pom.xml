@@ -16,6 +16,7 @@
     <module>Teads</module>
     <module>weekly</module>
     <module>medium</module>
+    <module>hard</module>
   </modules>
   
   <dependencies>
