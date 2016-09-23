@@ -175,7 +175,7 @@ public class PlayerTest {
         "..444.",
         "444.4.");
 
-    int nCount = board.countNeighbours(3, 1);
+    int nCount = board.getCacheNeighbours(3, 1);
     assertThat(nCount, is(13));
   }
 
@@ -511,6 +511,22 @@ public class PlayerTest {
   }
   
   @Test
+  public void boardIsFull() {
+    Player.Board board = new Player.Board(6, 6);
+    prepareBoard(board,
+        "123451",
+        "234512",
+        "123451",
+        "234512",
+        "123451",
+        "234512");
+
+    Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5), new Player.Block(5, 5) };
+    Player.Simulation s = new Player.Simulation(weights, board, blocks, 1);
+  }
+
+  
+  @Test
   public void case1_iter1() {
     Player.Board board = new Player.Board(6, 12);
     
@@ -539,7 +555,7 @@ public class PlayerTest {
     for (int i=0;i<MAX;i++) {
       Player.Board board = new Player.Board(6, 12);
   
-      Player.Simulation case1 = case1(board, 4);
+      Player.Simulation case1 = case1(board, 3);
       
     }
     long time2 = System.currentTimeMillis();

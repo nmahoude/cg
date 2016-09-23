@@ -198,7 +198,7 @@ class Player {
       }
       
       bestSS = null;
-      double bestScore = -10000;
+      double bestScore = -100000;
 
       // do one step further
       if (step < maxIterations) {
@@ -211,7 +211,7 @@ class Player {
             }
             StepSimulation ss = new StepSimulation(new Board(board), blocks, step+1, maxIterations, x, rotation);
             ss.simulate(weights);
-            if (ss.score > bestScore) {
+            if (bestSS == null || ss.score > bestScore) {
               bestScore = ss.score;
               bestSS = ss;
             }
@@ -238,12 +238,17 @@ class Player {
       if (positionnedBlocks != null) { 
         score += weight.nextToNeighboursWeight * nextToNeighbours(); 
       }
-      if (bestSS != null) { score += weight.nextIterWeight*bestSS.score; }
+      if (urgeToDoSomething != 1) {
+        if (bestSS != null) { score += weight.nextIterWeight*bestSS.score; }
+      }
     }
 
     private int nextToNeighbours() {
-      int neighbours = board.countNeighbours(positionnedBlocks[0].x, positionnedBlocks[0].y);
-      neighbours += board.countNeighbours(positionnedBlocks[1].x, positionnedBlocks[1].y);
+//      int neighbours = board.countNeighbours(positionnedBlocks[0].x, positionnedBlocks[0].y);
+//      neighbours += board.countNeighbours(positionnedBlocks[1].x, positionnedBlocks[1].y);
+
+      int neighbours = board.getCacheNeighbours(positionnedBlocks[0].x, positionnedBlocks[0].y)
+          +board.getCacheNeighbours(positionnedBlocks[1].x, positionnedBlocks[1].y);
       return neighbours;
     }
   }
@@ -251,6 +256,7 @@ class Player {
   public static class Board {
     private static final int EMPTY = 0;
     private static final int SKULL = 9;
+    static int[] empty = new int[12*6+2];
     
     final int WIDTH;
     final int HEIGHT;
@@ -265,37 +271,37 @@ class Player {
       WIDTH = W;
       HEIGHT = H;
       colorGrid = new int[WIDTH*HEIGHT];
-      neighboursGrid = new int[WIDTH*HEIGHT];
+      neighboursGrid = new int[WIDTH*HEIGHT+2];
       groupsGrid = new int[WIDTH][HEIGHT];
       heights = new int[WIDTH];
     }
 
-    final int countNeighbours(final int x, final int y) { 
-      int color = colorGrid[x+WIDTH*y]; 
-      if (color <1 || color > 6) { 
-        return 0;  
-      } 
-      Board b = new Board(this); 
-      int count = countNeighbours(b, color, x, y); 
-      return count; 
-    } 
-    
-    int countNeighbours(Board b, int color, int x, int y) { 
-      if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) { 
-        return 0; 
-      } 
-      int position = x+WIDTH*y; 
-      if (b.colorGrid[position] != color) { 
-        return 0; 
-      } 
-      b.colorGrid[position] = - color; 
-      int count = 1; 
-      count += countNeighbours(b, color, x - 1, y); 
-      count += countNeighbours(b, color, x + 1, y); 
-      count += countNeighbours(b, color, x, y + 1); 
-      count += countNeighbours(b, color, x, y - 1); 
-      return count; 
-    } 
+//    final int countNeighbours(final int x, final int y) { 
+//      int color = colorGrid[x+WIDTH*y]; 
+//      if (color <1 || color > 6) { 
+//        return 0;  
+//      } 
+//      Board b = new Board(this); 
+//      int count = countNeighbours(b, color, x, y); 
+//      return count; 
+//    } 
+//    
+//    int countNeighbours(Board b, int color, int x, int y) { 
+//      if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) { 
+//        return 0; 
+//      } 
+//      int position = x+WIDTH*y; 
+//      if (b.colorGrid[position] != color) { 
+//        return 0; 
+//      } 
+//      b.colorGrid[position] = - color; 
+//      int count = 1; 
+//      count += countNeighbours(b, color, x - 1, y); 
+//      count += countNeighbours(b, color, x + 1, y); 
+//      count += countNeighbours(b, color, x, y + 1); 
+//      count += countNeighbours(b, color, x, y - 1); 
+//      return count; 
+//    } 
     
     void updateNeighboursCache(int color, int x, int y) {
       int groupsToMerge[] = new int[4];
@@ -337,6 +343,8 @@ class Player {
     }
 
     void updateNeighboursCache() {
+      System.arraycopy(empty, 0, neighboursGrid, 0, neighboursGrid.length);
+      
       int groupIndex = 0;
       neighboursGrid[0] = 0;
       for (int y=0;y<HEIGHT;y++) {
@@ -346,23 +354,48 @@ class Player {
             groupsGrid[x][y] = 0;
             continue;
           }
-          int precedentIndex = 0;
+          int precedentXIndex = 0;
+          int precedentYIndex = 0;
+
           if (x > 0 && colorGrid[x-1+y*WIDTH] == colorGrid[x+y*WIDTH]) {
-            precedentIndex = groupsGrid[x-1][y];
-            neighboursGrid[precedentIndex] += 1;
-          } else if (y > 0 && colorGrid[x+(y-1)*WIDTH] == colorGrid[x+y*WIDTH]) {
-            precedentIndex = groupsGrid[x][y-1];
-            neighboursGrid[precedentIndex] += 1;
+            precedentXIndex = groupsGrid[x-1][y];
+          } 
+          if (y > 0 && colorGrid[x+(y-1)*WIDTH] == colorGrid[x+y*WIDTH]) {
+            if (precedentXIndex == 0) {
+              precedentXIndex = groupsGrid[x][y-1];
+            } else {
+              precedentYIndex = groupsGrid[x][y-1];
+            }
           }
-          if (precedentIndex == 0) {
-            precedentIndex = ++groupIndex;
-            neighboursGrid[precedentIndex] = 1;
+          if (precedentXIndex == 0 && precedentYIndex == 0) {
+            precedentXIndex = ++groupIndex;
+          } else if (precedentXIndex == precedentYIndex) {
+            precedentYIndex = 0; // don't count it 2 times, but same group
+          } else {
+            if (precedentYIndex != 0) {
+              mergeNeighbors(x,y, precedentXIndex, precedentYIndex);
+              precedentYIndex = 0;
+            } else {
+            }
           }
-          groupsGrid[x][y] = precedentIndex;
+          neighboursGrid[precedentXIndex] += 1;
+          groupsGrid[x][y] = precedentXIndex;
         }
       }
     }
 
+    private void mergeNeighbors(int xMax, int yMax, int to, int from) {
+      for (int y=0;y<yMax;y++) {
+        for (int x=0;x<WIDTH;x++) {
+          if (groupsGrid[x][y] == from) {
+            groupsGrid[x][y] = to;
+          }
+        }
+      }
+      neighboursGrid[to] +=neighboursGrid[from];
+      neighboursGrid[from] = 0;
+    }
+    
     public void putBlocksAndUpdate(StepSimulation stepSimulation) {
       List<P> pointsToCheck = Arrays.asList(stepSimulation.positionnedBlocks[0],
           stepSimulation.positionnedBlocks[1]);
@@ -425,7 +458,7 @@ class Player {
     int points;
     double nuisancePoints = 0;
     
-    boolean colorDestroyed[] = new boolean[6];
+    boolean colorDestroyed[] = new boolean[10];
     int skullsDestroyed;
     int skullsDestroyedPoints;
     int placedBlockX1;
@@ -526,11 +559,11 @@ class Player {
     }
 
     boolean canPlaceBlock(Block block, int x, int rotation) {
-      return (rotation % 2 == 1 && colorGrid[x+WIDTH*((HEIGHT-1)-1)] == EMPTY)
+      return (rotation % 2 == 1 && heights[x] < HEIGHT-1)
           ||
-          (rotation == 0 && x+1 <= WIDTH-1 && colorGrid[x+WIDTH*(HEIGHT-1)] == EMPTY && colorGrid[x+1+WIDTH*(HEIGHT-1)] == EMPTY)
+          (rotation == 0 && x+1 <= WIDTH-1 && heights[x] < HEIGHT && heights[x+1] < HEIGHT)
           || 
-          (rotation == 2 && x-1 >= 0 && colorGrid[x-1+WIDTH*(HEIGHT-1)] == EMPTY && colorGrid[x+WIDTH*(HEIGHT-1)] == EMPTY);
+          (rotation == 2 && x-1 >= 0 && heights[x] < HEIGHT && heights[x-1] < HEIGHT);
     }
     
      List<P> update() {
@@ -567,7 +600,7 @@ class Player {
     }
 
     private boolean destroyNeighbours(int x, int y) {
-      int neighbours = countNeighbours(x,y);
+      int neighbours = getCacheNeighbours(x,y);
       boolean someDestroyed = false;
       if (neighbours >= 4) {
         someDestroyed  = true;
@@ -674,17 +707,15 @@ class Player {
       updateReadings();
      
       // opponent simulation
-      /*
        urgeToDoSomething = 0;
       Simulation opponentSimulation = new Simulation(weights, oBoard, blocks, 2);
-      int futurePoints = currentPoints + opponentSimulation.firstStep().totalPoints;
+      int futurePoints = opponentSimulation.firstStep() != null ? currentPoints + opponentSimulation.firstStep().totalPoints : currentPoints ;
       if ( futurePoints>= 70*6) {
         // opponent will be able to make a line in at least 2 runs
         urgeToDoSomething = 1;
       } else {
         urgeToDoSomething = 0;
       }
-      */
       // my simulation
       Simulation s = new Simulation(weights, board, blocks, MAX_ITERATIONS);
       System.out.println("" + s.firstStep().column + " " + s.firstStep().rotation);
@@ -701,6 +732,8 @@ class Player {
       String row = in.next();
       board.updateRow(i, row);
     }
+    board.updateNeighboursCache();
+    
     updateOponentScore(in.nextInt());
     for (int i = 0; i < 12; i++) {
       String row = in.next(); 
