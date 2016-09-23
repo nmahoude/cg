@@ -5,5 +5,9 @@
     <artifactId>all</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>SmashTheCode</artifactId>
+  <artifactId>easy</artifactId>
+  <packaging>pom</packaging>
+  <modules>
+    <module>TheLastCrusade</module>
+  </modules>
 </project>

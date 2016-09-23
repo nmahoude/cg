@@ -17,6 +17,7 @@
     <module>weekly</module>
     <module>medium</module>
     <module>hard</module>
+    <module>multiplayers</module>
   </modules>
   
   <dependencies>
