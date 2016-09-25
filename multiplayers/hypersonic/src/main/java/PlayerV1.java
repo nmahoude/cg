@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-class Player {
+class PlayerV1 {
   private static Scanner in;
   private static int myIndex;
 
@@ -41,6 +41,12 @@ class Player {
     }
   }
 
+  static class Link {
+    Cell cell1;
+    Cell cell2;
+    public int weight = 1000;
+  }
+
   static class Entity {
   }
 
@@ -55,6 +61,7 @@ class Player {
       this.timer = timer;
       this.range = range;
     }
+
   }
 
   static class APlayer extends Entity {
@@ -62,7 +69,6 @@ class Player {
     int x, y; // his position
     int bombsLeft = 1;
     public int bombRange = 3;
-    public Cell cell;
   }
 
   static class Cell {
@@ -126,11 +132,12 @@ class Player {
     private int height;
 
     List<Cell> boxes = new ArrayList<>();
-
+    
     Map<Integer, APlayer> players = new HashMap<>();
     APlayer me = null;
 
     Cell[][] grid = new Cell[13][11];
+    Link[][] links = new Link[13 - 1][11 - 1];
 
     public Game(int width, int height) {
       this.width = width;
@@ -145,22 +152,26 @@ class Player {
           grid[x][y] = c;
         }
       }
+      for (int x = 0; x < width - 1; x++) {
+        for (int y = 0; y < height - 1; y++) {
+          links[x][y] = new Link();
+        }
+      }
     }
 
     public void addRow(int rowIndex, String row) {
-      System.err.println("row: "+row);
       for (int i = 0; i < row.length(); i++) {
         char c = row.charAt(i);
         Cell cell = grid[i][rowIndex];
         if (c == '.') {
           cell.type = Cell.Type.FLOOR;
-        } else if (c == 'X') {
-          cell.type = Cell.Type.WALL;
-          updateWallInfluence(cell);
         } else if (c >= '0') {
           cell.type = Cell.Type.BOX;
           cell.option = c - '0';
           boxes.add(cell);
+        } else if (c >= 'X') {
+          cell.type = Cell.Type.WALL;
+          updateWallInfluence(cell);
         }
       }
     }
@@ -169,37 +180,24 @@ class Player {
       cell.weight = Cell.MIN_WEIGHT;
     }
 
-    private void updateBoxInfluence(Cell originCell) {
-      int x = originCell.x;
-      int y = originCell.y;
+    private void updateBoxInfluence(Cell cell) {
+      int x = cell.x;
+      int y = cell.y;
       for (int rot = 0; rot < 4; rot++) {
         for (int d = 1; d < me.bombRange; d++) {
           Cell c = getCellAt(x + d * rotx[rot], y + d * roty[rot]);
-          if (c.type == Cell.Type.WALL || c.type == Cell.Type.BOX) {
+          if (cell.type == Cell.Type.WALL || cell.type == cell.type.BOX) {
             break;
           }
-          c.boxCount++;
-          
-          if (c.willExplode > 0 && c.willExplode < Integer.MAX_VALUE - 2) {
+          if (cell.willExplode > 0 && cell.willExplode<Integer.MAX_VALUE-2) {
             continue;
           }
+          c.boxCount++;
+          System.err.println("set weight at "+c.x+","+c.y+" : "+c.weight);
         }
       }
     }
 
-    void debug() {
-      for (int y=0;y<11;y++) {
-        String result = "";
-        for (int x=0;x<13;x++) {
-          if (grid[x][y].type == Cell.Type.WALL) {
-            result+="X";
-          } else {
-            result+=""+grid[x][y].boxCount;
-          }
-        }
-        System.err.println(result);
-      }
-    }
     private void updateOptionInfluence(Cell cell) {
       cell.weight += 2;
     }
@@ -248,7 +246,6 @@ class Player {
           }
           player.x = info.x;
           player.y = info.y;
-          player.cell = cell;
           if (info.owner == myIndex) {
             me = player;
           }
@@ -264,23 +261,23 @@ class Player {
 
     private void updateBombInfluence(Cell cell, int index, int tickLeft, int range) {
       // TODO
-      // if (cell.willExplode < tickLeft ) {
-      // tickLeft = cell.willExplode;
-      // }
-
+//      if (cell.willExplode < tickLeft ) {
+//        tickLeft = cell.willExplode;
+//      }
+      
       for (int rot = 0; rot < 4; rot++) {
         for (int d = 1; d < me.bombRange; d++) {
-          Cell c = getCellAt(cell.x + d * rotx[rot], cell.y + d * roty[rot]);
+          Cell c = getCellAt(cell.x+d*rotx[rot], cell.y+d*roty[rot]);
           // TODO
-          // if (c.hasBombs() && c.bomb().tickLeft > tickLeft) {
-          // updateBombInfluence(c, c.bomb().index, tickLeft, c.bomb().range);
-          // }
+//          if (c.hasBombs() && c.bomb().tickLeft > tickLeft) {
+//            updateBombInfluence(c, c.bomb().index, tickLeft, c.bomb().range);  
+//          }
           if (c.isBlocked()) {
             break;
           }
           c.willExplode = Math.min(c.willExplode, tickLeft);
           if (index != me.index) {
-            c.threat = Math.max(8 - tickLeft, c.threat);
+            c.threat = Math.max(8-tickLeft, c.threat);
           }
         }
       }
@@ -289,7 +286,7 @@ class Player {
     private void play() {
       Path.PathItem currentPath = null;
       Cell nextCell = null;
-
+      
       while (true) {
         resetGame();
         for (int y = 0; y < height; y++) {
@@ -312,39 +309,94 @@ class Player {
         for (Cell cell : boxes) {
           updateBoxInfluence(cell);
         }
-        debug();
+        in.nextLine();
+
+
+        // find the best influence in the neighbouroud
+        Cell myCell = grid[me.x][me.y];
+        nextCell = findBestPath2(myCell);
+
+        // find path to nextCell
+        Path path = new Path(grid, me.x, me.y, nextCell.x, nextCell.y);
+        Path.PathItem item = path.find();
+        currentPath = item;
         
-        int maxBox = -1;
-        Cell maxCell = me.cell;
+        System.err.println("Target: " + nextCell.x + " " + nextCell.y);
+        System.err.println("influenced : " + nextCell.weight);
+        System.err.println("Find path with "+item.length()+"entries");
         
-        Path.PathItem maxItem = null;
-        for (int y=0;y<11;y++) {
-          for (int x=0;x<13;x++) {
-            Cell c = getCellAt(x, y);
-            if (c.boxCount > maxBox) {
-              Path path = new Path(grid, me.x, me.y, c.x, c.y);
-              Path.PathItem item = path.find();
-              if (item != null) {
-                System.err.println("found : "+c.x+","+c.y+" with weight: "+c.boxCount);
-                maxBox = c.boxCount;
-                maxCell = c;
-                maxItem = item;
+        String command = "MOVE ";
+        if (nextCell.hvDistanceTo(me) == 0) {
+          command = "BOMB ";
+        } else {
+        }
+        command += "" + nextCell.x + " " + nextCell.y;
+        System.out.println(command);
+      }
+    }
+
+    private Cell findBestPath2(Cell myCell) {
+      int fromX = Math.max(0, myCell.x-5);
+      int fromY = Math.max(0, myCell.y-5);
+      int toX = Math.min(12, myCell.x+5);
+      int toY = Math.min(10, myCell.y+5);
+      
+      int maxWeight = 0;
+      Cell maxCell = myCell;
+      for (int y=fromY;y<toY;y++) {
+        for (int x=fromX;x<toX;x++) {
+          Cell cell = grid[x][y];
+          System.err.println("new best weight : "+cell.weight+" at "+cell.x+","+cell.y);
+          if (cell.weight > maxWeight) {
+            Path path = new Path(grid, me.x, me.y, cell.x, cell.y);
+            Path.PathItem item = path.find();
+            if (item != null) {
+              Path.PathItem i = item;
+              int count = i.length()-1;
+              while (i != null) {
+                if (count != 0 && i.cell.willExplode == count) {
+                  item = null;
+                  break;
+                }
+                count--;
+                i = i.precedent;
+              }
+              if (item != null){
+                maxWeight = cell.weight;
+                maxCell = cell;
               }
             }
           }
         }
-        in.nextLine();
+      }
+      return maxCell;
+    }
+    
+    private Cell findBestPath(Cell myCell) {
+      int maxRange = 10;
 
-        if (maxItem == null) {
-          System.out.println("MOVE "+me.x+" "+me.y);
-        } else {
-          String command ="MOVE ";
-          if (me.x == maxCell.x && me.y == maxCell.y) {
-            command = "BOMB ";
-          }
-          System.out.println(command+maxItem.cell.x+" "+maxItem.cell.y);
+      return findBestPath(myCell, 1);
+    }
+
+    private Cell findBestPath(Cell cell, int rangeLeft) {
+      if (rangeLeft == 0) {
+        return cell;
+      }
+      Cell bestCell = null;
+      int maxWeight = cell.weight;
+      System.err.println("max -> " + cell.weight);
+      for (int rot = 0; rot < 4; rot++) {
+        Cell studiedCell = getCellAt(cell.x + rotx[rot], cell.y + roty[rot]);
+        System.err.println("rot=" + rot + " -> " + studiedCell.weight);
+        if (studiedCell.weight > maxWeight) {
+          bestCell = studiedCell;
+          maxWeight = studiedCell.weight;
         }
       }
+      if (bestCell != null) {
+        return findBestPath(bestCell, rangeLeft - 1);
+      }
+      return cell;
     }
 
   }
@@ -400,15 +452,15 @@ class Player {
           Cell cellUp = grid[cell.x][cell.y - 1];
           addToOpenList(visiting, cell, cellUp);
         }
-        if (cell.y < grid[0].length - 1) {
+        if (cell.y < grid[0].length-1) {
           Cell cellDown = grid[cell.x][cell.y + 1];
           addToOpenList(visiting, cell, cellDown);
         }
         if (cell.x > 0) {
-          Cell cellLeft = grid[cell.x - 1][cell.y];
+          Cell cellLeft = grid[cell.x -1][cell.y];
           addToOpenList(visiting, cell, cellLeft);
         }
-        if (cell.x < grid.length - 1) {
+        if (cell.x < grid.length-1) {
           Cell cellRight = grid[cell.x + 1][cell.y];
           addToOpenList(visiting, cell, cellRight);
         }
@@ -438,7 +490,7 @@ class Player {
     }
 
     private int manhattanDistance(Cell cell) {
-      return Math.abs(cell.x - tx) + Math.abs(cell.y - ty);
+      return Math.abs(cell.x-tx) + Math.abs(cell.y-ty);
     }
 
     public static class PathItem {
@@ -446,11 +498,10 @@ class Player {
       int totalPrevisionalLength = 0;
       PathItem precedent = null;
       Cell cell;
-
       public int length() {
         PathItem i = this;
         int count = 0;
-        while (i != null) {
+        while (i!=null) {
           count++;
           i = i.precedent;
         }
