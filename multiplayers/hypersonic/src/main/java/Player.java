@@ -48,12 +48,16 @@ class Player {
     APlayer player; // who drops the bomb
     int timer;
     int range;
-
-    public Bomb(APlayer player, int timer, int range) {
+    Cell cell;
+    
+    public Bomb(APlayer player, Cell cell, int timer, int range) {
       super();
       this.player = player;
       this.timer = timer;
       this.range = range;
+      this.cell = cell;
+      
+      System.err.println("Bomb (p:"+player.index+") at ("+cell.x+","+cell.y+") with timer: "+timer+" and range: "+range);
     }
   }
 
@@ -86,9 +90,12 @@ class Player {
     public int weight = 0;
     public int option;
     private int threat;
-    public int willExplode;
     public int boxCount;
+    public int hasOption_bombUp;
+    public int hasOption_rangeUp;
 
+    Cell neighbors[] = new Cell[4];
+    
     public Cell(int x, int y) {
       this.x = x;
       this.y = y;
@@ -106,14 +113,55 @@ class Player {
     }
 
     public boolean isBlocked() {
-      return type == Type.WALL || type == Type.BOX;
+      return type == Type.WALL || type == Type.BOX ;
     }
-
+    public boolean isSoftBlocked() {
+      return bomb != null;
+    }
     public void reset() {
       weight = 0;
       threat = 0;
       boxCount = 0;
-      willExplode = Integer.MAX_VALUE;
+      hasOption_bombUp = 0;
+      hasOption_rangeUp = 0;
+      bomb = null;
+      willExplodeIn = Integer.MAX_VALUE;
+      explodingBombs.clear();
+    }
+
+    int willExplodeIn;
+    Bomb bomb;
+    List<Bomb> explodingBombs = new ArrayList<>();
+    public Object isSafe(APlayer player, int turns) {
+      for (Bomb b : explodingBombs) {
+        if (b.player == player) {
+          continue; // no threat
+        }
+        if (b.timer == turns) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    public void placeBomb(Bomb bomb) {
+      this.bomb = bomb;
+      updateBombInfluence();
+    }
+    private void updateBombInfluence() {
+      Cell currentCell = this;  
+      for (int rot =0;rot<4;rot++) {
+        for (int d = 1; d <= bomb.range; d++) {
+          currentCell = currentCell.neighbors[rot];
+          if (currentCell.isBlocked()) {
+            break;
+          }
+          currentCell.addBombInfluence(bomb);
+        }
+      }
+    }
+    private void addBombInfluence(Bomb fromBomb) {
+      explodingBombs.add(fromBomb);
     }
   }
 
@@ -145,10 +193,20 @@ class Player {
           grid[x][y] = c;
         }
       }
+      // update neighbors
+      for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+          grid[x][y].neighbors[Cell.UP] = getCellAt(x, y-1);
+          grid[x][y].neighbors[Cell.DOWN] = getCellAt(x, y+1);
+          grid[x][y].neighbors[Cell.LEFT] = getCellAt(x-1, y);
+          grid[x][y].neighbors[Cell.RIGHT] = getCellAt(x+1, y);
+        }
+      }
+      
     }
 
     public void addRow(int rowIndex, String row) {
-      System.err.println("row: "+row);
+      // System.err.println("row: "+row);
       for (int i = 0; i < row.length(); i++) {
         char c = row.charAt(i);
         Cell cell = grid[i][rowIndex];
@@ -178,10 +236,10 @@ class Player {
           if (c.type == Cell.Type.WALL || c.type == Cell.Type.BOX) {
             break;
           }
-          c.boxCount++;
-          
-          if (c.willExplode > 0 && c.willExplode < Integer.MAX_VALUE - 2) {
+          if (c.willExplodeIn > 0 && c.willExplodeIn < Integer.MAX_VALUE - 2) {
             continue;
+          } else {
+            c.boxCount++;
           }
         }
       }
@@ -194,7 +252,11 @@ class Player {
           if (grid[x][y].type == Cell.Type.WALL) {
             result+="X";
           } else {
-            result+=""+grid[x][y].boxCount;
+            if (grid[x][y].willExplodeIn == Integer.MAX_VALUE) {
+              result+=" ";
+            } else {
+              result+=""+grid[x][y].willExplodeIn;
+            }
           }
         }
         System.err.println(result);
@@ -205,7 +267,7 @@ class Player {
     }
 
     private Cell getCellAt(int x, int y) {
-      if (x < 0 || x >= 13 || y < 0 || y >= 11) {
+      if (x < 0 || x >= width || y < 0 || y >= height) {
         return NO_CELL;
       }
       return grid[x][y];
@@ -240,8 +302,8 @@ class Player {
       for (EntityInfo info : entities) {
         Cell cell = grid[info.x][info.y];
 
+        APlayer player = players.get(info.owner);
         if (info.entityType == ENTITY_PLAYER) {
-          APlayer player = players.get(info.owner);
           if (player == null) {
             player = new APlayer();
             players.put(info.owner, player);
@@ -254,33 +316,51 @@ class Player {
           }
         } else {
           if (info.entityType == ENTITY_ITEM) {
+            if (info.param1 == 1) {
+              cell.hasOption_rangeUp = 1;
+            } else if (info.param1 == 2) {
+              cell.hasOption_bombUp = 1;
+            }
             updateOptionInfluence(cell);
           } else if (info.entityType == ENTITY_BOMB) {
-            updateBombInfluence(cell, info.owner, info.param1 /* tickLeft */, info.param2/* range */);
+            // FIXME game seems to be screwed here, tickLeft seems shift by one :(
+            Bomb bomb = new Bomb(player, cell, info.param1-1 /* tickLeft */, info.param2 /* range */);
+            updateBombInfluence(bomb);
           }
         }
       }
     }
 
-    private void updateBombInfluence(Cell cell, int index, int tickLeft, int range) {
-      // TODO
-      // if (cell.willExplode < tickLeft ) {
-      // tickLeft = cell.willExplode;
-      // }
+    void updateBombInfluence(Bomb bomb) {
+      //System.err.println("update bomb at ("+bombCell.x+","+bombCell.y+") with "+range+" range and "+tickLeft+" tickLeft");
+      
+      if (bomb.cell.willExplodeIn < bomb.timer) {
+        // the cell will explode sooner that bomb.timer, so the 'bomb' will be triggered sooner
+        bomb.timer = bomb.cell.willExplodeIn;
+      }
+      
+      bomb.cell.bomb = bomb;
+      bomb.cell.willExplodeIn = Math.min(bomb.cell.willExplodeIn, bomb.timer);
 
       for (int rot = 0; rot < 4; rot++) {
-        for (int d = 1; d < me.bombRange; d++) {
-          Cell c = getCellAt(cell.x + d * rotx[rot], cell.y + d * roty[rot]);
-          // TODO
-          // if (c.hasBombs() && c.bomb().tickLeft > tickLeft) {
-          // updateBombInfluence(c, c.bomb().index, tickLeft, c.bomb().range);
-          // }
+        for (int d = 1; d <= bomb.range; d++) {
+          //System.err.println("check ("+(bombCell.x + d * rotx[rot])+","+ (bombCell.y + d * roty[rot])+")");
+          Cell c = getCellAt(bomb.cell.x + d * rotx[rot], bomb.cell.y + d * roty[rot]);
           if (c.isBlocked()) {
             break;
           }
-          c.willExplode = Math.min(c.willExplode, tickLeft);
-          if (index != me.index) {
-            c.threat = Math.max(8 - tickLeft, c.threat);
+          if (c.isSoftBlocked()) {
+            // there is a bomb
+            if (c.bomb.timer > bomb.timer) {
+              // this bomb will trigger another one, need to update its effect
+              c.bomb.timer = bomb.timer;
+              updateBombInfluence(c.bomb);
+            }
+            break;
+          }
+          c.willExplodeIn = Math.min(c.willExplodeIn, bomb.timer);
+          if (bomb.player != me) {
+            c.threat = Math.max(8 - bomb.timer, c.threat);
           }
         }
       }
@@ -314,19 +394,34 @@ class Player {
         }
         debug();
         
-        int maxBox = -1;
+        double maxScore = -1;
         Cell maxCell = me.cell;
         
         Path.PathItem maxItem = null;
         for (int y=0;y<11;y++) {
           for (int x=0;x<13;x++) {
             Cell c = getCellAt(x, y);
-            if (c.boxCount > maxBox) {
+            if (c.isBlocked()) {
+              continue;
+            }
+            int distance = Math.abs(c.x-me.x) + Math.abs(c.y-me.y);
+            double score = c.boxCount
+                + c.hasOption_bombUp
+                + c.hasOption_rangeUp
+                  - 0.2*distance;
+            if (score > maxScore) {
               Path path = new Path(grid, me.x, me.y, c.x, c.y);
               Path.PathItem item = path.find();
               if (item != null) {
-                System.err.println("found : "+c.x+","+c.y+" with weight: "+c.boxCount);
-                maxBox = c.boxCount;
+                System.err.println("found : "+c.x+","+c.y+" with score: "+score);
+                System.err.println("path : "+item.length()+ "--> ");
+                Path.PathItem i = item;
+                while(i != null) {
+                  System.err.print(i.cell.x+","+i.cell.y+" <<-");
+                  i = i.precedent;
+                }
+                System.err.println("");
+                maxScore = score;
                 maxCell = c;
                 maxItem = item;
               }
@@ -336,13 +431,20 @@ class Player {
         in.nextLine();
 
         if (maxItem == null) {
+          System.err.println("can't find path to best bomb");
           System.out.println("MOVE "+me.x+" "+me.y);
         } else {
           String command ="MOVE ";
           if (me.x == maxCell.x && me.y == maxCell.y) {
             command = "BOMB ";
           }
-          System.out.println(command+maxItem.cell.x+" "+maxItem.cell.y);
+          Path.PathItem i = maxItem;
+          Path.PathItem firstStep = maxItem;
+          while(i.precedent != null) {
+            firstStep = i;
+            i=i.precedent;
+          }
+          System.out.println(command+firstStep.cell.x+" "+firstStep.cell.y);
         }
       }
     }
@@ -427,7 +529,7 @@ class Player {
       if (closedList.containsKey(toCell)) {
         return;
       }
-      if (!toCell.isBlocked()) {
+      if (!toCell.isBlocked() && toCell.willExplodeIn != visiting.cumulativeLength+1) {
         PathItem pi = new PathItem();
         pi.cell = toCell;
         pi.cumulativeLength = visiting.cumulativeLength + 1;
