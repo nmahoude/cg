@@ -217,7 +217,7 @@ class Player {
     }
 
     public boolean hardBlock() {
-      return type == CellType.WALL || type == CellType.BOX;
+      return type == CellType.WALL;
     }
 
     public void updateBoxInfluenza(int range) {
@@ -341,7 +341,11 @@ class Player {
 
     private Action computeBestMove_v1() {
       Action action = new Action();
-
+      action.pos = currentState.players[0].p;
+      action.dropBomb = true;
+      
+      currentState.debugBoxInfluenza();
+      
       double maxScore = -1;
       Path bestPath = null;
       
@@ -360,8 +364,8 @@ class Player {
             Path.PathItem item = path.find();
             if (!path.path.isEmpty()) {
               bestPath = path;
-//              System.err.println("new best path with score : "+score);
-//              bestPath.debug();
+              System.err.println("new best path with score : "+score);
+              bestPath.debug();
             }
           }
         }
@@ -698,7 +702,7 @@ class Player {
       if (closedList.containsKey(toCell)) {
         return;
       }
-      if (!toCell.hardBlock() && !toCell.deadly()) {
+      if (!toCell.hardBlock() && toCell.type != CellType.BOX && !toCell.deadly()) {
         PathItem pi = new PathItem();
         pi.cell = toCell;
         pi.cumulativeLength = visiting.cumulativeLength + 1;
