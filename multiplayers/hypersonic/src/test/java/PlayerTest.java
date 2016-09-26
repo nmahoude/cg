@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class PlayerTest {
 
-  public static class CellAndBomb {
+  public static class CellAndBombs {
     Player.APlayer me;
     Player.APlayer opponent;
     
@@ -20,15 +20,114 @@ public class PlayerTest {
     }
     
     @Test
+    public void copyState() throws Exception {
+      Player.Game game = new Player.Game(5, 5);
+      game.addRow(0, ".....");
+      game.addRow(1, ".X.X.");
+      game.addRow(2, ".....");
+      game.addRow(3, ".X.X."); 
+      game.addRow(4, "....."); 
+      
+      Player.Bomb bomb = new Player.Bomb(me, game.states[0].grid[0][0], 1, 1);
+      game.updateOneBomb(bomb);
+      Player.Bomb bomb2 = new Player.Bomb(me, game.states[0].grid[2][2], 2, 1);
+      game.updateOneBomb(bomb2);
+
+      for (int i=0;i<2;i++) {
+        game.simulateOneTurn(i);
+        game.debug(""+i, i);
+      }
+      
+      assertThat(game.states[1].grid[0][0].bomb == null, is(true));
+      assertThat(game.states[1].grid[2][2].bomb == bomb2, is(true));
+
+      assertThat(game.states[2].grid[0][0].bomb == null, is(true));
+      assertThat(game.states[2].grid[2][2].bomb == null, is(true));
+    }
+    
+    @Test
+    public void temporalDestroy() throws Exception {
+      Player.Game game = new Player.Game(4, 4);
+      game.addRow(0, "....");
+      game.addRow(1, "....");
+      game.addRow(2, "....");
+      game.addRow(3, "...."); 
+      
+      Player.Cell cell = game.states[0].grid[0][0];
+      Player.Bomb bomb = new Player.Bomb(me, cell, 1, 1);
+      game.updateOneBomb(bomb);
+
+      game.simulateOneTurn(0);
+      
+      assertThat(cell.bomb, is(bomb));
+      assertThat(game.states[0].grid[0][0].isBlocked(), is(true));
+      assertThat(game.states[0].grid[1][0].isBlocked(), is(true));
+      assertThat(game.states[0].grid[0][1].isBlocked(), is(true));
+      assertThat(game.states[0].grid[2][0].isBlocked(), is(false));
+      assertThat(game.states[0].grid[0][2].isBlocked(), is(false));
+    }
+
+    @Test
+    public void triggerDestroy() throws Exception {
+      Player.Game game = new Player.Game(4, 4);
+      game.addRow(0, "....");
+      game.addRow(1, "....");
+      game.addRow(2, "....");
+      game.addRow(3, "...."); 
+      
+      Player.Bomb bomb1 = new Player.Bomb(me, game.states[0].grid[0][0], 1, 1);
+      Player.Bomb bomb2 = new Player.Bomb(me, game.states[0].grid[1][0], 8, 1);
+      game.updateOneBomb(bomb1);
+      game.updateOneBomb(bomb2);
+
+      game.simulateOneTurn(0);
+      
+      assertThat(game.states[0].grid[1][1].explodingBombs.contains(bomb2), is(true));
+      assertThat(game.states[0].grid[1][1].isBlocked(), is(true));
+    }
+
+    @Test
     public void placeBombOnCell() throws Exception {
       Player.Game game = new Player.Game(7, 1);
-      game.grid = createGrid( 
-          "......."
-          );
-      Player.Cell cell = game.grid[0][0];
+      game.addRow(0, ".......");
+      Player.Cell cell = game.states[0].grid[0][0];
+      Player.Bomb bomb = new Player.Bomb(me, cell, 1, 3);
+      
+      game.updateOneBomb(bomb);
+      game.simulateOneTurn(0);
+      
+      assertThat(cell.bomb, is(bomb));
+      assertThat(game.states[0].grid[3][0].explodingBombs.contains(bomb), is(true));
+      assertThat(game.states[0].grid[4][0].explodingBombs.contains(bomb), is(false));
+    }
+    @Test
+    public void placeBombOnCellInfluencedBlockedByWall() throws Exception {
+      Player.Game game = new Player.Game(7, 1);
+      game.addRow(0, ".X.....");
+      Player.Cell cell = game.states[0].grid[0][0];
       Player.Bomb bomb = new Player.Bomb(me, cell, 5, 3);
       
-      cell.placeBomb(bomb);
+      game.updateOneBomb(bomb);
+      game.simulateOneTurn(0);
+      
+      assertThat(cell.bomb, is(bomb));
+      assertThat(game.states[0].grid[1][0].explodingBombs.contains(bomb), is(false));
+      assertThat(game.states[0].grid[2][0].explodingBombs.contains(bomb), is(false));
+    }
+    
+    @Test
+    public void placeBombOnCellBlockedByBox() throws Exception {
+      Player.Game game = new Player.Game(7, 1);
+      game.addRow(0, ".0.....");
+      Player.Cell cell = game.states[0].grid[0][0];
+      Player.Bomb bomb = new Player.Bomb(me, cell, 1, 3);
+      
+      game.updateOneBomb(bomb);
+      game.simulateOneTurn(0);
+      
+      assertThat(cell.bomb, is(bomb));
+      assertThat(game.states[0].grid[1][0].explodingBombs.contains(bomb), is(true));
+      assertThat(game.states[0].grid[2][0].explodingBombs.contains(bomb), is(false));
     }
   }
   
@@ -36,56 +135,31 @@ public class PlayerTest {
   public static class PathFindingTests {
     @Test
     public void first() throws Exception {
-      Player.Cell[][] grid = createGrid( 
-          "..",
-          ".."
-          );
+      Player.Game game = new Player.Game(7, 1);
+      game.addRow(0, ".......");
+
+      for (int i=0;i<8;i++)
+        game.simulateOneTurn(i);
+
       
-      Player.Path p = new Player.Path(grid, 0, 0, 1, 1);
+      Player.Path p = new Player.Path(game.states, 0, 0, 2, 0);
       Player.Path.PathItem pathItem = p.find();
       assertThat(pathItem.cumulativeLength, is(2));
     }
 
     @Test
     public void blocked() throws Exception {
-      Player.Cell[][] grid = createGrid( 
-          "..0",
-          ".X.",
-          "0.."
-          );
+      Player.Game game = new Player.Game(3, 3);
+      game.addRow(0, "..X");
+      game.addRow(1, ".X.");
+      game.addRow(2, "X..");
+
+      for (int i=0;i<8;i++)
+        game.simulateOneTurn(i);
+
       
-      Player.Path p = new Player.Path(grid, 0, 0, 2, 2);
+      Player.Path p = new Player.Path(game.states, 0, 0, 2, 2);
       Player.Path.PathItem pathItem = p.find();
-      assertThat(pathItem == null, is(true));
-    }
-   
-    @Test
-    public void willExplodeLinear() throws Exception {
-      Player.Cell[][] grid = createGrid( 
-          "...."
-          );
-      grid[2][0].willExplodeIn = 2;
-      
-      Player.Path p = new Player.Path(grid, 0, 0, 3, 0);
-      Player.Path.PathItem pathItem = p.find();
-      
-      assertThat(pathItem == null, is(true));
-    }
-    
-    @Test
-    public void willExplodeOrthogonally() throws Exception {
-      Player.Cell[][] grid = createGrid( 
-          "X0X.",
-          ".0..",
-          "X.X.",
-          "....",
-          "X0X."
-          );
-      grid[1][3].willExplodeIn = 1;
-      
-      Player.Path p = new Player.Path(grid, 2, 3, 0, 3);
-      Player.Path.PathItem pathItem = p.find();
-    
       assertThat(pathItem == null, is(true));
     }
   }
@@ -104,84 +178,83 @@ public class PlayerTest {
     @Test
     public void range() throws Exception {
       Player.Game game = new Player.Game(7, 1);
-      game.grid = createGrid( 
+      game.states[0].grid = createGrid( 
           "......."
           );
       
-      Player.Bomb b1 = new Player.Bomb(me, game.grid[0][0], 1, 3);
+      Player.Bomb b1 = new Player.Bomb(me, game.states[0].grid[0][0], 1, 3);
       game.updateBombInfluence(b1);
 
-      assertThat(game.grid[0][0].willExplodeIn, is(1));
-      assertThat(game.grid[1][0].willExplodeIn, is(1));
-      assertThat(game.grid[2][0].willExplodeIn, is(1));
-      assertThat(game.grid[3][0].willExplodeIn, is(1));
+      assertThat(game.states[0].grid[0][0].willExplodeIn, is(1));
+      assertThat(game.states[0].grid[1][0].willExplodeIn, is(1));
+      assertThat(game.states[0].grid[2][0].willExplodeIn, is(1));
+      assertThat(game.states[0].grid[3][0].willExplodeIn, is(1));
 
     }
     
     @Test
     public void ExplosionTriggersBeOldBomb() {
       Player.Game game = new Player.Game(7, 1);
-      game.grid = createGrid( 
+      game.states[0].grid = createGrid( 
           "......."
           );
       
-      Player.Bomb b1 = new Player.Bomb(me, game.grid[0][0], 1, 3);
-      Player.Bomb b2 = new Player.Bomb(me, game.grid[3][0], 8, 3);
+      Player.Bomb b1 = new Player.Bomb(me, game.states[0].grid[0][0], 1, 3);
+      Player.Bomb b2 = new Player.Bomb(me, game.states[0].grid[3][0], 8, 3);
       
       game.updateBombInfluence(b1);
       game.updateBombInfluence(b2);
       
-      assertThat(game.grid[6][0].willExplodeIn, is(1));
+      assertThat(game.states[0].grid[6][0].willExplodeIn, is(1));
     }
 
     @Test
     public void ExplosionTriggersRetroactif() {
       Player.Game game = new Player.Game(7, 1);
-      game.grid = createGrid( 
+      game.states[0].grid = createGrid( 
           "......."
           );
       
-      Player.Bomb b1 = new Player.Bomb(me, game.grid[3][0], 1, 3);
-      Player.Bomb b2 = new Player.Bomb(me, game.grid[0][0], 8, 3);
+      Player.Bomb b1 = new Player.Bomb(me, game.states[0].grid[3][0], 1, 3);
+      Player.Bomb b2 = new Player.Bomb(me, game.states[0].grid[0][0], 8, 3);
       
       game.updateBombInfluence( b2);
       game.updateBombInfluence(b1);
       
-      assertThat(game.grid[6][0].willExplodeIn, is(1));
+      assertThat(game.states[0].grid[6][0].willExplodeIn, is(1));
     }
     
     @Test
     public void ExplosionTriggers_3Bombs() {
       Player.Game game = new Player.Game(7, 1);
-      game.grid = createGrid( 
+      game.states[0].grid = createGrid( 
           "......."
           );
       
-      Player.Bomb b1 = new Player.Bomb(me, game.grid[0][0],  1, 3);
-      Player.Bomb b2 = new Player.Bomb(me, game.grid[1][0], 2, 3);
-      Player.Bomb b3 = new Player.Bomb(me, game.grid[2][0], 3, 3);
+      Player.Bomb b1 = new Player.Bomb(me, game.states[0].grid[0][0],  1, 3);
+      Player.Bomb b2 = new Player.Bomb(me, game.states[0].grid[1][0], 2, 3);
+      Player.Bomb b3 = new Player.Bomb(me, game.states[0].grid[2][0], 3, 3);
       
       game.updateBombInfluence(b1);
       game.updateBombInfluence(b2);
       game.updateBombInfluence(b3);
       
-      assertThat(game.grid[5][0].willExplodeIn, is(1));
+      assertThat(game.states[0].grid[5][0].willExplodeIn, is(1));
     }
 
     @Test
     public void myBombsDontOvershadowEnemiesBombs() throws Exception {
-      Player.Game game = new Player.Game(7, 1);
-      game.grid = createGrid( 
-          "......."
-          );
+      Player.Game game = new Player.Game(8, 1);
+      game.addRow(0, "........");
       
-      Player.Bomb b1 = new Player.Bomb(me, game.grid[0][0], 1, 3);
-      game.updateBombInfluence(b1);
+      Player.Bomb b1 = new Player.Bomb(me, game.states[0].grid[0][0], 1, 3);
+      Player.Bomb b2 = new Player.Bomb(opponent, game.states[0].grid[6][0], 1, 6);
+      game.updateOneBomb(b1);
+      game.updateOneBomb(b2);
+      
+      game.simulateOneTurn(0);
 
-      Player.Bomb b2 = new Player.Bomb(opponent, game.grid[6][0], 1, 6);
-      game.updateBombInfluence(b2);
-
-      assertThat(game.grid[0][0].isSafe(me, 0), is(false));
+      assertThat(game.states[0].grid[0][0].isSafe(me), is(false));
     }
   }
 
