@@ -594,14 +594,29 @@ class Player {
 
           int moveX = firstStep.cell.x;
           int moveY = firstStep.cell.y;
-          if (states[1].grid[moveX][moveY].exploding && !states[1].grid[firstStep.cell.x][moveY].isSafe(me)) {
-            System.err.println("je vais mourrir au prochain tour");
-            moveY--;
+          if (isDyingNextStep(firstStep, moveX, moveY)) {
+            boolean foundSafe = false;
+            for (int rot=0;rot<4;rot++) {
+              if (!isDyingNextStep(firstStep, me.x+rotx[rot], me.y+roty[rot])) {
+                moveX = me.x+rotx[rot];
+                moveY = me.y+roty[rot];
+                foundSafe = true;
+              }
+            }
+            if (foundSafe) {
+              System.err.println("je vais mourrir au prochain tour, donc je vais à "+moveX+","+moveY);
+            } else {
+              System.err.println("Oups j'ai rien trouvé & je vais mourrir au prochain tour");
+            }
           }
 
           System.out.println(command+""+moveX+" "+moveY);
         }
       }
+    }
+
+    private boolean isDyingNextStep(Path.PathItem firstStep, int moveX, int moveY) {
+      return states[1].grid[moveX][moveY].exploding && !states[1].grid[moveX][moveY].isSafe(me);
     }
 
     public void simulateOneTurn(int step) {
