@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 class Player {
   private static Scanner in;
-  private static int myIndex;
   
   private static final int ENTITY_PLAYER = 0;
   private static final int ENTITY_BOMB = 1;
@@ -16,7 +15,6 @@ class Player {
   
   static int[] rotx = { 1, 0, -1, 0 };
   static int[] roty = { 0, 1, 0, -1 };
-  private static Game game;
 
   static class Entity  {
     GameState state;
@@ -94,7 +92,6 @@ class Player {
     }
 
     public void explode(GameState state) {
-      
       for (int rot=0;rot<4;rot++) {
         for (int d=1;d<range;d++) {
           int testedX = p.x+d*rotx[rot];
@@ -177,7 +174,7 @@ class Player {
 /** debug informations */
         System.err.println("Current grid:");
         System.err.println("-------------");
-        debugThreats();
+//        debugThreats();
 //        currentState.debugPlayerAccessibleCellsWithAStar();
 //        currentState.debugBoxInfluenza();
 //        currentState.debugBombs();
@@ -225,13 +222,13 @@ class Player {
       }
     }
 
-    private Action computeBestMove_v1() {
+    Action computeBestMove_v1() {
       Action action = new Action();
-      action.pos = game.currentState.players[0].p;
+      action.pos = currentState.players[0].p;
       action.dropBomb = false;
       action.message = "FOUND NOTHING TODO :(";
       
-      GameState state0 = game.states[0];
+      GameState state0 = states[0];
       P playerPos = state0.players[0].p;
 
       //1. find best influencedCell
@@ -252,11 +249,26 @@ class Player {
             if (score > maxScore) { // only check path if score is better
               // start A* to find a path
               Path path = new Path(states, playerPos, target);
-              path.find();
+              Path.PathItem lastPathPos = path.find();
               if (!path.path.isEmpty()) {
                 // ok we have a path
-                maxScore = score;
-                bestPath = path;
+                // check if it is safe
+                int tStep = 0;
+                boolean isSafe= true;
+                for (Path.PathItem pi : path.path) {
+                  if (isThreat(pi.pos) == tStep++) {
+                    isSafe = false;
+                  }                  
+                }
+                for (;tStep<8;tStep++) {
+                  if (isThreat(lastPathPos.pos) == tStep++) {
+                    isSafe = false;
+                  }                  
+                }
+                if(isSafe) {
+                  maxScore = score;
+                  bestPath = path;
+                }
               }
             }
           }
@@ -303,7 +315,9 @@ class Player {
         if (entityType == ENTITY_BOMB) {
           entity = new Bomb(currentState, owner, x,y, param1, param2);
         } else if (entityType == ENTITY_PLAYER) {
-          entity = new APlayer(currentState, owner, x,y, param1, param2);
+          APlayer player = new APlayer(currentState, owner, x,y, param1, param2);
+          currentState.players[owner] = player;
+          entity = player;
         } else if (entityType == ENTITY_ITEM) {
           entity = new Item(currentState, owner, x,y, param1, param2);
         } else {
@@ -343,7 +357,8 @@ class Player {
         if (e.type == ENTITY_BOMB && e.p.equals(pointToCheck)) {
           Bomb b = (Bomb)e;
           if (b.ticksLeft > 0) { // 0 == already triggered
-            b.explode(this);
+            b.ticksLeft = 1; // TODO ouch. besoin de ça pour qu'elle explose
+            b.update(this);
           }
         }
       }
@@ -388,7 +403,7 @@ class Player {
     int width, height;
 
     int[][] grid;
-    APlayer players[] = new APlayer[2];
+    APlayer players[] = new APlayer[4];
 
     int[][] boxInfluence;
     List<Entity> entities = new ArrayList<>();
@@ -444,7 +459,7 @@ class Player {
     public void addEntity(Entity entity) {
       entities.add(entity);
       if (entity.type == ENTITY_PLAYER) {
-        if (entity.owner == game.myIndex) {
+        if (entity.owner == players[0].owner) {
           players[0] = (APlayer)entity;
         } else {
           players[1] = (APlayer)entity;
@@ -573,10 +588,10 @@ class Player {
     in = new Scanner(System.in);
     int width = in.nextInt();
     int height = in.nextInt();
-    myIndex = in.nextInt();
+    int myIndex = in.nextInt();
     in.nextLine();
 
-    game = new Game(width, height);
+    Game game = new Game(width, height);
     game.myIndex = myIndex;
 
     game.play();

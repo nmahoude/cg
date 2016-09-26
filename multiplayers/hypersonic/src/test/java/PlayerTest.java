@@ -1,4 +1,5 @@
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
@@ -130,5 +131,65 @@ public class PlayerTest {
       
       assertThat(path.path.isEmpty(), is(false));
     }
+    
+    @Test
+    public void blockingBoxWillExplodeBeforeArriving() throws Exception {
+      Player.Game game = new Player.Game(5, 1);
+      me = new Player.APlayer(game.currentState, 0, 0,0,0,0);
+      opponent = new Player.APlayer(game.currentState, 1,5,5,0,0);
+
+      game.currentState.players[0] = me;
+      game.currentState.players[1] = opponent;
+      
+      game.currentState.addRow(0, "..0..");
+      Player.Bomb bomb = new Player.Bomb(game.currentState, 0, 3, 0 ,3, 2);
+      game.currentState.addEntity(bomb);
+
+      game.currentState.computeRound();
+      game.updateNextStates();
+
+      // path finding
+      Player.Path path = new Player.Path(game.states, Player.P.get(0, 0), Player.P.get(4, 0));
+      path.find();
+      
+      assertThat(path.path.isEmpty(), is(false));
+    }
+  }
+  
+  public static class AI {
+    Player.APlayer me;
+    Player.APlayer opponent;
+    
+    @Before
+    public void setup() {
+    }
+    
+    @Test
+    public void avoidBomb() throws Exception {
+      Player.Game game = new Player.Game(5, 5);
+      me = new Player.APlayer(game.currentState, 0, 0,0,0,0);
+      opponent = new Player.APlayer(game.currentState, 1,5,5,0,0);
+
+      game.currentState.players[0] = me;
+      game.currentState.players[1] = opponent;
+      
+      game.currentState.addRow(0, ".0...");
+      game.currentState.addRow(1, ".X.X.");
+      game.currentState.addRow(2, ".....");
+      game.currentState.addRow(3, ".X.X."); 
+      game.currentState.addRow(4, "....."); 
+      
+      Player.Bomb bomb = new Player.Bomb(game.currentState, 4, 0, 0 ,4, 5);
+      game.currentState.addEntity(bomb);
+      
+      game.currentState.computeRound();
+      game.updateNextStates();
+
+      // game ai
+      Player.Action action = game.computeBestMove_v1();
+      
+      assertThat(action.pos, is(not(Player.P.get(0, 0))));
+    }
+    
   }
 }
