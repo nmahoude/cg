@@ -249,7 +249,10 @@ class Player {
     }
 
     public void copyFrom(Cell cell) {
+      reset();
       this.type = cell.type;
+      this.hasOption_bombUp = cell.hasOption_bombUp;
+      this.hasOption_rangeUp = cell.hasOption_rangeUp;
       if (cell.bomb != null && !cell.bomb.hasExploded) {
         bomb = cell.bomb;
         bomb.cell = this;
@@ -375,7 +378,7 @@ class Player {
       }
     }
 
-    void debug(String message, int step) {
+    void debugBombExplosions(String message, int step) {
       System.err.println("*** "+message+" ***");
       step = Math.min(step, 7);
       for (int y=0;y<height;y++) {
@@ -512,6 +515,7 @@ class Player {
           String row = in.nextLine();
           addRow(y, row);
         }
+        
         int entitiesCount = in.nextInt();
         List<EntityInfo> entities = new ArrayList<>();
         for (int i = 0; i < entitiesCount; i++) {
@@ -532,17 +536,15 @@ class Player {
         for (int i=0;i<8;i++) {
           simulateOneTurn(i);
         }
+        //debugBombExplosions("now", 0);
+        //debugBombExplosions("time+1",1);
         
-        if (me.cell.exploding && !me.cell.isSafe(me)) {
-          System.err.println("je vais mourrir");
-        }
-        debug("now", 0);
-        debug("time+1",1);
+
         
         double maxScore = -1;
         Cell maxCell = me.cell;
-        
         Path.PathItem maxItem = null;
+
         for (int y=0;y<height;y++) {
           for (int x=0;x<width;x++) {
             Cell c = states[0].getCellAt(x, y);
@@ -589,7 +591,15 @@ class Player {
             firstStep = i;
             i=i.precedent;
           }
-          System.out.println(command+firstStep.cell.x+" "+firstStep.cell.y);
+
+          int moveX = firstStep.cell.x;
+          int moveY = firstStep.cell.y;
+          if (states[1].grid[moveX][moveY].exploding && !states[1].grid[firstStep.cell.x][moveY].isSafe(me)) {
+            System.err.println("je vais mourrir au prochain tour");
+            moveY--;
+          }
+
+          System.out.println(command+""+moveX+" "+moveY);
         }
       }
     }

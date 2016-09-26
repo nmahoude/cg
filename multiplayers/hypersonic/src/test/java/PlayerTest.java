@@ -35,7 +35,7 @@ public class PlayerTest {
 
       for (int i=0;i<2;i++) {
         game.simulateOneTurn(i);
-        game.debug(""+i, i);
+        game.debugBombExplosions(""+i, i);
       }
       
       assertThat(game.states[1].grid[0][0].bomb == null, is(true));
