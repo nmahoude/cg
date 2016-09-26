@@ -191,5 +191,59 @@ public class PlayerTest {
       assertThat(action.pos, is(not(Player.P.get(0, 0))));
     }
     
+    @Test
+    public void dontSuicide_1() throws Exception {
+      Player.Game game = new Player.Game(9, 5);
+      me = new Player.APlayer(game.currentState, 0, 0,0,0,0);
+      opponent = new Player.APlayer(game.currentState, 1,5,5,0,0);
+
+      game.currentState.players[0] = me;
+      game.currentState.players[1] = opponent;
+      
+      game.currentState.addRow(0, "..0......");
+      game.currentState.addRow(1, ".X.X.X.X.");
+      game.currentState.addRow(2, "0........");
+      game.currentState.addRow(3, ".X.X.X.X."); 
+      game.currentState.addRow(4, "........."); 
+      
+      game.currentState.computeRound();
+      game.updateNextStates();
+
+      // game ai
+      Player.Action action = game.computeBestMove_v1();
+      
+      //assertThat(action.pos, is(Player.P.get(0, 3)));
+      assertThat(action.dropBomb, is(not(true)));
+    }
+    
+    @Test
+    public void dontSuicide2() throws Exception {
+      Player.Game game = new Player.Game(9, 5);
+      me = new Player.APlayer(game.currentState, 0, 1,3,0,0);
+      opponent = new Player.APlayer(game.currentState, 1,5,5,0,0);
+
+      game.currentState.players[0] = me;
+      game.currentState.players[1] = opponent;
+      
+      game.currentState.addRow(0, ".........");
+      game.currentState.addRow(1, ".X.X.X.X.");
+      game.currentState.addRow(2, ".........");
+      game.currentState.addRow(3, ".X.X.X.X."); 
+      game.currentState.addRow(4, "........."); 
+      
+      Player.Bomb bomb1 = new Player.Bomb(game.currentState, 0, 7, 3 ,3, 20);
+      game.currentState.addEntity(bomb1);
+      Player.Bomb bomb2 = new Player.Bomb(game.currentState, 0, 2, 3 ,7, 20);
+      game.currentState.addEntity(bomb2);
+      
+      game.currentState.computeRound();
+      game.updateNextStates();
+
+      // game ai
+      Player.Action action = game.computeBestMove_v1();
+      
+      assertThat(action.pos, is(Player.P.get(0, 3)));
+      assertThat(action.dropBomb, is(not(true)));
+    }
   }
 }
