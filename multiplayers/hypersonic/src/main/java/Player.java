@@ -1,6 +1,8 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,9 +66,6 @@ class Player {
     }
 
     public void update() {
-      System.err.println("updating bomb at "+cell.x+","+cell.y);
-      System.err.println("timer: "+timer);
-
       timer--;
       if (timer == 0) {
         explode();
@@ -145,6 +144,8 @@ class Player {
       exploding = true;
       
       if (type == Type.BOX) {
+        willExplodeIn = 0;
+        type = Type.FLOOR;
       } else {
         item = null;
       }
@@ -198,6 +199,7 @@ class Player {
     int willExplodeIn;
     Bomb bomb;
     List<Bomb> explodingBombs = new ArrayList<>();
+    
     public boolean isSafe(APlayer player) {
       if (!exploding) {
         return true;
@@ -214,6 +216,7 @@ class Player {
 
     public void placeBomb(Bomb bomb) {
       this.bomb = bomb;
+      updateBombInfluence();
     }
     void updateBombInfluence() {
       if (bomb == null) {
@@ -241,6 +244,7 @@ class Player {
     }
     private void addBombInfluence(Bomb fromBomb) {
       explodingBombs.add(fromBomb);
+      willExplodeIn = Math.min(willExplodeIn, fromBomb.timer);
       if (bomb != null) {
         if (this.bomb.timer > fromBomb.timer) {
           this.bomb.timer = fromBomb.timer;
@@ -251,6 +255,12 @@ class Player {
     public void copyFrom(Cell cell) {
       reset();
       this.type = cell.type;
+      if (cell.willExplodeIn != Integer.MAX_VALUE) {
+        this.willExplodeIn = cell.willExplodeIn-1;
+        if (willExplodeIn == 0) {
+          this.type = Type.FLOOR;
+        }
+      }
       this.hasOption_bombUp = cell.hasOption_bombUp;
       this.hasOption_rangeUp = cell.hasOption_rangeUp;
       if (cell.bomb != null && !cell.bomb.hasExploded) {
@@ -369,7 +379,8 @@ class Player {
           if (c.type == Cell.Type.WALL || c.type == Cell.Type.BOX) {
             break;
           }
-          if (c.willExplodeIn > 0 && c.willExplodeIn < Integer.MAX_VALUE - 2) {
+          if (c.willExplodeIn > 0 
+              && c.willExplodeIn < Integer.MAX_VALUE - 2) {
             continue;
           } else {
             c.boxCount++;
@@ -397,6 +408,27 @@ class Player {
         System.err.println(result);
       }
     }
+    
+    void debugBox(String message, int step) {
+      System.err.println("*** "+message+" ***");
+      step = Math.min(step, 7);
+      for (int y=0;y<height;y++) {
+        String result = "";
+        for (int x=0;x<width;x++) {
+          if (states[step].grid[x][y].type == Cell.Type.BOX) {
+            if (states[step].grid[x][y].willExplodeIn != Integer.MAX_VALUE) {
+              result+=states[step].grid[x][y].willExplodeIn;
+            } else {
+              result+="B";
+            }
+          } else {
+            result+=" ";
+          }
+        }
+        System.err.println(result);
+      }
+    }
+    
     private void updateOptionInfluence(Cell cell) {
       cell.weight += 2;
     }
@@ -488,6 +520,7 @@ class Player {
           if (c.isBlocked()) {
             break;
           }
+          c.willExplodeIn = Math.min(c.willExplodeIn, bomb.timer);
           if (c.isSoftBlocked()) {
             // there is a bomb
             if (c.bomb.timer > bomb.timer) {
@@ -497,7 +530,6 @@ class Player {
             } 
             break;
           }
-          c.willExplodeIn = Math.min(c.willExplodeIn, bomb.timer);
           if (bomb.player != me) {
             c.threat = Math.max(8 - bomb.timer, c.threat);
           }
@@ -506,8 +538,7 @@ class Player {
     }
 
     private void play() {
-      Path.PathItem currentPath = null;
-      Cell nextCell = null;
+      Path currentPath = null;
 
       while (true) {
         resetGame();
@@ -536,68 +567,79 @@ class Player {
         for (int i=0;i<8;i++) {
           simulateOneTurn(i);
         }
-        //debugBombExplosions("now", 0);
+        
+        debugBombExplosions("now", 0);
         //debugBombExplosions("time+1",1);
-        
+        debugBox("now", 0);
+        //debugBox("t+1", 1);
 
-        
-        double maxScore = -1;
-        Cell maxCell = me.cell;
-        Path.PathItem maxItem = null;
-
-        for (int y=0;y<height;y++) {
-          for (int x=0;x<width;x++) {
-            Cell c = states[0].getCellAt(x, y);
-            if (c.isBlocked()) {
-              continue;
+        // check current path
+        boolean safe = false;
+        if (currentPath != null) {
+          safe = true;
+          for (int i=0;i<currentPath.path.size();i++) {
+            Path.PathItem item = currentPath.path.get(i);
+            if (!isSafe(i, item.cell.x, item.cell.y)) {
+              safe = false;
+              break;
             }
-            int distance = Math.abs(c.x-me.x) + Math.abs(c.y-me.y);
-            double score = c.boxCount
-                + c.hasOption_bombUp
-                + c.hasOption_rangeUp
-                  - 0.2*distance;
-            if (score > maxScore) {
-              Path path = new Path(states, me.x, me.y, c.x, c.y);
-              Path.PathItem item = path.find();
-              if (item != null) {
-                System.err.println("found : "+c.x+","+c.y+" with score: "+score);
-                System.err.println("path : "+item.length()+ "--> ");
-                Path.PathItem i = item;
-                while(i != null) {
-                  System.err.print(i.cell.x+","+i.cell.y+" <<-");
-                  i = i.precedent;
+          }
+        }
+        
+        if (!safe) {
+          // find a better way
+          double maxScore = -1;
+          Cell maxCell = me.cell;
+          Path.PathItem maxItem = null;
+  
+          for (int y=0;y<height;y++) {
+            for (int x=0;x<width;x++) {
+              Cell c = states[0].getCellAt(x, y);
+              if (c.isBlocked()) {
+                continue;
+              }
+              int distance = Math.abs(c.x-me.x) + Math.abs(c.y-me.y);
+              double score = c.boxCount
+                  + c.hasOption_bombUp
+                  + c.hasOption_rangeUp
+                    - 0.2*distance;
+              if (score > maxScore) {
+                Path path = new Path(states, me.x, me.y, c.x, c.y);
+                Path.PathItem item = path.find();
+                if (item != null) {
+                  System.err.println("found : "+c.x+","+c.y+" with score: "+score);
+                  System.err.println("path : "+item.length()+ "--> ");
+                  Path.PathItem i = item;
+                  while(i != null) {
+                    System.err.print(i.cell.x+","+i.cell.y+" <<-");
+                    i = i.precedent;
+                  }
+                  System.err.println("");
+                  maxScore = score;
+                  maxCell = c;
+                  maxItem = item;
+                  currentPath = path; // will be our next move path
                 }
-                System.err.println("");
-                maxScore = score;
-                maxCell = c;
-                maxItem = item;
               }
             }
           }
         }
         in.nextLine();
 
-        if (maxItem == null) {
+        if (currentPath == null) {
           System.err.println("can't find path to best bomb");
           System.out.println("MOVE "+me.x+" "+me.y);
         } else {
           String command ="MOVE ";
-          if (me.x == maxCell.x && me.y == maxCell.y) {
+          if (me.x == currentPath.path.get(0).cell.x && me.y == currentPath.path.get(0).cell.y) {
             command = "BOMB ";
           }
-          Path.PathItem i = maxItem;
-          Path.PathItem firstStep = maxItem;
-          while(i.precedent != null) {
-            firstStep = i;
-            i=i.precedent;
-          }
-
-          int moveX = firstStep.cell.x;
-          int moveY = firstStep.cell.y;
-          if (isDyingNextStep(firstStep, moveX, moveY)) {
+          int moveX = currentPath.path.get(0).cell.x;
+          int moveY = currentPath.path.get(0).cell.y;
+          if (isDyingNextStep(currentPath.path.get(0), moveX, moveY)) {
             boolean foundSafe = false;
             for (int rot=0;rot<4;rot++) {
-              if (!isDyingNextStep(firstStep, me.x+rotx[rot], me.y+roty[rot])) {
+              if (!isDyingNextStep(currentPath.path.get(0), me.x+rotx[rot], me.y+roty[rot])) {
                 moveX = me.x+rotx[rot];
                 moveY = me.y+roty[rot];
                 foundSafe = true;
@@ -612,6 +654,14 @@ class Player {
 
           System.out.println(command+""+moveX+" "+moveY);
         }
+      }
+    }
+
+    private boolean isSafe(int i, int x, int y) {
+      if (i>=8) {
+        return true; // no simulation
+      } else {
+        return !states[i].grid[x][y].exploding || states[i].grid[x][y].isSafe(me);
       }
     }
 
@@ -649,6 +699,9 @@ class Player {
   public static class Path {
     Map<Cell, PathItem> closedList = new HashMap<>();
     List<PathItem> openList = new ArrayList<>();
+    
+    List<PathItem> path = new ArrayList<>();
+    
     private GameState[] states;
     private int ix;
     private int iy;
@@ -665,6 +718,22 @@ class Player {
     }
 
     PathItem find() {
+      PathItem item = calculus();
+      path.clear();
+      if (item != null) {
+        calculatePath(item);
+      }
+      return item;
+    }
+
+    private void calculatePath(PathItem item) {
+      PathItem i = item;
+      while (i.precedent != null) {
+        path.add(0, i);
+        i = i.precedent;
+      }
+    }
+    PathItem calculus() {
       Cell origin = states[0].grid[ix][iy];
       PathItem root = new PathItem();
       root.cell = origin;

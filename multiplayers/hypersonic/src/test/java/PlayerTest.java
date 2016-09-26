@@ -46,6 +46,28 @@ public class PlayerTest {
     }
     
     @Test
+    public void boxDecrement() throws Exception {
+      Player.Game game = new Player.Game(5, 5);
+      game.addRow(0, ".0...");
+      game.addRow(1, ".X.X.");
+      game.addRow(2, ".....");
+      game.addRow(3, ".X.X."); 
+      game.addRow(4, "....."); 
+      
+      Player.Bomb bomb = new Player.Bomb(me, game.states[0].grid[0][0], 8, 1);
+      game.updateOneBomb(bomb);
+
+      for (int i=0;i<8;i++) {
+        game.simulateOneTurn(i);
+        //game.debugBombExplosions(""+i, i);
+      }
+      
+      assertThat(game.states[0].grid[1][0].willExplodeIn, is(8));
+      assertThat(game.states[1].grid[1][0].willExplodeIn, is(7));
+      assertThat(game.states[2].grid[1][0].willExplodeIn, is(6));
+    }
+    
+    @Test
     public void temporalDestroy() throws Exception {
       Player.Game game = new Player.Game(4, 4);
       game.addRow(0, "....");
