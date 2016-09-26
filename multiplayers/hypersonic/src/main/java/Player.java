@@ -1,8 +1,6 @@
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,11 +16,15 @@ class Player {
 
   static int[] rotx = { 1, 0, -1, 0 };
   static int[] roty = { 0, 1, 0, -1 };
+  private static Game game;
 
   enum EntityType {
     PLAYER, BOMB
   }
-
+  enum CellType {
+    WALL, BOX, FLOOR
+  }
+  
   static class P {
     final int x;
     final int y;
@@ -37,271 +39,419 @@ class Player {
       return (p.x - x) * (p.x - x) + (p.y - y) * (p.y - y);
     }
 
+    int manhattanDistance(P p) {
+      return Math.abs(x - p.x) + Math.abs(y - p.y);
+    }
+
     @Override
     public String toString() {
       return "(" + x + "," + y + ")";
     }
+
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + x;
+      result = prime * result + y;
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null)
+        return false;
+      if (getClass() != obj.getClass())
+        return false;
+      P other = (P) obj;
+      if (x != other.x)
+        return false;
+      if (y != other.y)
+        return false;
+      return true;
+    }
   }
 
-  static class Entity {
-  }
-
-  static class Item extends Entity {
+  static class Entity  {
+    public Entity(int type, int owner, int x, int y) {
+      this.type = type;
+      this.owner = owner;
+      p = new P(x,y);
+    }
     int type;
+    int owner;
+    P p;
+    public void update(GameState state) {
+    }
+  }
+  static class APlayer extends Entity {
+    public APlayer(int owner, int x, int y, int param1, int param2) {
+      super(ENTITY_PLAYER, owner, x, y);
+      bombsLeft = param1;
+      bombRange = param2;
+    }
+    int bombRange = 3;
+    int bombsLeft = 1;
+    boolean isDead = false;
   }
   
   static class Bomb extends Entity {
-    APlayer player; // who drops the bomb
-    boolean hasExploded = false;
-    int timer;
+    public Bomb(int owner, int x, int y, int param1, int param2) {
+      super(ENTITY_BOMB, owner, x, y);
+      ticksLeft=param1;
+      range=param2;
+    }
+    int ticksLeft;
     int range;
-    Cell cell;
     
-    public Bomb(APlayer player, Cell cell, int timer, int range) {
-      super();
-      this.player = player;
-      this.timer = timer;
-      this.range = range;
-      this.cell = cell;
-    }
-
-    public void update() {
-      timer--;
-      if (timer == 0) {
-        explode();
+    public void update(GameState state) {
+      ticksLeft--;
+      if (ticksLeft <= 0) {
+        explode(state);
+      } else {
+        affectBoxInfluenza(state);
       }
     }
-
-    private void explode() {
-      if (hasExploded) {
-        return;
-      }
-      hasExploded = true;
-      this.cell.explode(this); // explode center
-      
-      for (int rot =0;rot<4;rot++) {
-        Cell currentCell = this.cell;
-        for (int d = 1; d <= range; d++) {
+    private void affectBoxInfluenza(GameState state) {
+      for (int rot=0;rot<4;rot++) {
+        Cell currentCell = state.getCellAt(p.x, p.y);
+        for (int d=1;d<range;d++) {
           currentCell = currentCell.neighbors[rot];
-          if (currentCell.isExplosionHardBlocked()) {
+          if (currentCell.hardBlock()) {
             break;
-          } else if (currentCell.isExplosionSoftBlocked()) {
-            currentCell.explode(this);
+          }
+          currentCell.willBeHitLater = this.ticksLeft;
+          if (currentCell.type != CellType.FLOOR) {
             break;
-          } else {
-            currentCell.explode(this);
+          }
+        }
+      }
+    }
+
+    public void explode(GameState state) {
+      state.getCellAt(p.x, p.y).addExplodedBomb(this, state);
+      
+      for (int rot=0;rot<4;rot++) {
+        Cell currentCell = state.getCellAt(p.x, p.y);
+        for (int d=1;d<range;d++) {
+          currentCell = currentCell.neighbors[rot];
+          if (currentCell.hardBlock()) {
+            break;
+          }
+          currentCell.addExplodedBomb(this, state);
+          if (currentCell.softBlock()) {
+            break;
           }
         }
       }
     }
   }
-
-  static class APlayer extends Entity {
-    int index;
-    int x, y; // his position
-    int bombsLeft = 1;
-    public int bombRange = 3;
-    public Cell cell;
-  }
-
-  static class Cell {
-    static final int UP = 0;
-    static final int DOWN = 1;
-    static final int RIGHT = 2;
-    static final int LEFT = 3;
-
-    static final int OPTION_EXTRARANGE = 1;
-    static final int OPTION_EXTRABOMB = 2;
-    public static final int MIN_WEIGHT = -2000000;
-
-    enum Type {
-      BOX, FLOOR, WALL
+  static class Item extends Entity {
+    final static int RANGE_UP = 1;
+    final static int BOMB_UP = 2;
+    
+    public Item(int owner, int x, int y, int param1, int param2) {
+      super(ENTITY_ITEM, owner, x, y);
+      option = param1;
+      // param2 not used
     }
 
-    int x;
-    int y;
-    Type type;
-    List<Entity> entities; // present on cell (type floor)
-    Item item;
+    int option;
+  }  
+  
+  static class Cell {
+    public static final int RIGHT = 0;
+    public static final int UP = 1;
+    public static final int LEFT = 2;
+    public static final int DOWN = 3;
+    public static final Cell WALL = new Cell(-1,-1);
+    static {
+      WALL.type = CellType.WALL;
+      WALL.p = new P(-1,-1);
+    }
     
-    public int weight = 0;
-    public int option;
-    private int threat;
-    public int boxCount;
-    public int hasOption_bombUp;
-    public int hasOption_rangeUp;
-
-    Cell neighbors[] = new Cell[4];
-    private boolean exploding;
+    public Cell[] neighbors = new Cell[4];
+    P p;
+    
+    CellType type;
+    int option;
+    List<Entity> entities = new ArrayList<>();
+    List<Bomb> explodedBombs = new ArrayList<>();
+    int boxInfluenza;
+    int willBeHitLater;
     
     public Cell(int x, int y) {
-      this.x = x;
-      this.y = y;
-      reset();
+      this.p = new P(x,y);
     }
 
-    public void explode(Bomb originBomb) {
-      exploding = true;
-      
-      if (type == Type.BOX) {
-        willExplodeIn = 0;
-        type = Type.FLOOR;
-      } else {
-        item = null;
-      }
-      explodingBombs.add(originBomb);
-      if (bomb != null && bomb != originBomb) {
-        bomb.explode();
-      }
-    }
-
-    public int hvDistanceTo(APlayer me) {
-      if (me.x == x) {
-        return Math.abs(me.y - y);
-      } else if (me.y == y) {
-        return Math.abs(me.x - x);
-      } else {
-        return Integer.MAX_VALUE;
-      }
-    }
-
-
-    public boolean isExplosionHardBlocked() {
-      return type == Type.WALL;
-    }
-    public boolean isExplosionSoftBlocked() {
-      return type == Type.BOX || bomb != null || hasOption_bombUp > 0 || hasOption_rangeUp > 0;
-    }
-
-    public boolean isBlocked() {
-      return type == Type.WALL || type == Type.BOX || exploding;
-    }
-    public boolean isSoftBlocked() {
-      return bomb != null;
-    }
     public void reset() {
-      weight = 0;
-      threat = 0;
-      boxCount = 0;
-      hasOption_bombUp = 0;
-      hasOption_rangeUp = 0;
-      bomb = null;
-      
-      willExplodeIn = Integer.MAX_VALUE;
-      resetBombsArtefacts();
+      boxInfluenza = 0;
+      willBeHitLater = 0;
+      explodedBombs.clear();
+      entities.clear();
     }
 
-    public void resetBombsArtefacts() {
-      explodingBombs.clear();
-      exploding = false;
-    }
-    
-    int willExplodeIn;
-    Bomb bomb;
-    List<Bomb> explodingBombs = new ArrayList<>();
-    
-    public boolean isSafe(APlayer player) {
-      if (!exploding) {
-        return true;
-      }
-      for (Bomb b : explodingBombs) {
-        if (b.player == player) {
-          continue; // no threat
-        } else {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    public void placeBomb(Bomb bomb) {
-      this.bomb = bomb;
-      updateBombInfluence();
-    }
-    void updateBombInfluence() {
-      if (bomb == null) {
-        return;
-      }
-      
-      for (int rot =0;rot<4;rot++) {
-        updateBombInfluenceForOneLine(rot);
-      }
-    }
-
-    private void updateBombInfluenceForOneLine(int rot) {
-      Cell currentCell = this;  
-      for (int d = 1; d <= bomb.range; d++) {
-        currentCell = currentCell.neighbors[rot];
-        if (currentCell.isExplosionHardBlocked()) {
-          break;
-        } else if (currentCell.isExplosionSoftBlocked()) {
-          currentCell.addBombInfluence(bomb);
-          break;
-        } else {
-          currentCell.addBombInfluence(bomb);
-        }
-      }
-    }
-    private void addBombInfluence(Bomb fromBomb) {
-      explodingBombs.add(fromBomb);
-      willExplodeIn = Math.min(willExplodeIn, fromBomb.timer);
-      if (bomb != null) {
-        if (this.bomb.timer > fromBomb.timer) {
-          this.bomb.timer = fromBomb.timer;
+    public void addExplodedBomb(Bomb bomb, GameState state) {
+      explodedBombs.add(bomb);
+      for (Entity entity : entities) {
+        if (entity.type == ENTITY_BOMB && !explodedBombs.contains(bomb)) {
+          bomb.explode(state);
         }
       }
     }
 
-    public void copyFrom(Cell cell) {
+    public boolean softBlock() {
+      if (type == CellType.BOX) return true;
+      if (entities.isEmpty()) {
+        return false;
+      } else {
+        for (Entity entity :entities) {
+          if (entity.type != ENTITY_PLAYER) { // bombs go through players
+            return true;
+          }
+        }
+        return false;
+      }
+    }
+
+    public boolean hardBlock() {
+      return type == CellType.WALL || type == CellType.BOX;
+    }
+
+    public void updateBoxInfluenza(int range) {
+      if (type == CellType.BOX && willBeHitLater == 0) {
+        Cell currentCell = this;
+        for (int rot=0;rot<4;rot++) {
+          currentCell = this;
+          for (int d=1;d<range;d++) {
+            currentCell = currentCell.neighbors[rot];
+            if (currentCell.hardBlock()) {
+              break;
+            }
+            currentCell.boxInfluenza+=1;
+            if (currentCell.softBlock()) {
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    public boolean hasOption(int option) {
+      if (this.type != CellType.FLOOR) {
+        return false;
+      }
+      for (Entity entity : entities) {
+        if (entity.type == ENTITY_ITEM) {
+          Item item = (Item)entity;
+          if (item.option == option) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    public boolean hasOptionBombUp() {
+      return hasOption(Item.BOMB_UP);
+    }
+
+    public boolean hasOptionRangeUp() {
+      return hasOption(Item.RANGE_UP);
+    }
+
+    public void clone(Cell fromCell) {
       reset();
-      this.type = cell.type;
-      if (cell.willExplodeIn != Integer.MAX_VALUE) {
-        this.willExplodeIn = cell.willExplodeIn-1;
-        if (willExplodeIn == 0) {
-          this.type = Type.FLOOR;
+      this.type = fromCell.type;
+      this.option = fromCell.option;
+      for (Entity entity : fromCell.entities) {
+        this.entities.add(entity);
+      }
+    }
+
+    // will die if go here
+    public boolean deadly() {
+      if (explodedBombs.isEmpty()) {
+        return false;
+      } else {
+        for (Bomb bomb : explodedBombs) {
+          if (bomb.owner != game.myIndex) {
+            return true;
+          }
         }
       }
-      this.hasOption_bombUp = cell.hasOption_bombUp;
-      this.hasOption_rangeUp = cell.hasOption_rangeUp;
-      if (cell.bomb != null && !cell.bomb.hasExploded) {
-        bomb = cell.bomb;
-        bomb.cell = this;
-      }
+      return false;
     }
   }
+  
+  static class Action {
+    P pos;
+    boolean dropBomb;
+    String message;
+    
+    String get() {
+      return (dropBomb ? "BOMB" : "MOVE") + " "+ pos.x +" "+ pos.y +" "+ message; 
+    }
+  }
+  
+  static class Game {
+    int width, height;
+    GameState currentState;
+    GameState[] states = new GameState[1];
+    
+    public int myIndex;
+    
+    Game(int width, int height) {
+      this.width = width;
+      this.height = height;
+      
+      for (int i=0;i<states.length;i++) {
+        states[i] = new GameState(width, height);
+      }
+      currentState = states[0];
+    }
+    
+    private void play() {
+      while (true) {
+        prepareGameState();
+        currentState.computeRound();
 
+        updateNextStates();
+        
+//        System.err.println("Current grid:");
+//        System.err.println("-------------");
+//        currentState.debugBombs();
+//        System.err.println("Next grid:");
+//        System.err.println("----------");
+//        states[1].debugBombs();
+        
+        Action action = computeBestMove_v1();
+        System.out.println(action.get());
+      }
+    }
+
+    void updateNextStates() {
+      for (int i=1;i<states.length;i++) {
+        states[i].clone(states[i-1]);
+        states[i].computeRound();
+      }
+    }
+
+    private Action computeBestMove_v1() {
+      Action action = new Action();
+
+      double maxScore = -1;
+      Path bestPath = null;
+      
+      for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+          Cell c = currentState.getCellAt(x, y);
+          int distance = c.p.manhattanDistance(currentState.players[0].p);
+          double score = c.boxInfluenza
+              + (c.hasOptionBombUp() ? 1 : 0)
+              + (c.hasOptionRangeUp() ? 1 : 0)
+                - 0.5*distance
+              + 0;
+          if (score > maxScore) {
+            maxScore = score;
+            Path path = new Path(states, currentState.players[0].p, c.p);
+            Path.PathItem item = path.find();
+            if (!path.path.isEmpty()) {
+              bestPath = path;
+//              System.err.println("new best path with score : "+score);
+//              bestPath.debug();
+            }
+          }
+        }
+      }
+      if (bestPath != null) {
+        if (bestPath.path.size() < 2) {
+          action.dropBomb = true;
+          action.pos = currentState.players[0].p;
+        } else {
+          Path.PathItem i = bestPath.path.get(1);
+          action.dropBomb = false;
+          action.pos = i.cell.p;
+        }
+      }
+      return action;
+    }
+
+    private void prepareGameState() {
+      currentState.reset();
+      for (int y = 0; y < height; y++) {
+        String row = in.nextLine();
+        currentState.addRow(y, row);
+      }
+      
+      int entitiesCount = in.nextInt();
+      currentState.entities.clear();
+      for (int i = 0; i < entitiesCount; i++) {
+        int entityType = in.nextInt();
+        int owner = in.nextInt();
+        int x = in.nextInt();
+        int y = in.nextInt();
+        int param1 = in.nextInt();
+        int param2 = in.nextInt();
+        Entity entity;
+        Cell cell = currentState.getCellAt(x, y);
+        if (entityType == ENTITY_BOMB) {
+          entity = new Bomb(owner, x,y, param1, param2);
+        } else if (entityType == ENTITY_PLAYER) {
+          entity = new APlayer(owner, x,y, param1, param2);
+        } else if (entityType == ENTITY_ITEM) {
+          entity = new Item(owner, x,y, param1, param2);
+        } else {
+          System.err.println("Hmmm entitytype not found");
+          entity = new Item(owner, x,y, param1, param2);
+        }
+        currentState.addEntity(entity);
+        cell.entities.add(entity);
+      }
+      in.nextLine();
+    }
+  }
   static class GameState {
-    private int width;
-    private int height;
+    int width, height;
+    List<Entity> entities = new ArrayList<>();
     Cell[][] grid;
-    List<Bomb> bombs = new ArrayList<>();
+    APlayer players[] = new APlayer[2];
     
     GameState(int width, int height) {
       this.width = width;
       this.height = height;
-      
       grid = new Cell[width][height];
-    }
-    
-    private Cell getCellAt(int x, int y) {
-      if (x < 0 || x >= width || y < 0 || y >= height) {
-        return Game.NO_CELL;
-      }
-      return grid[x][y];
+      initGrid();
     }
 
-    public void clone(GameState gameState) {
-      for (int x = 0; x < grid.length; x++) {
-        for (int y = 0; y < grid[0].length; y++) {
-          grid[x][y].copyFrom(gameState.grid[x][y]);
-          if (grid[x][y].bomb != null) {
-            bombs.add(grid[x][y].bomb);
-          }
+    public void clone(GameState fromState) {
+      this.entities.addAll(fromState.entities);
+      this.players[0] = fromState.players[0];
+      this.players[1] = fromState.players[1];
+      
+      for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+          Cell fromCell = fromState.getCellAt(x, y);
+          Cell toCell = this.getCellAt(x, y);
+          toCell.clone(fromCell);
         }
       }
     }
 
-    public void init() {
+    public void addEntity(Entity entity) {
+      entities.add(entity);
+      if (entity.type == ENTITY_PLAYER) {
+        if (entity.owner == game.myIndex) {
+          players[0] = (APlayer)entity;
+        } else {
+          players[1] = (APlayer)entity;
+        }
+      }
+    }
+
+    private void initGrid() {
       for (int x = 0; x < width; x++) {
         for (int y = 0; y < height; y++) {
           Cell c = new Cell(x, y);
@@ -316,111 +466,104 @@ class Player {
           grid[x][y].neighbors[Cell.LEFT] = getCellAt(x-1, y);
           grid[x][y].neighbors[Cell.RIGHT] = getCellAt(x+1, y);
         }
+      }      
+    }
+
+    private Cell getCellAt(int x, int y) {
+      if (x < 0 || x >= width || y < 0 || y >= height) {
+        return Cell.WALL;
       }
-    }
-  }
-  static class Game {
-    private static final Cell NO_CELL = new Cell(-1, -1);
-    static {
-      NO_CELL.type = Cell.Type.WALL;
-      NO_CELL.weight = Cell.MIN_WEIGHT;
-    }
-    private int width;
-    private int height;
-
-    List<Cell> boxes = new ArrayList<>();
-
-    Map<Integer, APlayer> players = new HashMap<>();
-    APlayer me = null;
-
-    GameState[] states = new GameState[8];
-
-    public Game(int width, int height) {
-      this.width = width;
-      this.height = height;
-      initBoard();
+      return grid[x][y];
     }
 
-    private void initBoard() {
-      for (int i=0;i<8;i++) {
-        states[i] = new GameState(width, height);
-        states[i].init();
+    public void computeRound() {
+      for (Entity entity : entities) {
+        entity.update(this);
       }
+      removeHittedBoxes();
+      updateBoxInfluenza();
+      // debugBombs();
+      // debugBoxInfluenza();
+      // debugPlayerAccessibleCells();
     }
 
-    public void addRow(int rowIndex, String row) {
-      // System.err.println("row: "+row);
-      for (int i = 0; i < row.length(); i++) {
-        char c = row.charAt(i);
-        Cell cell = states[0].grid[i][rowIndex];
-        if (c == '.') {
-          cell.type = Cell.Type.FLOOR;
-        } else if (c == 'X') {
-          cell.type = Cell.Type.WALL;
-          updateWallInfluence(cell);
-        } else if (c >= '0') {
-          cell.type = Cell.Type.BOX;
-          cell.option = c - '0';
-          boxes.add(cell);
-        }
-      }
-    }
+    private void debugPlayerAccessibleCellsWithAStar() {
+      // TODO don't use A* to check this !
+      System.err.println("Accessible cells from "+players[1].p);
+      GameState[] states = new GameState[1];
+      states[0] = this;
 
-    private void updateWallInfluence(Cell cell) {
-      cell.weight = Cell.MIN_WEIGHT;
-    }
-
-    private void updateBoxInfluence(Cell originCell) {
-      int x = originCell.x;
-      int y = originCell.y;
-      for (int rot = 0; rot < 4; rot++) {
-        for (int d = 1; d < me.bombRange; d++) {
-          Cell c = states[0].getCellAt(x + d * rotx[rot], y + d * roty[rot]);
-          if (c.type == Cell.Type.WALL || c.type == Cell.Type.BOX) {
-            break;
-          }
-          if (c.willExplodeIn > 0 
-              && c.willExplodeIn < Integer.MAX_VALUE - 2) {
-            continue;
+      for (int y = 0; y < height; y++) {
+        String result="";
+        for (int x = 0; x < width; x++) {
+          Cell cell = grid[x][y];
+          Path path = new Path(states, players[1].p, cell.p);
+          path.find();
+          if (path.path.size() > 0) {
+            result+="A";
           } else {
-            c.boxCount++;
-          }
-        }
-      }
-    }
-
-    void debugBombExplosions(String message, int step) {
-      System.err.println("*** "+message+" ***");
-      step = Math.min(step, 7);
-      for (int y=0;y<height;y++) {
-        String result = "";
-        for (int x=0;x<width;x++) {
-          if (states[step].grid[x][y].type == Cell.Type.WALL) {
-            result+="X";
-          } else {
-            if (states[step].grid[x][y].exploding) {
-              result+="@";
-            } else {
-              result+=" ";
-            }
+            result+=" ";
           }
         }
         System.err.println(result);
       }
     }
+
+    private void removeHittedBoxes() {
+      for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+          Cell cell = grid[x][y];
+          if (cell.type == CellType.BOX && !cell.explodedBombs.isEmpty()) {
+            cell.type = CellType.FLOOR;
+          }
+        }
+      }
+    }
+
+    private void updateBoxInfluenza() {
+      for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+          Cell cell = grid[x][y];
+          cell.updateBoxInfluenza(players[0].bombRange);
+        }
+      }
+    }
+
+    public void addRow(int y, String row) {
+      for (int x = 0; x < row.length(); x++) {
+        char c = row.charAt(x);
+        Cell cell = grid[x][y];
+        if (c == '.') {
+          cell.type = CellType.FLOOR;
+        } else if (c == 'X') {
+          cell.type = CellType.WALL;
+        } else if (c >= '0') {
+          cell.type = CellType.BOX;
+          cell.option = c - '0';
+        }
+      }
+    }
+
+    public void reset() {
+      for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+          grid[x][y].reset();
+        }
+      }      
+    }
     
-    void debugBox(String message, int step) {
-      System.err.println("*** "+message+" ***");
-      step = Math.min(step, 7);
-      for (int y=0;y<height;y++) {
-        String result = "";
-        for (int x=0;x<width;x++) {
-          if (states[step].grid[x][y].type == Cell.Type.BOX) {
-            if (states[step].grid[x][y].willExplodeIn != Integer.MAX_VALUE) {
-              result+=states[step].grid[x][y].willExplodeIn;
-            } else {
-              result+="B";
-            }
+    void debugBoxInfluenza() {
+      System.err.println("Bow influenza for range "+players[0].bombRange);
+      for (int y = 0; y < height; y++) {
+        String result="";
+        for (int x = 0; x < width; x++) {
+          Cell cell = grid[x][y];
+          if (cell.type == CellType.WALL) {
+            result+="X";
+          } else if (cell.type == CellType.BOX) {
+            result+="b";
+          } else if (cell.boxInfluenza > 0) {
+            result+=""+cell.boxInfluenza;
           } else {
             result+=" ";
           }
@@ -429,273 +572,45 @@ class Player {
       }
     }
     
-    private void updateOptionInfluence(Cell cell) {
-      cell.weight += 2;
-    }
-
-    public void resetGame() {
-      for (int x = 0; x < width; x++) {
-        for (int y = 0; y < height; y++) {
-          states[0].grid[x][y].reset();
-        }
-      }
-      boxes.clear();
-    }
-
-    static class EntityInfo {
-      int entityType, owner, x, y;
-      private int param1;
-      private int param2;
-
-      public EntityInfo(int entityType, int owner, int x, int y, int param1, int param2) {
-        super();
-        this.entityType = entityType;
-        this.owner = owner;
-        this.x = x;
-        this.y = y;
-        this.param1 = param1;
-        this.param2 = param2;
-      }
-    }
-
-    void updateEntities(List<EntityInfo> entities) {
-      states[0].bombs.clear();
-      for (EntityInfo info : entities) {
-        updateOneEntity(info);
-      }
-    }
-
-    void updateOneEntity(EntityInfo info) {
-      Cell cell = states[0].grid[info.x][info.y];
-
-      APlayer player = players.get(info.owner);
-      if (info.entityType == ENTITY_PLAYER) {
-        if (player == null) {
-          player = new APlayer();
-          players.put(info.owner, player);
-        }
-        player.x = info.x;
-        player.y = info.y;
-        player.cell = cell;
-        if (info.owner == myIndex) {
-          me = player;
-        }
-      } else {
-        if (info.entityType == ENTITY_ITEM) {
-          if (info.param1 == 1) {
-            cell.hasOption_rangeUp = 1;
-          } else if (info.param1 == 2) {
-            cell.hasOption_bombUp = 1;
-          }
-          updateOptionInfluence(cell);
-        } else if (info.entityType == ENTITY_BOMB) {
-          Bomb bomb = new Bomb(player, cell, info.param1 /* tickLeft */, info.param2 /* range */);
-          updateOneBomb(bomb);
-        }
-      }
-    }
-
-    public void updateOneBomb(Bomb bomb) {
-      states[0].bombs.add(bomb);
-      bomb.cell.placeBomb(bomb);
-    }
-
-
-    
-    void updateBombInfluence(Bomb bomb) {
-      //System.err.println("update bomb at ("+bombCell.x+","+bombCell.y+") with "+range+" range and "+tickLeft+" tickLeft");
-      
-      if (bomb.cell.willExplodeIn < bomb.timer) {
-        // the cell will explode sooner that bomb.timer, so the 'bomb' will be triggered sooner
-        bomb.timer = bomb.cell.willExplodeIn;
-      }
-      
-      bomb.cell.bomb = bomb;
-      bomb.cell.willExplodeIn = Math.min(bomb.cell.willExplodeIn, bomb.timer);
-
-      for (int rot = 0; rot < 4; rot++) {
-        for (int d = 1; d <= bomb.range; d++) {
-          //System.err.println("check ("+(bombCell.x + d * rotx[rot])+","+ (bombCell.y + d * roty[rot])+")");
-          Cell c = states[0].getCellAt(bomb.cell.x + d * rotx[rot], bomb.cell.y + d * roty[rot]);
-          if (c.isBlocked()) {
-            break;
-          }
-          c.willExplodeIn = Math.min(c.willExplodeIn, bomb.timer);
-          if (c.isSoftBlocked()) {
-            // there is a bomb
-            if (c.bomb.timer > bomb.timer) {
-              // this bomb will trigger another one, need to update its effect
-              c.bomb.timer = bomb.timer;
-              updateBombInfluence(c.bomb);
-            } 
-            break;
-          }
-          if (bomb.player != me) {
-            c.threat = Math.max(8 - bomb.timer, c.threat);
+    void debugBombs() {
+      for (int y = 0; y < height; y++) {
+        String result="";
+        for (int x = 0; x < width; x++) {
+          Cell cell = grid[x][y];
+          if (!cell.explodedBombs.isEmpty()) {
+            result+="@";
+          } else if (cell.type == CellType.BOX) {
+            result+="b";
+          } else if (cell.type == CellType.WALL) {
+            result+="X";
+          } else if (!cell.entities.isEmpty()) {
+            result+="s";
+          } else {
+            result+=" ";
           }
         }
+        System.err.println(result);
       }
     }
-
-    private void play() {
-      Path currentPath = null;
-
-      while (true) {
-        resetGame();
-        for (int y = 0; y < height; y++) {
-          String row = in.nextLine();
-          addRow(y, row);
-        }
-        
-        int entitiesCount = in.nextInt();
-        List<EntityInfo> entities = new ArrayList<>();
-        for (int i = 0; i < entitiesCount; i++) {
-          int entityType = in.nextInt();
-          int owner = in.nextInt();
-          int x = in.nextInt();
-          int y = in.nextInt();
-          int param1 = in.nextInt();
-          int param2 = in.nextInt();
-          entities.add(new EntityInfo(entityType, owner, x, y, param1, param2));
-        }
-        // update board now !
-        
-        updateEntities(entities);
-        for (Cell cell : boxes) {
-          updateBoxInfluence(cell);
-        }
-        for (int i=0;i<8;i++) {
-          simulateOneTurn(i);
-        }
-        
-        debugBombExplosions("now", 0);
-        //debugBombExplosions("time+1",1);
-        debugBox("now", 0);
-        //debugBox("t+1", 1);
-
-        // check current path
-        boolean safe = false;
-        if (currentPath != null) {
-          safe = true;
-          for (int i=0;i<currentPath.path.size();i++) {
-            Path.PathItem item = currentPath.path.get(i);
-            if (!isSafe(i, item.cell.x, item.cell.y)) {
-              safe = false;
-              break;
-            }
-          }
-        }
-        
-        if (!safe) {
-          // find a better way
-          double maxScore = -1;
-          Cell maxCell = me.cell;
-          Path.PathItem maxItem = null;
-  
-          for (int y=0;y<height;y++) {
-            for (int x=0;x<width;x++) {
-              Cell c = states[0].getCellAt(x, y);
-              if (c.isBlocked()) {
-                continue;
-              }
-              int distance = Math.abs(c.x-me.x) + Math.abs(c.y-me.y);
-              double score = c.boxCount
-                  + c.hasOption_bombUp
-                  + c.hasOption_rangeUp
-                    - 0.2*distance;
-              if (score > maxScore) {
-                Path path = new Path(states, me.x, me.y, c.x, c.y);
-                Path.PathItem item = path.find();
-                if (item != null) {
-                  System.err.println("found : "+c.x+","+c.y+" with score: "+score);
-                  System.err.println("path : "+item.length()+ "--> ");
-                  Path.PathItem i = item;
-                  while(i != null) {
-                    System.err.print(i.cell.x+","+i.cell.y+" <<-");
-                    i = i.precedent;
-                  }
-                  System.err.println("");
-                  maxScore = score;
-                  maxCell = c;
-                  maxItem = item;
-                  currentPath = path; // will be our next move path
-                }
-              }
-            }
-          }
-        }
-        in.nextLine();
-
-        if (currentPath == null) {
-          System.err.println("can't find path to best bomb");
-          System.out.println("MOVE "+me.x+" "+me.y);
-        } else {
-          String command ="MOVE ";
-          if (me.x == currentPath.path.get(0).cell.x && me.y == currentPath.path.get(0).cell.y) {
-            command = "BOMB ";
-          }
-          int moveX = currentPath.path.get(0).cell.x;
-          int moveY = currentPath.path.get(0).cell.y;
-          if (isDyingNextStep(currentPath.path.get(0), moveX, moveY)) {
-            boolean foundSafe = false;
-            for (int rot=0;rot<4;rot++) {
-              if (!isDyingNextStep(currentPath.path.get(0), me.x+rotx[rot], me.y+roty[rot])) {
-                moveX = me.x+rotx[rot];
-                moveY = me.y+roty[rot];
-                foundSafe = true;
-              }
-            }
-            if (foundSafe) {
-              System.err.println("je vais mourrir au prochain tour, donc je vais à "+moveX+","+moveY);
-            } else {
-              System.err.println("Oups j'ai rien trouvé & je vais mourrir au prochain tour");
-            }
-          }
-
-          System.out.println(command+""+moveX+" "+moveY);
-        }
-      }
-    }
-
-    private boolean isSafe(int i, int x, int y) {
-      if (i>=8) {
-        return true; // no simulation
-      } else {
-        return !states[i].grid[x][y].exploding || states[i].grid[x][y].isSafe(me);
-      }
-    }
-
-    private boolean isDyingNextStep(Path.PathItem firstStep, int moveX, int moveY) {
-      return states[1].grid[moveX][moveY].exploding && !states[1].grid[moveX][moveY].isSafe(me);
-    }
-
-    public void simulateOneTurn(int step) {
-      if (step > 0) {
-        states[step].clone(states[step-1]);
-      }
-      for (Bomb b : states[step].bombs ) {
-        if (!b.hasExploded) {
-          b.update();
-        }
-      }
-    }
-
   }
-
-  public static void main(String args[]) {
+  
+  public static void main(String[] args) {
     in = new Scanner(System.in);
     int width = in.nextInt();
     int height = in.nextInt();
     myIndex = in.nextInt();
     in.nextLine();
 
-    Game game = new Game(width, height);
-    game.me = new APlayer();
-    game.me.index = myIndex;
+    game = new Game(width, height);
+    game.myIndex = myIndex;
 
     game.play();
   }
-
+  
+  /**
+   * PATH : A*
+   *
+   */
   public static class Path {
     Map<Cell, PathItem> closedList = new HashMap<>();
     List<PathItem> openList = new ArrayList<>();
@@ -703,18 +618,21 @@ class Player {
     List<PathItem> path = new ArrayList<>();
     
     private GameState[] states;
-    private int ix;
-    private int iy;
-    private int tx;
-    private int ty;
-
-    Path(GameState[] states, int ix, int iy, int tx, int ty) {
+    P from;
+    P target;
+    
+    Path(GameState[] states, P from, P target) {
       this.states = states;
-      this.ix = ix;
-      this.iy = iy;
-      this.tx = tx;
-      this.ty = ty;
+      this.from = from;
+      this.target = target;
+    }
 
+    public void debug() {
+      System.err.println("found a path: "+target);
+      System.err.println("path ("+path.size()+ ") :  ");
+      for (Path.PathItem i : path) {
+        System.err.print(i.cell.p+" --> ");
+      }
     }
 
     PathItem find() {
@@ -728,13 +646,13 @@ class Player {
 
     private void calculatePath(PathItem item) {
       PathItem i = item;
-      while (i.precedent != null) {
+      while (i != null) {
         path.add(0, i);
         i = i.precedent;
       }
     }
     PathItem calculus() {
-      Cell origin = states[0].grid[ix][iy];
+      Cell origin = states[0].grid[from.x][from.y];
       PathItem root = new PathItem();
       root.cell = origin;
 
@@ -743,26 +661,26 @@ class Player {
       while (openList.size() > 0) {
         PathItem visiting = openList.remove(0); // imagine it's the best
         Cell cell = visiting.cell;
-        if (cell.x == tx && cell.y == ty) {
+        if (cell.p.equals(target)) {
           return visiting;
         }
 
         closedList.put(cell, visiting);
-        int step = Math.min(7, visiting.length());
-        if (cell.y > 0) {
-          Cell cellUp = states[step].grid[cell.x][cell.y - 1];
+        int step = Math.min(states.length-1, visiting.length());
+        if (cell.p.y > 0) {
+          Cell cellUp = states[step].grid[cell.p.x][cell.p.y - 1];
           addToOpenList(visiting, cell, cellUp);
         }
-        if (cell.y < states[step].height - 1) {
-          Cell cellDown = states[step].grid[cell.x][cell.y + 1];
+        if (cell.p.y < states[step].height - 1) {
+          Cell cellDown = states[step].grid[cell.p.x][cell.p.y + 1];
           addToOpenList(visiting, cell, cellDown);
         }
-        if (cell.x > 0) {
-          Cell cellLeft = states[step].grid[cell.x - 1][cell.y];
+        if (cell.p.x > 0) {
+          Cell cellLeft = states[step].grid[cell.p.x - 1][cell.p.y];
           addToOpenList(visiting, cell, cellLeft);
         }
-        if (cell.x < states[step].width - 1) {
-          Cell cellRight = states[step].grid[cell.x + 1][cell.y];
+        if (cell.p.x < states[step].width - 1) {
+          Cell cellRight = states[step].grid[cell.p.x + 1][cell.p.y];
           addToOpenList(visiting, cell, cellRight);
         }
         // sort with distances
@@ -780,18 +698,14 @@ class Player {
       if (closedList.containsKey(toCell)) {
         return;
       }
-      if (!toCell.isBlocked() && toCell.willExplodeIn != visiting.cumulativeLength+1) {
+      if (!toCell.hardBlock() && !toCell.deadly()) {
         PathItem pi = new PathItem();
         pi.cell = toCell;
         pi.cumulativeLength = visiting.cumulativeLength + 1;
-        pi.totalPrevisionalLength = pi.cumulativeLength + manhattanDistance(fromCell);
+        pi.totalPrevisionalLength = pi.cumulativeLength + fromCell.p.manhattanDistance(target);
         pi.precedent = visiting;
         openList.add(pi);
       }
-    }
-
-    private int manhattanDistance(Cell cell) {
-      return Math.abs(cell.x - tx) + Math.abs(cell.y - ty);
     }
 
     public static class PathItem {
@@ -811,4 +725,5 @@ class Player {
       }
     }
   }
+  /** End of PATH */
 }
