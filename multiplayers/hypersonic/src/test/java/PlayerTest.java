@@ -343,7 +343,6 @@ public class PlayerTest {
       // game ai
       Player.AI ai = new Player.AI1();
       ai.game = game;
-      ai.myIndex = me.owner;
       ai.compute();
       Player.Action action = ai.actions.get(0);
       
@@ -378,7 +377,6 @@ public class PlayerTest {
       // game ai
       Player.AI ai = new Player.AI1();
       ai.game = game;
-      ai.myIndex = me.owner;
       ai.compute();
       Player.Action action = ai.actions.get(0);
 
@@ -419,7 +417,7 @@ public class PlayerTest {
           );
 
       Player.MCTS mcts = new Player.MCTS();
-      int findARandomMove = mcts.findARandomMove(me, game.currentState);
+      int findARandomMove = mcts.fillPossibilities(me, game.currentState);
       
       assertThat(mcts.possibilities[0], is(4));
       assertThat(mcts.possibilities[1], is(0));
@@ -466,7 +464,6 @@ public class PlayerTest {
       // game ai
       Player.MCTSAI ai = new Player.MCTSAI();
       ai.game = game;
-      ai.myIndex = me.owner;
       
       ai.steps = 10;
       ai.compute();

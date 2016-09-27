@@ -191,7 +191,6 @@ class Player {
     List<APlayer> offensive = new ArrayList<>();
   
     List<Action> actions = new ArrayList<>();
-    public int myIndex;
     
     abstract void compute();
   }
@@ -208,12 +207,12 @@ class Player {
       
       
       Action action = new Action();
-      action.pos = game.currentState.players[myIndex].p;
+      action.pos = game.currentState.players[Game.myIndex].p;
       action.dropBomb = false;
       action.message = "FOUND NOTHING TODO :(";
       
       GameState state0 = game.currentState;
-      P playerPos = state0.players[0].p;
+      P playerPos = state0.players[Game.myIndex].p;
 
       //1. find best influencedCell
       double maxScore = -100000;
@@ -339,7 +338,7 @@ class Player {
       //do simulation here
       fromState.computeRound_MCTS();
       //fromState.debugBombs();
-      if (fromState.players[0].isDead()) {
+      if (fromState.players[Game.myIndex].isDead()) {
         return false; // loss
       }
       
@@ -385,7 +384,7 @@ class Player {
       }
     }
     private boolean victoryFromPoints(GameState fromState) {
-      APlayer me = fromState.players[0];
+      APlayer me = fromState.players[Game.myIndex];
       for (int i=1;i<4;i++) {
         if (fromState.players[i] != null && me.points < fromState.players[i].points) {
           return false;
@@ -416,7 +415,7 @@ class Player {
 
   static class MCTSAI extends AI {
     int gameRound = 0;
-    private static final int MAX_STEPS = 20;
+    private static final int MAX_STEPS = 9;
     MCTS root = new MCTS();
     public int steps = MAX_STEPS;
     
@@ -425,8 +424,8 @@ class Player {
       gameRound++;
       root = new MCTS();
       
-      //System.err.println("COMPUTE MCTS AI for round "+gameRound +"isPlayer dead "+game.currentState.players[0].isDead());
-      //      int l =root.fillPossibilities(game.currentState.players[0], game.currentState);
+      //System.err.println("COMPUTE MCTS AI for round "+gameRound +"isPlayer dead "+game.currentState.players[Game.myIndex].isDead());
+      //      int l =root.fillPossibilities(game.currentState.players[Game.myIndex], game.currentState);
       //System.err.println("Possibilities : ");
       //      for (int i=0;i<l;i++) {
       //        System.err.println(" "+rotString[root.possibilities[i]]);
@@ -442,7 +441,7 @@ class Player {
       MCTS chosen = root.childs.get(chosenKey);
       if (chosen == null) {
         Action action = new Action();
-        action.pos = game.currentState.players[0].p;
+        action.pos = game.currentState.players[Game.myIndex].p;
         action.dropBomb = false;
         action.message = "Sayonara";
         actions.clear();
@@ -456,7 +455,7 @@ class Player {
       Action action = new Action();
       action.message = chosenKey+", s: "+root.simulatedCount;
 
-      APlayer player = game.currentState.players[myIndex];
+      APlayer player = game.currentState.players[Game.myIndex];
       action.dropBomb = chosenKey.charAt(1) == 'B';
 
       int actionIndex = chosenKey.charAt(0)-'0';
@@ -503,7 +502,7 @@ class Player {
     GameState currentState;
     int depth = 0;
     
-    public int myIndex;
+    public static int myIndex = 0;
     
     Game(int width, int height) {
       this.width = width;
@@ -517,7 +516,7 @@ class Player {
       
       AI ai = new MCTSAI();
       ai.game = this;
-      ai.myIndex = myIndex;
+      System.err.println("My index: "+myIndex);
       
       while (true) {
         long long1 = System.currentTimeMillis();
@@ -788,12 +787,9 @@ class Player {
 
     public void addEntity(Entity entity) {
       entities.add(entity);
+      
       if (entity.type == ENTITY_PLAYER) {
-        if (entity.owner == players[0].owner) {
-          players[0] = (APlayer)entity;
-        } else {
-          players[1] = (APlayer)entity;
-        }
+        players[entity.owner] = (APlayer)entity;
       }
     }
 
@@ -809,7 +805,7 @@ class Player {
         entity.update(this);
       }
       removeHittedBoxes();
-      updateBoxInfluenza(players[0].bombRange);
+      updateBoxInfluenza(players[Game.myIndex].bombRange); // MCTS : fonction dupliquée pour optimisation, en dessous
     }
 
     public void computeRound_MCTS() {
@@ -898,7 +894,6 @@ class Player {
     }
 
     void debugBoxInfluenza() {
-      System.err.println("Box influenza for range "+players[0].bombRange);
       for (int y = 0; y < height; y++) {
         String result="";
         for (int x = 0; x < width; x++) {
@@ -952,7 +947,7 @@ class Player {
     in.nextLine();
 
     Game game = new Game(width, height);
-    game.myIndex = myIndex;
+    Game.myIndex = myIndex;
 
     game.play();
   }
