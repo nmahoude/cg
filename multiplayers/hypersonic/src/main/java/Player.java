@@ -1,14 +1,10 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.swing.text.Position;
-
 import java.util.Scanner;
 
 class Player {
@@ -311,11 +307,13 @@ class Player {
     void randomActions(GameState fromState, int[] dir, boolean[] bomb) {
       for (int p=0;p<game.playersCount;p++) {
         APlayer player = fromState.players[p];
-
+        if (player == null) {
+          continue ;
+        }
         int possibleMoves = fillPossibilities(player, fromState);
         dir[p] = findARandomMove(player, fromState, possibleMoves);
         
-        if (fromState.players[p].bombsLeft > 0) {
+        if (player.bombsLeft > 0) {
           boolean canDropBombOnBoard = !GameState.isABomb(fromState.getCellAt(player.p.x, player.p.y));
           boolean cornered = possibleMoves <= 1;
           bomb[p] = (!cornered && canDropBombOnBoard) ? Math.random() > 0.5 : false;
@@ -350,7 +348,9 @@ class Player {
         for (int playerIndex=0;playerIndex<game.playersCount;playerIndex++) {
           int i = dir[playerIndex];
           APlayer player = fromState.players[playerIndex];
-          
+          if (player == null) {
+            continue;
+          }
           // drop bomb if needed
           if (bomb[playerIndex]) {
             Bomb droppedBomb = new Bomb(fromState, player.owner, player.p.x,player.p.y, 8, player.bombRange);
@@ -415,7 +415,7 @@ class Player {
 
   static class MCTSAI extends AI {
     int gameRound = 0;
-    private static final int MAX_STEPS = 9;
+    private static final int MAX_STEPS = 15;
     MCTS root = new MCTS();
     public int steps = MAX_STEPS;
     
@@ -432,6 +432,9 @@ class Player {
       //      }
       GameState copyOfRoot = new GameState(game.currentState.width, game.currentState.height, 0);
       int simulationCount = 3000;
+      if (game.playersCount == 4) {
+        simulationCount = 1500;
+      }
       for (int i=0;i<simulationCount;i++) {
         copyOfRoot.duplicateFrom(game.currentState);
         root.simulate(copyOfRoot, steps);
