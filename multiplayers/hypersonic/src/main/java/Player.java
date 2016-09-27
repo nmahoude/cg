@@ -145,19 +145,19 @@ class Player {
   }
   
   static class Game {
+    private static final String MOVE_STAY_NOBOMB = "  ";
+    private static final int MAX_STEPS = 100;
     int width, height;
     GameState currentState;
-    GameState[] states = new GameState[9];
+    int depth = 0;
+    
     public int myIndex;
     
     Game(int width, int height) {
       this.width = width;
       this.height = height;
       
-      for (int i=0;i<states.length;i++) {
-        states[i] = new GameState(width, height);
-      }
-      currentState = states[0];
+      currentState = new GameState(width, height, 0);
     }
     
     private void play() {
@@ -199,11 +199,16 @@ class Player {
     }
 
     int isThreat(P p) {
-      for (int layer = 0;layer<states.length;layer++) {
-        int value = states[layer].grid[p.x][p.y];
+      GameState theState = currentState;
+      for (int layer = 0;layer<MAX_STEPS;layer++) {
+        if (theState == null) {
+          return -1;
+        }
+        int value = theState.grid[p.x][p.y];
         if (GameState.isFire(value)) {
           return layer;
         }
+        theState = theState.childs.get(MOVE_STAY_NOBOMB);
       }
       return -1;
     }
@@ -228,7 +233,7 @@ class Player {
       action.dropBomb = false;
       action.message = "FOUND NOTHING TODO :(";
       
-      GameState state0 = states[0];
+      GameState state0 = currentState;
       P playerPos = state0.players[0].p;
 
       //1. find best influencedCell
@@ -248,7 +253,7 @@ class Player {
                 + 0;
             if (score > maxScore) { // only check path if score is better
               // start A* to find a path
-              Path path = new Path(states, playerPos, target);
+              Path path = new Path(currentState, playerPos, target);
               Path.PathItem lastPathPos = path.find();
               if (!path.path.isEmpty()) {
                 // ok we have a path
@@ -290,10 +295,7 @@ class Player {
     }
 
     void updateNextStates() {
-      for (int i=1;i<states.length;i++) {
-        states[i].clone(states[i-1]);
-        states[i].computeRound();
-      }
+      currentState.simulate(MOVE_STAY_NOBOMB);
     }
 
     private void prepareGameState() {
@@ -352,6 +354,15 @@ class Player {
         grid[p.x][p.y] = CELL_ITEM_RANGEUP;
       }
     }
+    public void simulate(String string) {
+      if (this.depth < Game.MAX_STEPS) {
+        GameState nextState = childs.get(Game.MOVE_STAY_NOBOMB);
+        if (nextState != null) {
+          nextState.clone(this);
+          nextState.computeRound();
+        }
+      }
+    }
     public void triggerBomb(P pointToCheck) {
       for (Entity e: entities) {
         if (e.type == ENTITY_BOMB && e.p.equals(pointToCheck)) {
@@ -401,6 +412,7 @@ class Player {
     }
     
     int width, height;
+    Map<String, GameState> childs = new HashMap<>();
 
     int[][] grid;
     APlayer players[] = new APlayer[4];
@@ -410,12 +422,18 @@ class Player {
     private List<P> boxes = new ArrayList<>();
     private List<P> hittedBoxes = new ArrayList<>();
     public List<Bomb> explodedBombs = new ArrayList<>();
+    int depth;
     
-    GameState(int width, int height) {
+    GameState(int width, int height, int depth) {
       this.width = width;
       this.height = height;
+      this.depth = depth;
       grid = new int[width][height];
       boxInfluence = new int[width][height];
+      
+      if( depth < Game.MAX_STEPS) {
+        childs.put("  ", new GameState(width,height, depth+1));
+      }
     }
 
     // clean cumulative states
@@ -485,13 +503,11 @@ class Player {
     private void debugPlayerAccessibleCellsWithAStar() {
       // TODO don't use A* to check this !
       System.err.println("Accessible cells from "+players[1].p);
-      GameState[] states = new GameState[1];
-      states[0] = this;
 
       for (int y = 0; y < height; y++) {
         String result="";
         for (int x = 0; x < width; x++) {
-          Path path = new Path(states, players[1].p, P.get(x, y));
+          Path path = new Path(this, players[1].p, P.get(x, y));
           path.find();
           if (path.path.size() > 0) {
             result+="A";
@@ -607,12 +623,12 @@ class Player {
     
     List<PathItem> path = new ArrayList<>();
     
-    private GameState[] states;
+    private GameState rootState;
     P from;
     P target;
     
-    Path(GameState[] states, P from, P target) {
-      this.states = states;
+    Path(GameState root, P from, P target) {
+      this.rootState = root;
       this.from = from;
       this.target = target;
     }
@@ -642,6 +658,7 @@ class Player {
       }
     }
     PathItem calculus() {
+      GameState theState = rootState;
       PathItem root = new PathItem();
       root.pos = from;
       openList.add(root);
@@ -654,18 +671,17 @@ class Player {
         }
 
         closedList.put(pos, visiting);
-        int step = Math.min(states.length-1, visiting.length()); // temporal A*
         if (pos.y > 0) {
-          addToOpenList(visiting, states[step], pos , P.get(pos.x, pos.y-1));
+          addToOpenList(visiting, theState, pos , P.get(pos.x, pos.y-1));
         }
-        if (pos.y < states[step].height - 1) {
-          addToOpenList(visiting, states[step], pos , P.get(pos.x, pos.y+1));
+        if (pos.y < theState.height - 1) {
+          addToOpenList(visiting, theState, pos , P.get(pos.x, pos.y+1));
         }
         if (pos.x > 0) {
-          addToOpenList(visiting, states[step], pos , P.get(pos.x-1, pos.y));
+          addToOpenList(visiting, theState, pos , P.get(pos.x-1, pos.y));
         }
-        if (pos.x < states[step].width - 1) {
-          addToOpenList(visiting, states[step], pos , P.get(pos.x+1, pos.y));
+        if (pos.x < theState.width - 1) {
+          addToOpenList(visiting, theState, pos , P.get(pos.x+1, pos.y));
         }
         // sort with distances
         Collections.sort(openList, new Comparator<PathItem>() {

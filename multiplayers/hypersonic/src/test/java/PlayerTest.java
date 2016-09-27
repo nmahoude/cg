@@ -37,7 +37,7 @@ public class PlayerTest {
       game.updateNextStates();
       
       assertThat(game.currentState.grid[0][0], is(Player.GameState.CELL_BOMB_0+1));
-      assertThat(game.states[1].grid[0][0], is(Player.GameState.CELL_FIRE));
+      assertThat(game.currentState.childs.get("  ").grid[0][0], is(Player.GameState.CELL_FIRE));
     }
     
     @Test
@@ -92,7 +92,7 @@ public class PlayerTest {
       game.updateNextStates();
       
       int cellValue = game.currentState.grid[0][1];
-      int cellValueNext = game.states[1].grid[0][1];
+      int cellValueNext = game.currentState.childs.get("  ").grid[0][1];
       
       assertThat(cellValue, is(Player.GameState.CELL_FIRE));
       assertThat(cellValueNext, is(Player.GameState.CELL_FLOOR));
@@ -126,7 +126,7 @@ public class PlayerTest {
       game.updateNextStates();
 
       // path finding
-      Player.Path path = new Player.Path(game.states, Player.P.get(0, 0), Player.P.get(1, 0));
+      Player.Path path = new Player.Path(game.currentState, Player.P.get(0, 0), Player.P.get(1, 0));
       path.find();
       
       assertThat(path.path.isEmpty(), is(false));
@@ -149,7 +149,7 @@ public class PlayerTest {
       game.updateNextStates();
 
       // path finding
-      Player.Path path = new Player.Path(game.states, Player.P.get(0, 0), Player.P.get(4, 0));
+      Player.Path path = new Player.Path(game.currentState, Player.P.get(0, 0), Player.P.get(4, 0));
       path.find();
       
       assertThat(path.path.isEmpty(), is(false));
