@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 class Player {
@@ -41,9 +42,14 @@ class Player {
     }
     int bombRange = 3;
     int bombsLeft = 1;
-
+    public int points = 0;
+    public boolean isDead = false;
+    
     public Entity duplicate(GameState newState) {
-      return new APlayer(newState, owner, p.x, p.y, bombsLeft, bombRange);
+      APlayer aPlayer = new APlayer(newState, owner, p.x, p.y, bombsLeft, bombRange);
+      aPlayer.points = this.points;
+      aPlayer.isDead = this.isDead;
+      return aPlayer;
     }
   }
   
@@ -91,7 +97,19 @@ class Player {
       }
     }
 
+    void updatePlayerDeath(P position) {
+      for (int p=0;p<4;p++) {
+        if (state.players[p] != null && state.players[p].p.equals(position)) {
+          state.players[p].isDead = true;
+        }
+      }
+    }
     public void explode(GameState state) {
+      if (state.players[owner] != null) {
+        state.players[owner].bombsLeft++;
+      }
+      updatePlayerDeath(this.p);
+      
       for (int rot=0;rot<4;rot++) {
         for (int d=1;d<range;d++) {
           int testedX = p.x+d*rotx[rot];
@@ -101,7 +119,10 @@ class Player {
           if (GameState.explosionBlocked(value)) {
             break;
           }
+
           P testedP = P.get(testedX, testedY);
+          updatePlayerDeath(testedP);
+
           state.explodedBombs.add(this);
           if (GameState.explosionSoftBlocked(value)) {
             if (GameState.isABomb(value)) {
@@ -109,6 +130,9 @@ class Player {
               state.triggerBomb(testedP);
             } else if (GameState.isABox(value)) {
               state.hittedBoxes.add(testedP);
+              if (state.players[owner] != null) {
+                state.players[owner].points ++;
+              }
             }
             break;
           }
@@ -225,7 +249,7 @@ class Player {
       
       if (bestPath != null) {
         if (bestPath.path.size() == 1) {
-          action.dropBomb = true;
+          action.dropBomb = true; 
           action.message = "At dest,drop a bomb";
         } else {
           Path.PathItem firstStep = bestPath.path.get(1);
@@ -240,36 +264,154 @@ class Player {
   }
   
   static class MCTS {
-    int[] dir = new int[4];
-    boolean[] bomb = new boolean[4];
+    static Game game; // static reference to the game (only one). Better way to do it ?
+    
+    int[] dir = new int[5];
+    boolean[] bomb = new boolean[5];
+    
+    int simulatedCount=0; // how many branches (total > childs.size())
+    int win=0;
     
     MCTS parent;
-    
+    Map<String, MCTS> childs = new HashMap<>();
+
+
+    static int [] possibilities = new int[5]; // dont' parralelize !
+    static {
+      possibilities[0] = 4; // don't move !
+    }
+    int findARandomMove(APlayer player, GameState fromState) {
+      int moveLeft = 1; // don't move is always a possible move ! 
+      for (int i=0;i<4;i++) {
+        int px = player.p.x + rotx[i];
+        int py = player.p.y + roty[i];
+        if (GameState.canWalkThrough(fromState.getCellAt(px, py))) {
+          possibilities[moveLeft++] = i;
+        }
+      }
+      
+      if (moveLeft == 1) {
+        return possibilities[0];
+      } else {
+        // need to randomize here
+        return possibilities[getRandom(0,moveLeft-1)];
+      }
+    }
+    static int getRandom(int i, int j) {
+      return (int)(i+j * Math.random());
+    }
+    void randomActions(GameState fromState) {
+      for (int p=0;p<game.playersCount;p++) {
+        APlayer player = fromState.players[p];
+        dir[p] = findARandomMove(player, fromState);
+        bomb[p] = fromState.players[p].bombsLeft > 0 ? Math.random() > 0.5 : false;
+      }
+    }
+    String getKeyFromActions() {
+      String key = "";
+      for (int i=0;i<game.playersCount;i++) {
+        key+= dir[i]+(bomb[i] ? "B" : "M");
+      }
+      return key;
+    }
+
+    boolean simulate(GameState fromState, int depth) {
+      this.simulatedCount++;
+      
+      //do simulation here
+      fromState.computeRound_MCTS();
+      if (   (fromState.players[1] == null || fromState.players[1].isDead)
+          && (fromState.players[2] == null || fromState.players[2].isDead)
+          && (fromState.players[3] == null || fromState.players[3].isDead)) {
+        if (fromState.players[0].isDead) {
+          return victoryFromPoints(fromState);
+        } else {
+          return true; // all other dead or missing, we won
+        }
+      } else if (fromState.players[0].isDead) {
+        return false; // loss
+      }
+      // choose some new random moves
+      randomActions(fromState);
+      for (int p=0;p<game.playersCount-1;p++) {
+        int i = dir[p];
+        APlayer player = fromState.players[p];
+        
+        // drop bomb if needed
+        if (bomb[i]) {
+          Bomb bomb = new Bomb(fromState, player.owner, player.p.x,player.p.y, 8, player.bombRange);
+          fromState.addEntity(bomb);
+          player.bombsLeft--;
+        }
+        // then move
+        player.p = P.get(player.p.x + rotx[i], player.p.y + roty[i]);
+      }
+      
+      if (depth > 0) {
+        // prepare child
+        String key = getKeyFromActions();
+        MCTS chosenChild = childs.get(key);
+        if (chosenChild != null) {
+          // we already go there !
+        } else {
+          // create a new one
+          chosenChild = new MCTS();
+          childs.put(key, chosenChild);
+        }
+        boolean hasWon = chosenChild.simulate(fromState, depth-1);
+        if (hasWon) {
+          win++;
+        }
+        return hasWon;
+      } else {
+        return victoryFromPoints(fromState);
+      }
+    }
+    private boolean victoryFromPoints(GameState fromState) {
+      APlayer me = fromState.players[0];
+      for (int i=1;i<4;i++) {
+        if (fromState.players[i] != null && me.points < fromState.players[i].points) {
+          return false;
+        }
+      }
+      win++; // don't forget to count our victory
+      return true; // we won !
+    }
   }
 
   static class MCTSAI extends AI {
     MCTS root = new MCTS();
-    
-    void randomAction(GameState fromState, int[] dir, boolean[] bomb) {
-      
-      for (int p=0;p<game.playersCount;p++) {
-        APlayer player = game.currentState.players[p];
-        dir[p] = (int)(Math.random()*5); // 5 pour la case je ne bouge pas
-        if (GameState.isWall(fromState.getCellAt(player.p.x+rotx[root.dir[p]], player.p.y+roty[root.dir[p]]))) {
-          dir[p] = 4;
-        }
-        bomb[p] = fromState.players[p].bombsLeft > 0 ? Math.random() > 0.5 : false;
-      }
-    }
     @Override
     void compute() {
-      randomAction(game.currentState, root.dir, root.bomb);
-      APlayer player = game.currentState.players[myIndex];
+      GameState copyOfRoot = new GameState(game.currentState.width, game.currentState.height, 0);
+      for (int i=0;i<100;i++) {
+        copyOfRoot.duplicateFrom(game.currentState);
+        root.simulate(copyOfRoot, 200);
+      }
+      
+      MCTS chosen = null;
+      double bestRatio = -1.0;
+      for (Entry<String, MCTS> m : root.childs.entrySet()) {
+        MCTS tested = m.getValue();
+        double ratio1 = tested.win / tested.simulatedCount;
+        if (ratio1 > bestRatio) {
+          chosen = tested;
+          bestRatio = ratio1;
+        }
+      }
+      System.err.println("Best chosen child has a ratio of "+bestRatio + " ("+chosen.win+" / "+chosen.simulatedCount+")");
+      System.err.println("best key is "+chosen.getKeyFromActions());
       
       Action action = new Action();
-      action.dropBomb = root.bomb[0];
-      action.pos = P.get(player.p.x+rotx[root.dir[0]], player.p.y+roty[root.dir[0]]);
-      action.message = ""+root.dir[0]+" / "+ root.bomb[0];
+      action.message = chosen.getKeyFromActions()+", simulations: "+root.simulatedCount;
+
+      APlayer player = game.currentState.players[myIndex];
+      action.dropBomb = chosen.bomb[0];
+
+      int newPosX = player.p.x+rotx[chosen.dir[0]];
+      int newPosY = player.p.y+roty[chosen.dir[0]];
+      action.pos = P.get(newPosX, newPosY);
+
       actions.clear();
       actions.add(action);
     }
@@ -293,6 +435,8 @@ class Player {
     }
     
     private void play() {
+      MCTS.game = this; // OUTCH, it's ugly
+      
       AI ai = new MCTSAI();
       ai.game = this;
       ai.myIndex = myIndex;
@@ -301,7 +445,7 @@ class Player {
         long long1 = System.currentTimeMillis();
         prepareGameState();
         long long2 = System.currentTimeMillis();
-        currentState.computeRound();
+        //currentState.computeRound();
         long long3 = System.currentTimeMillis();
         updateNextStates();
         long long4 = System.currentTimeMillis();
@@ -502,6 +646,12 @@ class Player {
       }
     }
 
+    // clean for next simulation on same spot
+    void softReset() {
+      explodedBombs.clear();
+      hittedBoxes.clear();
+      
+    }
     // clean cumulative states
     void reset() {
       boxes.clear();
@@ -516,14 +666,32 @@ class Player {
       }
     }
 
+    public void duplicateFrom(GameState fromState) {
+      reset();
+      for (Entity e : fromState.entities) {
+        Entity duplicate = e.duplicate(this);
+        if (duplicate.type == ENTITY_PLAYER) {
+          this.players[duplicate.owner] = (APlayer)duplicate;
+        }
+        this.entities.add(duplicate);
+      }
+
+      for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+          grid[x][y] = fromState.grid[x][y];
+        }
+      }
+    }
+    
     public void clone(GameState fromState) {
       reset();
       for (Entity e : fromState.entities) {
         this.entities.add(e.duplicate(this));
       }
-      
-      this.players[0] = fromState.players[0];
-      this.players[1] = fromState.players[1];
+
+      for (int p=0;p<4;p++) {
+        this.players[p] = fromState.players[p];
+      } 
       
       for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
@@ -564,6 +732,13 @@ class Player {
       }
       removeHittedBoxes();
       updateBoxInfluenza(players[0].bombRange);
+    }
+
+    public void computeRound_MCTS() {
+      for (Entity entity : entities) {
+        entity.update(this);
+      }
+      removeHittedBoxes();
     }
 
     private void debugPlayerAccessibleCellsWithAStar(APlayer player) {
@@ -870,11 +1045,7 @@ class Player {
       if (getClass() != obj.getClass())
         return false;
       P other = (P) obj;
-      if (x != other.x)
-        return false;
-      if (y != other.y)
-        return false;
-      return true;
+      return x == other.x && y == other.y;
     }
   }
 

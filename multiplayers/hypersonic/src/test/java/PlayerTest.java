@@ -3,6 +3,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class PlayerTest {
@@ -265,6 +266,7 @@ public class PlayerTest {
     }
     
     @Test
+    @Ignore
     public void blockingBoxWillExplodeBeforeArriving() throws Exception {
       Player.Game game = new Player.Game(5, 1);
       me = new PlayerBuilder()
@@ -331,7 +333,7 @@ public class PlayerTest {
           "....." 
           );
       
-      Player.Bomb bomb = new Player.Bomb(game.currentState, 4, 0, 0 ,4, 5);
+      Player.Bomb bomb = new Player.Bomb(game.currentState, 1, 0, 0 ,4, 5);
       game.currentState.addEntity(bomb);
       
       computeGame(game);
@@ -339,7 +341,7 @@ public class PlayerTest {
       // game ai
       Player.AI ai = new Player.AI1();
       ai.game = game;
-      ai.player = me;
+      ai.myIndex = me.owner;
       ai.compute();
       Player.Action action = ai.actions.get(0);
       
@@ -374,7 +376,107 @@ public class PlayerTest {
       // game ai
       Player.AI ai = new Player.AI1();
       ai.game = game;
-      ai.player = me;
+      ai.myIndex = me.owner;
+      ai.compute();
+      Player.Action action = ai.actions.get(0);
+
+      assertThat(action.pos, is(not(Player.P.get(0, 0))));
+    }
+  }
+  
+  public static class MCTS {
+    Player.APlayer me;
+    Player.APlayer opponent;
+    
+    @Before
+    public void setup() {
+    }
+    
+    @Test
+    public void avoidBomb() throws Exception {
+      Player.Game game = new Player.Game(5, 5);
+      Player.MCTS.game = game;
+      
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
+      
+      buildBoard(game,
+          ".00..",
+          "0X.X.",
+          "0....",
+          ".X.X.", 
+          "....." 
+          );
+      
+      game.currentState.addEntity(me);
+      game.currentState.addEntity(opponent);
+
+      // game ai
+      Player.MCTSAI ai = new Player.MCTSAI();
+      ai.game = game;
+      ai.myIndex = me.owner;
+      
+      ai.compute();
+      
+      // debug
+      debugMCTS(ai.root, 0);
+      
+      
+      Player.Action action = ai.actions.get(0);
+      assertThat(action.pos, is(not(Player.P.get(0, 0))));
+    }
+    
+    private void debugMCTS(Player.MCTS root, int step) {
+      for (int i=0;i<step;i++) {
+        System.out.print(" ");
+      }
+      System.out.println(root.getKeyFromActions()+" "+root.win+" / "+root.simulatedCount);
+      
+      if (step < 9) {
+        for (Player.MCTS m : root.childs.values()) {
+          debugMCTS(m, step+1);
+        }
+      }
+    }
+
+    @Test
+    public void dropBombAtStart() throws Exception {
+      Player.Game game = new Player.Game(5, 5);
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
+
+      buildBoard(game,
+          "...00",
+          ".X0X.",
+          "00...",
+          ".X.X.", 
+          "....." 
+          );
+      
+      computeGame(game);
+
+      // game ai
+      Player.AI ai = new Player.AI1();
+      ai.game = game;
+      ai.myIndex = me.owner;
       ai.compute();
       Player.Action action = ai.actions.get(0);
 
