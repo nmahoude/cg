@@ -47,7 +47,7 @@ class Player {
     }
   }
   
-  static class Bomb extends Entity {
+   static class Bomb extends Entity {
     public Bomb(GameState state, int owner, int x, int y, int ticksLeft, int range) {
       super(state, ENTITY_BOMB, owner, x, y);
       this.ticksLeft=ticksLeft;
@@ -144,9 +144,80 @@ class Player {
     }
   }
   
+  static class AI {
+    Game game;
+    APlayer player;
+    
+    Action computeBestMove_v1() {
+      Action action = new Action();
+      action.pos = player.p;
+      action.dropBomb = false;
+      action.message = "FOUND NOTHING TODO :(";
+      
+      GameState state0 = game.currentState;
+      P playerPos = state0.players[0].p;
+
+      //1. find best influencedCell
+      double maxScore = -100000;
+      Path bestPath = null;
+
+      for (int x=0;x<state0.width;x++) {
+        for (int y=0;y<state0.height;y++) {
+          P target = P.get(x, y);
+          int value = state0.getCellAt(x, y);
+          if (GameState.canWalkThrough(value)) {
+            // score heuristic
+            int distance = playerPos.manhattanDistance(target);
+            double score = state0.boxInfluence[target.x][target.y]
+                + (GameState.isAnItem(value) ? 1 : 0)
+                  - 0.2*distance
+                + 0;
+            if (score > maxScore) { // only check path if score is better
+              // start A* to find a path
+              Path path = new Path(game.currentState, playerPos, target);
+              Path.PathItem lastPathPos = path.find();
+              if (!path.path.isEmpty()) {
+                // ok we have a path
+                // check if it is safe
+                int tStep = 0;
+                boolean isSafe= true;
+                for (Path.PathItem pi : path.path) {
+                  if (game.currentState.isThreat(pi.pos) == tStep++) {
+                    isSafe = false;
+                  }                  
+                }
+                for (;tStep<8;tStep++) {
+                  if (game.currentState.isThreat(lastPathPos.pos) == tStep++) {
+                    isSafe = false;
+                  }                  
+                }
+                if(isSafe) {
+                  maxScore = score;
+                  bestPath = path;
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      if (bestPath != null) {
+        if (bestPath.path.size() == 1) {
+          action.dropBomb = true;
+          action.message = "At dest,drop a bomb";
+        } else {
+          Path.PathItem firstStep = bestPath.path.get(1);
+          action.pos = firstStep.pos;
+          action.message = "Cruising";
+        }
+      }
+      
+      return action;
+    }
+  }
   static class Game {
     private static final String MOVE_STAY_NOBOMB = "  ";
-    private static final int MAX_STEPS = 100;
+    private static final int MAX_STEPS = 20;
     int width, height;
     GameState currentState;
     int depth = 0;
@@ -187,38 +258,30 @@ class Player {
         long long5 = System.currentTimeMillis();
 
         
+        /*ai */long aiBefore = System.currentTimeMillis();
+        AI ai = new AI();
+        ai.game = this;
+        ai.player = currentState.players[myIndex];
+        Action action = ai.computeBestMove_v1();
+        /*ai */long aiAfter= System.currentTimeMillis();
+        
         System.err.println("prepareGame : "+(long2-long1));
         System.err.println("computeRound: "+(long3-long2));
         System.err.println("updateStates: "+(long4-long3));
         System.err.println("debug       : "+(long5-long4));
+        System.err.println("AI          : "+(aiAfter-aiBefore));
         
-
-        Action action = computeBestMove_v1();
+        
         System.out.println(action.get());
       }
     }
 
-    int isThreat(P p) {
-      GameState theState = currentState;
-      for (int layer = 0;layer<MAX_STEPS;layer++) {
-        if (theState == null) {
-          return -1;
-        }
-        int value = theState.grid[p.x][p.y];
-        if (GameState.isFire(value)) {
-          return layer;
-        }
-        theState = theState.childs.get(MOVE_STAY_NOBOMB);
-      }
-      return -1;
-    }
-    
     void debugThreats() {
       for (int y = 0; y < height; y++) {
         String result="";
         for (int x = 0; x < width; x++) {
           char c= ' ';
-          if (isThreat(P.get(x, y)) >= 0) {
+          if (currentState.isThreat(P.get(x, y)) >= 0) {
             c='!';
           }
           result+=c;
@@ -227,72 +290,7 @@ class Player {
       }
     }
 
-    Action computeBestMove_v1() {
-      Action action = new Action();
-      action.pos = currentState.players[0].p;
-      action.dropBomb = false;
-      action.message = "FOUND NOTHING TODO :(";
-      
-      GameState state0 = currentState;
-      P playerPos = state0.players[0].p;
 
-      //1. find best influencedCell
-      double maxScore = -100000;
-      Path bestPath = null;
-
-      for (int x=0;x<state0.width;x++) {
-        for (int y=0;y<state0.height;y++) {
-          P target = P.get(x, y);
-          int value = state0.getCellAt(x, y);
-          if (GameState.canWalkThrough(value)) {
-            // score heuristic
-            int distance = playerPos.manhattanDistance(target);
-            double score = state0.boxInfluence[target.x][target.y]
-                + (GameState.isAnItem(value) ? 1 : 0)
-                  - 0.2*distance
-                + 0;
-            if (score > maxScore) { // only check path if score is better
-              // start A* to find a path
-              Path path = new Path(currentState, playerPos, target);
-              Path.PathItem lastPathPos = path.find();
-              if (!path.path.isEmpty()) {
-                // ok we have a path
-                // check if it is safe
-                int tStep = 0;
-                boolean isSafe= true;
-                for (Path.PathItem pi : path.path) {
-                  if (isThreat(pi.pos) == tStep++) {
-                    isSafe = false;
-                  }                  
-                }
-                for (;tStep<8;tStep++) {
-                  if (isThreat(lastPathPos.pos) == tStep++) {
-                    isSafe = false;
-                  }                  
-                }
-                if(isSafe) {
-                  maxScore = score;
-                  bestPath = path;
-                }
-              }
-            }
-          }
-        }
-      }
-      
-      if (bestPath != null) {
-        if (bestPath.path.size() == 1) {
-          action.dropBomb = true;
-          action.message = "At dest,drop a bomb";
-        } else {
-          Path.PathItem firstStep = bestPath.path.get(1);
-          action.pos = firstStep.pos;
-          action.message = "Cruising";
-        }
-      }
-      
-      return action;
-    }
 
     void updateNextStates() {
       currentState.simulate(MOVE_STAY_NOBOMB);
@@ -597,6 +595,20 @@ class Player {
         }
         System.err.println(result);
       }
+    }
+    int isThreat(P p) {
+      GameState theState = this;
+      for (int layer = 0;layer<Game.MAX_STEPS;layer++) {
+        if (theState == null) {
+          return -1;
+        }
+        int value = theState.grid[p.x][p.y];
+        if (GameState.isFire(value)) {
+          return layer;
+        }
+        theState = theState.childs.get(Game.MOVE_STAY_NOBOMB);
+      }
+      return -1;
     }
   }
   
