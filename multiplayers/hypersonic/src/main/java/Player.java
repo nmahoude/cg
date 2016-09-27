@@ -1,10 +1,14 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.swing.text.Position;
+
 import java.util.Scanner;
 
 class Player {
@@ -16,6 +20,7 @@ class Player {
   
   static int[] rotx = { 1, 0, -1, 0, 0 };
   static int[] roty = { 0, 1, 0, -1, 0 };
+  static String[] rotString = { "RIGHT", "DOWN ", "LEFT ", "UP   ", "STAY " };
 
   static class Entity  {
     GameState state;
@@ -39,17 +44,24 @@ class Player {
       super(state, ENTITY_PLAYER, owner, x, y);
       bombsLeft = param1;
       bombRange = param2;
+      isDead = false;
     }
     int bombRange = 3;
     int bombsLeft = 1;
     public int points = 0;
-    public boolean isDead = false;
+    private boolean isDead = false;
     
     public Entity duplicate(GameState newState) {
       APlayer aPlayer = new APlayer(newState, owner, p.x, p.y, bombsLeft, bombRange);
       aPlayer.points = this.points;
       aPlayer.isDead = this.isDead;
       return aPlayer;
+    }
+    boolean isDead() {
+      return isDead;
+    }
+    void setDead() {
+      isDead = true;
     }
   }
   
@@ -100,7 +112,7 @@ class Player {
     void updatePlayerDeath(P position) {
       for (int p=0;p<4;p++) {
         if (state.players[p] != null && state.players[p].p.equals(position)) {
-          state.players[p].isDead = true;
+          state.players[p].setDead();
         }
       }
     }
@@ -265,22 +277,25 @@ class Player {
   
   static class MCTS {
     static Game game; // static reference to the game (only one). Better way to do it ?
-    
-    int[] dir = new int[5];
-    boolean[] bomb = new boolean[5];
+    Map<String, MCTS> childs = new HashMap<>();
     
     int simulatedCount=0; // how many branches (total > childs.size())
     int win=0;
-    
-    MCTS parent;
-    Map<String, MCTS> childs = new HashMap<>();
 
 
     static int [] possibilities = new int[5]; // dont' parralelize !
     static {
-      possibilities[0] = 4; // don't move !
+      possibilities[0] = 4; // don't move is the 1st choice!
     }
-    int findARandomMove(APlayer player, GameState fromState) {
+    int findARandomMove(APlayer player, GameState fromState, int range) {
+      if (range == 1) {
+        return possibilities[0];
+      } else {
+        // need to randomize here
+        return possibilities[getRandom(0,range)];
+      }
+    }
+    int fillPossibilities(APlayer player, GameState fromState) {
       int moveLeft = 1; // don't move is always a possible move ! 
       for (int i=0;i<4;i++) {
         int px = player.p.x + rotx[i];
@@ -289,25 +304,28 @@ class Player {
           possibilities[moveLeft++] = i;
         }
       }
-      
-      if (moveLeft == 1) {
-        return possibilities[0];
-      } else {
-        // need to randomize here
-        return possibilities[getRandom(0,moveLeft-1)];
-      }
+      return moveLeft;
     }
     static int getRandom(int i, int j) {
       return (int)(i+j * Math.random());
     }
-    void randomActions(GameState fromState) {
+    void randomActions(GameState fromState, int[] dir, boolean[] bomb) {
       for (int p=0;p<game.playersCount;p++) {
         APlayer player = fromState.players[p];
-        dir[p] = findARandomMove(player, fromState);
-        bomb[p] = fromState.players[p].bombsLeft > 0 ? Math.random() > 0.5 : false;
+
+        int possibleMoves = fillPossibilities(player, fromState);
+        dir[p] = findARandomMove(player, fromState, possibleMoves);
+        
+        if (fromState.players[p].bombsLeft > 0) {
+          boolean canDropBombOnBoard = !GameState.isABomb(fromState.getCellAt(player.p.x, player.p.y));
+          boolean cornered = possibleMoves <= 1;
+          bomb[p] = (!cornered && canDropBombOnBoard) ? Math.random() > 0.5 : false;
+        } else {
+          bomb[p] = false;
+        }
       }
     }
-    String getKeyFromActions() {
+    String getKeyFromActions(int[] dir, boolean bomb[]) {
       String key = "";
       for (int i=0;i<game.playersCount;i++) {
         key+= dir[i]+(bomb[i] ? "B" : "M");
@@ -320,39 +338,38 @@ class Player {
       
       //do simulation here
       fromState.computeRound_MCTS();
-      if (   (fromState.players[1] == null || fromState.players[1].isDead)
-          && (fromState.players[2] == null || fromState.players[2].isDead)
-          && (fromState.players[3] == null || fromState.players[3].isDead)) {
-        if (fromState.players[0].isDead) {
-          return victoryFromPoints(fromState);
-        } else {
-          return true; // all other dead or missing, we won
-        }
-      } else if (fromState.players[0].isDead) {
+      //fromState.debugBombs();
+      if (fromState.players[0].isDead()) {
         return false; // loss
-      }
-      // choose some new random moves
-      randomActions(fromState);
-      for (int p=0;p<game.playersCount-1;p++) {
-        int i = dir[p];
-        APlayer player = fromState.players[p];
-        
-        // drop bomb if needed
-        if (bomb[i]) {
-          Bomb bomb = new Bomb(fromState, player.owner, player.p.x,player.p.y, 8, player.bombRange);
-          fromState.addEntity(bomb);
-          player.bombsLeft--;
-        }
-        // then move
-        player.p = P.get(player.p.x + rotx[i], player.p.y + roty[i]);
       }
       
       if (depth > 0) {
+        // choose some new random moves
+        int[] dir = new int[5];
+        boolean[] bomb = new boolean[5];
+        randomActions(fromState, dir, bomb);
+        for (int playerIndex=0;playerIndex<game.playersCount;playerIndex++) {
+          int i = dir[playerIndex];
+          APlayer player = fromState.players[playerIndex];
+          
+          // drop bomb if needed
+          if (bomb[playerIndex]) {
+            Bomb droppedBomb = new Bomb(fromState, player.owner, player.p.x,player.p.y, 8, player.bombRange);
+            fromState.addEntity(droppedBomb);
+            player.bombsLeft-=1;
+          }
+          // then move
+          
+          int x = player.p.x + rotx[i];
+          int y = player.p.y + roty[i];
+          player.p = P.get(x, y);
+        }
+      
         // prepare child
-        String key = getKeyFromActions();
+        String key = getKeyFromActions(dir, bomb);
         MCTS chosenChild = childs.get(key);
         if (chosenChild != null) {
-          // we already go there !
+          // we already go there, reuse the child !
         } else {
           // create a new one
           chosenChild = new MCTS();
@@ -377,44 +394,105 @@ class Player {
       win++; // don't forget to count our victory
       return true; // we won !
     }
+    
+    String getBestChild() {
+      String chosenKey = null;
+      double bestRatio = -100.0;
+      for (Entry<String, MCTS> m : childs.entrySet()) {
+        MCTS tested = m.getValue();
+        double ratio1 = (1.0*tested.win) / tested.simulatedCount;
+        if (ratio1 > bestRatio) {
+          bestRatio = ratio1;
+          chosenKey = m.getKey();
+        }
+      }
+      return chosenKey;
+    }
+    @Override
+    public String toString() {
+      return "w/s:"+win+"/"+simulatedCount+" childs:"+childs.size();
+    }
   }
 
   static class MCTSAI extends AI {
+    int gameRound = 0;
+    private static final int MAX_STEPS = 20;
     MCTS root = new MCTS();
+    public int steps = MAX_STEPS;
+    
     @Override
     void compute() {
+      gameRound++;
+      root = new MCTS();
+      
+      //System.err.println("COMPUTE MCTS AI for round "+gameRound +"isPlayer dead "+game.currentState.players[0].isDead());
+      //      int l =root.fillPossibilities(game.currentState.players[0], game.currentState);
+      //System.err.println("Possibilities : ");
+      //      for (int i=0;i<l;i++) {
+      //        System.err.println(" "+rotString[root.possibilities[i]]);
+      //      }
       GameState copyOfRoot = new GameState(game.currentState.width, game.currentState.height, 0);
-      for (int i=0;i<100;i++) {
+      int simulationCount = 3000;
+      for (int i=0;i<simulationCount;i++) {
         copyOfRoot.duplicateFrom(game.currentState);
-        root.simulate(copyOfRoot, 200);
+        root.simulate(copyOfRoot, steps);
       }
       
-      MCTS chosen = null;
-      double bestRatio = -1.0;
-      for (Entry<String, MCTS> m : root.childs.entrySet()) {
-        MCTS tested = m.getValue();
-        double ratio1 = tested.win / tested.simulatedCount;
-        if (ratio1 > bestRatio) {
-          chosen = tested;
-          bestRatio = ratio1;
-        }
+      String chosenKey = root.getBestChild();
+      MCTS chosen = root.childs.get(chosenKey);
+      if (chosen == null) {
+        Action action = new Action();
+        action.pos = game.currentState.players[0].p;
+        action.dropBomb = false;
+        action.message = "Sayonara";
+        actions.clear();
+        actions.add(action);
+        
+        return;
       }
-      System.err.println("Best chosen child has a ratio of "+bestRatio + " ("+chosen.win+" / "+chosen.simulatedCount+")");
-      System.err.println("best key is "+chosen.getKeyFromActions());
-      
+      //System.err.println("best key is "+chosenKey);
+      //System.err.println("For p0 : "+keyToString(chosenKey));
+
       Action action = new Action();
-      action.message = chosen.getKeyFromActions()+", simulations: "+root.simulatedCount;
+      action.message = chosenKey+", s: "+root.simulatedCount;
 
       APlayer player = game.currentState.players[myIndex];
-      action.dropBomb = chosen.bomb[0];
+      action.dropBomb = chosenKey.charAt(1) == 'B';
 
-      int newPosX = player.p.x+rotx[chosen.dir[0]];
-      int newPosY = player.p.y+roty[chosen.dir[0]];
+      int actionIndex = chosenKey.charAt(0)-'0';
+      int newPosX = player.p.x+rotx[actionIndex];
+      int newPosY = player.p.y+roty[actionIndex];
       action.pos = P.get(newPosX, newPosY);
 
       actions.clear();
       actions.add(action);
     }
+
+    static String keyToString(String chosenKey, int playerIndex) {
+      return (chosenKey.charAt(2*playerIndex+1) == 'B' ? "BOMB" : "MOVE")+ " " +rotString[chosenKey.charAt(2*playerIndex)-'0'];
+    }
+    static String keyToString(String chosenKey) {
+      return keyToString(chosenKey, 0);
+    }
+    static void debugMCTS2(Player.MCTS root) {
+      int[] win = new int[5];
+      int[] simulated = new int[5];
+      for (Entry<String, Player.MCTS> m : root.childs.entrySet()) {
+        String key = m.getKey();
+        int index = key.charAt(0)-'0';
+        win[index] += m.getValue().win;
+        simulated[index] += m.getValue().simulatedCount;
+      }
+      int cumul = 0;
+      for (int i=0;i<5;i++) {
+        cumul+=win[i];
+        System.err.println(""+Player.rotString[i]+" -> "+win[i]+" / "+simulated[i]);
+      }
+      if (cumul == 0) {
+        MCTS.game.currentState.debugBombs();
+      }
+    }
+
   }
   
   static class Game {
@@ -447,13 +525,13 @@ class Player {
         long long2 = System.currentTimeMillis();
         //currentState.computeRound();
         long long3 = System.currentTimeMillis();
-        updateNextStates();
+        //updateNextStates();
         long long4 = System.currentTimeMillis();
 
         
 /** debug informations */
-        System.err.println("Current grid:");
-        System.err.println("-------------");
+//        System.err.println("Current grid:");
+//        System.err.println("-------------");
 //        debugThreats();
 //        currentState.debugPlayerAccessibleCellsWithAStar();
 //        currentState.debugBoxInfluenza();
@@ -472,10 +550,10 @@ class Player {
         Action action = ai.actions.get(0);
         /*ai */long aiAfter= System.currentTimeMillis();
         
-        System.err.println("prepareGame : "+(long2-long1));
-        System.err.println("computeRound: "+(long3-long2));
-        System.err.println("updateStates: "+(long4-long3));
-        System.err.println("debug       : "+(long5-long4));
+//        System.err.println("prepareGame : "+(long2-long1));
+//        System.err.println("computeRound: "+(long3-long2));
+//        System.err.println("updateStates: "+(long4-long3));
+//        System.err.println("debug       : "+(long5-long4));
         System.err.println("AI          : "+(aiAfter-aiBefore));
         
         
@@ -735,6 +813,17 @@ class Player {
     }
 
     public void computeRound_MCTS() {
+      // remove old fire
+      for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+          int value = grid[x][y];
+          if (value == GameState.CELL_FIRE) {
+            grid[x][y] = GameState.CELL_FLOOR;
+          }
+        }
+      }
+      
+      
       for (Entity entity : entities) {
         entity.update(this);
       }

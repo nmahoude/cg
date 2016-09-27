@@ -2,6 +2,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
+import java.util.Map.Entry;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -393,94 +395,118 @@ public class PlayerTest {
     }
     
     @Test
+    public void findRandomMove() throws Exception {
+      Player.Game game = new Player.Game(5, 5);
+      Player.MCTS.game = game;
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
+      
+      buildBoard(game,
+          "..0..",
+          ".X.X.",
+          "0....",
+          ".X.X.", 
+          "....." 
+          );
+
+      Player.MCTS mcts = new Player.MCTS();
+      int findARandomMove = mcts.findARandomMove(me, game.currentState);
+      
+      assertThat(mcts.possibilities[0], is(4));
+      assertThat(mcts.possibilities[1], is(0));
+      assertThat(mcts.possibilities[2], is(1));
+    }
+    
+    
+    @Test
     public void avoidBomb() throws Exception {
       Player.Game game = new Player.Game(5, 5);
       Player.MCTS.game = game;
       
       me = new PlayerBuilder()
           .withId(0)
-          .withPos(0, 0)
+          .withPos(1, 0)
           .withState(game.currentState)
           .build();
       
       opponent = new PlayerBuilder()
           .withId(1)
-          .withPos(5, 5)
+          .withPos(4, 4)
           .withState(game.currentState)
           .build();
       
       buildBoard(game,
-          ".00..",
-          "0X.X.",
+          "..0..",
+          ".X.X.",
           "0....",
           ".X.X.", 
           "....." 
           );
       
+      
       game.currentState.addEntity(me);
       game.currentState.addEntity(opponent);
-
+      Player.Bomb bomb = new BombBuilder()
+          .atState(game.currentState)
+          .from(opponent)
+          .atPosition(0, 1)
+          .withRange(3)
+          .withTicksLeft(2)
+          .build();
+      
       // game ai
       Player.MCTSAI ai = new Player.MCTSAI();
       ai.game = game;
       ai.myIndex = me.owner;
       
+      ai.steps = 10;
       ai.compute();
       
       // debug
-      debugMCTS(ai.root, 0);
-      
+      //debugMCTS("ROOT", ai.root, 0);
+      //Player.MCTSAI.debugMCTS2(ai.root);
+      debugBestMove(ai.root, 10);
       
       Player.Action action = ai.actions.get(0);
       assertThat(action.pos, is(not(Player.P.get(0, 0))));
+      
+      assertThat(game.currentState.players[0].isDead(), is(false));
     }
     
-    private void debugMCTS(Player.MCTS root, int step) {
+    private void debugBestMove(Player.MCTS root, int depth) {
+      String key = root.getBestChild();
+      if (key == null) {
+        // the end
+        return;
+      }
+      System.out.println("--> "+Player.MCTSAI.keyToString(key));
+      if (depth > 0) {
+        Player.MCTS mcts = root.childs.get(key);
+        debugBestMove(mcts, depth-1);
+      }
+    }
+
+    private void debugMCTS(String key, Player.MCTS root, int step) {
       for (int i=0;i<step;i++) {
         System.out.print(" ");
       }
-      System.out.println(root.getKeyFromActions()+" "+root.win+" / "+root.simulatedCount);
-      
-      if (step < 9) {
-        for (Player.MCTS m : root.childs.values()) {
-          debugMCTS(m, step+1);
+      if (!key.equals("ROOT")) {
+        System.out.println(Player.MCTSAI.keyToString(key)+" : "+root.win+" / "+root.simulatedCount);
+      }
+      if (step < 1) {
+        for (Entry<String, Player.MCTS> m : root.childs.entrySet()) {
+          debugMCTS(m.getKey(), m.getValue(), step+1);
         }
       }
-    }
-
-    @Test
-    public void dropBombAtStart() throws Exception {
-      Player.Game game = new Player.Game(5, 5);
-      me = new PlayerBuilder()
-          .withId(0)
-          .withPos(0, 0)
-          .withState(game.currentState)
-          .build();
-      
-      opponent = new PlayerBuilder()
-          .withId(1)
-          .withPos(5, 5)
-          .withState(game.currentState)
-          .build();
-
-      buildBoard(game,
-          "...00",
-          ".X0X.",
-          "00...",
-          ".X.X.", 
-          "....." 
-          );
-      
-      computeGame(game);
-
-      // game ai
-      Player.AI ai = new Player.AI1();
-      ai.game = game;
-      ai.myIndex = me.owner;
-      ai.compute();
-      Player.Action action = ai.actions.get(0);
-
-      assertThat(action.pos, is(not(Player.P.get(0, 0))));
     }
   }
 }
