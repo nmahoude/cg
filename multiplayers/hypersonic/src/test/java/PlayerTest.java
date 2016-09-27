@@ -3,10 +3,92 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class PlayerTest {
 
+  static void computeGame(Player.Game game) {
+    game.currentState.computeRound();
+    game.updateNextStates();
+  }
+  
+  static void buildBoard(Player.Game game, String...rows) {
+    int rowIndex = 0;
+    for (String row : rows) {
+      game.currentState.addRow(rowIndex++, row);
+    }
+  }
+  static class BombBuilder {
+    Player.GameState state;
+    int owner;
+    int x;
+    int y;
+    int ticksLeft;
+    int range;
+    BombBuilder atState(Player.GameState state) {
+      this.state = state;
+      return this;
+    }
+    BombBuilder from(Player.APlayer p) {
+      owner = p.owner;
+      return this;
+    }
+    BombBuilder atPosition(int x, int y) {
+      this.x = x;
+      this.y = y;
+      return this;
+    }
+    BombBuilder withTicksLeft(int t) {
+      ticksLeft = t;
+      return this;
+    }
+    BombBuilder withRange(int r) {
+      range = r;
+      return this;
+    }
+    
+    Player.Bomb build() {
+      Player.Bomb bomb = new Player.Bomb(state, owner, x, y, ticksLeft, range);
+      state.addEntity(bomb);
+      return bomb;
+    }
+  }
+
+  static class PlayerBuilder {
+    int x,y;
+    int bombsLeft=1;
+    int range=3;
+    int id = 0;
+    Player.GameState state;
+    
+    PlayerBuilder withState(Player.GameState state) {
+      this.state = state;
+      return this;
+    }
+    PlayerBuilder withId(int id) {
+      this.id = id;
+      return this;
+    }
+    PlayerBuilder withPos(int x, int y) {
+      this.x = x;
+      this.y = y;
+      return this;
+    }
+    PlayerBuilder withBombsLeft(int bl) {
+      this.bombsLeft = bl;
+      return this;
+    }
+    PlayerBuilder withRange(int r) {
+      this.range = r;
+      return this;
+    }
+    Player.APlayer build() {
+      Player.APlayer aPlayer = new Player.APlayer(state, id, x, y, bombsLeft, range);
+      state.players[id] = aPlayer;
+      return aPlayer;
+    }
+  }
   public static class CellAndBombs {
     Player.APlayer me;
     Player.APlayer opponent;
@@ -18,50 +100,81 @@ public class PlayerTest {
     @Test
     public void copyState() throws Exception {
       Player.Game game = new Player.Game(5, 5);
-      me = new Player.APlayer(game.currentState, 0, 0,0,0,0);
-      opponent = new Player.APlayer(game.currentState, 1,5,5,0,0);
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
 
-      game.currentState.players[0] = me;
-      game.currentState.players[1] = opponent;
+      buildBoard(game,
+          ".....",
+          ".X.X.",
+          ".....",
+          ".X.X.", 
+          "....." 
+          );
       
-      game.currentState.addRow(0, ".....");
-      game.currentState.addRow(1, ".X.X.");
-      game.currentState.addRow(2, ".....");
-      game.currentState.addRow(3, ".X.X."); 
-      game.currentState.addRow(4, "....."); 
-      
-      Player.Bomb bomb = new Player.Bomb(game.currentState, 0, 0, 0 ,2, 2);
-      game.currentState.addEntity(bomb);
-      
-      game.currentState.computeRound();
-      game.updateNextStates();
+      Player.Bomb bomb = new BombBuilder()
+          .atState(game.currentState)
+          .from(me)
+          .atPosition(0,0)
+          .withRange(2)
+          .withTicksLeft(2)
+          .build();
+
+      computeGame(game);
       
       assertThat(game.currentState.grid[0][0], is(Player.GameState.CELL_BOMB_0+1));
-      assertThat(game.states[1].grid[0][0], is(Player.GameState.CELL_FIRE));
+      assertThat(game.currentState.childs.get("  ").grid[0][0], is(Player.GameState.CELL_FIRE));
     }
-    
+
     @Test
     public void chainExplosion() throws Exception {
       Player.Game game = new Player.Game(5, 5);
-      me = new Player.APlayer(game.currentState, 0, 0,0,0,0);
-      opponent = new Player.APlayer(game.currentState, 1,5,5,0,0);
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
 
-      game.currentState.players[0] = me;
-      game.currentState.players[1] = opponent;
+
+      buildBoard(game,
+          ".....",
+          ".X.X.",
+          ".....",
+          ".X.X.", 
+          "....." 
+          );
       
-      game.currentState.addRow(0, ".....");
-      game.currentState.addRow(1, ".X.X.");
-      game.currentState.addRow(2, ".....");
-      game.currentState.addRow(3, ".X.X."); 
-      game.currentState.addRow(4, "....."); 
-      
-      Player.Bomb bomb = new Player.Bomb(game.currentState, 0, 0, 0 ,1, 2);
-      game.currentState.addEntity(bomb);
-      Player.Bomb bomb2 = new Player.Bomb(game.currentState, 0, 1, 0 ,8, 2);
-      game.currentState.addEntity(bomb2);
-      
-      
-      game.currentState.computeRound();
+      Player.Bomb bomb = new BombBuilder()
+          .atState(game.currentState)
+          .from(me)
+          .atPosition(0,0)
+          .withRange(2)
+          .withTicksLeft(1)
+          .build();
+
+      Player.Bomb bomb2 = new BombBuilder()
+          .atState(game.currentState)
+          .from(me)
+          .atPosition(0,1)
+          .withRange(2)
+          .withTicksLeft(8)
+          .build();
+
+      computeGame(game);
       
       int bomb1Value = game.currentState.grid[0][0];
       int bomb2Value = game.currentState.grid[0][1];
@@ -73,26 +186,39 @@ public class PlayerTest {
     @Test
     public void bombsTriggerFireWhichDisapearsNextRound() throws Exception {
       Player.Game game = new Player.Game(5, 5);
-      me = new Player.APlayer(game.currentState, 0, 0,0,0,0);
-      opponent = new Player.APlayer(game.currentState, 1,5,5,0,0);
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
 
-      game.currentState.players[0] = me;
-      game.currentState.players[1] = opponent;
+      buildBoard(game,
+          ".....",
+          ".X.X.",
+          ".....",
+          ".X.X.", 
+          "....." 
+          ); 
       
-      game.currentState.addRow(0, ".....");
-      game.currentState.addRow(1, ".X.X.");
-      game.currentState.addRow(2, ".....");
-      game.currentState.addRow(3, ".X.X."); 
-      game.currentState.addRow(4, "....."); 
+      Player.Bomb bomb = new BombBuilder()
+          .atState(game.currentState)
+          .from(me)
+          .atPosition(0,0)
+          .withRange(2)
+          .withTicksLeft(1)
+          .build();
       
-      Player.Bomb bomb = new Player.Bomb(game.currentState, 0, 0, 0 ,1, 2);
-      game.currentState.addEntity(bomb);
       
-      game.currentState.computeRound();
-      game.updateNextStates();
+      computeGame(game);
       
       int cellValue = game.currentState.grid[0][1];
-      int cellValueNext = game.states[1].grid[0][1];
+      int cellValueNext = game.currentState.childs.get("  ").grid[0][1];
       
       assertThat(cellValue, is(Player.GameState.CELL_FIRE));
       assertThat(cellValueNext, is(Player.GameState.CELL_FLOOR));
@@ -110,46 +236,66 @@ public class PlayerTest {
     @Test
     public void easy() throws Exception {
       Player.Game game = new Player.Game(5, 5);
-      me = new Player.APlayer(game.currentState, 0, 0,0,0,0);
-      opponent = new Player.APlayer(game.currentState, 1,5,5,0,0);
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
 
-      game.currentState.players[0] = me;
-      game.currentState.players[1] = opponent;
+      buildBoard(game,
+          "..0..",
+          ".X.X.",
+          "0....",
+          ".X.X.", 
+          "....." 
+          );
       
-      game.currentState.addRow(0, "..0..");
-      game.currentState.addRow(1, ".X.X.");
-      game.currentState.addRow(2, "0....");
-      game.currentState.addRow(3, ".X.X."); 
-      game.currentState.addRow(4, "....."); 
-      
-      game.currentState.computeRound();
-      game.updateNextStates();
+      computeGame(game);
 
       // path finding
-      Player.Path path = new Player.Path(game.states, Player.P.get(0, 0), Player.P.get(1, 0));
+      Player.Path path = new Player.Path(game.currentState, Player.P.get(0, 0), Player.P.get(1, 0));
       path.find();
       
       assertThat(path.path.isEmpty(), is(false));
     }
     
     @Test
+    @Ignore
     public void blockingBoxWillExplodeBeforeArriving() throws Exception {
       Player.Game game = new Player.Game(5, 1);
-      me = new Player.APlayer(game.currentState, 0, 0,0,0,0);
-      opponent = new Player.APlayer(game.currentState, 1,5,5,0,0);
-
-      game.currentState.players[0] = me;
-      game.currentState.players[1] = opponent;
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
       
-      game.currentState.addRow(0, "..0..");
-      Player.Bomb bomb = new Player.Bomb(game.currentState, 0, 3, 0 ,3, 2);
-      game.currentState.addEntity(bomb);
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
 
-      game.currentState.computeRound();
-      game.updateNextStates();
+      buildBoard(game, "..0..");
+
+      Player.Bomb bomb = new BombBuilder()
+          .atState(game.currentState)
+          .atPosition(4, 0)
+          .withRange(2)
+          .withTicksLeft(2)
+          .build();
+
+      computeGame(game);
 
       // path finding
-      Player.Path path = new Player.Path(game.states, Player.P.get(0, 0), Player.P.get(4, 0));
+      Player.Path path = new Player.Path(game.currentState, 
+          Player.P.get(0, 0), 
+          Player.P.get(4, 0));
       path.find();
       
       assertThat(path.path.isEmpty(), is(false));
@@ -167,83 +313,174 @@ public class PlayerTest {
     @Test
     public void avoidBomb() throws Exception {
       Player.Game game = new Player.Game(5, 5);
-      me = new Player.APlayer(game.currentState, 0, 0,0,0,0);
-      opponent = new Player.APlayer(game.currentState, 1,5,5,0,0);
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
 
-      game.currentState.players[0] = me;
-      game.currentState.players[1] = opponent;
+      buildBoard(game,
+          ".0...",
+          ".X.X.",
+          ".....",
+          ".X.X.", 
+          "....." 
+          );
       
-      game.currentState.addRow(0, ".0...");
-      game.currentState.addRow(1, ".X.X.");
-      game.currentState.addRow(2, ".....");
-      game.currentState.addRow(3, ".X.X."); 
-      game.currentState.addRow(4, "....."); 
-      
-      Player.Bomb bomb = new Player.Bomb(game.currentState, 4, 0, 0 ,4, 5);
+      Player.Bomb bomb = new Player.Bomb(game.currentState, 1, 0, 0 ,4, 5);
       game.currentState.addEntity(bomb);
       
-      game.currentState.computeRound();
-      game.updateNextStates();
+      computeGame(game);
 
       // game ai
-      Player.Action action = game.computeBestMove_v1();
+      Player.AI ai = new Player.AI1();
+      ai.game = game;
+      ai.myIndex = me.owner;
+      ai.compute();
+      Player.Action action = ai.actions.get(0);
       
       assertThat(action.pos, is(not(Player.P.get(0, 0))));
     }
     
     @Test
-    public void dontSuicide_1() throws Exception {
-      Player.Game game = new Player.Game(9, 5);
-      me = new Player.APlayer(game.currentState, 0, 0,0,0,0);
-      opponent = new Player.APlayer(game.currentState, 1,5,5,0,0);
+    public void dropBombAtStart() throws Exception {
+      Player.Game game = new Player.Game(5, 5);
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
 
-      game.currentState.players[0] = me;
-      game.currentState.players[1] = opponent;
+      buildBoard(game,
+          "...00",
+          ".X0X.",
+          "00...",
+          ".X.X.", 
+          "....." 
+          );
       
-      game.currentState.addRow(0, "..0......");
-      game.currentState.addRow(1, ".X.X.X.X.");
-      game.currentState.addRow(2, "0........");
-      game.currentState.addRow(3, ".X.X.X.X."); 
-      game.currentState.addRow(4, "........."); 
-      
-      game.currentState.computeRound();
-      game.updateNextStates();
+      computeGame(game);
 
       // game ai
-      Player.Action action = game.computeBestMove_v1();
-      
-      //assertThat(action.pos, is(Player.P.get(0, 3)));
-      assertThat(action.dropBomb, is(not(true)));
+      Player.AI ai = new Player.AI1();
+      ai.game = game;
+      ai.myIndex = me.owner;
+      ai.compute();
+      Player.Action action = ai.actions.get(0);
+
+      assertThat(action.pos, is(not(Player.P.get(0, 0))));
+    }
+  }
+  
+  public static class MCTS {
+    Player.APlayer me;
+    Player.APlayer opponent;
+    
+    @Before
+    public void setup() {
     }
     
     @Test
-    public void dontSuicide2() throws Exception {
-      Player.Game game = new Player.Game(9, 5);
-      me = new Player.APlayer(game.currentState, 0, 1,3,0,0);
-      opponent = new Player.APlayer(game.currentState, 1,5,5,0,0);
-
-      game.currentState.players[0] = me;
-      game.currentState.players[1] = opponent;
+    public void avoidBomb() throws Exception {
+      Player.Game game = new Player.Game(5, 5);
+      Player.MCTS.game = game;
       
-      game.currentState.addRow(0, ".........");
-      game.currentState.addRow(1, ".X.X.X.X.");
-      game.currentState.addRow(2, ".........");
-      game.currentState.addRow(3, ".X.X.X.X."); 
-      game.currentState.addRow(4, "........."); 
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
       
-      Player.Bomb bomb1 = new Player.Bomb(game.currentState, 0, 7, 3 ,3, 20);
-      game.currentState.addEntity(bomb1);
-      Player.Bomb bomb2 = new Player.Bomb(game.currentState, 0, 2, 3 ,7, 20);
-      game.currentState.addEntity(bomb2);
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
       
-      game.currentState.computeRound();
-      game.updateNextStates();
+      buildBoard(game,
+          ".00..",
+          "0X.X.",
+          "0....",
+          ".X.X.", 
+          "....." 
+          );
+      
+      game.currentState.addEntity(me);
+      game.currentState.addEntity(opponent);
 
       // game ai
-      Player.Action action = game.computeBestMove_v1();
+      Player.MCTSAI ai = new Player.MCTSAI();
+      ai.game = game;
+      ai.myIndex = me.owner;
       
-      assertThat(action.pos, is(Player.P.get(0, 3)));
-      assertThat(action.dropBomb, is(not(true)));
+      ai.compute();
+      
+      // debug
+      debugMCTS(ai.root, 0);
+      
+      
+      Player.Action action = ai.actions.get(0);
+      assertThat(action.pos, is(not(Player.P.get(0, 0))));
+    }
+    
+    private void debugMCTS(Player.MCTS root, int step) {
+      for (int i=0;i<step;i++) {
+        System.out.print(" ");
+      }
+      System.out.println(root.getKeyFromActions()+" "+root.win+" / "+root.simulatedCount);
+      
+      if (step < 9) {
+        for (Player.MCTS m : root.childs.values()) {
+          debugMCTS(m, step+1);
+        }
+      }
+    }
+
+    @Test
+    public void dropBombAtStart() throws Exception {
+      Player.Game game = new Player.Game(5, 5);
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
+
+      buildBoard(game,
+          "...00",
+          ".X0X.",
+          "00...",
+          ".X.X.", 
+          "....." 
+          );
+      
+      computeGame(game);
+
+      // game ai
+      Player.AI ai = new Player.AI1();
+      ai.game = game;
+      ai.myIndex = me.owner;
+      ai.compute();
+      Player.Action action = ai.actions.get(0);
+
+      assertThat(action.pos, is(not(Player.P.get(0, 0))));
     }
   }
 }

@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 class Player {
@@ -13,8 +14,8 @@ class Player {
   private static final int ENTITY_BOMB = 1;
   private static final int ENTITY_ITEM = 2;
   
-  static int[] rotx = { 1, 0, -1, 0 };
-  static int[] roty = { 0, 1, 0, -1 };
+  static int[] rotx = { 1, 0, -1, 0, 0 };
+  static int[] roty = { 0, 1, 0, -1, 0 };
 
   static class Entity  {
     GameState state;
@@ -41,13 +42,18 @@ class Player {
     }
     int bombRange = 3;
     int bombsLeft = 1;
-
+    public int points = 0;
+    public boolean isDead = false;
+    
     public Entity duplicate(GameState newState) {
-      return new APlayer(newState, owner, p.x, p.y, bombsLeft, bombRange);
+      APlayer aPlayer = new APlayer(newState, owner, p.x, p.y, bombsLeft, bombRange);
+      aPlayer.points = this.points;
+      aPlayer.isDead = this.isDead;
+      return aPlayer;
     }
   }
   
-  static class Bomb extends Entity {
+   static class Bomb extends Entity {
     public Bomb(GameState state, int owner, int x, int y, int ticksLeft, int range) {
       super(state, ENTITY_BOMB, owner, x, y);
       this.ticksLeft=ticksLeft;
@@ -91,7 +97,19 @@ class Player {
       }
     }
 
+    void updatePlayerDeath(P position) {
+      for (int p=0;p<4;p++) {
+        if (state.players[p] != null && state.players[p].p.equals(position)) {
+          state.players[p].isDead = true;
+        }
+      }
+    }
     public void explode(GameState state) {
+      if (state.players[owner] != null) {
+        state.players[owner].bombsLeft++;
+      }
+      updatePlayerDeath(this.p);
+      
       for (int rot=0;rot<4;rot++) {
         for (int d=1;d<range;d++) {
           int testedX = p.x+d*rotx[rot];
@@ -101,7 +119,10 @@ class Player {
           if (GameState.explosionBlocked(value)) {
             break;
           }
+
           P testedP = P.get(testedX, testedY);
+          updatePlayerDeath(testedP);
+
           state.explodedBombs.add(this);
           if (GameState.explosionSoftBlocked(value)) {
             if (GameState.isABomb(value)) {
@@ -109,6 +130,9 @@ class Player {
               state.triggerBomb(testedP);
             } else if (GameState.isABox(value)) {
               state.hittedBoxes.add(testedP);
+              if (state.players[owner] != null) {
+                state.players[owner].points ++;
+              }
             }
             break;
           }
@@ -144,28 +168,284 @@ class Player {
     }
   }
   
+  static abstract class AI {
+    Game game;
+    enum Mode {
+      CRUISING,
+      DEFENSIVE,
+      OFFENSIVE
+    }
+    Mode mode = Mode.CRUISING;
+    List<APlayer> offensive = new ArrayList<>();
+  
+    List<Action> actions = new ArrayList<>();
+    public int myIndex;
+    
+    abstract void compute();
+  }
+  static class AI1 extends AI {
+    void compute() {
+//      GameState cState = game.currentState;
+//      int index = 0;
+//      while (cState != null && index < 10) {
+//        System.err.println("Step : "+index);
+//        cState.debugBombs();
+//        cState = cState.childs.get(Game.MOVE_STAY_NOBOMB);
+//        index++;
+//      }
+      
+      
+      Action action = new Action();
+      action.pos = game.currentState.players[myIndex].p;
+      action.dropBomb = false;
+      action.message = "FOUND NOTHING TODO :(";
+      
+      GameState state0 = game.currentState;
+      P playerPos = state0.players[0].p;
+
+      //1. find best influencedCell
+      double maxScore = -100000;
+      Path bestPath = null;
+
+      for (int x=0;x<state0.width;x++) {
+        for (int y=0;y<state0.height;y++) {
+          P target = P.get(x, y);
+          int value = state0.getCellAt(x, y);
+          if (GameState.canWalkThrough(value)) {
+            // score heuristic
+            int distance = playerPos.manhattanDistance(target);
+            double score = state0.boxInfluence[target.x][target.y]
+                + (GameState.isAnItem(value) ? 1 : 0)
+                  - 0.2*distance
+                + 0;
+            if (score > maxScore) { // only check path if score is better
+              // start A* to find a path
+              Path path = new Path(game.currentState, playerPos, target);
+              Path.PathItem lastPathPos = path.find();
+              if (!path.path.isEmpty()) {
+                // ok we have a path
+                // check if it is safe
+                int tStep = 0;
+                boolean isSafe= true;
+                for (Path.PathItem pi : path.path) {
+                  if (game.currentState.isThreat(pi.pos) == tStep++) {
+                    isSafe = false;
+                  }                  
+                }
+                for (;tStep<8;tStep++) {
+                  if (game.currentState.isThreat(lastPathPos.pos) == tStep++) {
+                    isSafe = false;
+                  }                  
+                }
+                if(isSafe) {
+                  maxScore = score;
+                  bestPath = path;
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      if (bestPath != null) {
+        if (bestPath.path.size() == 1) {
+          action.dropBomb = true; 
+          action.message = "At dest,drop a bomb";
+        } else {
+          Path.PathItem firstStep = bestPath.path.get(1);
+          action.pos = firstStep.pos;
+          action.message = "Cruising";
+        }
+      }
+      
+      actions.clear();
+      actions.add(action);
+    }
+  }
+  
+  static class MCTS {
+    static Game game; // static reference to the game (only one). Better way to do it ?
+    
+    int[] dir = new int[5];
+    boolean[] bomb = new boolean[5];
+    
+    int simulatedCount=0; // how many branches (total > childs.size())
+    int win=0;
+    
+    MCTS parent;
+    Map<String, MCTS> childs = new HashMap<>();
+
+
+    static int [] possibilities = new int[5]; // dont' parralelize !
+    static {
+      possibilities[0] = 4; // don't move !
+    }
+    int findARandomMove(APlayer player, GameState fromState) {
+      int moveLeft = 1; // don't move is always a possible move ! 
+      for (int i=0;i<4;i++) {
+        int px = player.p.x + rotx[i];
+        int py = player.p.y + roty[i];
+        if (GameState.canWalkThrough(fromState.getCellAt(px, py))) {
+          possibilities[moveLeft++] = i;
+        }
+      }
+      
+      if (moveLeft == 1) {
+        return possibilities[0];
+      } else {
+        // need to randomize here
+        return possibilities[getRandom(0,moveLeft-1)];
+      }
+    }
+    static int getRandom(int i, int j) {
+      return (int)(i+j * Math.random());
+    }
+    void randomActions(GameState fromState) {
+      for (int p=0;p<game.playersCount;p++) {
+        APlayer player = fromState.players[p];
+        dir[p] = findARandomMove(player, fromState);
+        bomb[p] = fromState.players[p].bombsLeft > 0 ? Math.random() > 0.5 : false;
+      }
+    }
+    String getKeyFromActions() {
+      String key = "";
+      for (int i=0;i<game.playersCount;i++) {
+        key+= dir[i]+(bomb[i] ? "B" : "M");
+      }
+      return key;
+    }
+
+    boolean simulate(GameState fromState, int depth) {
+      this.simulatedCount++;
+      
+      //do simulation here
+      fromState.computeRound_MCTS();
+      if (   (fromState.players[1] == null || fromState.players[1].isDead)
+          && (fromState.players[2] == null || fromState.players[2].isDead)
+          && (fromState.players[3] == null || fromState.players[3].isDead)) {
+        if (fromState.players[0].isDead) {
+          return victoryFromPoints(fromState);
+        } else {
+          return true; // all other dead or missing, we won
+        }
+      } else if (fromState.players[0].isDead) {
+        return false; // loss
+      }
+      // choose some new random moves
+      randomActions(fromState);
+      for (int p=0;p<game.playersCount-1;p++) {
+        int i = dir[p];
+        APlayer player = fromState.players[p];
+        
+        // drop bomb if needed
+        if (bomb[i]) {
+          Bomb bomb = new Bomb(fromState, player.owner, player.p.x,player.p.y, 8, player.bombRange);
+          fromState.addEntity(bomb);
+          player.bombsLeft--;
+        }
+        // then move
+        player.p = P.get(player.p.x + rotx[i], player.p.y + roty[i]);
+      }
+      
+      if (depth > 0) {
+        // prepare child
+        String key = getKeyFromActions();
+        MCTS chosenChild = childs.get(key);
+        if (chosenChild != null) {
+          // we already go there !
+        } else {
+          // create a new one
+          chosenChild = new MCTS();
+          childs.put(key, chosenChild);
+        }
+        boolean hasWon = chosenChild.simulate(fromState, depth-1);
+        if (hasWon) {
+          win++;
+        }
+        return hasWon;
+      } else {
+        return victoryFromPoints(fromState);
+      }
+    }
+    private boolean victoryFromPoints(GameState fromState) {
+      APlayer me = fromState.players[0];
+      for (int i=1;i<4;i++) {
+        if (fromState.players[i] != null && me.points < fromState.players[i].points) {
+          return false;
+        }
+      }
+      win++; // don't forget to count our victory
+      return true; // we won !
+    }
+  }
+
+  static class MCTSAI extends AI {
+    MCTS root = new MCTS();
+    @Override
+    void compute() {
+      GameState copyOfRoot = new GameState(game.currentState.width, game.currentState.height, 0);
+      for (int i=0;i<100;i++) {
+        copyOfRoot.duplicateFrom(game.currentState);
+        root.simulate(copyOfRoot, 200);
+      }
+      
+      MCTS chosen = null;
+      double bestRatio = -1.0;
+      for (Entry<String, MCTS> m : root.childs.entrySet()) {
+        MCTS tested = m.getValue();
+        double ratio1 = tested.win / tested.simulatedCount;
+        if (ratio1 > bestRatio) {
+          chosen = tested;
+          bestRatio = ratio1;
+        }
+      }
+      System.err.println("Best chosen child has a ratio of "+bestRatio + " ("+chosen.win+" / "+chosen.simulatedCount+")");
+      System.err.println("best key is "+chosen.getKeyFromActions());
+      
+      Action action = new Action();
+      action.message = chosen.getKeyFromActions()+", simulations: "+root.simulatedCount;
+
+      APlayer player = game.currentState.players[myIndex];
+      action.dropBomb = chosen.bomb[0];
+
+      int newPosX = player.p.x+rotx[chosen.dir[0]];
+      int newPosY = player.p.y+roty[chosen.dir[0]];
+      action.pos = P.get(newPosX, newPosY);
+
+      actions.clear();
+      actions.add(action);
+    }
+  }
+  
   static class Game {
+    public int playersCount=2;
+    private static final String MOVE_STAY_NOBOMB = "  ";
+    private static final int MAX_STEPS = 20;
     int width, height;
     GameState currentState;
-    GameState[] states = new GameState[9];
+    int depth = 0;
+    
     public int myIndex;
     
     Game(int width, int height) {
       this.width = width;
       this.height = height;
       
-      for (int i=0;i<states.length;i++) {
-        states[i] = new GameState(width, height);
-      }
-      currentState = states[0];
+      currentState = new GameState(width, height, 0);
     }
     
     private void play() {
+      MCTS.game = this; // OUTCH, it's ugly
+      
+      AI ai = new MCTSAI();
+      ai.game = this;
+      ai.myIndex = myIndex;
+      
       while (true) {
         long long1 = System.currentTimeMillis();
         prepareGameState();
         long long2 = System.currentTimeMillis();
-        currentState.computeRound();
+        //currentState.computeRound();
         long long3 = System.currentTimeMillis();
         updateNextStates();
         long long4 = System.currentTimeMillis();
@@ -187,33 +467,28 @@ class Player {
         long long5 = System.currentTimeMillis();
 
         
+        /*ai */long aiBefore = System.currentTimeMillis();
+        ai.compute();
+        Action action = ai.actions.get(0);
+        /*ai */long aiAfter= System.currentTimeMillis();
+        
         System.err.println("prepareGame : "+(long2-long1));
         System.err.println("computeRound: "+(long3-long2));
         System.err.println("updateStates: "+(long4-long3));
         System.err.println("debug       : "+(long5-long4));
+        System.err.println("AI          : "+(aiAfter-aiBefore));
         
-
-        Action action = computeBestMove_v1();
+        
         System.out.println(action.get());
       }
     }
 
-    int isThreat(P p) {
-      for (int layer = 0;layer<states.length;layer++) {
-        int value = states[layer].grid[p.x][p.y];
-        if (GameState.isFire(value)) {
-          return layer;
-        }
-      }
-      return -1;
-    }
-    
     void debugThreats() {
       for (int y = 0; y < height; y++) {
         String result="";
         for (int x = 0; x < width; x++) {
           char c= ' ';
-          if (isThreat(P.get(x, y)) >= 0) {
+          if (currentState.isThreat(P.get(x, y)) >= 0) {
             c='!';
           }
           result+=c;
@@ -222,78 +497,10 @@ class Player {
       }
     }
 
-    Action computeBestMove_v1() {
-      Action action = new Action();
-      action.pos = currentState.players[0].p;
-      action.dropBomb = false;
-      action.message = "FOUND NOTHING TODO :(";
-      
-      GameState state0 = states[0];
-      P playerPos = state0.players[0].p;
 
-      //1. find best influencedCell
-      double maxScore = -100000;
-      Path bestPath = null;
-
-      for (int x=0;x<state0.width;x++) {
-        for (int y=0;y<state0.height;y++) {
-          P target = P.get(x, y);
-          int value = state0.getCellAt(x, y);
-          if (GameState.canWalkThrough(value)) {
-            // score heuristic
-            int distance = playerPos.manhattanDistance(target);
-            double score = state0.boxInfluence[target.x][target.y]
-                + (GameState.isAnItem(value) ? 1 : 0)
-                  - 0.2*distance
-                + 0;
-            if (score > maxScore) { // only check path if score is better
-              // start A* to find a path
-              Path path = new Path(states, playerPos, target);
-              Path.PathItem lastPathPos = path.find();
-              if (!path.path.isEmpty()) {
-                // ok we have a path
-                // check if it is safe
-                int tStep = 0;
-                boolean isSafe= true;
-                for (Path.PathItem pi : path.path) {
-                  if (isThreat(pi.pos) == tStep++) {
-                    isSafe = false;
-                  }                  
-                }
-                for (;tStep<8;tStep++) {
-                  if (isThreat(lastPathPos.pos) == tStep++) {
-                    isSafe = false;
-                  }                  
-                }
-                if(isSafe) {
-                  maxScore = score;
-                  bestPath = path;
-                }
-              }
-            }
-          }
-        }
-      }
-      
-      if (bestPath != null) {
-        if (bestPath.path.size() == 1) {
-          action.dropBomb = true;
-          action.message = "At dest,drop a bomb";
-        } else {
-          Path.PathItem firstStep = bestPath.path.get(1);
-          action.pos = firstStep.pos;
-          action.message = "Cruising";
-        }
-      }
-      
-      return action;
-    }
 
     void updateNextStates() {
-      for (int i=1;i<states.length;i++) {
-        states[i].clone(states[i-1]);
-        states[i].computeRound();
-      }
+      currentState.simulate(MOVE_STAY_NOBOMB);
     }
 
     private void prepareGameState() {
@@ -304,6 +511,7 @@ class Player {
         currentState.addRow(y, row);
       }
       int entitiesCount = in.nextInt();
+      int playersCount = 0;
       for (int i = 0; i < entitiesCount; i++) {
         int entityType = in.nextInt();
         int owner = in.nextInt();
@@ -318,6 +526,7 @@ class Player {
           APlayer player = new APlayer(currentState, owner, x,y, param1, param2);
           currentState.players[owner] = player;
           entity = player;
+          playersCount++;
         } else if (entityType == ENTITY_ITEM) {
           entity = new Item(currentState, owner, x,y, param1, param2);
         } else {
@@ -328,6 +537,8 @@ class Player {
         }
       }
       in.nextLine();
+      
+      this.playersCount = playersCount;
     }
   }
   static class GameState {
@@ -350,6 +561,16 @@ class Player {
         grid[p.x][p.y] = CELL_ITEM_BOMBUP;
       }else if (value == CELL_RANGEUP_BOX) {
         grid[p.x][p.y] = CELL_ITEM_RANGEUP;
+      }
+    }
+    public void simulate(String theMove) {
+      if (this.depth < Game.MAX_STEPS) {
+        GameState nextState = childs.get(Game.MOVE_STAY_NOBOMB);
+        if (nextState != null) {
+          nextState.clone(this);
+          nextState.computeRound();
+          nextState.simulate(theMove);
+        }
       }
     }
     public void triggerBomb(P pointToCheck) {
@@ -401,6 +622,7 @@ class Player {
     }
     
     int width, height;
+    Map<String, GameState> childs = new HashMap<>();
 
     int[][] grid;
     APlayer players[] = new APlayer[4];
@@ -410,14 +632,26 @@ class Player {
     private List<P> boxes = new ArrayList<>();
     private List<P> hittedBoxes = new ArrayList<>();
     public List<Bomb> explodedBombs = new ArrayList<>();
+    int depth;
     
-    GameState(int width, int height) {
+    GameState(int width, int height, int depth) {
       this.width = width;
       this.height = height;
+      this.depth = depth;
       grid = new int[width][height];
       boxInfluence = new int[width][height];
+      
+      if( depth < Game.MAX_STEPS) {
+        childs.put("  ", new GameState(width,height, depth+1));
+      }
     }
 
+    // clean for next simulation on same spot
+    void softReset() {
+      explodedBombs.clear();
+      hittedBoxes.clear();
+      
+    }
     // clean cumulative states
     void reset() {
       boxes.clear();
@@ -432,14 +666,32 @@ class Player {
       }
     }
 
+    public void duplicateFrom(GameState fromState) {
+      reset();
+      for (Entity e : fromState.entities) {
+        Entity duplicate = e.duplicate(this);
+        if (duplicate.type == ENTITY_PLAYER) {
+          this.players[duplicate.owner] = (APlayer)duplicate;
+        }
+        this.entities.add(duplicate);
+      }
+
+      for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+          grid[x][y] = fromState.grid[x][y];
+        }
+      }
+    }
+    
     public void clone(GameState fromState) {
       reset();
       for (Entity e : fromState.entities) {
         this.entities.add(e.duplicate(this));
       }
-      
-      this.players[0] = fromState.players[0];
-      this.players[1] = fromState.players[1];
+
+      for (int p=0;p<4;p++) {
+        this.players[p] = fromState.players[p];
+      } 
       
       for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
@@ -482,16 +734,21 @@ class Player {
       updateBoxInfluenza(players[0].bombRange);
     }
 
-    private void debugPlayerAccessibleCellsWithAStar() {
+    public void computeRound_MCTS() {
+      for (Entity entity : entities) {
+        entity.update(this);
+      }
+      removeHittedBoxes();
+    }
+
+    private void debugPlayerAccessibleCellsWithAStar(APlayer player) {
       // TODO don't use A* to check this !
-      System.err.println("Accessible cells from "+players[1].p);
-      GameState[] states = new GameState[1];
-      states[0] = this;
+      System.err.println("Accessible cells from "+player);
 
       for (int y = 0; y < height; y++) {
         String result="";
         for (int x = 0; x < width; x++) {
-          Path path = new Path(states, players[1].p, P.get(x, y));
+          Path path = new Path(this, player.p, P.get(x, y));
           path.find();
           if (path.path.size() > 0) {
             result+="A";
@@ -520,7 +777,7 @@ class Player {
             int testedY = p.y+range*roty[rot];
             
             int value = getCellAt(testedX, testedY);
-            if (isHardBlocked(value) || isSoftBlock(value)) {
+            if (explosionBlocked(value)) {
               break;
             }
             boxInfluence[testedX][testedY] ++;
@@ -582,6 +839,20 @@ class Player {
         System.err.println(result);
       }
     }
+    int isThreat(P p) {
+      GameState theState = this;
+      for (int layer = 0;layer<Game.MAX_STEPS;layer++) {
+        if (theState == null) {
+          return -1;
+        }
+        int value = theState.grid[p.x][p.y];
+        if (GameState.isFire(value)) {
+          return layer;
+        }
+        theState = theState.childs.get(Game.MOVE_STAY_NOBOMB);
+      }
+      return -1;
+    }
   }
   
   public static void main(String[] args) {
@@ -607,12 +878,12 @@ class Player {
     
     List<PathItem> path = new ArrayList<>();
     
-    private GameState[] states;
+    private GameState rootState;
     P from;
     P target;
     
-    Path(GameState[] states, P from, P target) {
-      this.states = states;
+    Path(GameState root, P from, P target) {
+      this.rootState = root;
       this.from = from;
       this.target = target;
     }
@@ -623,6 +894,7 @@ class Player {
       for (Path.PathItem i : path) {
         System.err.print(i.pos+" --> ");
       }
+      System.err.println("");
     }
 
     PathItem find() {
@@ -643,29 +915,30 @@ class Player {
     }
     PathItem calculus() {
       PathItem root = new PathItem();
-      root.pos = from;
+      root.pos = this.from;
+      root.state = this.rootState;
       openList.add(root);
 
       while (openList.size() > 0) {
         PathItem visiting = openList.remove(0); // imagine it's the best
+        GameState theState = visiting.state;
         P pos = visiting.pos;
         if (pos.equals(target)) {
           return visiting;
         }
 
         closedList.put(pos, visiting);
-        int step = Math.min(states.length-1, visiting.length()); // temporal A*
         if (pos.y > 0) {
-          addToOpenList(visiting, states[step], pos , P.get(pos.x, pos.y-1));
+          addToOpenList(visiting, pos , P.get(pos.x, pos.y-1));
         }
-        if (pos.y < states[step].height - 1) {
-          addToOpenList(visiting, states[step], pos , P.get(pos.x, pos.y+1));
+        if (pos.y < theState.height - 1) {
+          addToOpenList(visiting, pos , P.get(pos.x, pos.y+1));
         }
         if (pos.x > 0) {
-          addToOpenList(visiting, states[step], pos , P.get(pos.x-1, pos.y));
+          addToOpenList(visiting, pos , P.get(pos.x-1, pos.y));
         }
-        if (pos.x < states[step].width - 1) {
-          addToOpenList(visiting, states[step], pos , P.get(pos.x+1, pos.y));
+        if (pos.x < theState.width - 1) {
+          addToOpenList(visiting, pos , P.get(pos.x+1, pos.y));
         }
         // sort with distances
         Collections.sort(openList, new Comparator<PathItem>() {
@@ -678,18 +951,21 @@ class Player {
       return null; // not found !
     }
 
-    private void addToOpenList(PathItem visiting, GameState state, P fromCell, P toCell) {
+    private void addToOpenList(PathItem visiting, P fromCell, P toCell) {
       if (closedList.containsKey(toCell)) {
         return;
       }
-      int value = state.getCellAt(toCell.x, toCell.y);
+      int value = visiting.state.getCellAt(toCell.x, toCell.y);
       if (GameState.canWalkThrough(value)) {
         PathItem pi = new PathItem();
         pi.pos = toCell;
         pi.cumulativeLength = visiting.cumulativeLength + 1;
         pi.totalPrevisionalLength = pi.cumulativeLength + fromCell.manhattanDistance(target);
         pi.precedent = visiting;
-        pi.state = state;
+        pi.state = visiting.state.childs.get(Game.MOVE_STAY_NOBOMB);
+        if (pi.state == null) {
+          pi.state = visiting.state;
+        }
         openList.add(pi);
       }
     }
@@ -769,11 +1045,7 @@ class Player {
       if (getClass() != obj.getClass())
         return false;
       P other = (P) obj;
-      if (x != other.x)
-        return false;
-      if (y != other.y)
-        return false;
-      return true;
+      return x == other.x && y == other.y;
     }
   }
 
