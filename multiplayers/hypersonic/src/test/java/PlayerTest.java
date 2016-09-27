@@ -83,7 +83,7 @@ public class PlayerTest {
       return this;
     }
     Player.APlayer build() {
-      Player.APlayer aPlayer = new Player.APlayer(state, id, x, y, range, bombsLeft);
+      Player.APlayer aPlayer = new Player.APlayer(state, id, x, y, bombsLeft, range);
       state.players[id] = aPlayer;
       return aPlayer;
     }
@@ -283,15 +283,17 @@ public class PlayerTest {
 
       Player.Bomb bomb = new BombBuilder()
           .atState(game.currentState)
-          .atPosition(0,0)
+          .atPosition(4, 0)
           .withRange(2)
-          .withTicksLeft(3)
+          .withTicksLeft(2)
           .build();
 
       computeGame(game);
 
       // path finding
-      Player.Path path = new Player.Path(game.currentState, Player.P.get(0, 0), Player.P.get(4, 0));
+      Player.Path path = new Player.Path(game.currentState, 
+          Player.P.get(0, 0), 
+          Player.P.get(4, 0));
       path.find();
       
       assertThat(path.path.isEmpty(), is(false));
@@ -335,11 +337,47 @@ public class PlayerTest {
       computeGame(game);
 
       // game ai
-      Player.AI ai = new Player.AI();
+      Player.AI ai = new Player.AI1();
       ai.game = game;
       ai.player = me;
-      Player.Action action = ai.computeBestMove_v1();
+      ai.compute();
+      Player.Action action = ai.actions.get(0);
       
+      assertThat(action.pos, is(not(Player.P.get(0, 0))));
+    }
+    
+    @Test
+    public void dropBombAtStart() throws Exception {
+      Player.Game game = new Player.Game(5, 5);
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
+
+      buildBoard(game,
+          "...00",
+          ".X0X.",
+          "00...",
+          ".X.X.", 
+          "....." 
+          );
+      
+      computeGame(game);
+
+      // game ai
+      Player.AI ai = new Player.AI1();
+      ai.game = game;
+      ai.player = me;
+      ai.compute();
+      Player.Action action = ai.actions.get(0);
+
       assertThat(action.pos, is(not(Player.P.get(0, 0))));
     }
   }

@@ -13,8 +13,8 @@ class Player {
   private static final int ENTITY_BOMB = 1;
   private static final int ENTITY_ITEM = 2;
   
-  static int[] rotx = { 1, 0, -1, 0 };
-  static int[] roty = { 0, 1, 0, -1 };
+  static int[] rotx = { 1, 0, -1, 0, 0 };
+  static int[] roty = { 0, 1, 0, -1, 0 };
 
   static class Entity  {
     GameState state;
@@ -144,13 +144,35 @@ class Player {
     }
   }
   
-  static class AI {
+  static abstract class AI {
     Game game;
-    APlayer player;
+    enum Mode {
+      CRUISING,
+      DEFENSIVE,
+      OFFENSIVE
+    }
+    Mode mode = Mode.CRUISING;
+    List<APlayer> offensive = new ArrayList<>();
+  
+    List<Action> actions = new ArrayList<>();
+    public int myIndex;
     
-    Action computeBestMove_v1() {
+    abstract void compute();
+  }
+  static class AI1 extends AI {
+    void compute() {
+//      GameState cState = game.currentState;
+//      int index = 0;
+//      while (cState != null && index < 10) {
+//        System.err.println("Step : "+index);
+//        cState.debugBombs();
+//        cState = cState.childs.get(Game.MOVE_STAY_NOBOMB);
+//        index++;
+//      }
+      
+      
       Action action = new Action();
-      action.pos = player.p;
+      action.pos = game.currentState.players[myIndex].p;
       action.dropBomb = false;
       action.message = "FOUND NOTHING TODO :(";
       
@@ -212,10 +234,49 @@ class Player {
         }
       }
       
-      return action;
+      actions.clear();
+      actions.add(action);
     }
   }
+  
+  static class MCTS {
+    int[] dir = new int[4];
+    boolean[] bomb = new boolean[4];
+    
+    MCTS parent;
+    
+  }
+
+  static class MCTSAI extends AI {
+    MCTS root = new MCTS();
+    
+    void randomAction(GameState fromState, int[] dir, boolean[] bomb) {
+      
+      for (int p=0;p<game.playersCount;p++) {
+        APlayer player = game.currentState.players[p];
+        dir[p] = (int)(Math.random()*5); // 5 pour la case je ne bouge pas
+        if (GameState.isWall(fromState.getCellAt(player.p.x+rotx[root.dir[p]], player.p.y+roty[root.dir[p]]))) {
+          dir[p] = 4;
+        }
+        bomb[p] = fromState.players[p].bombsLeft > 0 ? Math.random() > 0.5 : false;
+      }
+    }
+    @Override
+    void compute() {
+      randomAction(game.currentState, root.dir, root.bomb);
+      APlayer player = game.currentState.players[myIndex];
+      
+      Action action = new Action();
+      action.dropBomb = root.bomb[0];
+      action.pos = P.get(player.p.x+rotx[root.dir[0]], player.p.y+roty[root.dir[0]]);
+      action.message = ""+root.dir[0]+" / "+ root.bomb[0];
+      actions.clear();
+      actions.add(action);
+    }
+  }
+  
   static class Game {
+    public int playersCount=2;
     private static final String MOVE_STAY_NOBOMB = "  ";
     private static final int MAX_STEPS = 20;
     int width, height;
@@ -232,6 +293,10 @@ class Player {
     }
     
     private void play() {
+      AI ai = new MCTSAI();
+      ai.game = this;
+      ai.myIndex = myIndex;
+      
       while (true) {
         long long1 = System.currentTimeMillis();
         prepareGameState();
@@ -259,10 +324,8 @@ class Player {
 
         
         /*ai */long aiBefore = System.currentTimeMillis();
-        AI ai = new AI();
-        ai.game = this;
-        ai.player = currentState.players[myIndex];
-        Action action = ai.computeBestMove_v1();
+        ai.compute();
+        Action action = ai.actions.get(0);
         /*ai */long aiAfter= System.currentTimeMillis();
         
         System.err.println("prepareGame : "+(long2-long1));
@@ -304,6 +367,7 @@ class Player {
         currentState.addRow(y, row);
       }
       int entitiesCount = in.nextInt();
+      int playersCount = 0;
       for (int i = 0; i < entitiesCount; i++) {
         int entityType = in.nextInt();
         int owner = in.nextInt();
@@ -318,6 +382,7 @@ class Player {
           APlayer player = new APlayer(currentState, owner, x,y, param1, param2);
           currentState.players[owner] = player;
           entity = player;
+          playersCount++;
         } else if (entityType == ENTITY_ITEM) {
           entity = new Item(currentState, owner, x,y, param1, param2);
         } else {
@@ -328,6 +393,8 @@ class Player {
         }
       }
       in.nextLine();
+      
+      this.playersCount = playersCount;
     }
   }
   static class GameState {
@@ -352,12 +419,13 @@ class Player {
         grid[p.x][p.y] = CELL_ITEM_RANGEUP;
       }
     }
-    public void simulate(String string) {
+    public void simulate(String theMove) {
       if (this.depth < Game.MAX_STEPS) {
         GameState nextState = childs.get(Game.MOVE_STAY_NOBOMB);
         if (nextState != null) {
           nextState.clone(this);
           nextState.computeRound();
+          nextState.simulate(theMove);
         }
       }
     }
@@ -498,14 +566,14 @@ class Player {
       updateBoxInfluenza(players[0].bombRange);
     }
 
-    private void debugPlayerAccessibleCellsWithAStar() {
+    private void debugPlayerAccessibleCellsWithAStar(APlayer player) {
       // TODO don't use A* to check this !
-      System.err.println("Accessible cells from "+players[1].p);
+      System.err.println("Accessible cells from "+player);
 
       for (int y = 0; y < height; y++) {
         String result="";
         for (int x = 0; x < width; x++) {
-          Path path = new Path(this, players[1].p, P.get(x, y));
+          Path path = new Path(this, player.p, P.get(x, y));
           path.find();
           if (path.path.size() > 0) {
             result+="A";
@@ -534,7 +602,7 @@ class Player {
             int testedY = p.y+range*roty[rot];
             
             int value = getCellAt(testedX, testedY);
-            if (isHardBlocked(value) || isSoftBlock(value)) {
+            if (explosionBlocked(value)) {
               break;
             }
             boxInfluence[testedX][testedY] ++;
@@ -651,6 +719,7 @@ class Player {
       for (Path.PathItem i : path) {
         System.err.print(i.pos+" --> ");
       }
+      System.err.println("");
     }
 
     PathItem find() {
@@ -670,13 +739,14 @@ class Player {
       }
     }
     PathItem calculus() {
-      GameState theState = rootState;
       PathItem root = new PathItem();
-      root.pos = from;
+      root.pos = this.from;
+      root.state = this.rootState;
       openList.add(root);
 
       while (openList.size() > 0) {
         PathItem visiting = openList.remove(0); // imagine it's the best
+        GameState theState = visiting.state;
         P pos = visiting.pos;
         if (pos.equals(target)) {
           return visiting;
@@ -684,16 +754,16 @@ class Player {
 
         closedList.put(pos, visiting);
         if (pos.y > 0) {
-          addToOpenList(visiting, theState, pos , P.get(pos.x, pos.y-1));
+          addToOpenList(visiting, pos , P.get(pos.x, pos.y-1));
         }
         if (pos.y < theState.height - 1) {
-          addToOpenList(visiting, theState, pos , P.get(pos.x, pos.y+1));
+          addToOpenList(visiting, pos , P.get(pos.x, pos.y+1));
         }
         if (pos.x > 0) {
-          addToOpenList(visiting, theState, pos , P.get(pos.x-1, pos.y));
+          addToOpenList(visiting, pos , P.get(pos.x-1, pos.y));
         }
         if (pos.x < theState.width - 1) {
-          addToOpenList(visiting, theState, pos , P.get(pos.x+1, pos.y));
+          addToOpenList(visiting, pos , P.get(pos.x+1, pos.y));
         }
         // sort with distances
         Collections.sort(openList, new Comparator<PathItem>() {
@@ -706,18 +776,21 @@ class Player {
       return null; // not found !
     }
 
-    private void addToOpenList(PathItem visiting, GameState state, P fromCell, P toCell) {
+    private void addToOpenList(PathItem visiting, P fromCell, P toCell) {
       if (closedList.containsKey(toCell)) {
         return;
       }
-      int value = state.getCellAt(toCell.x, toCell.y);
+      int value = visiting.state.getCellAt(toCell.x, toCell.y);
       if (GameState.canWalkThrough(value)) {
         PathItem pi = new PathItem();
         pi.pos = toCell;
         pi.cumulativeLength = visiting.cumulativeLength + 1;
         pi.totalPrevisionalLength = pi.cumulativeLength + fromCell.manhattanDistance(target);
         pi.precedent = visiting;
-        pi.state = state;
+        pi.state = visiting.state.childs.get(Game.MOVE_STAY_NOBOMB);
+        if (pi.state == null) {
+          pi.state = visiting.state;
+        }
         openList.add(pi);
       }
     }
