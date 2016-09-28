@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
 
 class Player {
   private static Scanner in;
@@ -287,7 +288,7 @@ class Player {
         return possibilities[0];
       } else {
         // need to randomize here
-        return possibilities[getRandom(0,range)];
+        return possibilities[getRandom(range)];
       }
     }
     int fillPossibilities(APlayer player, GameState fromState) {
@@ -301,8 +302,8 @@ class Player {
       }
       return moveLeft;
     }
-    static int getRandom(int i, int j) {
-      return (int)(i+j * Math.random());
+    static int getRandom(int range) {
+      return ThreadLocalRandom.current().nextInt(range);
     }
     void randomActions(GameState fromState, int[] dir, boolean[] bomb) {
       for (int p=0;p<game.playersCount;p++) {
@@ -316,7 +317,11 @@ class Player {
         if (player.bombsLeft > 0) {
           boolean canDropBombOnBoard = !GameState.isABomb(fromState.getCellAt(player.p.x, player.p.y));
           boolean cornered = possibleMoves <= 1;
-          bomb[p] = (!cornered && canDropBombOnBoard) ? Math.random() > 0.5 : false;
+          int RANDOMIZE = 300;
+          if (player.p.x % 2 == 0 && player.p.y % 2 == 0) {
+            RANDOMIZE = 150;
+          }
+          bomb[p] = (!cornered && canDropBombOnBoard) ? getRandom(RANDOMIZE) == 0 : false;
         } else {
           bomb[p] = false;
         }
@@ -358,7 +363,6 @@ class Player {
             player.bombsLeft-=1;
           }
           // then move
-          
           int x = player.p.x + rotx[i];
           int y = player.p.y + roty[i];
           player.p = P.get(x, y);
@@ -442,53 +446,58 @@ class Player {
       
       String chosenKey = root.getBestChild();
       MCTS chosen = root.childs.get(chosenKey);
+      
       if (chosen == null) {
+        buildSayonaraAction();
+        return;
+      } else {
         Action action = new Action();
-        action.pos = game.currentState.players[Game.myIndex].p;
-        action.dropBomb = false;
-        action.message = "Sayonara";
+
+        action.message = MCTSAI.keyToString(chosenKey, Game.myIndex);
+  
+        APlayer player = game.currentState.players[Game.myIndex];
+        action.dropBomb = chosenKey.charAt(2*Game.myIndex+1) == 'B';
+  
+        int actionIndex = chosenKey.charAt(2*Game.myIndex+0)-'0';
+        int newPosX = player.p.x+rotx[actionIndex];
+        int newPosY = player.p.y+roty[actionIndex];
+        action.pos = P.get(newPosX, newPosY);
+  
         actions.clear();
         actions.add(action);
         
-        return;
+        debugMCTS2(root);
       }
-      //System.err.println("best key is "+chosenKey);
-      //System.err.println("For p0 : "+keyToString(chosenKey));
+    }
 
+    private void buildSayonaraAction() {
       Action action = new Action();
-      action.message = chosenKey+", s: "+root.simulatedCount;
-
-      APlayer player = game.currentState.players[Game.myIndex];
-      action.dropBomb = chosenKey.charAt(1) == 'B';
-
-      int actionIndex = chosenKey.charAt(0)-'0';
-      int newPosX = player.p.x+rotx[actionIndex];
-      int newPosY = player.p.y+roty[actionIndex];
-      action.pos = P.get(newPosX, newPosY);
-
+      action.pos = game.currentState.players[Game.myIndex].p;
+      action.dropBomb = false;
+      action.message = "Sayonara";
       actions.clear();
       actions.add(action);
+      return;
     }
 
     static String keyToString(String chosenKey, int playerIndex) {
       return (chosenKey.charAt(2*playerIndex+1) == 'B' ? "BOMB" : "MOVE")+ " " +rotString[chosenKey.charAt(2*playerIndex)-'0'];
-    }
-    static String keyToString(String chosenKey) {
-      return keyToString(chosenKey, 0);
     }
     static void debugMCTS2(Player.MCTS root) {
       int[] win = new int[5];
       int[] simulated = new int[5];
       for (Entry<String, Player.MCTS> m : root.childs.entrySet()) {
         String key = m.getKey();
-        int index = key.charAt(0)-'0';
+        int index = key.charAt(2*Game.myIndex+0)-'0';
         win[index] += m.getValue().win;
         simulated[index] += m.getValue().simulatedCount;
       }
       int cumul = 0;
       for (int i=0;i<5;i++) {
         cumul+=win[i];
-        System.err.println(""+Player.rotString[i]+" -> "+win[i]+" / "+simulated[i]);
+        if (simulated[i] > 0) {
+          System.err.println(""+Player.rotString[i]+" -> "+win[i]+" / "+simulated[i]);
+        }
       }
       if (cumul == 0) {
         MCTS.game.currentState.debugBombs();
@@ -525,6 +534,7 @@ class Player {
         long long1 = System.currentTimeMillis();
         prepareGameState();
         long long2 = System.currentTimeMillis();
+        currentState.updateBoxInfluenza(currentState.players[Game.myIndex].bombRange);
         //currentState.computeRound();
         long long3 = System.currentTimeMillis();
         //updateNextStates();
@@ -591,7 +601,7 @@ class Player {
         currentState.addRow(y, row);
       }
       int entitiesCount = in.nextInt();
-      int playersCount = 0;
+      int playersCount = 1;
       for (int i = 0; i < entitiesCount; i++) {
         int entityType = in.nextInt();
         int owner = in.nextInt();
@@ -606,7 +616,7 @@ class Player {
           APlayer player = new APlayer(currentState, owner, x,y, param1, param2);
           currentState.players[owner] = player;
           entity = player;
-          playersCount++;
+          playersCount = Math.max(playersCount, owner+1);
         } else if (entityType == ENTITY_ITEM) {
           entity = new Item(currentState, owner, x,y, param1, param2);
         } else {
@@ -738,6 +748,10 @@ class Player {
       hittedBoxes.clear();
       entities.clear();
       explodedBombs.clear();
+      players[0] = null;
+      players[1] = null;
+      players[2] = null;
+      players[3] = null;
       
       for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {

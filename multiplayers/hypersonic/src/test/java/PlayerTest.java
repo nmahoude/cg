@@ -479,13 +479,67 @@ public class PlayerTest {
       assertThat(game.currentState.players[0].isDead(), is(false));
     }
     
+    @Test
+    public void ImNotTrapped() throws Exception {
+      Player.Game game = new Player.Game(5, 5);
+      Player.MCTS.game = game;
+      
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 1)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(4, 4)
+          .withState(game.currentState)
+          .build();
+      
+      buildBoard(game,
+          ".....",
+          ".X.X.",
+          ".....",
+          ".X.X.", 
+          "....." 
+          );
+      
+      
+      game.currentState.addEntity(me);
+      game.currentState.addEntity(opponent);
+      Player.Bomb bomb = new BombBuilder()
+          .atState(game.currentState)
+          .from(opponent)
+          .atPosition(0, 2)
+          .withRange(3)
+          .withTicksLeft(3)
+          .build();
+      
+      // game ai
+      Player.MCTSAI ai = new Player.MCTSAI();
+      ai.game = game;
+      
+      ai.steps = 10;
+      ai.compute();
+      
+      // debug
+      //debugMCTS("ROOT", ai.root, 0);
+      //Player.MCTSAI.debugMCTS2(ai.root);
+      debugBestMove(ai.root, 10);
+      
+      Player.Action action = ai.actions.get(0);
+      assertThat(action.pos, is(Player.P.get(0, 0)));
+      
+      assertThat(game.currentState.players[0].isDead(), is(false));
+    }
+    
     private void debugBestMove(Player.MCTS root, int depth) {
       String key = root.getBestChild();
       if (key == null) {
         // the end
         return;
       }
-      System.out.println("--> "+Player.MCTSAI.keyToString(key));
+      System.out.println("--> "+Player.MCTSAI.keyToString(key, 0));
       if (depth > 0) {
         Player.MCTS mcts = root.childs.get(key);
         debugBestMove(mcts, depth-1);
@@ -497,7 +551,7 @@ public class PlayerTest {
         System.out.print(" ");
       }
       if (!key.equals("ROOT")) {
-        System.out.println(Player.MCTSAI.keyToString(key)+" : "+root.win+" / "+root.simulatedCount);
+        System.out.println(Player.MCTSAI.keyToString(key, 0)+" : "+root.win+" / "+root.simulatedCount);
       }
       if (step < 1) {
         for (Entry<String, Player.MCTS> m : root.childs.entrySet()) {
