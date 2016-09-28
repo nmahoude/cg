@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -138,16 +139,16 @@ class Player {
           P testedP = P.get(testedX, testedY);
           updatePlayerDeath(testedP);
 
-          state.explodedBombs.add(this);
           if (GameState.explosionSoftBlocked(value)) {
             if (GameState.isABomb(value)) {
-              // TODO should trigger this bomb to
               state.triggerBomb(testedP);
             } else if (GameState.isABox(value)) {
               state.hittedBoxes.add(testedP);
               if (state.players[owner] != null) {
                 state.players[owner].points ++;
               }
+            } else if (GameState.isAnItem(value)) {
+              state.removeItem(testedP);
             }
             break;
           }
@@ -278,31 +279,150 @@ class Player {
   }
   
   static abstract class MovementAlgorithm {
+    enum AlgoType {
+      FAIR,
+      BOX,
+      AGGRESSIVE
+    }
+    AlgoType type;
+    public MovementAlgorithm(AlgoType type) {
+      this.type = type;
+    }
+    abstract String getBestChild(MCTS root);
     abstract int compute(APlayer player, GameState fromState, int[] possibilities);
   }
   
-  static class FairMovementAlgorithm extends MovementAlgorithm {
+  static class AggressiveMovementAlgorithm extends MovementAlgorithm {
+    private APlayer bestOpponent;
+    private APlayer player;
+
+    public AggressiveMovementAlgorithm() {
+      super(AlgoType.AGGRESSIVE);
+    }
+
+    private APlayer getBestOpponent(APlayer player, GameState fromState) {
+      APlayer bestOpponent=null;
+      int minDist = 1024;
+      for (int p=0;p<4;p++) {
+        APlayer opponent = fromState.players[p];
+        if (opponent == null || opponent == player) {
+          continue;
+        }
+        if (opponent.points > player.points) {
+          int dist = opponent.p.manhattanDistance(player.p);
+          if (dist < minDist) {
+            minDist = dist;
+            bestOpponent = opponent;
+          }
+        }
+      }
+      return bestOpponent;
+    }
+    
     @Override
     int compute(APlayer player, GameState fromState, int[] possibilities) {
       possibilities[4] = 1; // stay
       int total=1;
+
+      this.player = player;
+      bestOpponent = getBestOpponent(player, fromState);
+      int minDist = 0;
+      if (bestOpponent == null) {
+        // avoid fights
+      } else {
+        // look for fight
+        minDist = bestOpponent.p.manhattanDistance(player.p);
+      }
       
       for (int i=0;i<4;i++) {
         int px = player.p.x + rotx[i];
         int py = player.p.y + roty[i];
         int valueAtCell = fromState.getCellAt(px, py);
         if (GameState.canWalkThrough(valueAtCell)) {
+          if (bestOpponent != null 
+              && bestOpponent.p.manhattanDistance(P.get(px, py)) < minDist) {
+            possibilities[i] = 5;
+          } else {
            possibilities[i] = 1;
-           total++;
+          }
+          total+=possibilities[i];
         } else {
           possibilities[i] = 0;
         }
       }
       return total;
     }
+    
+    String getBestChild(MCTS root) {
+      String chosenKey = null;
+      double bestPointsRatio = -100.0;
+      double bestWinRatio = -100.0;
+      
+      int moreWin = 0;
+      Entry<String, MCTS> bestEntry = null;
+      
+      int nominalDistance = 0;
+      if (bestOpponent != null) {
+        nominalDistance = player.p.manhattanDistance(bestOpponent.p);
+      }
+      
+      if (bestOpponent != null) {
+        for (Entry<String, MCTS> m : root.childs.entrySet()) {
+          MCTS tested = m.getValue();
+          if (tested.win == 0) {
+            continue; // avoid Divide/0
+          }
+          
+          int op = m.getKey().charAt(0) -'0';
+          int nearest = nominalDistance - P.get(player.p.x+rotx[op], player.p.y+roty[op]).manhattanDistance(bestOpponent.p);
+          double testedWinRatio = (1.0*m.getValue().win / m.getValue().simulatedCount);
+          if (nearest < 0 && testedWinRatio > 0.10) {
+            return m.getKey();
+          }
+        }
+      }
+      return null; // FIXME really ? the null ?
+    }
   }
-
+  
   static class BoxedOrientedPossibilitiesAlgorithm extends MovementAlgorithm {
+    public BoxedOrientedPossibilitiesAlgorithm() {
+      super(AlgoType.BOX);
+    }
+    String getBestChild(MCTS root) {
+      String chosenKey = null;
+      double bestPointsRatio = -100.0;
+      double bestWinRatio = -100.0;
+      
+      int moreWin = 0;
+      Entry<String, MCTS> bestEntry = null;
+      
+      for (Entry<String, MCTS> m : root.childs.entrySet()) {
+        MCTS tested = m.getValue();
+        if (tested.win == 0) {
+          continue; // avoid Divide/0
+        }
+        double testedPointsRatio = (1.0*m.getValue().totalPoints / tested.win);
+        double testedWinRatio = (1.0*m.getValue().win / m.getValue().simulatedCount);
+        
+        //System.err.println("Tested child: "+MCTSAI.keyToString(m.getKey(), Game.myIndex)+" -> rPts:"+String.format("%.2f",testedPointsRatio)+" rWin:"+String.format("%.2f", testedWinRatio));
+        if ((testedPointsRatio > 0.01 && testedPointsRatio > bestPointsRatio) 
+            || (bestPointsRatio < 0.01 && testedWinRatio > bestWinRatio )) {
+          bestEntry = m;
+          bestPointsRatio = testedPointsRatio;
+          bestWinRatio = testedWinRatio;
+          moreWin = tested.win;
+          chosenKey = m.getKey();
+        }
+      }
+//      if (bestEntry != null) {
+//        System.err.println("Best child: "+chosenKey + " ("+bestPointsRatio+" / "+bestWinRatio+")");
+//      } else {
+//        System.err.println("No best move");
+//      }
+      return chosenKey;
+    }
+
     @Override
     int compute(APlayer player, GameState fromState, int[] possibilities) {
       possibilities[4] = 1; // stay
@@ -316,9 +436,9 @@ class Player {
           P newP = P.get(px, py);
           if (fromState.depth == 1 ) {
             if (Game.nearestBox != null && Game.nearestBox.manhattanDistance(player.p) < 6 && Game.nearestBox.manhattanDistance(player.p) - Game.nearestBox.manhattanDistance(newP) >= 0) {
-              possibilities[i] = 15;
+              possibilities[i] = 3;
             } else if (Game.nearestOption != null && Game.nearestOption.manhattanDistance(player.p) < 6 && Game.nearestOption.manhattanDistance(player.p) - Game.nearestOption.manhattanDistance(newP) >= 0) { 
-              possibilities[i] = 7;
+              possibilities[i] = 3;
             } else {
               possibilities[i] = 1;
             }
@@ -336,13 +456,16 @@ class Player {
   
   static class MCTS {
     static MovementAlgorithm biasedMovementAlgorithm = new BoxedOrientedPossibilitiesAlgorithm();
+    // debug : start with the aggressive algorithm
+    //static MovementAlgorithm biasedMovementAlgorithm = new AggressiveMovementAlgorithm();
     
     static Game game; // static reference to the game (only one). Better way to do it ?
     Map<String, MCTS> childs = new HashMap<>();
     
     int simulatedCount=0; // how many branches (total > childs.size())
     int win=0;
-
+    int points;
+    int totalPoints;
 
     static int [] possibilities = new int[5]; // dont' parralelize !
     static {
@@ -368,9 +491,6 @@ class Player {
       }
     }
     
-    int fillBiasedMovementMatrix(APlayer player, GameState fromState) {
-      return biasedMovementAlgorithm.compute(player, fromState, possibilities);
-    }
     int getRandom(int range) {
       return ThreadLocalRandom.current().nextInt(range);
     }
@@ -380,27 +500,32 @@ class Player {
         if (player == null) {
           continue ;
         }
-        int possibleMoves = fillBiasedMovementMatrix(player, fromState);
+        
+        
+        biasedMovementAlgorithm.compute(player, fromState, possibilities);
         dir[p] = findARandomMove();
         
         if (player.bombsLeft > 0) {
           boolean canDropBombOnBoard = !GameState.isABomb(fromState.getCellAt(player.p.x, player.p.y));
-          boolean cornered = possibleMoves <= 1;
-          if (cornered || !canDropBombOnBoard) {
+          if (!canDropBombOnBoard) {
             bomb[p] = false;
           } else {
-            int THRESHOLD = 500;
-            if (player.p.x % 2 == 0 && player.p.y % 2 == 0) {
-              THRESHOLD = 333;
-            }
-            if (fromState.depth == 1) {
-              int influenza = fromState.boxInfluence[player.p.x][player.p.y];
-              if (influenza > 2 ) {
-                THRESHOLD = 110;
-              } else if (influenza == 2) {
-                THRESHOLD = 180;
-              } else if (influenza == 1) {
-                THRESHOLD = 250;
+            int THRESHOLD = 800;
+            if (fromState.boxes.size() == 0) {
+              THRESHOLD = 100;
+            } else {
+              if (player.p.x % 2 == 0 && player.p.y % 2 == 0) {
+                THRESHOLD = 600;
+              }
+              if (fromState.depth == 1) {
+                int influenza = fromState.boxInfluence[player.p.x][player.p.y];
+                if (influenza > 2 ) {
+                  THRESHOLD = 200; //110;
+                } else if (influenza == 2) {
+                  THRESHOLD = 300; //180;
+                } else if (influenza == 1) {
+                  THRESHOLD = 400; //250;
+                }
               }
             }
             bomb[p] = getRandom(1000) > THRESHOLD;
@@ -422,15 +547,17 @@ class Player {
       return key;
     }
 
-    boolean simulate(GameState fromState, int depth) {
+    int simulate(GameState fromState, int depth) {
       this.simulatedCount++;
       fromState.depth++;
       
       //do simulation here
       fromState.computeRound_MCTS();
+      points = fromState.players[Game.myIndex].points;
+      totalPoints += points;
       //fromState.debugBombs();
       if (fromState.players[Game.myIndex].isDead()) {
-        return false; // we're dead, it's a definitive loss
+        return -1; // we're dead, it's a definitive loss
       }
       
       if (depth > 0) {
@@ -455,7 +582,10 @@ class Player {
           int y = player.p.y + roty[i];
           player.p = P.get(x, y);
         }
-      
+        if (dir[0] == 1 && fromState.depth == 1) {
+          int debug =0;
+          debug++;
+        }
         // prepare child
         String key = getKeyFromActions(dir, bomb);
         MCTS chosenChild = childs.get(key);
@@ -466,14 +596,17 @@ class Player {
           chosenChild = new MCTS();
           childs.put(key, chosenChild);
         }
-        boolean hasWon = chosenChild.simulate(fromState, depth-1);
-        if (hasWon) {
+        int childTotalPoints = chosenChild.simulate(fromState, depth-1);
+        if (childTotalPoints >= 0) {
+          totalPoints+=childTotalPoints;
           win++;
+          return points+childTotalPoints;
+        } else {
+          return -1;
         }
-        return hasWon;
       } else {
         //return victoryFromPoints(fromState);
-        return true; // we are still alive, it's a victory :) 
+        return points; // we are still alive, it's a victory :) 
       }
     }
     private boolean victoryFromPoints(GameState fromState) {
@@ -487,56 +620,35 @@ class Player {
       return true; // we won !
     }
     
-    String getBestChild() {
-      String chosenKey = null;
-      double bestRatio = -100.0;
-      int moreWin = 0;
-      for (Entry<String, MCTS> m : childs.entrySet()) {
-        MCTS tested = m.getValue();
-        double ratio1 = (1.0*tested.win) / tested.simulatedCount;
-        if (ratio1 - bestRatio > 0.05 
-            || (bestRatio - ratio1 < 0.05 && tested.win > moreWin)) {
-          bestRatio = ratio1;
-          moreWin = tested.win;
-          chosenKey = m.getKey();
-        }
-      }
-      return chosenKey;
-    }
     @Override
     public String toString() {
-      return "w/s:"+win+"/"+simulatedCount+" childs:"+childs.size();
+      return "w/s:"+win+"/"+simulatedCount+" p:"+points+",tp:"+totalPoints+", childs:"+childs.size();
     }
   }
 
   static class MCTSAI extends AI {
     String quotes[] = {
-      "I don’t want to earn my living; I want to live.",
+      "Walking on the moon",
+      "Trying my best",
       "Live for yourself.",
       "Work hard. Dream big.",
-      "Life is short. Live passionately.",
-      ""
+      "Life is short.",
+      "Bombs Everywhere"
     };
+    int seed = ThreadLocalRandom.current().nextInt(20);
     int gameRound = 0;
-    static final int MAX_STEPS = 15;
+    static final int MAX_STEPS = 16;
     MCTS root = new MCTS();
     public int steps = MAX_STEPS;
     
     @Override
     void compute() {
+      evaluateAlgorithmSwitch();
+      
       gameRound++;
       root = new MCTS();
       
-      if(Game.nearestBox != null) {
-        System.err.println("NEAREST Box is "+Game.nearestBox);
-      } else {
-        System.err.println("hmmm no nearest box ?");
-      }
-      if(Game.nearestOption != null) {
-        System.err.println("NEAREST Option is "+Game.nearestOption);
-      } else {
-        System.err.println("hmmm no nearest option ?");
-      }
+      // debugBoxAndOptionsDistance();
 
       GameState copyOfRoot = new GameState(game.currentState.width, game.currentState.height, 0);
       int simulationCount = getAffordableSimulationCount();
@@ -546,7 +658,7 @@ class Player {
         root.simulate(copyOfRoot, steps);
       }
       
-      String chosenKey = root.getBestChild();
+      String chosenKey = MCTS.biasedMovementAlgorithm.getBestChild(root);
       MCTS chosen = root.childs.get(chosenKey);
       
       if (chosen == null) {
@@ -557,10 +669,29 @@ class Player {
       }
     }
 
+    private void evaluateAlgorithmSwitch() {
+      if (game.currentState.boxes.isEmpty() && MCTS.biasedMovementAlgorithm.type == MovementAlgorithm.AlgoType.BOX) {
+        MCTS.biasedMovementAlgorithm = new AggressiveMovementAlgorithm();
+      }
+    }
+
+    private void debugBoxAndOptionsDistance() {
+      if(Game.nearestBox != null) {
+        System.err.println("NEAREST Box is "+Game.nearestBox);
+      } else {
+        System.err.println("hmmm no nearest box ?");
+      }
+      if(Game.nearestOption != null) {
+        System.err.println("NEAREST Option is "+Game.nearestOption);
+      } else {
+        System.err.println("hmmm no nearest option ?");
+      }
+    }
+
     private void buildBestActionFromKey(String chosenKey) {
       Action action = new Action();
 
-      action.message = "Walking on the moon";
+      action.message = quotes[(seed+gameRound) % (quotes.length)];
  
       APlayer player = game.currentState.players[Game.myIndex];
       action.dropBomb = chosenKey.charAt(2*Game.myIndex+1) == 'B';
@@ -573,15 +704,19 @@ class Player {
       actions.clear();
       actions.add(action);
       
-      debugMCTS2(root);
+      //debugMCTS2(root);
     }
 
     private int getAffordableSimulationCount() {
-      int simulationCount = 3000;
-      if (game.playersCount == 4) {
-        simulationCount = 1500;
+      switch(game.playersCount) {
+        case 4:
+          return 1500;
+        case 3:
+          return 2000;
+        case 2 : 
+        default:
+          return 3000;
       }
-      return simulationCount;
     }
 
     private void buildSayonaraAction() {
@@ -670,7 +805,7 @@ class Player {
         long long2 = System.currentTimeMillis();
         updateNearestBoxes();
         updateNearestOption();
-        currentState.updateBoxInfluenza(currentState.players[Game.myIndex].bombRange);
+        //currentState.updateBoxInfluenza(currentState.players[Game.myIndex].bombRange);
         //currentState.computeRound();
         long long3 = System.currentTimeMillis();
         //updateNextStates();
@@ -820,6 +955,17 @@ class Player {
         grid[p.x][p.y] = CELL_ITEM_RANGEUP;
       }
     }
+    public void removeItem(P testedP) {
+      Iterator<Entity> iteE = entities.iterator();
+      while (iteE.hasNext()) {
+        Entity e =iteE.next(); 
+        if (e.type == ENTITY_ITEM && e.p.equals(testedP)) {
+          iteE.remove();
+          return; // only one item per cell
+        }
+      }
+    }
+    
     public void simulate(String theMove) {
       if (this.depth < Game.MAX_STEPS) {
         GameState nextState = childs.get(Game.MOVE_STAY_NOBOMB);
@@ -860,7 +1006,7 @@ class Player {
     }
 
     static private boolean isAnItem(int value) {
-      return false;
+      return value == CELL_ITEM_BOMBUP || value == CELL_ITEM_RANGEUP;
     }
     static private boolean isABox(int value) {
       return value == CELL_EMPTY_BOX || value == CELL_BOMBUP_BOX || value == CELL_RANGEUP_BOX;
@@ -888,7 +1034,6 @@ class Player {
     List<Entity> entities = new ArrayList<>();
     private List<P> boxes = new ArrayList<>();
     private List<P> hittedBoxes = new ArrayList<>();
-    public List<Bomb> explodedBombs = new ArrayList<>();
     int depth;
     
     GameState(int width, int height, int depth) {
@@ -905,16 +1050,13 @@ class Player {
 
     // clean for next simulation on same spot
     void softReset() {
-      explodedBombs.clear();
       hittedBoxes.clear();
-      
     }
     // clean cumulative states
     void reset() {
       boxes.clear();
       hittedBoxes.clear();
       entities.clear();
-      explodedBombs.clear();
       players[0] = null;
       players[1] = null;
       players[2] = null;
@@ -994,6 +1136,7 @@ class Player {
     }
 
     public void computeRound_MCTS() {
+      resetPlayerPoints();
       // remove old fire
       for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
@@ -1009,6 +1152,13 @@ class Player {
         entity.update(this);
       }
       removeHittedBoxes();
+    }
+    private void resetPlayerPoints() {
+      for (int i=0;i<4;i++) {
+        if (players[i] != null) {
+          players[i].points = 0;
+        }
+      }
     }
 
     private void debugPlayerAccessibleCellsWithAStar(APlayer player) {
@@ -1033,8 +1183,12 @@ class Player {
     private void removeHittedBoxes() {
       for (P p : hittedBoxes ) {
         int boxValue = grid[p.x][p.y];
-        if (boxValue == CELL_EMPTY_BOX || boxValue == CELL_BOMBUP_BOX || boxValue == CELL_RANGEUP_BOX) {
+        if (boxValue == CELL_EMPTY_BOX) {
           grid[p.x][p.y] = CELL_FLOOR;
+        } else if (boxValue == CELL_BOMBUP_BOX ) {
+          grid[p.x][p.y] = CELL_ITEM_BOMBUP;
+        } else if (boxValue == CELL_RANGEUP_BOX) {
+          grid[p.x][p.y] = CELL_ITEM_RANGEUP;
         }
       }
     }
