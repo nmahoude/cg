@@ -412,9 +412,13 @@ class Player {
     }
     String getKeyFromActions(int[] dir, boolean bomb[]) {
       String key = "";
-      for (int i=0;i<game.playersCount;i++) {
-        key+= dir[i]+(bomb[i] ? "B" : "M");
-      }
+//      for (int i=0;i<game.playersCount;i++) {
+//        key+= dir[i]+(bomb[i] ? "B" : "M");
+//      }
+      key+= dir[game.myIndex]+(bomb[game.myIndex] ? "B" : "M");
+      key+= dir[game.myIndex]+(bomb[game.myIndex] ? "B" : "M");
+      key+= dir[game.myIndex]+(bomb[game.myIndex] ? "B" : "M");
+      key+= dir[game.myIndex]+(bomb[game.myIndex] ? "B" : "M");
       return key;
     }
 
@@ -506,6 +510,13 @@ class Player {
   }
 
   static class MCTSAI extends AI {
+    String quotes[] = {
+      "I don’t want to earn my living; I want to live.",
+      "Live for yourself.",
+      "Work hard. Dream big.",
+      "Life is short. Live passionately.",
+      ""
+    };
     int gameRound = 0;
     static final int MAX_STEPS = 15;
     MCTS root = new MCTS();
@@ -549,7 +560,7 @@ class Player {
     private void buildBestActionFromKey(String chosenKey) {
       Action action = new Action();
 
-      action.message = MCTSAI.keyToString(chosenKey, Game.myIndex);
+      action.message = "Walking on the moon";
  
       APlayer player = game.currentState.players[Game.myIndex];
       action.dropBomb = chosenKey.charAt(2*Game.myIndex+1) == 'B';
