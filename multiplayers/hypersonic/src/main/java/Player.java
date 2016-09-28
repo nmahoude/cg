@@ -14,6 +14,12 @@ class Player {
   private static final int ENTITY_PLAYER = 0;
   private static final int ENTITY_BOMB = 1;
   private static final int ENTITY_ITEM = 2;
+
+  static int MOVE_RIGHT = 0;
+  static int MOVE_DOWN = 1;
+  static int MOVE_LEFT = 2;
+  static int MOVE_UP = 3;
+  static int MOVE_STAY = 4;
   
   static int[] rotx = { 1, 0, -1, 0, 0 };
   static int[] roty = { 0, 1, 0, -1, 0 };
@@ -271,7 +277,66 @@ class Player {
     }
   }
   
+  static abstract class MovementAlgorithm {
+    abstract int compute(APlayer player, GameState fromState, int[] possibilities);
+  }
+  
+  static class FairMovementAlgorithm extends MovementAlgorithm {
+    @Override
+    int compute(APlayer player, GameState fromState, int[] possibilities) {
+      possibilities[4] = 1; // stay
+      int total=1;
+      
+      for (int i=0;i<4;i++) {
+        int px = player.p.x + rotx[i];
+        int py = player.p.y + roty[i];
+        int valueAtCell = fromState.getCellAt(px, py);
+        if (GameState.canWalkThrough(valueAtCell)) {
+           possibilities[i] = 1;
+           total++;
+        } else {
+          possibilities[i] = 0;
+        }
+      }
+      return total;
+    }
+  }
+
+  static class BoxedOrientedPossibilitiesAlgorithm extends MovementAlgorithm {
+    @Override
+    int compute(APlayer player, GameState fromState, int[] possibilities) {
+      possibilities[4] = 1; // stay
+      int total = 1;
+
+      for (int i = 0; i < 4; i++) {
+        int px = player.p.x + rotx[i];
+        int py = player.p.y + roty[i];
+        int valueAtCell = fromState.getCellAt(px, py);
+        if (GameState.canWalkThrough(valueAtCell)) {
+          P newP = P.get(px, py);
+          if (fromState.depth == 1 ) {
+            if (Game.nearestOption != null && Game.nearestOption.manhattanDistance(player.p) < 6 && Game.nearestOption.manhattanDistance(player.p) - Game.nearestOption.manhattanDistance(newP) > 0) {
+              possibilities[i] = 100;
+            } else  if (Game.nearestBox != null && Game.nearestBox.manhattanDistance(player.p) < 6 && Game.nearestBox.manhattanDistance(player.p) - Game.nearestBox.manhattanDistance(newP) > 0) {
+              possibilities[i] = 5;
+            } else {
+              possibilities[i] = 1;
+            }
+          } else {
+            possibilities[i] = 1;
+          }
+          total+=possibilities[i];
+        } else {
+          possibilities[i] = 0;
+        }
+      }
+      return total;
+    }
+  }
+  
   static class MCTS {
+    static MovementAlgorithm biasedMovementAlgorithm = new BoxedOrientedPossibilitiesAlgorithm();
+    
     static Game game; // static reference to the game (only one). Better way to do it ?
     Map<String, MCTS> childs = new HashMap<>();
     
@@ -281,47 +346,63 @@ class Player {
 
     static int [] possibilities = new int[5]; // dont' parralelize !
     static {
-      possibilities[0] = 4; // don't move is the 1st choice!
+      possibilities[4] = 1; // don't move is the 1st choice!
     }
-    int findARandomMove(APlayer player, GameState fromState, int range) {
-      if (range == 1) {
-        return possibilities[0];
+    int findARandomMove() {
+      int sum = 0;
+      for (int i=0;i<5;i++) {
+        sum+=possibilities[i];
+      }
+      if (sum == 1) {
+        return 4; // STAY
       } else {
-        // need to randomize here
-        return possibilities[getRandom(range)];
-      }
-    }
-    int fillPossibilities(APlayer player, GameState fromState) {
-      int moveLeft = 1; // don't move is always a possible move ! 
-      for (int i=0;i<4;i++) {
-        int px = player.p.x + rotx[i];
-        int py = player.p.y + roty[i];
-        if (GameState.canWalkThrough(fromState.getCellAt(px, py))) {
-          possibilities[moveLeft++] = i;
+        int rand = getRandom(sum);
+        int i;
+        for(i = 0;i<5;i++) {
+          rand=rand-possibilities[i];
+          if (rand < 0) {
+            break;
+          }
         }
+        return i;
       }
-      return moveLeft;
     }
-    static int getRandom(int range) {
+    
+    int fillBiasedMovementMatrix(APlayer player, GameState fromState) {
+      return biasedMovementAlgorithm.compute(player, fromState, possibilities);
+    }
+    int getRandom(int range) {
       return ThreadLocalRandom.current().nextInt(range);
     }
-    void randomActions(GameState fromState, int[] dir, boolean[] bomb) {
+    void calculateActions(GameState fromState, int[] dir, boolean[] bomb) {
       for (int p=0;p<game.playersCount;p++) {
         APlayer player = fromState.players[p];
         if (player == null) {
           continue ;
         }
-        int possibleMoves = fillPossibilities(player, fromState);
-        dir[p] = findARandomMove(player, fromState, possibleMoves);
+        int possibleMoves = fillBiasedMovementMatrix(player, fromState);
+        dir[p] = findARandomMove();
         
         if (player.bombsLeft > 0) {
           boolean canDropBombOnBoard = !GameState.isABomb(fromState.getCellAt(player.p.x, player.p.y));
           boolean cornered = possibleMoves <= 1;
-          int RANDOMIZE = 300;
-          if (player.p.x % 2 == 0 && player.p.y % 2 == 0) {
-            RANDOMIZE = 150;
+          if (cornered || !canDropBombOnBoard) {
+            bomb[p] = false;
+          } else {
+            int RANDOMIZE = 10;
+            if (player.p.x % 2 == 0 && player.p.y % 2 == 0) {
+              RANDOMIZE = 5;
+            }
+            if (fromState.depth == 1) {
+              int influenza = fromState.boxInfluence[player.p.x][player.p.y];
+              if (influenza > 2 ) {
+                RANDOMIZE = 1;
+              } else if (influenza == 1) {
+                RANDOMIZE = 2;
+              }
+            }
+            bomb[p] = getRandom(RANDOMIZE) == 0;
           }
-          bomb[p] = (!cornered && canDropBombOnBoard) ? getRandom(RANDOMIZE) == 0 : false;
         } else {
           bomb[p] = false;
         }
@@ -337,19 +418,20 @@ class Player {
 
     boolean simulate(GameState fromState, int depth) {
       this.simulatedCount++;
+      fromState.depth++;
       
       //do simulation here
       fromState.computeRound_MCTS();
       //fromState.debugBombs();
       if (fromState.players[Game.myIndex].isDead()) {
-        return false; // loss
+        return false; // we're dead, it's a definitive loss
       }
       
       if (depth > 0) {
         // choose some new random moves
         int[] dir = new int[5];
         boolean[] bomb = new boolean[5];
-        randomActions(fromState, dir, bomb);
+        calculateActions(fromState, dir, bomb);
         for (int playerIndex=0;playerIndex<game.playersCount;playerIndex++) {
           int i = dir[playerIndex];
           APlayer player = fromState.players[playerIndex];
@@ -384,7 +466,8 @@ class Player {
         }
         return hasWon;
       } else {
-        return victoryFromPoints(fromState);
+        //return victoryFromPoints(fromState);
+        return true; // we are still alive, it's a victory :) 
       }
     }
     private boolean victoryFromPoints(GameState fromState) {
@@ -401,11 +484,14 @@ class Player {
     String getBestChild() {
       String chosenKey = null;
       double bestRatio = -100.0;
+      int moreWin = 0;
       for (Entry<String, MCTS> m : childs.entrySet()) {
         MCTS tested = m.getValue();
         double ratio1 = (1.0*tested.win) / tested.simulatedCount;
-        if (ratio1 > bestRatio) {
+        if (ratio1 - bestRatio > 0.05
+            || (Math.abs(ratio1-bestRatio) < 0.05 && tested.win > moreWin)) {
           bestRatio = ratio1;
+          moreWin = tested.win;
           chosenKey = m.getKey();
         }
       }
@@ -419,7 +505,7 @@ class Player {
 
   static class MCTSAI extends AI {
     int gameRound = 0;
-    private static final int MAX_STEPS = 15;
+    static final int MAX_STEPS = 15;
     MCTS root = new MCTS();
     public int steps = MAX_STEPS;
     
@@ -428,19 +514,22 @@ class Player {
       gameRound++;
       root = new MCTS();
       
-      //System.err.println("COMPUTE MCTS AI for round "+gameRound +"isPlayer dead "+game.currentState.players[Game.myIndex].isDead());
-      //      int l =root.fillPossibilities(game.currentState.players[Game.myIndex], game.currentState);
-      //System.err.println("Possibilities : ");
-      //      for (int i=0;i<l;i++) {
-      //        System.err.println(" "+rotString[root.possibilities[i]]);
-      //      }
-      GameState copyOfRoot = new GameState(game.currentState.width, game.currentState.height, 0);
-      int simulationCount = 3000;
-      if (game.playersCount == 4) {
-        simulationCount = 1500;
+      if(Game.nearestBox != null) {
+        System.err.println("NEAREST Box is "+Game.nearestBox);
+      } else {
+        System.err.println("hmmm no nearest box ?");
       }
+      if(Game.nearestOption != null) {
+        System.err.println("NEAREST Option is "+Game.nearestOption);
+      } else {
+        System.err.println("hmmm no nearest option ?");
+      }
+
+      GameState copyOfRoot = new GameState(game.currentState.width, game.currentState.height, 0);
+      int simulationCount = getAffordableSimulationCount();
       for (int i=0;i<simulationCount;i++) {
         copyOfRoot.duplicateFrom(game.currentState);
+        copyOfRoot.depth = 0; // FIXME redondant ?
         root.simulate(copyOfRoot, steps);
       }
       
@@ -451,23 +540,35 @@ class Player {
         buildSayonaraAction();
         return;
       } else {
-        Action action = new Action();
-
-        action.message = MCTSAI.keyToString(chosenKey, Game.myIndex);
-  
-        APlayer player = game.currentState.players[Game.myIndex];
-        action.dropBomb = chosenKey.charAt(2*Game.myIndex+1) == 'B';
-  
-        int actionIndex = chosenKey.charAt(2*Game.myIndex+0)-'0';
-        int newPosX = player.p.x+rotx[actionIndex];
-        int newPosY = player.p.y+roty[actionIndex];
-        action.pos = P.get(newPosX, newPosY);
-  
-        actions.clear();
-        actions.add(action);
-        
-        debugMCTS2(root);
+        buildBestActionFromKey(chosenKey);
       }
+    }
+
+    private void buildBestActionFromKey(String chosenKey) {
+      Action action = new Action();
+
+      action.message = MCTSAI.keyToString(chosenKey, Game.myIndex);
+ 
+      APlayer player = game.currentState.players[Game.myIndex];
+      action.dropBomb = chosenKey.charAt(2*Game.myIndex+1) == 'B';
+ 
+      int actionIndex = chosenKey.charAt(2*Game.myIndex+0)-'0';
+      int newPosX = player.p.x+rotx[actionIndex];
+      int newPosY = player.p.y+roty[actionIndex];
+      action.pos = P.get(newPosX, newPosY);
+ 
+      actions.clear();
+      actions.add(action);
+      
+      debugMCTS2(root);
+    }
+
+    private int getAffordableSimulationCount() {
+      int simulationCount = 3000;
+      if (game.playersCount == 4) {
+        simulationCount = 1500;
+      }
+      return simulationCount;
     }
 
     private void buildSayonaraAction() {
@@ -483,22 +584,41 @@ class Player {
     static String keyToString(String chosenKey, int playerIndex) {
       return (chosenKey.charAt(2*playerIndex+1) == 'B' ? "BOMB" : "MOVE")+ " " +rotString[chosenKey.charAt(2*playerIndex)-'0'];
     }
+
     static void debugMCTS2(Player.MCTS root) {
+      debugMCTS2(root, "");
+    }
+    static void debugMCTS2(Player.MCTS root, String decal) {
       int[] win = new int[5];
+      int bombAndWin = 0, bombSimulation=0;
+      int moveAndWin = 0, moveSimulation=0;
+      
       int[] simulated = new int[5];
       for (Entry<String, Player.MCTS> m : root.childs.entrySet()) {
         String key = m.getKey();
         int index = key.charAt(2*Game.myIndex+0)-'0';
         win[index] += m.getValue().win;
+      
+        if (key.charAt(2*Game.myIndex+1) == 'B') {
+          bombAndWin+=m.getValue().win;
+          bombSimulation+=m.getValue().simulatedCount;
+        } else {
+          moveAndWin+=m.getValue().win;
+          moveSimulation+=m.getValue().simulatedCount;
+        }
         simulated[index] += m.getValue().simulatedCount;
       }
       int cumul = 0;
       for (int i=0;i<5;i++) {
         cumul+=win[i];
         if (simulated[i] > 0) {
-          System.err.println(""+Player.rotString[i]+" -> "+win[i]+" / "+simulated[i]);
+          System.err.println(decal+Player.rotString[i]+" -> "+win[i]+" / "+simulated[i]+" ("+String.format("%.2f",1.0*win[i]/simulated[i])+")");
         }
       }
+      System.err.println(decal+"BOMB "+" -> "+bombAndWin+" / "+bombSimulation);
+      System.err.println(decal+"MOVE "+" -> "+moveAndWin+" / "+moveSimulation);
+      
+      
       if (cumul == 0) {
         MCTS.game.currentState.debugBombs();
       }
@@ -513,6 +633,8 @@ class Player {
     int width, height;
     GameState currentState;
     int depth = 0;
+    private static P nearestOption;
+    private static P nearestBox;
     
     public static int myIndex = 0;
     
@@ -528,12 +650,12 @@ class Player {
       
       AI ai = new MCTSAI();
       ai.game = this;
-      System.err.println("My index: "+myIndex);
-      
+
       while (true) {
         long long1 = System.currentTimeMillis();
         prepareGameState();
         long long2 = System.currentTimeMillis();
+        updateNearestBoxes();
         currentState.updateBoxInfluenza(currentState.players[Game.myIndex].bombRange);
         //currentState.computeRound();
         long long3 = System.currentTimeMillis();
@@ -562,8 +684,9 @@ class Player {
         Action action = ai.actions.get(0);
         /*ai */long aiAfter= System.currentTimeMillis();
         
-//        System.err.println("prepareGame : "+(long2-long1));
-//        System.err.println("computeRound: "+(long3-long2));
+        System.err.println(" ------- Stats ------------");
+        System.err.println("prepareGame : "+(long2-long1));
+        System.err.println("computeRound: "+(long3-long2));
 //        System.err.println("updateStates: "+(long4-long3));
 //        System.err.println("debug       : "+(long5-long4));
         System.err.println("AI          : "+(aiAfter-aiBefore));
@@ -571,6 +694,36 @@ class Player {
         
         System.out.println(action.get());
       }
+    }
+    
+    
+    void updateNearestOption() {
+      int minDist = 10000;
+      nearestOption = null;
+      P playerPos = currentState.players[myIndex].p;
+      for (Entity e : currentState.entities) {
+        if (e.type == ENTITY_ITEM) {
+          int manhattanDistance = e.p.manhattanDistance(playerPos);
+          if (manhattanDistance < minDist) {
+            minDist = manhattanDistance;
+            nearestOption = e.p;
+          }
+        }
+      }
+    }
+
+    void updateNearestBoxes() {
+      int minDist = 10000;
+      P nearestBoxes = null;
+      P playerPos = currentState.players[myIndex].p;
+      for (P box : currentState.boxes) {
+        int manhattanDistance = box.manhattanDistance(playerPos);
+        if (manhattanDistance < minDist) {
+          minDist = box.manhattanDistance(playerPos);
+          nearestBoxes = box;
+        }
+      }
+      this.nearestBox = nearestBoxes;
     }
 
     void debugThreats() {
@@ -627,7 +780,7 @@ class Player {
         }
       }
       in.nextLine();
-      
+
       this.playersCount = playersCount;
     }
   }
@@ -773,6 +926,7 @@ class Player {
       for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
           grid[x][y] = fromState.grid[x][y];
+          boxInfluence[x][y] = fromState.boxInfluence[x][y];
         }
       }
     }
@@ -871,7 +1025,7 @@ class Player {
       }
     }
 
-    private void updateBoxInfluenza(int bombRange) {
+    void updateBoxInfluenza(int bombRange) {
       for (P p : boxes) {
         for (int rot = 0;rot<4;rot++) {
           for (int range = 1;range<bombRange;range++) {
@@ -897,17 +1051,20 @@ class Player {
           grid[x][y] = CELL_WALL;
         } else if (c == '0') {
           grid[x][y] = CELL_EMPTY_BOX;
-          boxes.add(P.get(x, y));
+          addABox(y, x);
         } else if (c == '1') {
           grid[x][y] = CELL_RANGEUP_BOX;
-          boxes.add(P.get(x, y));
+          addABox(y, x);
         } else if (c == '2') {
           grid[x][y] = CELL_BOMBUP_BOX;
-          boxes.add(P.get(x, y));
+          addABox(y, x);
         }
         // update influence map
         boxInfluence[x][y] = 0;
       }
+    }
+    private void addABox(int y, int x) {
+      boxes.add(P.get(x, y));
     }
 
     void debugBoxInfluenza() {

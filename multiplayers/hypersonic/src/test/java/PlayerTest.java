@@ -18,6 +18,7 @@ public class PlayerTest {
   static void buildBoard(Player.Game game, String...rows) {
     int rowIndex = 0;
     for (String row : rows) {
+      row = row.replace(" ", ".");
       game.currentState.addRow(rowIndex++, row);
     }
   }
@@ -88,6 +89,7 @@ public class PlayerTest {
     Player.APlayer build() {
       Player.APlayer aPlayer = new Player.APlayer(state, id, x, y, bombsLeft, range);
       state.players[id] = aPlayer;
+      state.addEntity(aPlayer);
       return aPlayer;
     }
   }
@@ -99,6 +101,35 @@ public class PlayerTest {
     public void setup() {
     }
     
+    
+    @Test
+    public void influenza() throws Exception {
+      Player.Game game = new Player.Game(5, 5);
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 0)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
+
+      buildBoard(game,
+          ".....",
+          ".X0X.",
+          ".0.0.",
+          ".X0X.", 
+          "....." 
+          );
+      
+      game.updateNearestBoxes();
+      game.currentState.updateBoxInfluenza(game.currentState.players[Player.Game.myIndex].bombRange);
+      
+      game.currentState.debugBoxInfluenza();
+    }
     @Test
     public void copyState() throws Exception {
       Player.Game game = new Player.Game(5, 5);
@@ -162,29 +193,102 @@ public class PlayerTest {
       
       Player.Bomb bomb = new BombBuilder()
           .atState(game.currentState)
-          .from(me)
-          .atPosition(0,0)
-          .withRange(2)
+          .from(opponent)
+          .atPosition(4,4)
+          .withRange(10)
           .withTicksLeft(1)
           .build();
 
       Player.Bomb bomb2 = new BombBuilder()
           .atState(game.currentState)
           .from(me)
-          .atPosition(0,1)
-          .withRange(2)
+          .atPosition(2,4)
+          .withRange(10)
           .withTicksLeft(8)
           .build();
 
-      computeGame(game);
+      game.currentState.computeRound_MCTS();
       
-      int bomb1Value = game.currentState.grid[0][0];
-      int bomb2Value = game.currentState.grid[0][1];
+      int bomb1Value = game.currentState.grid[4][4];
+      int bomb2Value = game.currentState.grid[2][4];
+      int bomb3Value = game.currentState.grid[2][3];
       
       assertThat(bomb1Value, is(Player.GameState.CELL_FIRE));
       assertThat(bomb2Value, is(Player.GameState.CELL_FIRE));
+      assertThat(bomb3Value, is(Player.GameState.CELL_FIRE));
+    }
+
+    @Test
+    public void explosionChaining_2() throws Exception {
+      Player.Game game = new Player.Game(13, 11);
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(4, 9)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
+
+
+      buildBoard(game,
+        "             ",
+        " X X XbX X X ",
+        "      3      ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "    4 2      "
+          );
+      
+      Player.Bomb bomb = new BombBuilder()
+          .atState(game.currentState)
+          .from(me)
+          .atPosition(4,10)
+          .withRange(4)
+          .withTicksLeft(3)
+          .build();
+
+      Player.Bomb bomb2 = new BombBuilder()
+          .atState(game.currentState)
+          .from(me)
+          .atPosition(6, 10)
+          .withRange(4)
+          .withTicksLeft(1)
+          .build();
+
+      game.currentState.computeRound_MCTS();
+
+      checkCellOnFire(game, 1, 10 );
+      checkCellOnFire(game, 2, 10 );
+      checkCellOnFire(game, 3, 10 );
+      checkCellOnFire(game, 4, 10 );
+      checkCellOnFire(game, 5, 10 );
+      checkCellOnFire(game, 6, 10 );
+      checkCellOnFire(game, 7, 10 );
+      checkCellOnFire(game, 8, 10 );
+      checkCellOnFire(game, 9, 10 );
+      
+      checkCellOnFire(game, 4, 9 );
+      checkCellOnFire(game, 4, 8 );
+      checkCellOnFire(game, 4, 7 );
+      
+      checkCellOnFire(game, 6, 9 );
+      checkCellOnFire(game, 6, 8 );
+      checkCellOnFire(game, 6, 7 );
     }
     
+    private void checkCellOnFire(Player.Game game, int i, int j) {
+      assertThat(game.currentState.grid[i][j], is(Player.GameState.CELL_FIRE));
+    }
+
     @Test
     public void bombsTriggerFireWhichDisapearsNextRound() throws Exception {
       Player.Game game = new Player.Game(5, 5);
@@ -393,6 +497,31 @@ public class PlayerTest {
     }
     
     @Test
+    public void buildRandomMove() throws Exception {
+      class MyMCTS extends Player.MCTS {
+        int randomNumber;
+        
+        public MyMCTS(int random) {
+          randomNumber = random;
+        }
+        @Override
+        int getRandom(int range) {
+          return randomNumber;
+        }
+      }
+      
+      MyMCTS m = new MyMCTS(0);
+      Player.MCTS.possibilities[0] = 0;
+      Player.MCTS.possibilities[1] = 0;
+      Player.MCTS.possibilities[2] = 0;
+      Player.MCTS.possibilities[3] = 0;
+      Player.MCTS.possibilities[4] = 1;
+      
+      int result = m.findARandomMove();
+      assertThat(result, is(4));
+    }
+    
+    @Test
     public void findRandomMove() throws Exception {
       Player.Game game = new Player.Game(5, 5);
       Player.MCTS.game = game;
@@ -417,11 +546,14 @@ public class PlayerTest {
           );
 
       Player.MCTS mcts = new Player.MCTS();
-      int findARandomMove = mcts.fillPossibilities(me, game.currentState);
+      int sum = mcts.fillBiasedMovementMatrix(me, game.currentState);
       
-      assertThat(mcts.possibilities[0], is(4));
-      assertThat(mcts.possibilities[1], is(0));
-      assertThat(mcts.possibilities[2], is(1));
+      assertThat(sum, is(3));
+      assertThat(Player.MCTS.possibilities[Player.MOVE_RIGHT], is(1));
+      assertThat(Player.MCTS.possibilities[Player.MOVE_DOWN], is(1));
+      assertThat(Player.MCTS.possibilities[Player.MOVE_LEFT], is(0));
+      assertThat(Player.MCTS.possibilities[Player.MOVE_UP], is(0));
+      assertThat(Player.MCTS.possibilities[Player.MOVE_STAY], is(1));
     }
     
     
@@ -451,8 +583,6 @@ public class PlayerTest {
           );
       
       
-      game.currentState.addEntity(me);
-      game.currentState.addEntity(opponent);
       Player.Bomb bomb = new BombBuilder()
           .atState(game.currentState)
           .from(opponent)
@@ -505,8 +635,6 @@ public class PlayerTest {
           );
       
       
-      game.currentState.addEntity(me);
-      game.currentState.addEntity(opponent);
       Player.Bomb bomb = new BombBuilder()
           .atState(game.currentState)
           .from(opponent)
@@ -533,6 +661,116 @@ public class PlayerTest {
       assertThat(game.currentState.players[0].isDead(), is(false));
     }
     
+    @Test
+    @Ignore
+    //FIXME fix this test !
+    public void ImNotTrapped_2() throws Exception {
+      Player.Game game = new Player.Game(5, 5);
+      Player.MCTS.game = game;
+      
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(0, 3)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(4, 4)
+          .withState(game.currentState)
+          .build();
+      
+      buildBoard(game,
+          ".....",
+          ".X.X.",
+          ".X...",
+          ".X.X.", 
+          ".X..." 
+          );
+      
+
+      Player.Bomb bomb = new BombBuilder()
+          .atState(game.currentState)
+          .from(opponent)
+          .atPosition(0, 4)
+          .withRange(10)
+          .withTicksLeft(5)
+          .build();
+      
+      // game ai
+      Player.MCTSAI ai = new Player.MCTSAI();
+      ai.game = game;
+      
+      ai.compute();
+      
+      // debug
+      //System.err.println("//////////////////////");
+      //debugMCTS("ROOT", ai.root, 0);
+      //Player.MCTSAI.debugMCTS2(ai.root);
+      //debugBestMove(ai.root, 10);
+      
+      Player.Action action = ai.actions.get(0);
+      assertThat(action.pos, is(Player.P.get(0, 2)));
+      
+      assertThat(game.currentState.players[0].isDead(), is(false));
+    }
+    
+    @Test
+    public void explosionChaining_2() throws Exception {
+      Player.Game game = new Player.Game(13, 11);
+      Player.MCTS.game = game;
+      me = new PlayerBuilder()
+          .withId(0)
+          .withPos(4, 9)
+          .withState(game.currentState)
+          .build();
+      
+      opponent = new PlayerBuilder()
+          .withId(1)
+          .withPos(5, 5)
+          .withState(game.currentState)
+          .build();
+
+
+      buildBoard(game,
+        "             ",
+        " X X X0X X X ",
+        "             ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "             "
+          );
+      
+      Player.Bomb bomb = new BombBuilder()
+          .atState(game.currentState)
+          .from(me)
+          .atPosition(4,10)
+          .withRange(4)
+          .withTicksLeft(3)
+          .build();
+
+      Player.Bomb bomb2 = new BombBuilder()
+          .atState(game.currentState)
+          .from(me)
+          .atPosition(6, 10)
+          .withRange(4)
+          .withTicksLeft(1)
+          .build();
+
+      // game ai
+      Player.MCTSAI ai = new Player.MCTSAI();
+      ai.game = game;
+      
+      ai.compute();
+
+      debugBestMove(ai.root, 2);
+    }
+    
     private void debugBestMove(Player.MCTS root, int depth) {
       String key = root.getBestChild();
       if (key == null) {
@@ -547,11 +785,13 @@ public class PlayerTest {
     }
 
     private void debugMCTS(String key, Player.MCTS root, int step) {
+      String decal="";
       for (int i=0;i<step;i++) {
-        System.out.print(" ");
+        decal+=" ";
       }
       if (!key.equals("ROOT")) {
-        System.out.println(Player.MCTSAI.keyToString(key, 0)+" : "+root.win+" / "+root.simulatedCount);
+        System.err.println(decal+Player.MCTSAI.keyToString(key, 0)+" : "+root.win+" / "+root.simulatedCount);
+        Player.MCTSAI.debugMCTS2(root, decal+"-> ");
       }
       if (step < 1) {
         for (Entry<String, Player.MCTS> m : root.childs.entrySet()) {
