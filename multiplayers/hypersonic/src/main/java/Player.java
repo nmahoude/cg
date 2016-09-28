@@ -377,10 +377,13 @@ class Player {
           int nearest = nominalDistance - P.get(player.p.x+rotx[op], player.p.y+roty[op]).manhattanDistance(bestOpponent.p);
           double testedWinRatio = (1.0*m.getValue().win / m.getValue().simulatedCount);
           if (nearest < 0 && testedWinRatio > 0.10) {
+            System.err.println("AGGRO : "+m.getKey());
+
             return m.getKey();
           }
         }
       }
+      System.err.println("AGGRO : No best way");
       return null; // FIXME really ? the null ?
     }
   }
@@ -670,9 +673,10 @@ class Player {
     }
 
     private void evaluateAlgorithmSwitch() {
-      if (game.currentState.boxes.isEmpty() && MCTS.biasedMovementAlgorithm.type == MovementAlgorithm.AlgoType.BOX) {
-        MCTS.biasedMovementAlgorithm = new AggressiveMovementAlgorithm();
-      }
+//      if (game.currentState.boxes.isEmpty() && MCTS.biasedMovementAlgorithm.type == MovementAlgorithm.AlgoType.BOX) {
+//        MCTS.biasedMovementAlgorithm = new AggressiveMovementAlgorithm();
+//      }
+      return; // FIXME Aggressive algo is KO
     }
 
     private void debugBoxAndOptionsDistance() {
