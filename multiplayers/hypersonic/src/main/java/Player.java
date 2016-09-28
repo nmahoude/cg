@@ -315,10 +315,10 @@ class Player {
         if (GameState.canWalkThrough(valueAtCell)) {
           P newP = P.get(px, py);
           if (fromState.depth == 1 ) {
-            if (Game.nearestOption != null && Game.nearestOption.manhattanDistance(player.p) < 6 && Game.nearestOption.manhattanDistance(player.p) - Game.nearestOption.manhattanDistance(newP) > 0) {
-              possibilities[i] = 100;
-            } else  if (Game.nearestBox != null && Game.nearestBox.manhattanDistance(player.p) < 6 && Game.nearestBox.manhattanDistance(player.p) - Game.nearestBox.manhattanDistance(newP) > 0) {
-              possibilities[i] = 5;
+            if (Game.nearestBox != null && Game.nearestBox.manhattanDistance(player.p) < 6 && Game.nearestBox.manhattanDistance(player.p) - Game.nearestBox.manhattanDistance(newP) >= 0) {
+              possibilities[i] = 15;
+            } else if (Game.nearestOption != null && Game.nearestOption.manhattanDistance(player.p) < 6 && Game.nearestOption.manhattanDistance(player.p) - Game.nearestOption.manhattanDistance(newP) >= 0) { 
+              possibilities[i] = 7;
             } else {
               possibilities[i] = 1;
             }
@@ -389,19 +389,21 @@ class Player {
           if (cornered || !canDropBombOnBoard) {
             bomb[p] = false;
           } else {
-            int RANDOMIZE = 10;
+            int THRESHOLD = 500;
             if (player.p.x % 2 == 0 && player.p.y % 2 == 0) {
-              RANDOMIZE = 5;
+              THRESHOLD = 333;
             }
             if (fromState.depth == 1) {
               int influenza = fromState.boxInfluence[player.p.x][player.p.y];
               if (influenza > 2 ) {
-                RANDOMIZE = 1;
+                THRESHOLD = 110;
+              } else if (influenza == 2) {
+                THRESHOLD = 180;
               } else if (influenza == 1) {
-                RANDOMIZE = 2;
+                THRESHOLD = 250;
               }
             }
-            bomb[p] = getRandom(RANDOMIZE) == 0;
+            bomb[p] = getRandom(1000) > THRESHOLD;
           }
         } else {
           bomb[p] = false;
@@ -488,8 +490,8 @@ class Player {
       for (Entry<String, MCTS> m : childs.entrySet()) {
         MCTS tested = m.getValue();
         double ratio1 = (1.0*tested.win) / tested.simulatedCount;
-        if (ratio1 - bestRatio > 0.05
-            || (Math.abs(ratio1-bestRatio) < 0.05 && tested.win > moreWin)) {
+        if (ratio1 - bestRatio > 0.05 
+            || (bestRatio - ratio1 < 0.05 && tested.win > moreWin)) {
           bestRatio = ratio1;
           moreWin = tested.win;
           chosenKey = m.getKey();
@@ -656,6 +658,7 @@ class Player {
         prepareGameState();
         long long2 = System.currentTimeMillis();
         updateNearestBoxes();
+        updateNearestOption();
         currentState.updateBoxInfluenza(currentState.players[Game.myIndex].bombRange);
         //currentState.computeRound();
         long long3 = System.currentTimeMillis();
