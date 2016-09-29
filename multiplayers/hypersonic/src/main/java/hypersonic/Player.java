@@ -8,16 +8,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
 class Player {
-  private static Scanner in;
+  static Scanner in;
   
-  private static final int ENTITY_PLAYER = 0;
-  private static final int ENTITY_BOMB = 1;
-  private static final int ENTITY_ITEM = 2;
+  static final int ENTITY_PLAYER = 0;
+  static final int ENTITY_BOMB = 1;
+  static final int ENTITY_ITEM = 2;
 
   static int MOVE_RIGHT = 0;
   static int MOVE_DOWN = 1;
@@ -57,7 +56,7 @@ class Player {
     int bombRange = 3;
     int bombsLeft = 1;
     public int points = 0;
-    private boolean isDead = false;
+    boolean isDead = false;
     public int droppedBombs = 0;
     
     int getTotalBombs() {
@@ -69,7 +68,7 @@ class Player {
       
       super.update(state);
     }
-    private void pickupBonuses(GameState state) {
+    void pickupBonuses(GameState state) {
       int value = state.grid[p.x+13*p.y];
       if (GameState.isRangeUpItem(value)) {
         bombRange++;
@@ -130,7 +129,7 @@ class Player {
         affectBoxInfluenza(state);
       }
     }
-    private void updateStateGrid() {
+    void updateStateGrid() {
       if (ticksLeft == 0) {
         state.grid[p.x+13*p.y] = GameState.CELL_FIRE;
         state.fireCells.add(p);
@@ -139,7 +138,7 @@ class Player {
       }
     }
 
-    private void affectBoxInfluenza(GameState state) {
+    void affectBoxInfluenza(GameState state) {
       for (int rot=0;rot<4;rot++) {
         for (int d=1;d<range;d++) {
         }
@@ -195,7 +194,7 @@ class Player {
   static class Item extends Entity {
     final static int RANGE_UP = 1;
     final static int BOMB_UP = 2;
-    private int param2;
+    int param2;
     
     public Item(GameState state, int owner, int x, int y, int param1, int param2) {
       super(state, ENTITY_ITEM, owner, x, y);
@@ -343,8 +342,8 @@ class Player {
   }
   
   static class AggressiveMovementAlgorithm extends MovementAlgorithm {
-    private APlayer bestOpponent;
-    private APlayer player;
+    APlayer bestOpponent;
+    APlayer player;
 
     public AggressiveMovementAlgorithm() {
       super(AlgoType.AGGRESSIVE);
@@ -354,7 +353,7 @@ class Player {
     void computeBombs(APlayer player, GameState fromState, int p, boolean[] bombs) {
       // TODO
     }
-    private APlayer getBestOpponent(APlayer player, GameState fromState) {
+    APlayer getBestOpponent(APlayer player, GameState fromState) {
       APlayer bestOpponent=null;
       int minDist = 1024;
       for (int p=0;p<4;p++) {
@@ -519,7 +518,7 @@ class Player {
   }
   
   static class EarlyGameAlgorithm extends MovementAlgorithm {
-    private static final double SCORE_MINUS_INFINITY = -1_000_000;
+    static final double SCORE_MINUS_INFINITY = -1_000_000;
 
     enum GameType {
       EARLY,
@@ -583,10 +582,14 @@ class Player {
       for (int i = 0; i < 4; i++) {
         int px = player.p.x + rotx[i];
         int py = player.p.y + roty[i];
-        int valueAtCell = fromState.getCellAt(px, py);
-        if (GameState.canWalkThrough(valueAtCell)) {
-          possibilities[i] = 1;
-          total+=possibilities[i];
+        if (px >= 0 && px < 13 && py >= 0 & py < 11) {
+          int valueAtCell = fromState.grid[px+13*py];
+          if (GameState.canWalkThrough(valueAtCell)) {
+            possibilities[i] = 1;
+            total+=1;
+          } else {
+            possibilities[i] = 0;
+          }
         } else {
           possibilities[i] = 0;
         }
@@ -619,7 +622,7 @@ class Player {
     public boolean playerIsDead = false;
     public int bombRange;
     public int totalBombs;
-    private Integer key;
+    Integer key;
 
     public MCTS(Integer key) {
       this.key = key;
@@ -652,21 +655,16 @@ class Player {
       return ThreadLocalRandom.current().nextInt(range);
     }
     void calculateActions(GameState fromState, int[] dir, boolean[] bomb) {
-      for (int p=0;p<game.playersCount;p++) {
+      for (int p=game.playersCount-1;p>=0;p--) {
         APlayer player = fromState.players[p];
-        if (player == null) {
-          continue ;
-        }
-        biasedMovementAlgorithm.compute(player, fromState, possibilities);
-        dir[p] = findARandomMove();
-//        if (fromState.depth == 1 && p == 0) {
-//          System.err.println("chosen dir :" +dir[0]);
-//        }
-
-        if (player.bombsLeft > 0) {
-          biasedMovementAlgorithm.computeBombs(player, fromState, p, bomb);
-        } else {
-          bomb[p] = false;
+        if (player != null) {
+          biasedMovementAlgorithm.compute(player, fromState, possibilities);
+          dir[p] = findARandomMove();
+          if (player.bombsLeft > 0) {
+            biasedMovementAlgorithm.computeBombs(player, fromState, p, bomb);
+          } else {
+            bomb[p] = false;
+          }
         }
       }
     }
@@ -761,7 +759,7 @@ class Player {
         }
       }
     }
-    private boolean victoryFromPoints(GameState fromState) {
+    boolean victoryFromPoints(GameState fromState) {
       APlayer me = fromState.players[Game.myIndex];
       for (int i=1;i<4;i++) {
         if (fromState.players[i] != null && me.points < fromState.players[i].points) {
@@ -848,14 +846,14 @@ class Player {
     }
 
     
-    private void evaluateAlgorithmSwitch() {
+    void evaluateAlgorithmSwitch() {
 //      if (game.currentState.boxes.isEmpty() && MCTS.biasedMovementAlgorithm.type == MovementAlgorithm.AlgoType.BOX) {
 //        MCTS.biasedMovementAlgorithm = new AggressiveMovementAlgorithm();
 //      }
       return; // FIXME Aggressive algo is KO
     }
 
-    private void debugBoxAndOptionsDistance() {
+    void debugBoxAndOptionsDistance() {
       if(Game.nearestBox != null) {
         System.err.println("NEAREST Box is "+Game.nearestBox);
       } else {
@@ -868,7 +866,7 @@ class Player {
       }
     }
 
-    private void buildBestActionFromKey(Integer chosenKey) {
+    void buildBestActionFromKey(Integer chosenKey) {
       Action action = new Action();
 
       action.message = quotes[(seed+gameRound) % (quotes.length)];
@@ -897,7 +895,7 @@ class Player {
       }
     }
 
-    private void buildSayonaraAction() {
+    void buildSayonaraAction() {
       Action action = new Action();
       action.pos = game.currentState.players[Game.myIndex].p;
       action.dropBomb = false;
@@ -915,15 +913,15 @@ class Player {
   
   static class Game {
     public int playersCount=2;
-    private static final String MOVE_STAY_NOBOMB = "  ";
-    private static final int MAX_STEPS = 20;
+    static final String MOVE_STAY_NOBOMB = "  ";
+    static final int MAX_STEPS = 20;
     int width, height;
     GameState currentState;
     int depth = 0;
-    private static P nearestOption;
-    private static P nearestBox;
+    static P nearestOption;
+    static P nearestBox;
     
-    public static int myIndex = 0;
+    static int myIndex = 0;
     
     Game(int width, int height) {
       this.width = width;
@@ -932,7 +930,7 @@ class Player {
       currentState = new GameState(width, height, 0);
     }
     
-    private void play() {
+    void play() {
       MCTS.game = this; // OUTCH, it's ugly
       
       AI ai = new MCTSAI();
@@ -1034,7 +1032,7 @@ class Player {
       currentState.simulate(MOVE_STAY_NOBOMB);
     }
 
-    private void prepareGameState() {
+    void prepareGameState() {
       currentState.reset();
 
       for (int y = 0; y < height; y++) {
@@ -1080,6 +1078,14 @@ class Player {
     static final int CELL_BOMBUP_BOX = 11;
     static final int CELL_RANGEUP_BOX = 12;
     static final int CELL_BOMB_0 = 90;
+    static final int CELL_BOMB_1 = 91;
+    static final int CELL_BOMB_2 = 92;
+    static final int CELL_BOMB_3 = 93;
+    static final int CELL_BOMB_4 = 94;
+    static final int CELL_BOMB_5 = 95;
+    static final int CELL_BOMB_6 = 96;
+    static final int CELL_BOMB_7 = 97;
+    static final int CELL_BOMB_8 = 98;
     static final int CELL_BOMB_9 = 99;
     static final int CELL_FIRE = 200;
     static final int CELL_ITEM_BOMBUP = 31;
@@ -1132,7 +1138,19 @@ class Player {
       // correct way :
       // return !isFire(value) && !isABomb(value) && !isWall(value) && !isABox(value);
       // optimize for endGame (fire second)
-      return !isWall(value) && !isFire(value) && !isABox(value) && !isABomb(value) ;
+      return value != CELL_WALL 
+          && value != CELL_FIRE 
+          && value != CELL_EMPTY_BOX && value != CELL_BOMBUP_BOX && value != CELL_RANGEUP_BOX
+          && !(value == CELL_BOMB_0)
+          && !(value == CELL_BOMB_1)
+          && !(value == CELL_BOMB_2)
+          && !(value == CELL_BOMB_3)
+          && !(value == CELL_BOMB_4)
+          && !(value == CELL_BOMB_5)
+          && !(value == CELL_BOMB_6)
+          && !(value == CELL_BOMB_7)
+          && !(value == CELL_BOMB_8)
+          && !(value == CELL_BOMB_9);
     }
     
     static boolean isFire(int value) {
@@ -1148,7 +1166,7 @@ class Player {
       return isABox(value) || isAnItem(value) || isABomb(value);
     }
 
-    static private boolean isAnItem(int value) {
+    static boolean isAnItem(int value) {
       return isBombUpItem(value) || isRangeUpItem(value);
     }
 
@@ -1159,7 +1177,7 @@ class Player {
       return value == CELL_ITEM_RANGEUP;
     }
 
-    static private boolean isABox(int value) {
+    static boolean isABox(int value) {
       return value == CELL_EMPTY_BOX || value == CELL_BOMBUP_BOX || value == CELL_RANGEUP_BOX;
     }
     boolean isHardBlocked(P pos) {
@@ -1182,8 +1200,8 @@ class Player {
     APlayer players[] = new APlayer[4];
 
     List<Entity> entities = new ArrayList<>();
-    private List<P> boxes = new ArrayList<>();
-    private List<P> hittedBoxes = new ArrayList<>();
+    List<P> boxes = new ArrayList<>();
+    List<P> hittedBoxes = new ArrayList<>();
     List<P> fireCells = new ArrayList<>();
     int depth;
     
@@ -1261,7 +1279,7 @@ class Player {
 
     }
 
-    private int getCellAt(int x, int y) {
+    int getCellAt(int x, int y) {
       if (x < 0 || x >= width || y < 0 || y >= height) {
         return CELL_WALL;
       }
@@ -1287,7 +1305,7 @@ class Player {
       }
       removeHittedBoxes();
     }
-    private void resetPlayerPoints() {
+    void resetPlayerPoints() {
       for (int i=0;i<4;i++) {
         if (players[i] != null) {
           players[i].points = 0;
@@ -1295,7 +1313,7 @@ class Player {
       }
     }
 
-    private void debugPlayerAccessibleCellsWithAStar(APlayer player) {
+    void debugPlayerAccessibleCellsWithAStar(APlayer player) {
       // TODO don't use A* to check this !
       System.err.println("Accessible cells from "+player);
 
@@ -1314,7 +1332,7 @@ class Player {
       }
     }
 
-    private void removeHittedBoxes() {
+    void removeHittedBoxes() {
       for (P p : hittedBoxes ) {
         int boxValue = grid[p.x+13*p.y];
         if (boxValue == CELL_EMPTY_BOX) {
@@ -1346,7 +1364,7 @@ class Player {
         }
       }
     }
-    private void addABox(int y, int x) {
+    void addABox(int y, int x) {
       boxes.add(P.get(x, y));
     }
 
@@ -1409,7 +1427,7 @@ class Player {
     
     List<PathItem> path = new ArrayList<>();
     
-    private GameState rootState;
+    GameState rootState;
     P from;
     P target;
     
@@ -1437,7 +1455,7 @@ class Player {
       return item;
     }
 
-    private void calculatePath(PathItem item) {
+    void calculatePath(PathItem item) {
       PathItem i = item;
       while (i != null) {
         path.add(0, i);
@@ -1482,7 +1500,7 @@ class Player {
       return null; // not found !
     }
 
-    private void addToOpenList(PathItem visiting, P fromCell, P toCell) {
+    void addToOpenList(PathItem visiting, P fromCell, P toCell) {
       if (closedList.containsKey(toCell)) {
         return;
       }
