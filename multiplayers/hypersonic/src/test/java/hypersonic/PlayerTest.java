@@ -1,3 +1,4 @@
+package hypersonic;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -720,11 +721,11 @@ public class PlayerTest {
       
       ai.compute();
 
-      debugBestMove(ai.root.childs.get("1M1M1M1M").childs.get("3B3B3B3B"), 2);
+      debugBestMove(ai.root.childs.get(1*2+0).childs.get(3*2+1), 2);
     }
     
     private void debugBestMove(Player.MCTS root, int depth) {
-      String key = Player.MCTS.biasedMovementAlgorithm.getBestChild(root);
+      Integer key = Player.MCTS.biasedMovementAlgorithm.getBestChild(root);
       if (key == null) {
         // the end
         return;
@@ -736,7 +737,7 @@ public class PlayerTest {
       }
     }
 
-    private void debugMCTS(String key, Player.MCTS root, int step) {
+    private void debugMCTS(Integer key, Player.MCTS root, int step) {
       String decal="";
       for (int i=0;i<step;i++) {
         decal+=" ";
@@ -746,7 +747,7 @@ public class PlayerTest {
         Player.MCTSAI.debugMCTS2(root, decal+"-> ");
       }
       if (step < 1) {
-        for (Entry<String, Player.MCTS> m : root.childs.entrySet()) {
+        for (Entry<Integer, Player.MCTS> m : root.childs.entrySet()) {
           debugMCTS(m.getKey(), m.getValue(), step+1);
         }
       }

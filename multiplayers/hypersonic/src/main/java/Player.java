@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -67,7 +68,7 @@ class Player {
       super.update(state);
     }
     private void pickupBonuses(GameState state) {
-      int value = state.getCellAt(p.x, p.y);
+      int value = state.grid[p.x+13*p.y];
       if (GameState.isRangeUpItem(value)) {
         bombRange++;
       } else if (GameState.isBombUpItem(value)) {
@@ -130,6 +131,7 @@ class Player {
     private void updateStateGrid() {
       if (ticksLeft == 0) {
         state.grid[p.x+13*p.y] = GameState.CELL_FIRE;
+        state.fireCells.add(p);
       } else {
         state.grid[p.x+13*p.y] = GameState.CELL_BOMB_0+ticksLeft;
       }
@@ -183,6 +185,7 @@ class Player {
             break;
           }
           state.grid[testedX+13*testedY] = GameState.CELL_FIRE;
+          state.fireCells.add(p);
         }
       }
     }
@@ -259,7 +262,7 @@ class Player {
           if (GameState.canWalkThrough(value)) {
             // score heuristic
             int distance = playerPos.manhattanDistance(target);
-            double score = state0.boxInfluence[target.x+13*target.y]
+            double score = 1
                 + (GameState.isAnItem(value) ? 1 : 0)
                   - 0.2*distance
                 + 0;
@@ -318,30 +321,18 @@ class Player {
     public MovementAlgorithm(AlgoType type) {
       this.type = type;
     }
-    abstract String getBestChild(MCTS root);
+    abstract Integer getBestChild(MCTS root);
     abstract int compute(APlayer player, GameState fromState, int[] possibilities);
     
     void computeBombs(APlayer player, GameState fromState, int p, boolean[] bombs) {
-      boolean canDropBombOnBoard = !GameState.isABomb(fromState.getCellAt(player.p.x, player.p.y));
+      boolean canDropBombOnBoard = !GameState.isABomb(fromState.grid[player.p.x+13*player.p.y]);
       if (!canDropBombOnBoard) {
         bombs[p] = false;
       } else {
-        int THRESHOLD = 800;
+        int THRESHOLD = 500;
         if (fromState.boxes.size() == 0) {
-          THRESHOLD = 100;
-        } else {
           if (player.p.x % 2 == 0 && player.p.y % 2 == 0) {
-            THRESHOLD = 600;
-          }
-          if (fromState.depth == 1) {
-            int influenza = fromState.boxInfluence[player.p.x+13*player.p.y];
-            if (influenza > 2 ) {
-              THRESHOLD = 200; //110;
-            } else if (influenza == 2) {
-              THRESHOLD = 300; //180;
-            } else if (influenza == 1) {
-              THRESHOLD = 400; //250;
-            }
+            THRESHOLD = 200;
           }
         }
         bombs[p] = ThreadLocalRandom.current().nextInt(1000) > THRESHOLD;
@@ -415,7 +406,7 @@ class Player {
     }
     
     
-    String getBestChild(MCTS root) {
+    Integer getBestChild(MCTS root) {
       String chosenKey = null;
       double bestPointsRatio = -100.0;
       double bestWinRatio = -100.0;
@@ -429,13 +420,13 @@ class Player {
       }
       
       if (bestOpponent != null) {
-        for (Entry<String, MCTS> m : root.childs.entrySet()) {
+        for (Entry<Integer, MCTS> m : root.childs.entrySet()) {
           MCTS tested = m.getValue();
           if (tested.win == 0) {
             continue; // avoid Divide/0
           }
           
-          int op = m.getKey().charAt(0) -'0';
+          int op = m.getKey() / 2;
           int nearest = nominalDistance - P.get(player.p.x+rotx[op], player.p.y+roty[op]).manhattanDistance(bestOpponent.p);
           double testedWinRatio = (1.0*m.getValue().win / m.getValue().simulatedCount);
           if (nearest < 0 && testedWinRatio > 0.10) {
@@ -460,15 +451,15 @@ class Player {
       // TODO Auto-generated method stub
       
     }
-    String getBestChild(MCTS root) {
-      String chosenKey = null;
+    Integer getBestChild(MCTS root) {
+      Integer chosenKey = null;
       double bestPointsRatio = -100.0;
       double bestWinRatio = -100.0;
       
       int moreWin = 0;
-      Entry<String, MCTS> bestEntry = null;
+      Entry<Integer, MCTS> bestEntry = null;
       
-      for (Entry<String, MCTS> m : root.childs.entrySet()) {
+      for (Entry<Integer, MCTS> m : root.childs.entrySet()) {
         MCTS tested = m.getValue();
         if (tested.win == 0) {
           continue; // avoid Divide/0
@@ -528,6 +519,13 @@ class Player {
   static class EarlyGameAlgorithm extends MovementAlgorithm {
     private static final double SCORE_MINUS_INFINITY = -1_000_000;
 
+    enum GameType {
+      EARLY,
+      MIDDLE,
+      LATE
+    }
+    GameType gametype = GameType.MIDDLE;
+    
     public EarlyGameAlgorithm() {
       super(AlgoType.EARLY);
     }
@@ -538,11 +536,17 @@ class Player {
         if (node.playerIsDead ) {
           return SCORE_MINUS_INFINITY;
         } else {
-          return 10*node.totalPoints + node.totalBombs + node.bombRange - node.depth;
+          if (gametype == GameType.EARLY) {
+            return 10*node.totalPoints + node.totalBombs + node.bombRange - node.depth;
+          } else if (gametype == GameType.MIDDLE) {
+            return 2*node.totalPoints + node.totalBombs + node.bombRange;
+          } else {
+            return 1;
+          }
         }
       } else {
         double score = SCORE_MINUS_INFINITY;
-        for (Entry<String, MCTS> m : node.childs.entrySet()) {
+        for (Entry<Integer, MCTS> m : node.childs.entrySet()) {
           //TODO bien y penser, on bypasse tous les infinity max !
           // il faut peut-etre prendre en compt le % de win dans l'heuristique?
           score = Math.max(score, getScore(m.getValue())); 
@@ -551,12 +555,15 @@ class Player {
       }
     }
     
-    String getBestChild(MCTS root) {
-      Entry<String, MCTS> bestEntry = null;
+    Integer getBestChild(MCTS root) {
+      Entry<Integer, MCTS> bestEntry = null;
       double bestScore = SCORE_MINUS_INFINITY;
       
-      for (Entry<String, MCTS> m : root.childs.entrySet()) {
-        double testedScore = getScore(m.getValue());
+      for (Entry<Integer, MCTS> m : root.childs.entrySet()) {
+        MCTS mcts = m.getValue();
+        double ratio = 1.0*mcts.win / mcts.simulatedCount;
+        double score = getScore(mcts);
+        double testedScore = ratio * score;
         if (testedScore > bestScore) {
           bestScore = testedScore;
           bestEntry = m;
@@ -596,7 +603,7 @@ class Player {
     //static MovementAlgorithm biasedMovementAlgorithm = new AggressiveMovementAlgorithm();
     
     static Game game; // static reference to the game (only one). Better way to do it ?
-    Map<String, MCTS> childs = new HashMap<>();
+    Map<Integer, MCTS> childs = new HashMap<>();
     
     public int depth;
     int simulatedCount=0; // how many branches (total > childs.size())
@@ -650,16 +657,13 @@ class Player {
         }
       }
     }
-    String getKeyFromActions(int[] dir, boolean bomb[]) {
-      String key = "";
-//      for (int i=0;i<game.playersCount;i++) {
-//        key+= dir[i]+(bomb[i] ? "B" : "M");
-//      }
-      key+= dir[game.myIndex]+(bomb[game.myIndex] ? "B" : "M");
-      key+= dir[game.myIndex]+(bomb[game.myIndex] ? "B" : "M");
-      key+= dir[game.myIndex]+(bomb[game.myIndex] ? "B" : "M");
-      key+= dir[game.myIndex]+(bomb[game.myIndex] ? "B" : "M");
-      return key;
+    Integer getKeyFromActions(int[] dir, boolean bomb[]) {
+//      String key = "";
+//      String myKey = dir[game.myIndex]+(bomb[game.myIndex] ? "B" : "M");
+//      key = myKey+myKey+myKey+myKey;
+//      return key;
+//      
+      return 2 * dir[game.myIndex]+(bomb[game.myIndex] ? 1 : 0);
     }
 
     int simulate(GameState fromState, int depth) {
@@ -697,7 +701,7 @@ class Player {
         
         boolean simulationDone = false;
         int maxTests = 10;
-        String key = null;
+        Integer key = null;
         MCTS chosenChild = null;
         // Find a non final child node
         while (!simulationDone && maxTests > 0) {
@@ -706,7 +710,7 @@ class Player {
           // prepare child
           key = getKeyFromActions(dir, bomb);
           chosenChild = childs.get(key);
-          if (chosenChild == null || chosenChild.playerIsDead == false) {
+          if (chosenChild == null || !chosenChild.playerIsDead) {
             simulationDone = true;
           }
         }
@@ -793,7 +797,7 @@ class Player {
         root.simulate(copyOfRoot, steps);
       }
       
-      String chosenKey = MCTS.biasedMovementAlgorithm.getBestChild(root);
+      Integer chosenKey = MCTS.biasedMovementAlgorithm.getBestChild(root);
       MCTS chosen = root.childs.get(chosenKey);
       
       if (chosen == null) {
@@ -824,15 +828,15 @@ class Player {
       }
     }
 
-    private void buildBestActionFromKey(String chosenKey) {
+    private void buildBestActionFromKey(Integer chosenKey) {
       Action action = new Action();
 
       action.message = quotes[(seed+gameRound) % (quotes.length)];
  
       APlayer player = game.currentState.players[Game.myIndex];
-      action.dropBomb = chosenKey.charAt(2*Game.myIndex+1) == 'B';
+      action.dropBomb = (chosenKey % 2 == 1);
  
-      int actionIndex = chosenKey.charAt(2*Game.myIndex+0)-'0';
+      int actionIndex = chosenKey / 2 ;
       int newPosX = player.p.x+rotx[actionIndex];
       int newPosY = player.p.y+roty[actionIndex];
       action.pos = P.get(newPosX, newPosY);
@@ -843,7 +847,7 @@ class Player {
       //debugMCTS2(root);
     }
 
-    private int getAffordableSimulationCount() {
+    int getAffordableSimulationCount() {
       switch(game.playersCount) {
         case 4:
           return 1_500;
@@ -865,8 +869,8 @@ class Player {
       return;
     }
 
-    static String keyToString(String chosenKey, int playerIndex) {
-      return (chosenKey.charAt(2*playerIndex+1) == 'B' ? "BOMB" : "MOVE")+ " " +rotString[chosenKey.charAt(2*playerIndex)-'0'];
+    static String keyToString(Integer chosenKey, int playerIndex) {
+      return (chosenKey % 2 == 1 ? "BOMB" : "MOVE")+ " " +rotString[chosenKey / 2];
     }
 
     static void debugMCTS2(Player.MCTS root) {
@@ -878,12 +882,12 @@ class Player {
       int moveAndWin = 0, moveSimulation=0;
       
       int[] simulated = new int[5];
-      for (Entry<String, Player.MCTS> m : root.childs.entrySet()) {
-        String key = m.getKey();
-        int index = key.charAt(2*Game.myIndex+0)-'0';
+      for (Entry<Integer, Player.MCTS> m : root.childs.entrySet()) {
+        Integer key = m.getKey();
+        int index = key / 2;
         win[index] += m.getValue().win;
       
-        if (key.charAt(2*Game.myIndex+1) == 'B') {
+        if (key % 2 == 1) {
           bombAndWin+=m.getValue().win;
           bombSimulation+=m.getValue().simulatedCount;
         } else {
@@ -1126,7 +1130,10 @@ class Player {
     }
     
     static boolean canWalkThrough(int value) {
-      return !isFire(value) && !isABomb(value) && !isWall(value) && !isABox(value);
+      // correct way :
+      // return !isFire(value) && !isABomb(value) && !isWall(value) && !isABox(value);
+      // optimize for endGame (fire second)
+      return !isWall(value) && !isFire(value) && !isABox(value) && !isABomb(value) ;
     }
     
     static boolean isFire(int value) {
@@ -1175,10 +1182,10 @@ class Player {
     int[] grid;
     APlayer players[] = new APlayer[4];
 
-    int[] boxInfluence;
     List<Entity> entities = new ArrayList<>();
     private List<P> boxes = new ArrayList<>();
     private List<P> hittedBoxes = new ArrayList<>();
+    List<P> fireCells = new ArrayList<>();
     int depth;
     
     GameState(int width, int height, int depth) {
@@ -1186,7 +1193,6 @@ class Player {
       this.height = height;
       this.depth = depth;
       grid = new int[13*11];
-      boxInfluence = new int[13*11];
       
       if( depth < Game.MAX_STEPS) {
         childs.put("  ", new GameState(width,height, depth+1));
@@ -1196,22 +1202,17 @@ class Player {
     // clean for next simulation on same spot
     void softReset() {
       hittedBoxes.clear();
+      fireCells.clear();
     }
     // clean cumulative states
     void reset() {
+      softReset();
       boxes.clear();
-      hittedBoxes.clear();
       entities.clear();
       players[0] = null;
       players[1] = null;
       players[2] = null;
       players[3] = null;
-      
-      for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-          boxInfluence[x+13*y] = 0;
-        }
-      }
     }
 
     public void duplicateFrom(GameState fromState) {
@@ -1224,12 +1225,7 @@ class Player {
         this.entities.add(duplicate);
       }
 
-      for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-          grid[x+13*y] = fromState.grid[x+13*y];
-          boxInfluence[x+13*y] = fromState.boxInfluence[x+13*y];
-        }
-      }
+      System.arraycopy(fromState.grid, 0, grid, 0, 13*11);
     }
     
     public void clone(GameState fromState) {
@@ -1278,18 +1274,12 @@ class Player {
         entity.update(this);
       }
       removeHittedBoxes();
-      updateBoxInfluenza(players[Game.myIndex].bombRange); // MCTS : fonction dupliquée pour optimisation, en dessous
     }
 
     public void computeRound_MCTS() {
       // remove old fire
-      for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-          int value = grid[x+13*y];
-          if (value == GameState.CELL_FIRE) {
-            grid[x+13*y] = GameState.CELL_FLOOR;
-          }
-        }
+      for (P p : fireCells) {
+        grid[p.x+13*p.y] = GameState.CELL_FLOOR;
       }
       
       for (Entity entity : entities) {
@@ -1337,23 +1327,6 @@ class Player {
       }
     }
 
-    void updateBoxInfluenza(int bombRange) {
-      for (P p : boxes) {
-        for (int rot = 0;rot<4;rot++) {
-          for (int range = 1;range<bombRange;range++) {
-            int testedX = p.x+range*rotx[rot];
-            int testedY = p.y+range*roty[rot];
-            
-            int value = getCellAt(testedX, testedY);
-            if (explosionBlocked(value)) {
-              break;
-            }
-            boxInfluence[testedX+13*testedY] ++;
-          }
-        }
-      }
-    }
-
     public void addRow(int y, String row) {
       for (int x = 0; x < row.length(); x++) {
         char c = row.charAt(x);
@@ -1371,24 +1344,12 @@ class Player {
           grid[x+13*y] = CELL_BOMBUP_BOX;
           addABox(y, x);
         }
-        // update influence map
-        boxInfluence[x+13*y] = 0;
       }
     }
     private void addABox(int y, int x) {
       boxes.add(P.get(x, y));
     }
 
-    void debugBoxInfluenza() {
-      for (int y = 0; y < height; y++) {
-        String result="";
-        for (int x = 0; x < width; x++) {
-          result+=(char)('0'+boxInfluence[x+13*y]);
-        }
-        System.err.println(result);
-      }
-    }
-    
     void debugBombs() {
       for (int y = 0; y < height; y++) {
         String result="";
