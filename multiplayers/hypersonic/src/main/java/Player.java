@@ -129,9 +129,9 @@ class Player {
     }
     private void updateStateGrid() {
       if (ticksLeft == 0) {
-        state.grid[p.x][p.y] = GameState.CELL_FIRE;
+        state.grid[p.x+13*p.y] = GameState.CELL_FIRE;
       } else {
-        state.grid[p.x][p.y] = GameState.CELL_BOMB_0+ticksLeft;
+        state.grid[p.x+13*p.y] = GameState.CELL_BOMB_0+ticksLeft;
       }
     }
 
@@ -182,7 +182,7 @@ class Player {
             }
             break;
           }
-          state.grid[testedX][testedY] = GameState.CELL_FIRE;
+          state.grid[testedX+13*testedY] = GameState.CELL_FIRE;
         }
       }
     }
@@ -259,7 +259,7 @@ class Player {
           if (GameState.canWalkThrough(value)) {
             // score heuristic
             int distance = playerPos.manhattanDistance(target);
-            double score = state0.boxInfluence[target.x][target.y]
+            double score = state0.boxInfluence[target.x+13*target.y]
                 + (GameState.isAnItem(value) ? 1 : 0)
                   - 0.2*distance
                 + 0;
@@ -320,6 +320,7 @@ class Player {
     }
     abstract String getBestChild(MCTS root);
     abstract int compute(APlayer player, GameState fromState, int[] possibilities);
+    
     void computeBombs(APlayer player, GameState fromState, int p, boolean[] bombs) {
       boolean canDropBombOnBoard = !GameState.isABomb(fromState.getCellAt(player.p.x, player.p.y));
       if (!canDropBombOnBoard) {
@@ -333,7 +334,7 @@ class Player {
             THRESHOLD = 600;
           }
           if (fromState.depth == 1) {
-            int influenza = fromState.boxInfluence[player.p.x][player.p.y];
+            int influenza = fromState.boxInfluence[player.p.x+13*player.p.y];
             if (influenza > 2 ) {
               THRESHOLD = 200; //110;
             } else if (influenza == 2) {
@@ -1084,11 +1085,11 @@ class Player {
     public void explodeBox(P p) {
       int value = getCellAt(p.x, p.y);
       if (value == CELL_EMPTY_BOX) {
-        grid[p.x][p.y] = CELL_FLOOR;
+        grid[p.x+13*p.y] = CELL_FLOOR;
       }else if (value == CELL_BOMBUP_BOX) {
-        grid[p.x][p.y] = CELL_ITEM_BOMBUP;
+        grid[p.x+13*p.y] = CELL_ITEM_BOMBUP;
       }else if (value == CELL_RANGEUP_BOX) {
-        grid[p.x][p.y] = CELL_ITEM_RANGEUP;
+        grid[p.x+13*p.y] = CELL_ITEM_RANGEUP;
       }
     }
     public void removeItem(P testedP) {
@@ -1156,7 +1157,7 @@ class Player {
       return value == CELL_EMPTY_BOX || value == CELL_BOMBUP_BOX || value == CELL_RANGEUP_BOX;
     }
     boolean isHardBlocked(P pos) {
-      return isHardBlocked(grid[pos.x][pos.y]);
+      return isHardBlocked(grid[pos.x+13*pos.y]);
     }
     static boolean isHardBlocked(int value) {
       return value == CELL_WALL || isABomb(value);
@@ -1171,10 +1172,10 @@ class Player {
     int width, height;
     Map<String, GameState> childs = new HashMap<>();
 
-    int[][] grid;
+    int[] grid;
     APlayer players[] = new APlayer[4];
 
-    int[][] boxInfluence;
+    int[] boxInfluence;
     List<Entity> entities = new ArrayList<>();
     private List<P> boxes = new ArrayList<>();
     private List<P> hittedBoxes = new ArrayList<>();
@@ -1184,8 +1185,8 @@ class Player {
       this.width = width;
       this.height = height;
       this.depth = depth;
-      grid = new int[width][height];
-      boxInfluence = new int[width][height];
+      grid = new int[13*11];
+      boxInfluence = new int[13*11];
       
       if( depth < Game.MAX_STEPS) {
         childs.put("  ", new GameState(width,height, depth+1));
@@ -1208,7 +1209,7 @@ class Player {
       
       for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-          boxInfluence[x][y] = 0;
+          boxInfluence[x+13*y] = 0;
         }
       }
     }
@@ -1225,8 +1226,8 @@ class Player {
 
       for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-          grid[x][y] = fromState.grid[x][y];
-          boxInfluence[x][y] = fromState.boxInfluence[x][y];
+          grid[x+13*y] = fromState.grid[x+13*y];
+          boxInfluence[x+13*y] = fromState.boxInfluence[x+13*y];
         }
       }
     }
@@ -1243,7 +1244,7 @@ class Player {
       
       for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-          int value = fromState.grid[x][y];
+          int value = fromState.grid[x+13*y];
           if (isABomb(value)) {
             value --;
             if (value == CELL_BOMB_0) {
@@ -1251,7 +1252,7 @@ class Player {
           } else if (isFire(value)) {
             value = CELL_FLOOR; // fire from bomb return to floor
           }
-          grid[x][y] = value;
+          grid[x+13*y] = value;
         }
       }
     }
@@ -1269,7 +1270,7 @@ class Player {
       if (x < 0 || x >= width || y < 0 || y >= height) {
         return CELL_WALL;
       }
-      return grid[x][y];
+      return grid[x+13*y];
     }
 
     public void computeRound() {
@@ -1284,9 +1285,9 @@ class Player {
       // remove old fire
       for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-          int value = grid[x][y];
+          int value = grid[x+13*y];
           if (value == GameState.CELL_FIRE) {
-            grid[x][y] = GameState.CELL_FLOOR;
+            grid[x+13*y] = GameState.CELL_FLOOR;
           }
         }
       }
@@ -1325,13 +1326,13 @@ class Player {
 
     private void removeHittedBoxes() {
       for (P p : hittedBoxes ) {
-        int boxValue = grid[p.x][p.y];
+        int boxValue = grid[p.x+13*p.y];
         if (boxValue == CELL_EMPTY_BOX) {
-          grid[p.x][p.y] = CELL_FLOOR;
+          grid[p.x+13*p.y] = CELL_FLOOR;
         } else if (boxValue == CELL_BOMBUP_BOX ) {
-          grid[p.x][p.y] = CELL_ITEM_BOMBUP;
+          grid[p.x+13*p.y] = CELL_ITEM_BOMBUP;
         } else if (boxValue == CELL_RANGEUP_BOX) {
-          grid[p.x][p.y] = CELL_ITEM_RANGEUP;
+          grid[p.x+13*p.y] = CELL_ITEM_RANGEUP;
         }
       }
     }
@@ -1347,7 +1348,7 @@ class Player {
             if (explosionBlocked(value)) {
               break;
             }
-            boxInfluence[testedX][testedY] ++;
+            boxInfluence[testedX+13*testedY] ++;
           }
         }
       }
@@ -1357,21 +1358,21 @@ class Player {
       for (int x = 0; x < row.length(); x++) {
         char c = row.charAt(x);
         if (c == '.') {
-          grid[x][y] = CELL_FLOOR;
+          grid[x+13*y] = CELL_FLOOR;
         } else if (c == 'X') {
-          grid[x][y] = CELL_WALL;
+          grid[x+13*y] = CELL_WALL;
         } else if (c == '0') {
-          grid[x][y] = CELL_EMPTY_BOX;
+          grid[x+13*y] = CELL_EMPTY_BOX;
           addABox(y, x);
         } else if (c == '1') {
-          grid[x][y] = CELL_RANGEUP_BOX;
+          grid[x+13*y] = CELL_RANGEUP_BOX;
           addABox(y, x);
         } else if (c == '2') {
-          grid[x][y] = CELL_BOMBUP_BOX;
+          grid[x+13*y] = CELL_BOMBUP_BOX;
           addABox(y, x);
         }
         // update influence map
-        boxInfluence[x][y] = 0;
+        boxInfluence[x+13*y] = 0;
       }
     }
     private void addABox(int y, int x) {
@@ -1382,7 +1383,7 @@ class Player {
       for (int y = 0; y < height; y++) {
         String result="";
         for (int x = 0; x < width; x++) {
-          result+=(char)('0'+boxInfluence[x][y]);
+          result+=(char)('0'+boxInfluence[x+13*y]);
         }
         System.err.println(result);
       }
@@ -1392,7 +1393,7 @@ class Player {
       for (int y = 0; y < height; y++) {
         String result="";
         for (int x = 0; x < width; x++) {
-          int value = grid[x][y];
+          int value = grid[x+13*y];
           char c= '?';
           if (value == CELL_FLOOR) { c = ' '; }
           else if (value == CELL_WALL) { c = 'X'; }
@@ -1414,7 +1415,7 @@ class Player {
         if (theState == null) {
           return -1;
         }
-        int value = theState.grid[p.x][p.y];
+        int value = theState.grid[p.x+13*p.y];
         if (GameState.isFire(value)) {
           return layer;
         }

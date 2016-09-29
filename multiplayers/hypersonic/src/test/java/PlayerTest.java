@@ -17,50 +17,6 @@ public class PlayerTest {
   public void setup() {
   }
 
-  @Test
-  public void testPerfs() throws Exception {
-    
-    int i = 1;
-    i = i +1;
-    
-    Player.Game game = new Player.Game(13, 11);
-    Player.MCTS.game = game;
-    
-    me = new PlayerBuilder(game.currentState)
-        .withId(0)
-        .withPos(0, 0)
-        .build();
-    
-    opponent = new PlayerBuilder(game.currentState)
-        .withId(1)
-        .withPos(12, 10)
-        .build();
-    
-    buildBoard(game,
-        "             ",
-        " X X X X X X ",
-        "             ",
-        " X X X X X X ",
-        "             ",
-        " X X X X X X ",
-        "             ",
-        " X X X X X X ",
-        "             ",
-        " X X X X X X ",
-        "             "
-          );
-    
-   
-    // game ai
-    Player.MCTSAI ai = new Player.MCTSAI();
-    ai.game = game;
-    
-    ai.steps = 16;
-    ai.compute();
-    
-  }
-  
-  
   public static class CellAndBombs {
     Player.APlayer me;
     Player.APlayer opponent;
@@ -159,8 +115,8 @@ public class PlayerTest {
 
       computeGame(game);
       
-      assertThat(game.currentState.grid[0][0], is(Player.GameState.CELL_BOMB_0+1));
-      assertThat(game.currentState.childs.get("  ").grid[0][0], is(Player.GameState.CELL_FIRE));
+      assertThat(game.currentState.grid[0+13*0], is(Player.GameState.CELL_BOMB_0+1));
+      assertThat(game.currentState.childs.get("  ").grid[0+13*0], is(Player.GameState.CELL_FIRE));
     }
 
     @Test
@@ -201,9 +157,9 @@ public class PlayerTest {
 
       game.currentState.computeRound_MCTS();
       
-      int bomb1Value = game.currentState.grid[4][4];
-      int bomb2Value = game.currentState.grid[2][4];
-      int bomb3Value = game.currentState.grid[2][3];
+      int bomb1Value = game.currentState.grid[4+13*4];
+      int bomb2Value = game.currentState.grid[2+13*4];
+      int bomb3Value = game.currentState.grid[2+13*3];
       
       assertThat(bomb1Value, is(Player.GameState.CELL_FIRE));
       assertThat(bomb2Value, is(Player.GameState.CELL_FIRE));
@@ -274,7 +230,7 @@ public class PlayerTest {
     }
     
     private void checkCellOnFire(Player.Game game, int i, int j) {
-      assertThat(game.currentState.grid[i][j], is(Player.GameState.CELL_FIRE));
+      assertThat(game.currentState.grid[i+13*j], is(Player.GameState.CELL_FIRE));
     }
 
     @Test
@@ -308,8 +264,8 @@ public class PlayerTest {
       
       computeGame(game);
       
-      int cellValue = game.currentState.grid[0][1];
-      int cellValueNext = game.currentState.childs.get("  ").grid[0][1];
+      int cellValue = game.currentState.grid[0+13*1];
+      int cellValueNext = game.currentState.childs.get("  ").grid[0+13*1];
       
       assertThat(cellValue, is(Player.GameState.CELL_FIRE));
       assertThat(cellValueNext, is(Player.GameState.CELL_FLOOR));
@@ -902,10 +858,8 @@ public class PlayerTest {
     public Player.Item build() {
       Player.Item item = new Player.Item(state, 0, x, y, 0, 0);
       state.addEntity(item);
-      state.grid[x][y] = Player.GameState.CELL_ITEM_RANGEUP;
+      state.grid[x+13*y] = Player.GameState.CELL_ITEM_RANGEUP;
       return item;
     }
   }
-
-  
 }
