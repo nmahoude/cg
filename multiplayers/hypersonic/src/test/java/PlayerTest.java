@@ -10,7 +10,53 @@ import org.junit.Test;
 
 
 public class PlayerTest {
+  Player.APlayer me;
+  Player.APlayer opponent;
+  
+  @Before
+  public void setup() {
+  }
 
+  @Test
+  public void testPerfs() throws Exception {
+    Player.Game game = new Player.Game(13, 11);
+    Player.MCTS.game = game;
+    
+    me = new PlayerBuilder(game.currentState)
+        .withId(0)
+        .withPos(0, 0)
+        .build();
+    
+    opponent = new PlayerBuilder(game.currentState)
+        .withId(1)
+        .withPos(12, 10)
+        .build();
+    
+    buildBoard(game,
+        "             ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "             "
+          );
+    
+   
+    // game ai
+    Player.MCTSAI ai = new Player.MCTSAI();
+    ai.game = game;
+    
+    ai.steps = 16;
+    ai.compute();
+    
+  }
+  
+  
   public static class CellAndBombs {
     Player.APlayer me;
     Player.APlayer opponent;
@@ -516,7 +562,7 @@ public class PlayerTest {
       Player.MCTSAI ai = new Player.MCTSAI();
       ai.game = game;
       
-      ai.steps = 10;
+      ai.steps = 16;
       ai.compute();
       
       // debug

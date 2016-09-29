@@ -38,6 +38,7 @@ class Player {
     int owner;
     P p;
     public void update(GameState state) {
+      
     }
     public Entity duplicate(GameState newState) {
       return null;
@@ -54,11 +55,33 @@ class Player {
     int bombsLeft = 1;
     public int points = 0;
     private boolean isDead = false;
+    public int droppedBombs = 0;
+    
+    int getTotalBombs() {
+      return bombsLeft + droppedBombs;
+    }
+    @Override
+    public void update(GameState state) {
+      pickupBonuses(state);
+      
+      super.update(state);
+    }
+    private void pickupBonuses(GameState state) {
+      int value = state.getCellAt(p.x, p.y);
+      if (GameState.isRangeUpItem(value)) {
+        bombRange++;
+      } else if (GameState.isBombUpItem(value)) {
+        bombsLeft++;
+      }
+    }
     
     public Entity duplicate(GameState newState) {
       APlayer aPlayer = new APlayer(newState, owner, p.x, p.y, bombsLeft, bombRange);
       aPlayer.points = this.points;
+      
+      aPlayer.droppedBombs = this.droppedBombs;
       aPlayer.isDead = this.isDead;
+      
       return aPlayer;
     }
     boolean isDead() {
@@ -66,6 +89,12 @@ class Player {
     }
     void setDead() {
       isDead = true;
+    }
+    public void dropBomb() {
+      Bomb droppedBomb = new Bomb(state, owner, p.x,p.y, 8, bombRange);
+      state.addEntity(droppedBomb);
+      this.bombsLeft-=1;
+      this.droppedBombs+=1;
     }
   }
   
@@ -123,6 +152,7 @@ class Player {
     public void explode(GameState state) {
       if (state.players[owner] != null) {
         state.players[owner].bombsLeft++;
+        state.players[owner].droppedBombs--;
       }
       updatePlayerDeath(this.p);
       
@@ -282,7 +312,7 @@ class Player {
     enum AlgoType {
       FAIR,
       BOX,
-      AGGRESSIVE
+      AGGRESSIVE, EARLY
     }
     AlgoType type;
     public MovementAlgorithm(AlgoType type) {
@@ -457,18 +487,94 @@ class Player {
     }
   }
   
+  static class EarlyGameAlgorithm extends MovementAlgorithm {
+    private static final double SCORE_MINUS_INFINITY = -1_000_000;
+
+    public EarlyGameAlgorithm() {
+      super(AlgoType.EARLY);
+    }
+    
+    double getScore(MCTS node) {
+      if (node.childs.isEmpty()) {
+        // score
+        if (node.playerIsDead ) {
+          return SCORE_MINUS_INFINITY;
+        } else {
+          return 2*node.totalPoints + node.totalBombs + node.bombRange - node.depth;
+        }
+      } else {
+        double score = SCORE_MINUS_INFINITY;
+        for (Entry<String, MCTS> m : node.childs.entrySet()) {
+          //TODO bien y penser, on bypasse tous les infinity max !
+          // il faut peut-etre prendre en compt le % de win dans l'heuristique?
+          score = Math.max(score, getScore(m.getValue())); 
+        }
+        return score;
+      }
+    }
+    
+    String getBestChild(MCTS root) {
+      Entry<String, MCTS> bestEntry = null;
+      double bestScore = SCORE_MINUS_INFINITY;
+      
+      for (Entry<String, MCTS> m : root.childs.entrySet()) {
+        double testedScore = getScore(m.getValue());
+        if (testedScore > bestScore) {
+          bestScore = testedScore;
+          bestEntry = m;
+        }
+      }
+      return bestEntry != null ? bestEntry.getKey() : null;
+    }
+
+    @Override
+    int compute(APlayer player, GameState fromState, int[] possibilities) {
+      possibilities[4] = 1; // stay
+      int total = 1;
+
+      for (int i = 0; i < 4; i++) {
+        int px = player.p.x + rotx[i];
+        int py = player.p.y + roty[i];
+        int valueAtCell = fromState.getCellAt(px, py);
+        if (GameState.canWalkThrough(valueAtCell)) {
+          P newP = P.get(px, py);
+          if (fromState.depth == 1 ) {
+            if (Game.nearestBox != null && Game.nearestBox.manhattanDistance(player.p) < 6 && Game.nearestBox.manhattanDistance(player.p) - Game.nearestBox.manhattanDistance(newP) >= 0) {
+              possibilities[i] = 3;
+            } else if (Game.nearestOption != null && Game.nearestOption.manhattanDistance(player.p) < 6 && Game.nearestOption.manhattanDistance(player.p) - Game.nearestOption.manhattanDistance(newP) >= 0) { 
+              possibilities[i] = 3;
+            } else {
+              possibilities[i] = 1;
+            }
+          } else {
+            possibilities[i] = 1;
+          }
+          total+=possibilities[i];
+        } else {
+          possibilities[i] = 0;
+        }
+      }
+      return total;
+    }
+  }
+  
   static class MCTS {
-    static MovementAlgorithm biasedMovementAlgorithm = new BoxedOrientedPossibilitiesAlgorithm();
+    //static MovementAlgorithm biasedMovementAlgorithm = new BoxedOrientedPossibilitiesAlgorithm();
+    static MovementAlgorithm biasedMovementAlgorithm = new EarlyGameAlgorithm();
     // debug : start with the aggressive algorithm
     //static MovementAlgorithm biasedMovementAlgorithm = new AggressiveMovementAlgorithm();
     
     static Game game; // static reference to the game (only one). Better way to do it ?
     Map<String, MCTS> childs = new HashMap<>();
     
+    public int depth;
     int simulatedCount=0; // how many branches (total > childs.size())
     int win=0;
     int points;
     int totalPoints;
+    public boolean playerIsDead = false;
+    public int bombRange;
+    public int totalBombs;
 
     static int [] possibilities = new int[5]; // dont' parralelize !
     static {
@@ -551,19 +657,34 @@ class Player {
     }
 
     int simulate(GameState fromState, int depth) {
+      this.depth = fromState.depth;
       this.simulatedCount++;
       fromState.depth++;
-      
+
+      // if we already now that the player will be dead, no excuse to continue this road
+      if (playerIsDead) {
+        return -1;
+      }
       //do simulation here
       fromState.computeRound_MCTS();
-      points = fromState.players[Game.myIndex].points;
+      APlayer aPlayer = fromState.players[Game.myIndex];
+      points = aPlayer.points;
       totalPoints += points;
-      //fromState.debugBombs();
-      if (fromState.players[Game.myIndex].isDead()) {
-        return -1; // we're dead, it's a definitive loss
+
+      if (aPlayer.isDead()) {
+        playerIsDead = true;
+        return -1;
       }
       
-      if (depth > 0) {
+      totalPoints = aPlayer.points;
+      totalBombs = aPlayer.getTotalBombs();
+      bombRange = aPlayer.bombRange;
+
+      if (depth == 0) {
+        // terminating node
+        // total box killed by player to this leaf
+        return 1;
+      } else {
         // choose some new random moves
         int[] dir = new int[5];
         boolean[] bomb = new boolean[5];
@@ -576,9 +697,7 @@ class Player {
           }
           // drop bomb if needed
           if (bomb[playerIndex]) {
-            Bomb droppedBomb = new Bomb(fromState, player.owner, player.p.x,player.p.y, 8, player.bombRange);
-            fromState.addEntity(droppedBomb);
-            player.bombsLeft-=1;
+            player.dropBomb();
           }
           // then move
           int x = player.p.x + rotx[i];
@@ -607,9 +726,6 @@ class Player {
         } else {
           return -1;
         }
-      } else {
-        //return victoryFromPoints(fromState);
-        return points; // we are still alive, it's a victory :) 
       }
     }
     private boolean victoryFromPoints(GameState fromState) {
@@ -714,12 +830,12 @@ class Player {
     private int getAffordableSimulationCount() {
       switch(game.playersCount) {
         case 4:
-          return 1500;
+          return 1_500;
         case 3:
-          return 2000;
+          return 2_000;
         case 2 : 
         default:
-          return 3000;
+          return 3_000;
       }
     }
 
@@ -918,6 +1034,7 @@ class Player {
         Entity entity = null;
         if (entityType == ENTITY_BOMB) {
           entity = new Bomb(currentState, owner, x,y, param1, param2);
+          currentState.players[owner].droppedBombs++;
         } else if (entityType == ENTITY_PLAYER) {
           APlayer player = new APlayer(currentState, owner, x,y, param1, param2);
           currentState.players[owner] = player;
@@ -1010,8 +1127,16 @@ class Player {
     }
 
     static private boolean isAnItem(int value) {
-      return value == CELL_ITEM_BOMBUP || value == CELL_ITEM_RANGEUP;
+      return isBombUpItem(value) || isRangeUpItem(value);
     }
+
+    public static boolean isBombUpItem(int value) {
+      return value == CELL_ITEM_BOMBUP;
+    }
+    public static boolean isRangeUpItem(int value) {
+      return value == CELL_ITEM_RANGEUP;
+    }
+
     static private boolean isABox(int value) {
       return value == CELL_EMPTY_BOX || value == CELL_BOMBUP_BOX || value == CELL_RANGEUP_BOX;
     }
@@ -1122,6 +1247,7 @@ class Player {
       if (entity.type == ENTITY_PLAYER) {
         players[entity.owner] = (APlayer)entity;
       }
+
     }
 
     private int getCellAt(int x, int y) {
@@ -1140,7 +1266,6 @@ class Player {
     }
 
     public void computeRound_MCTS() {
-      resetPlayerPoints();
       // remove old fire
       for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
@@ -1150,7 +1275,6 @@ class Player {
           }
         }
       }
-      
       
       for (Entity entity : entities) {
         entity.update(this);
