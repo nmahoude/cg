@@ -19,6 +19,10 @@ public class PlayerTest {
 
   @Test
   public void testPerfs() throws Exception {
+    
+    int i = 1;
+    i = i +1;
+    
     Player.Game game = new Player.Game(13, 11);
     Player.MCTS.game = game;
     

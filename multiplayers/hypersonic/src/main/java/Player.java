@@ -537,7 +537,7 @@ class Player {
         if (node.playerIsDead ) {
           return SCORE_MINUS_INFINITY;
         } else {
-          return 2*node.totalPoints + node.totalBombs + node.bombRange - node.depth;
+          return 10*node.totalPoints + node.totalBombs + node.bombRange - node.depth;
         }
       } else {
         double score = SCORE_MINUS_INFINITY;
@@ -567,9 +567,6 @@ class Player {
     @Override
     int compute(APlayer player, GameState fromState, int[] possibilities) {
       possibilities[4] = 1; // stay
-      for (int i = 0; i < 4; i++) {
-        possibilities[i] = 1;
-      }
       int total = 1;
       for (int i = 0; i < 4; i++) {
         int px = player.p.x + rotx[i];
@@ -696,7 +693,23 @@ class Player {
         // choose some new random moves
         int[] dir = new int[5];
         boolean[] bomb = new boolean[5];
-        calculateActions(fromState, dir, bomb);
+        
+        boolean simulationDone = false;
+        int maxTests = 10;
+        String key = null;
+        MCTS chosenChild = null;
+        // Find a non final child node
+        while (!simulationDone && maxTests > 0) {
+          maxTests--;
+          calculateActions(fromState, dir, bomb);
+          // prepare child
+          key = getKeyFromActions(dir, bomb);
+          chosenChild = childs.get(key);
+          if (chosenChild == null || chosenChild.playerIsDead == false) {
+            simulationDone = true;
+          }
+        }
+
         for (int playerIndex=0;playerIndex<game.playersCount;playerIndex++) {
           int i = dir[playerIndex];
           APlayer player = fromState.players[playerIndex];
@@ -712,13 +725,7 @@ class Player {
           int y = player.p.y + roty[i];
           player.p = P.get(x, y);
         }
-        if (dir[0] == 1 && fromState.depth == 1) {
-          int debug =0;
-          debug++;
-        }
-        // prepare child
-        String key = getKeyFromActions(dir, bomb);
-        MCTS chosenChild = childs.get(key);
+
         if (chosenChild != null) {
           // we already go there, reuse the child !
         } else {
