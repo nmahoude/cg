@@ -320,6 +320,32 @@ class Player {
     }
     abstract String getBestChild(MCTS root);
     abstract int compute(APlayer player, GameState fromState, int[] possibilities);
+    void computeBombs(APlayer player, GameState fromState, int p, boolean[] bombs) {
+      boolean canDropBombOnBoard = !GameState.isABomb(fromState.getCellAt(player.p.x, player.p.y));
+      if (!canDropBombOnBoard) {
+        bombs[p] = false;
+      } else {
+        int THRESHOLD = 800;
+        if (fromState.boxes.size() == 0) {
+          THRESHOLD = 100;
+        } else {
+          if (player.p.x % 2 == 0 && player.p.y % 2 == 0) {
+            THRESHOLD = 600;
+          }
+          if (fromState.depth == 1) {
+            int influenza = fromState.boxInfluence[player.p.x][player.p.y];
+            if (influenza > 2 ) {
+              THRESHOLD = 200; //110;
+            } else if (influenza == 2) {
+              THRESHOLD = 300; //180;
+            } else if (influenza == 1) {
+              THRESHOLD = 400; //250;
+            }
+          }
+        }
+        bombs[p] = ThreadLocalRandom.current().nextInt(1000) > THRESHOLD;
+      }
+    }
   }
   
   static class AggressiveMovementAlgorithm extends MovementAlgorithm {
@@ -330,6 +356,10 @@ class Player {
       super(AlgoType.AGGRESSIVE);
     }
 
+    @Override
+    void computeBombs(APlayer player, GameState fromState, int p, boolean[] bombs) {
+      // TODO
+    }
     private APlayer getBestOpponent(APlayer player, GameState fromState) {
       APlayer bestOpponent=null;
       int minDist = 1024;
@@ -383,6 +413,7 @@ class Player {
       return total;
     }
     
+    
     String getBestChild(MCTS root) {
       String chosenKey = null;
       double bestPointsRatio = -100.0;
@@ -421,6 +452,12 @@ class Player {
   static class BoxedOrientedPossibilitiesAlgorithm extends MovementAlgorithm {
     public BoxedOrientedPossibilitiesAlgorithm() {
       super(AlgoType.BOX);
+    }
+    
+    @Override
+    void computeBombs(APlayer player, GameState fromState, int p, boolean[] bombs) {
+      // TODO Auto-generated method stub
+      
     }
     String getBestChild(MCTS root) {
       String chosenKey = null;
@@ -530,31 +567,27 @@ class Player {
     @Override
     int compute(APlayer player, GameState fromState, int[] possibilities) {
       possibilities[4] = 1; // stay
+      for (int i = 0; i < 4; i++) {
+        possibilities[i] = 1;
+      }
       int total = 1;
-
       for (int i = 0; i < 4; i++) {
         int px = player.p.x + rotx[i];
         int py = player.p.y + roty[i];
         int valueAtCell = fromState.getCellAt(px, py);
         if (GameState.canWalkThrough(valueAtCell)) {
-          P newP = P.get(px, py);
-          if (fromState.depth == 1 ) {
-            if (Game.nearestBox != null && Game.nearestBox.manhattanDistance(player.p) < 6 && Game.nearestBox.manhattanDistance(player.p) - Game.nearestBox.manhattanDistance(newP) >= 0) {
-              possibilities[i] = 3;
-            } else if (Game.nearestOption != null && Game.nearestOption.manhattanDistance(player.p) < 6 && Game.nearestOption.manhattanDistance(player.p) - Game.nearestOption.manhattanDistance(newP) >= 0) { 
-              possibilities[i] = 3;
-            } else {
-              possibilities[i] = 1;
-            }
-          } else {
-            possibilities[i] = 1;
-          }
+          possibilities[i] = 1;
           total+=possibilities[i];
         } else {
           possibilities[i] = 0;
         }
       }
       return total;
+    }
+    
+    @Override
+    void computeBombs(APlayer player, GameState fromState, int p, boolean[] bombs) {
+      bombs[p] = ThreadLocalRandom.current().nextInt(1000) > 500;
     }
   }
   
@@ -609,36 +642,11 @@ class Player {
         if (player == null) {
           continue ;
         }
-        
-        
         biasedMovementAlgorithm.compute(player, fromState, possibilities);
         dir[p] = findARandomMove();
         
         if (player.bombsLeft > 0) {
-          boolean canDropBombOnBoard = !GameState.isABomb(fromState.getCellAt(player.p.x, player.p.y));
-          if (!canDropBombOnBoard) {
-            bomb[p] = false;
-          } else {
-            int THRESHOLD = 800;
-            if (fromState.boxes.size() == 0) {
-              THRESHOLD = 100;
-            } else {
-              if (player.p.x % 2 == 0 && player.p.y % 2 == 0) {
-                THRESHOLD = 600;
-              }
-              if (fromState.depth == 1) {
-                int influenza = fromState.boxInfluence[player.p.x][player.p.y];
-                if (influenza > 2 ) {
-                  THRESHOLD = 200; //110;
-                } else if (influenza == 2) {
-                  THRESHOLD = 300; //180;
-                } else if (influenza == 1) {
-                  THRESHOLD = 400; //250;
-                }
-              }
-            }
-            bomb[p] = getRandom(1000) > THRESHOLD;
-          }
+          biasedMovementAlgorithm.computeBombs(player, fromState, p, bomb);
         } else {
           bomb[p] = false;
         }
