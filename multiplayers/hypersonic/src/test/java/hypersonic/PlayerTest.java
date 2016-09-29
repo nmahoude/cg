@@ -1,4 +1,5 @@
 package hypersonic;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -409,7 +410,7 @@ public class PlayerTest {
       computeGame(game);
 
       // game ai
-      Player.AI ai = new Player.AI1();
+      Player.AI ai = new Player.MCTSAI();
       ai.game = game;
       ai.compute();
       Player.Action action = ai.actions.get(0);
@@ -432,6 +433,7 @@ public class PlayerTest {
         int randomNumber;
         
         public MyMCTS(int random) {
+          super(0);
           randomNumber = random;
         }
         @Override
@@ -473,7 +475,7 @@ public class PlayerTest {
           "....." 
           );
 
-      Player.MCTS mcts = new Player.MCTS();
+      Player.MCTS mcts = new Player.MCTS(0);
       int sum = Player.MCTS.biasedMovementAlgorithm.compute(me, game.currentState, Player.MCTS.possibilities);
       
       assertThat(sum, is(3));
@@ -507,7 +509,6 @@ public class PlayerTest {
           ".X.X.", 
           "....." 
           );
-      
       
       Player.Bomb bomb = new BombBuilder(game.currentState)
           .from(opponent)
@@ -723,6 +724,63 @@ public class PlayerTest {
 
       debugBestMove(ai.root.childs.get(1*2+0).childs.get(3*2+1), 2);
     }
+    
+    @Test
+    public void bombLeftIsNotAGoodIdea() throws Exception {
+      Player.Game game = new Player.Game(13, 11);
+      me = new PlayerBuilder(game.currentState)
+          .withId(0)
+          .withPos(6, 10)
+          .build();
+      
+      opponent = new PlayerBuilder(game.currentState)
+          .withId(1)
+          .withPos(0, 0)
+          .build();
+
+
+      buildBoard(game,
+        "             ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "1            ",
+        "0X X X X X X ",
+        "121          ",
+        " X0X1X X X X ",
+        "             "
+          );
+      
+      new BombBuilder(game.currentState).from(me)
+          .atPosition(9,8)
+          .withRange(7)
+          .withTicksLeft(2)
+          .build();
+
+      new BombBuilder(game.currentState).from(me)
+        .atPosition(8,9)
+        .withRange(7)
+        .withTicksLeft(5)
+        .build();
+
+      new BombBuilder(game.currentState).from(me)
+        .atPosition(8,10)
+        .withRange(7)
+        .withTicksLeft(7)
+        .build();
+      
+      // game ai
+      Player.MCTS.game = game;
+      Player.MCTSAI ai = new Player.MCTSAI();
+      ai.game = game;
+      
+      ai.compute();
+
+      debugBestMove(ai.root, 2);
+    }
+
     
     private void debugBestMove(Player.MCTS root, int depth) {
       Integer key = Player.MCTS.biasedMovementAlgorithm.getBestChild(root);

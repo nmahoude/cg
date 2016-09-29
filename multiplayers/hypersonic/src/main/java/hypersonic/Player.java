@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -185,8 +186,8 @@ class Player {
             }
             break;
           }
-          state.grid[testedX+13*testedY] = GameState.CELL_FIRE;
-          state.fireCells.add(p);
+          state.grid[testedP.x+13*testedP.y] = GameState.CELL_FIRE;
+          state.fireCells.add(testedP);
         }
       }
     }
@@ -538,20 +539,22 @@ class Player {
           return SCORE_MINUS_INFINITY;
         } else {
           if (gametype == GameType.EARLY) {
-            return 10*node.totalPoints + node.totalBombs + node.bombRange;
+            node.score = 10*node.totalPoints + node.totalBombs + node.bombRange;
           } else if (gametype == GameType.MIDDLE) {
-            return 2*node.totalPoints + node.totalBombs + node.bombRange;
+            node.score = (5.0*node.win / node.simulatedCount)+2*node.totalPoints + node.totalBombs + node.bombRange;
           } else {
-            return 1;
+            node.score = 1;
           }
+          return node.score;
         }
       } else {
         double score = SCORE_MINUS_INFINITY;
         for (Entry<Integer, MCTS> m : node.childs.entrySet()) {
           //TODO bien y penser, on bypasse tous les infinity max !
           // il faut peut-etre prendre en compt le % de win dans l'heuristique?
-          score = Math.max(score, getScore(m.getValue())-1); 
+          score = Math.max(score, 0.95*getScore(m.getValue())); 
         }
+        node.score = score;
         return score;
       }
     }
@@ -598,6 +601,7 @@ class Player {
   }
   
   static class MCTS {
+
     //static MovementAlgorithm biasedMovementAlgorithm = new BoxedOrientedPossibilitiesAlgorithm();
     static MovementAlgorithm biasedMovementAlgorithm = new EarlyGameAlgorithm();
     // debug : start with the aggressive algorithm
@@ -606,6 +610,7 @@ class Player {
     static Game game; // static reference to the game (only one). Better way to do it ?
     Map<Integer, MCTS> childs = new HashMap<>();
     
+    public double score;
     public int depth;
     int simulatedCount=0; // how many branches (total > childs.size())
     int win=0;
@@ -614,7 +619,11 @@ class Player {
     public boolean playerIsDead = false;
     public int bombRange;
     public int totalBombs;
+    private Integer key;
 
+    public MCTS(Integer key) {
+      this.key = key;
+    }
     static int [] possibilities = new int[5]; // dont' parralelize !
     static {
       possibilities[4] = 1; // don't move is the 1st choice!
@@ -650,7 +659,10 @@ class Player {
         }
         biasedMovementAlgorithm.compute(player, fromState, possibilities);
         dir[p] = findARandomMove();
-        
+//        if (fromState.depth == 1 && p == 0) {
+//          System.err.println("chosen dir :" +dir[0]);
+//        }
+
         if (player.bombsLeft > 0) {
           biasedMovementAlgorithm.computeBombs(player, fromState, p, bomb);
         } else {
@@ -717,7 +729,7 @@ class Player {
         }
 
         for (int playerIndex=0;playerIndex<game.playersCount;playerIndex++) {
-          int i = dir[playerIndex];
+          int theRot = dir[playerIndex];
           APlayer player = fromState.players[playerIndex];
           if (player == null) {
             continue;
@@ -727,8 +739,8 @@ class Player {
             player.dropBomb();
           }
           // then move
-          int x = player.p.x + rotx[i];
-          int y = player.p.y + roty[i];
+          int x = player.p.x + rotx[theRot];
+          int y = player.p.y + roty[theRot];
           player.p = P.get(x, y);
         }
 
@@ -736,7 +748,7 @@ class Player {
           // we already go there, reuse the child !
         } else {
           // create a new one
-          chosenChild = new MCTS();
+          chosenChild = new MCTS(key);
           childs.put(key, chosenChild);
         }
         int childTotalPoints = chosenChild.simulate(fromState, depth-1);
@@ -762,7 +774,8 @@ class Player {
     
     @Override
     public String toString() {
-      return "w/s:"+win+"/"+simulatedCount+" p:"+points+",tp:"+totalPoints+", childs:"+childs.size();
+      String dir = MCTSAI.keyToString(this.key, 0);
+      return dir+" w/s:"+win+"/"+simulatedCount+" s:"+score;
     }
   }
 
@@ -776,9 +789,9 @@ class Player {
       "Bombs Everywhere"
     };
     int seed = ThreadLocalRandom.current().nextInt(20);
-    int gameRound = 0;
+    static int gameRound = 0;
     static final int MAX_STEPS = 16;
-    MCTS root = new MCTS();
+    MCTS root = new MCTS(0);
     public int steps = MAX_STEPS;
     
     @Override
@@ -786,11 +799,13 @@ class Player {
       evaluateAlgorithmSwitch();
       
       gameRound++;
-      root = new MCTS();
+      root = new MCTS(0);
       
       // debugBoxAndOptionsDistance();
 
       GameState copyOfRoot = new GameState(game.currentState.width, game.currentState.height, 0);
+
+      // when 200 simulation : steps = MAX_STEPS-gameRound;
       int simulationCount = getAffordableSimulationCount();
       for (int i=0;i<simulationCount;i++) {
         copyOfRoot.duplicateFrom(game.currentState);
@@ -800,15 +815,17 @@ class Player {
       
       Integer key = MCTS.biasedMovementAlgorithm.getBestChild(root);
       MCTS chosen = root.childs.get(key);
-      System.err.println("BEST child is : "+Player.rotString[key/2]+","+(key%2==1 ? "B" : "M")+" -> "+EarlyGameAlgorithm.getScore(chosen));
-      System.err.println("FullPath is");
-      MCTS loop = chosen;
-      while (loop != null) {
-        System.err.print("v->"+Player.rotString[key/2]+","+(key%2==1 ? "B" : "M")+" -> "+EarlyGameAlgorithm.getScore(loop));
-        loop = loop.childs.get(MCTS.biasedMovementAlgorithm.getBestChild(loop));
-      }
-      System.err.println("----");
-      debugMCTS2(root, "");
+//      if (chosen != null) {
+//        System.err.println("BEST child is : "+Player.rotString[key/2]+","+(key%2==1 ? "B" : "M")+" -> "+EarlyGameAlgorithm.getScore(chosen));
+//        System.err.println("FullPath is");
+//        MCTS loop = chosen;
+//        while (loop != null) {
+//          System.err.print("v->"+Player.rotString[key/2]+","+(key%2==1 ? "B" : "M")+" -> "+EarlyGameAlgorithm.getScore(loop));
+//          loop = loop.childs.get(MCTS.biasedMovementAlgorithm.getBestChild(loop));
+//        }
+//        System.err.println("----");
+//      }
+      //debugMCTS2(root, "");
       
       if (chosen == null) {
         buildSayonaraAction();
@@ -873,7 +890,7 @@ class Player {
         case 4:
           return 1_500;
         case 3:
-          return 2_000;
+          return 4_000;
         case 2 : 
         default:
           return 3_000;
@@ -1263,6 +1280,7 @@ class Player {
       for (P p : fireCells) {
         grid[p.x+13*p.y] = GameState.CELL_FLOOR;
       }
+      fireCells.clear();
       
       for (Entity entity : entities) {
         entity.update(this);

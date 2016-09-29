@@ -21,14 +21,14 @@ public class Perf {
         .build();
     
     PlayerTest.buildBoard(game,
+        "   0 0  0  0 ",
+        " X0X X X X X ",
+        "0  0 0   0   ",
+        " X0X X0X X X ",
+        "    0   0    ",
+        " X0X0X0X X X ",
         "             ",
-        " X X X X X X ",
-        "             ",
-        " X X X X X X ",
-        "             ",
-        " X X X X X X ",
-        "             ",
-        " X X X X X X ",
+        "0X X X0X X X ",
         "             ",
         " X X X X X X ",
         "             "
@@ -44,7 +44,6 @@ public class Perf {
     };
     ai.game = game;
     
-    ai.steps = 16;
     ai.compute();
     
   }

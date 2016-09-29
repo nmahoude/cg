@@ -540,7 +540,7 @@ class Player {
           if (gametype == GameType.EARLY) {
             node.score = 10*node.totalPoints + node.totalBombs + node.bombRange;
           } else if (gametype == GameType.MIDDLE) {
-            node.score = 2*node.totalPoints + node.totalBombs + node.bombRange;
+            node.score = (5.0*node.win / node.simulatedCount)+2*node.totalPoints + node.totalBombs + node.bombRange;
           } else {
             node.score = 1;
           }
@@ -803,6 +803,8 @@ class Player {
       // debugBoxAndOptionsDistance();
 
       GameState copyOfRoot = new GameState(game.currentState.width, game.currentState.height, 0);
+
+      // when 200 simulation : steps = MAX_STEPS-gameRound;
       int simulationCount = getAffordableSimulationCount();
       for (int i=0;i<simulationCount;i++) {
         copyOfRoot.duplicateFrom(game.currentState);
@@ -887,7 +889,7 @@ class Player {
         case 4:
           return 1_500;
         case 3:
-          return 2_000;
+          return 4_000;
         case 2 : 
         default:
           return 3_000;
