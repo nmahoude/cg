@@ -655,16 +655,19 @@ class Player {
       return ThreadLocalRandom.current().nextInt(range);
     }
     void calculateActions(GameState fromState, int[] dir, boolean[] bomb) {
-      for (int p=game.playersCount-1;p>=0;p--) {
+      for (int p=0;p<game.playersCount;p++) {
         APlayer player = fromState.players[p];
-        if (player != null) {
-          biasedMovementAlgorithm.compute(player, fromState, possibilities);
-          dir[p] = findARandomMove();
-          if (player.bombsLeft > 0) {
-            biasedMovementAlgorithm.computeBombs(player, fromState, p, bomb);
-          } else {
-            bomb[p] = false;
-          }
+        if (player == null) {
+          continue ;
+        }
+        biasedMovementAlgorithm.compute(player, fromState, possibilities);
+
+        dir[p] = findARandomMove();
+        
+        if (player.bombsLeft > 0) {
+          biasedMovementAlgorithm.computeBombs(player, fromState, p, bomb);
+        } else {
+          bomb[p] = false;
         }
       }
     }
