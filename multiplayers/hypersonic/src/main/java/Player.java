@@ -59,6 +59,38 @@ class Player {
     boolean isDead = false;
     public int droppedBombs = 0;
     
+    int getBoxesInRange() { 
+      int boxes = 0; 
+      for (int rot=0;rot<4;rot++) { 
+        for (int d=1;d<bombRange;d++) { 
+          int x = p.x+d*rotx[rot]; 
+          int y = p.y+d*roty[rot]; 
+          int value = state.getCellAt(x, y); 
+          if (value == GameState.CELL_EMPTY_BOX || value == GameState.CELL_BOMBUP_BOX || value == GameState.CELL_RANGEUP_BOX) { 
+            boxes++; 
+            break; 
+          } else if (value == GameState.CELL_WALL  
+              || value == GameState.CELL_ITEM_BOMBUP 
+              || value == GameState.CELL_ITEM_RANGEUP 
+              || value == GameState.CELL_BOMB_0 
+              || value == GameState.CELL_BOMB_1 
+              || value == GameState.CELL_BOMB_2 
+              || value == GameState.CELL_BOMB_3 
+              || value == GameState.CELL_BOMB_4 
+              || value == GameState.CELL_BOMB_5 
+              || value == GameState.CELL_BOMB_6 
+              || value == GameState.CELL_BOMB_7 
+              || value == GameState.CELL_BOMB_8 
+              || value == GameState.CELL_BOMB_9 
+              ) { 
+            break; 
+          } 
+        } 
+      } 
+      return boxes; 
+    } 
+
+    
     int getTotalBombs() {
       return bombsLeft + droppedBombs;
     }
@@ -200,7 +232,11 @@ class Player {
       super(state, ENTITY_ITEM, owner, x, y);
       option = param1;
       this.param2 = param2;// param2 not used
-    }
+      updateStateGrid(); 
+    } 
+    private void updateStateGrid() { 
+      state.grid[p.x+13*p.y] = GameState.CELL_ITEM_RANGEUP; 
+    }    
     public Entity duplicate(GameState newState) {
       return new Item(newState, owner, p.x, p.y, option, param2);
     }
@@ -540,7 +576,7 @@ class Player {
           if (gametype == GameType.EARLY) {
             node.score = 10*node.totalPoints + node.totalBombs + node.bombRange;
           } else if (gametype == GameType.MIDDLE) {
-            node.score = (5.0*node.win / node.simulatedCount)+2*node.totalPoints + node.totalBombs + node.bombRange;
+            node.score = 2*node.totalPoints + node.totalBombs + node.bombRange;
           } else {
             node.score = 1;
           }
@@ -551,7 +587,11 @@ class Player {
         for (Entry<Integer, MCTS> m : node.childs.entrySet()) {
           //TODO bien y penser, on bypasse tous les infinity max !
           // il faut peut-etre prendre en compt le % de win dans l'heuristique?
-          score = Math.max(score, 0.95*getScore(m.getValue())); 
+          double ratio = 0.95;
+          if (node.depth == 0) {
+            ratio = (1.0*node.win / node.simulatedCount);
+          }
+          score = Math.max(score, ratio*getScore(m.getValue())); 
         }
         node.score = score;
         return score;
@@ -599,7 +639,21 @@ class Player {
     
     @Override
     void computeBombs(APlayer player, GameState fromState, int p, boolean[] bombs) {
-      bombs[p] = ThreadLocalRandom.current().nextInt(1000) > 500;
+      boolean canDropBombOnBoard = !GameState.isABomb(fromState.grid[player.p.x+13*player.p.y]); 
+      if (canDropBombOnBoard) { 
+        if (player.owner == MCTS.game.myIndex) { 
+          int bombsInRange = player.getBoxesInRange(); 
+          if (bombsInRange > 0) { 
+            bombs[p] = ThreadLocalRandom.current().nextInt(1000) > 500 ; 
+          } else { 
+            bombs[p] = false; 
+          } 
+        } else { 
+          bombs[p] = ThreadLocalRandom.current().nextInt(1000) > 500; 
+        } 
+      } else { 
+        bombs[p] = false; 
+      }
     }
   }
   
@@ -1126,7 +1180,8 @@ class Player {
       }
     }
     public void triggerBomb(P pointToCheck) {
-      for (Entity e: entities) {
+      List<Entity> entitiesBackup = new ArrayList<>(entities);
+      for (Entity e : entitiesBackup) {
         if (e.type == ENTITY_BOMB && e.p.equals(pointToCheck)) {
           Bomb b = (Bomb)e;
           if (b.ticksLeft > 0) { // 0 == already triggered
@@ -1302,8 +1357,9 @@ class Player {
         grid[p.x+13*p.y] = GameState.CELL_FLOOR;
       }
       fireCells.clear();
-      
-      for (Entity entity : entities) {
+
+      List<Entity> entitiesBackup = new ArrayList<>(entities);
+      for (Entity entity : entitiesBackup) {
         entity.update(this);
       }
       removeHittedBoxes();
