@@ -11,8 +11,6 @@ import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
-import Player.EarlyGameAlgorithm.GameType;
-
 class Player {
   static Scanner in;
   
@@ -595,7 +593,25 @@ class Player {
       } else {
         if (gametype == GameType.LATE) {
           double score = SCORE_MINUS_INFINITY;
+          int oppIndex = 0;
+          for (int p=0;p<4;p++) {
+            if (MCTS.game.myIndex != p && MCTS.game.currentState.players[p] != null) {
+              oppIndex = p;
+            }
+          }
+          P myPos = MCTS.game.currentState.players[MCTS.game.myIndex].p;
+          P oppPos = MCTS.game.currentState.players[oppIndex].p;
+          int oldDist = myPos.manhattanDistance(oppPos);
           
+          int rot = node.key / 2;
+          int bomb = (node.key+1) % 2;
+          int newX = myPos.x + rotx[rot];
+          int newY = myPos.y + roty[rot];
+          
+          int newDist = Math.abs(newX - oppPos.x) + Math.abs(newY - oppPos.y);
+          System.err.println("lateDist : "+MCTSAI.keyToString(node.key, MCTS.game.myIndex)+ " : "+oldDist+"->"+newDist);
+          score = Math.max(score, (2+(oldDist-newDist)+node.points+bomb) * (1.0*node.win / node.simulatedCount));
+          return score;
         } else {
           double score = SCORE_MINUS_INFINITY;
           for (Entry<Integer, MCTS> m : node.childs.entrySet()) {
@@ -658,7 +674,7 @@ class Player {
       if (canDropBombOnBoard) { 
         if (player.owner == MCTS.game.myIndex) { 
           int bombsInRange = player.getBoxesInRange(); 
-          if (bombsInRange > 0) { 
+          if (bombsInRange > 0 || EarlyGameAlgorithm.gametype == EarlyGameAlgorithm.GameType.LATE) { 
             bombs[p] = ThreadLocalRandom.current().nextInt(1000) > 500 ; 
           } else { 
             bombs[p] = false; 
@@ -894,7 +910,7 @@ class Player {
 //        }
 //        System.err.println("----");
 //      }
-       debugMCTS2(root, "");
+      //debugMCTS2(root, "");
       // game.currentState.debugBombs();
       
       if (chosen == null) {
@@ -941,7 +957,7 @@ class Player {
     void buildBestActionFromKey(Integer chosenKey) {
       Action action = new Action();
 
-      action.message = quotes[(seed+gameRound) % (quotes.length)];
+      action.message = "Drop bomb, move, don't die, repeat";
  
       APlayer player = game.currentState.players[Game.myIndex];
       action.dropBomb = (chosenKey % 2 == 1);
@@ -1042,12 +1058,12 @@ class Player {
         Action action = ai.actions.get(0);
         /*ai */long aiAfter= System.currentTimeMillis();
         
-        System.err.println(" ------- Stats ------------");
-        System.err.println("prepareGame : "+(long2-long1));
-        System.err.println("computeRound: "+(long3-long2));
+//        System.err.println(" ------- Stats ------------");
+//        System.err.println("prepareGame : "+(long2-long1));
+//        System.err.println("computeRound: "+(long3-long2));
 //        System.err.println("updateStates: "+(long4-long3));
 //        System.err.println("debug       : "+(long5-long4));
-        System.err.println("AI          : "+(aiAfter-aiBefore));
+//        System.err.println("AI          : "+(aiAfter-aiBefore));
         
         
         System.out.println(action.get());
