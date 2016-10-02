@@ -2,13 +2,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>nmahoude.codingame</groupId>
-    <artifactId>all</artifactId>
+    <artifactId>multiplayers</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>multiplayers</artifactId>
-  <packaging>pom</packaging>
-  <modules>
-    <module>hypersonic</module>
-    <module>theAccountant</module>
-  </modules>
+  <artifactId>theAccountant</artifactId>
 </project>
