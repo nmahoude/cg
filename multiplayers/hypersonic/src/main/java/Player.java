@@ -131,7 +131,7 @@ class Player {
       this.droppedBombs+=1;
     }
   }
-  
+
    static class Bomb extends Entity {
     public Bomb(GameState state, int owner, int x, int y, int ticksLeft, int range) {
       super(state, ENTITY_BOMB, owner, x, y);
