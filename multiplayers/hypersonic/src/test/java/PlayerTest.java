@@ -351,41 +351,6 @@ public class PlayerTest {
     }
     
     @Test
-    public void avoidBomb() throws Exception {
-      Player.Game game = new Player.Game(5, 5);
-      me = new PlayerBuilder(game.currentState)
-          .withId(0)
-          .withPos(0, 0)
-          .build();
-      
-      opponent = new PlayerBuilder(game.currentState)
-          .withId(1)
-          .withPos(5, 5)
-          .build();
-
-      buildBoard(game,
-          ".0...",
-          ".X.X.",
-          ".....",
-          ".X.X.", 
-          "....." 
-          );
-      
-      Player.Bomb bomb = new Player.Bomb(game.currentState, 1, 0, 0 ,4, 5);
-      game.currentState.addEntity(bomb);
-      
-      computeGame(game);
-
-      // game ai
-      Player.AI ai = new Player.AI1();
-      ai.game = game;
-      ai.compute();
-      Player.Action action = ai.actions.get(0);
-      
-      assertThat(action.pos, is(not(Player.P.get(0, 0))));
-    }
-    
-    @Test
     public void dropBombAtStart() throws Exception {
       Player.Game game = new Player.Game(5, 5);
       me = new PlayerBuilder(game.currentState)
@@ -784,6 +749,61 @@ public class PlayerTest {
       debugBestMove(ai.root, 2);
     }
 
+    @Test
+    public void dontGoOnChainBombLine() throws Exception {
+      Player.Game game = new Player.Game(13, 11);
+      me = new PlayerBuilder(game.currentState)
+          .withId(0)
+          .withPos(7, 8)
+          .build();
+      
+      opponent = new PlayerBuilder(game.currentState)
+          .withId(1)
+          .withPos(7, 8)
+          .build();
+
+
+      buildBoard(game,
+        "             ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "             ",
+        " X X X X X X ",
+        "1            ",
+        "0X X X X X X ",
+        "121          ",
+        " X0X1X X X X ",
+        "             "
+          );
+      
+      new BombBuilder(game.currentState).from(me)
+          .atPosition(8, 1)
+          .withRange(7)
+          .withTicksLeft(2)
+          .build();
+
+      new BombBuilder(game.currentState).from(me)
+        .atPosition(8, 2)
+        .withRange(7)
+        .withTicksLeft(3)
+        .build();
+      
+      new BombBuilder(game.currentState).from(me)
+      .atPosition(8, 7)
+      .withRange(7)
+      .withTicksLeft(8)
+      .build();
+
+      // game ai
+      Player.MCTS.game = game;
+      Player.MCTSAI ai = new Player.MCTSAI();
+      ai.game = game;
+      
+      ai.compute();
+
+      debugBestMove(ai.root, 2);
+    }
     
     private void debugBestMove(Player.MCTS root, int depth) {
       Integer key = Player.MCTS.biasedMovementAlgorithm.getBestChild(root);
