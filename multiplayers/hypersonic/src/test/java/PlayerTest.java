@@ -687,7 +687,7 @@ public class PlayerTest {
     }
     
     @Test
-    public void moveDownBombUp_isAGoodMove() throws Exception {
+    public void bombRightIsDeath() throws Exception {
       Player.Game game = new Player.Game(13, 11);
       Player.MCTS.game = game;
       me = new PlayerBuilder(game.currentState)
@@ -697,14 +697,14 @@ public class PlayerTest {
       
       opponent = new PlayerBuilder(game.currentState)
           .withId(1)
-          .withPos(5, 5)
+          .withPos(10, 5)
           .build();
 
 
       buildBoard(game,
-        "    0 0      ",
-        ".X X0X0X X X ",
-        " 0000        ",
+        "  0    0     ",
+        " X X X0X X X ",
+        "10000        ",
         "0X X X X X X ",
         "             ",
         " X X X X X X ",
@@ -719,9 +719,13 @@ public class PlayerTest {
       Player.MCTSAI ai = new Player.MCTSAI();
       ai.game = game;
       
+      new ItemBuilder(game.currentState)
+      .atPosition(5, 0)
+      .build();
+      
       ai.compute();
 
-      debugBestMove(ai.root.childs.get(1*2+0).childs.get(3*2+1), 2);
+      ai.debugMCTS2(ai.root);
     }
     
     @Test

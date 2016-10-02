@@ -11,6 +11,8 @@ import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
+import Player.EarlyGameAlgorithm.GameType;
+
 class Player {
   static Scanner in;
   
@@ -104,8 +106,10 @@ class Player {
       int value = state.grid[p.x+13*p.y];
       if (GameState.isRangeUpItem(value)) {
         bombRange++;
+        state.grid[p.x+13*p.y] = GameState.CELL_FLOOR;
       } else if (GameState.isBombUpItem(value)) {
         bombsLeft++;
+        state.grid[p.x+13*p.y] = GameState.CELL_FLOOR;
       }
     }
     
@@ -129,6 +133,12 @@ class Player {
       state.addEntity(droppedBomb);
       this.bombsLeft-=1;
       this.droppedBombs+=1;
+    }
+
+
+    public void moveTo(int x, int y) {
+      p = P.get(x, y);
+      pickupBonuses(this.state);
     }
   }
 
@@ -571,30 +581,35 @@ class Player {
       if (node.childs.isEmpty()) {
         // score
         if (node.playerIsDead ) {
-          return SCORE_MINUS_INFINITY;
+          return -1;
         } else {
           if (gametype == GameType.EARLY) {
-            node.score = 10*node.totalPoints + node.totalBombs + node.bombRange;
+            node.score = 10*node.points + 2*node.totalBombs + node.bombRange;
           } else if (gametype == GameType.MIDDLE) {
-            node.score = 2*node.totalPoints + node.totalBombs + node.bombRange;
+            node.score = 2*node.points + node.totalBombs + node.bombRange;
           } else {
             node.score = 1;
           }
           return node.score;
         }
       } else {
-        double score = SCORE_MINUS_INFINITY;
-        for (Entry<Integer, MCTS> m : node.childs.entrySet()) {
-          //TODO bien y penser, on bypasse tous les infinity max !
-          // il faut peut-etre prendre en compt le % de win dans l'heuristique?
-          double ratio = 0.95;
-          if (node.depth == 0) {
-            ratio = (1.0*node.win / node.simulatedCount);
+        if (gametype == GameType.LATE) {
+          double score = SCORE_MINUS_INFINITY;
+          
+        } else {
+          double score = SCORE_MINUS_INFINITY;
+          for (Entry<Integer, MCTS> m : node.childs.entrySet()) {
+            //TODO bien y penser, on bypasse tous les infinity max !
+            // il faut peut-etre prendre en compt le % de win dans l'heuristique?
+            double ratio = 0.95;
+  //          if (node.depth == 1) {
+  //            ratio = (1.0*node.win / node.simulatedCount);
+  //          }
+            score = Math.max(score, ratio*(10*node.points+1) * getScore(m.getValue())); 
           }
-          score = Math.max(score, ratio*getScore(m.getValue())); 
+          node.score = score;
+          return score;
         }
-        node.score = score;
-        return score;
       }
     }
     
@@ -794,9 +809,8 @@ class Player {
             player.dropBomb();
           }
           // then move
-          int x = player.p.x + rotx[theRot];
-          int y = player.p.y + roty[theRot];
-          player.p = P.get(x, y);
+          player.moveTo(player.p.x + rotx[theRot], player.p.y + roty[theRot]);
+          
         }
 
         if (chosenChild != null) {
@@ -845,7 +859,7 @@ class Player {
     };
     int seed = ThreadLocalRandom.current().nextInt(20);
     static int gameRound = 0;
-    static final int MAX_STEPS = 16;
+    static final int MAX_STEPS = 18;
     MCTS root = new MCTS(0);
     public int steps = MAX_STEPS;
     
@@ -880,7 +894,8 @@ class Player {
 //        }
 //        System.err.println("----");
 //      }
-      //debugMCTS2(root, "");
+       debugMCTS2(root, "");
+      // game.currentState.debugBombs();
       
       if (chosen == null) {
         buildSayonaraAction();
@@ -945,10 +960,10 @@ class Player {
         case 4:
           return 1_500;
         case 3:
-          return 4_000;
+          return 2_000;
         case 2 : 
         default:
-          return 3_000;
+          return 2_500;
       }
     }
 
@@ -1096,6 +1111,11 @@ class Player {
         String row = in.nextLine();
         currentState.addRow(y, row);
       }
+      
+      if (currentState.boxes.isEmpty()) {
+        EarlyGameAlgorithm.gametype = EarlyGameAlgorithm.GameType.LATE;
+      }
+      
       int entitiesCount = in.nextInt();
       int playersCount = 1;
       for (int i = 0; i < entitiesCount; i++) {
@@ -1439,6 +1459,8 @@ class Player {
             || value == CELL_BOMBUP_BOX
             || value == CELL_RANGEUP_BOX) {
               c = 'b';
+          } else if (value == CELL_ITEM_BOMBUP || value == CELL_ITEM_RANGEUP) {
+            c= '+';
           } else if (value >= CELL_BOMB_0 && value <= CELL_BOMB_9) {
               c = (char)('0' + (value - CELL_BOMB_0));
           }
