@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * are to an enemy, the more damage you do but don't get too close or you'll get
  * killed.
  **/
-class Player {
+class Player_MCTS {
 
   
   static GameEngine gameEngineMain = new GameEngine();
@@ -42,35 +42,96 @@ class Player {
         int enemyLife = in.nextInt();
         gameEngineMain.createEnemy(enemyId, enemyX, enemyY, enemyLife);
       }
-      gameEngineMain.init();
-      
+
       ai.doYourStuff();
 
       System.out.println(ai.command.get()); 
     }
   }
 
+  static class MCTS {
+    Command command;
+    Map<String, MCTS> childs = new HashMap<>();
+    int score = 0;
+    boolean gameOver = false;
+    
+    void simulate(GameEngine engine, int depth) {
 
+      if (depth == 0) {
+        score = engine.getScore();
+        return;
+      } else {
+        // random command
+        if (ThreadLocalRandom.current().nextInt(1000) > 800 /* more shoot than move ? */) {
+          // move, find to where ?
+          int newX = engine.wolff.p.x+10*(ThreadLocalRandom.current().nextInt(21)-10);
+          int newY = engine.wolff.p.y+10*(ThreadLocalRandom.current().nextInt(21)-10);
+          command = new Move(new P(newX,newY));
+        } else {
+          // shoot
+          int size = engine.enemies.size();
+          int index = ThreadLocalRandom.current().nextInt(size);
+          command = new Shoot(engine.enemies.get(index));
+        }
+        engine.lastCommand = command;
+        engine.playTurn();
+
+        if (engine.gameOver()) {
+          score = engine.getScore();
+          gameOver = true;
+          return;
+        } else {
+          MCTS mcts = childs.get(command.get());
+          if (mcts == null ) {
+            mcts = new MCTS();
+            childs.put(command.get(), mcts);
+            mcts.command = command;
+          }
+          mcts.simulate(engine, depth-1);
+        }
+      }
+    }
+
+    public int score() {
+      if (childs.isEmpty()) {
+        return score;
+      } else {
+        int score = -1000;
+        for (Entry<String, MCTS> m : childs.entrySet()) {
+          score = Math.max(score,  m.getValue().score());
+        }
+        return score;
+      }
+    }
+    public MCTS getBestChild() {
+      System.err.println("child count : "+childs.size());
+      int bestScore = -1_000_000;
+      MCTS bestChild = null;
+      for (Entry<String, MCTS> m : childs.entrySet()) {
+        int score = m.getValue().score();
+        //System.err.println("child: "+m.getValue().command.get()+" -> "+score);
+        if (score > bestScore) {
+          bestScore = score;
+          bestChild = m.getValue();
+        }
+      }
+      return bestChild;
+    }
+  }
   static class AI {
     static int MAX_DEPTH = 15;
     static int BREADTH = 2000;
     
     Command command ;
     public void doYourStuff() {
-      GameEngine copy = gameEngineMain.duplicate();
-      
-      for (Enemy e : copy.enemies) {
-        System.err.println(e.id+" will reach target in "+e.turnToReachTarget+" turns");
-        System.err.println("I can deal "+copy.wolff.getPotentialDamage(e)+" damages (he has "+e.lifePoints+" pv )");
-        if (1.0*e.lifePoints / e.turnToReachTarget > copy.wolff.getPotentialDamage(e)) {
-          System.err.println("I need to get closer");
-        } else {
-          System.err.println("I can shoot him from here");
-        }
+      MCTS root = new MCTS();
+      for (int i=0;i<BREADTH;i++) {
+        GameEngine copy = gameEngineMain.duplicate();
+        root.simulate(copy, MAX_DEPTH);
       }
       
-      //command = new Shoot(gameEngineMain.enemies.get(0));
-      command = new Move(new P(0,0));
+      MCTS best = root.getBestChild();
+      command = best.command;
     }
   }
   
@@ -106,20 +167,12 @@ class Player {
   static class Enemy extends Movable {
     private static final int ENEMY_WOLFF_RANGE = 2000;
     private static final int ENEMY_DATAPOINT_RANGE = 500;
-    private static final int ENEMY_MOVE = 500;
     int lifePoints;
     int id;
-    int turnToReachTarget;
-    
     public Enemy(GameEngine engine) {
-      super(engine,ENEMY_MOVE);
+      super(engine,500);
     }
 
-    public void init() {
-      DataPoint dp = findNearestDataPoint();
-      turnToReachTarget = Math.round(dp.p.squareDistance(p) / 500)+1; // FIXME bug here
-    }
-    
     boolean checkForDeath(P wolffPos) {
       return wolffPos.squareDistance(p) <= ENEMY_WOLFF_RANGE*ENEMY_WOLFF_RANGE;
     }
@@ -156,13 +209,7 @@ class Player {
       e.p = p;
       e.id = id;
       e.lifePoints = lifePoints;
-      e.turnToReachTarget = turnToReachTarget;
       return e;
-    }
-
-    public void updateTurnToReachTarget() {
-      DataPoint dp = findNearestDataPoint();
-      turnToReachTarget = (int)Math.round(1.0*dp.p.distance(p) / ENEMY_MOVE); // FIXME bug here
     }
   }
   static class DataPoint {
@@ -187,13 +234,10 @@ class Player {
       super(engine, 1000);
     }
 
-    int getPotentialDamage(Enemy enemy) {
-      double x = p.distance(enemy.p);
-      return (int)Math.round(125_000 / Math.pow(x, 1.2));
-    }
     void damage(Enemy enemy) {
-
-      enemy.lifePoints -= getPotentialDamage(enemy);
+      double x = p.distance(enemy.p);
+      int damage = (int)Math.round(125_000 / Math.pow(x, 1.2));
+      enemy.lifePoints -= damage;
       if (enemy.lifePoints <= 0) {
         gameEngine.removeEnemy(enemy);
       }
@@ -232,7 +276,6 @@ class Player {
       for (Enemy e : enemies) {
         totalEnemiesLife += e.lifePoints;
         totalEnemies++;
-        e.updateTurnToReachTarget();
       }
     }
     public void createWolff(int x, int y) {

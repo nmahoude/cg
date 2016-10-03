@@ -1,0 +1,32 @@
+# CodinGame - Hypersonic
+
+Cette semaine avait lieu un concours de programmation sur le site codingame.com.
+En l'occurence, coder l'AI d'un joueur de bomberman (NdM : bien que je pense que ce n'etait pas l'idée à la base du concours).
+
+Le jeu se déroule en plusieurs poules (bois, bronez, argent, or, legende) et chaque poules a généralement des règles un peu plus complexes et/ou contraignantes.
+
+# Regles & Objectif Bomberman
+
+Les règles sont assez simples (et c'est tant mieux quand on doit coder une AI :) ) :
+- on controle un bomberman chargé de casser des caisses à l'aide de bombes. 
+- Ce bomberman possède un certains nombre de bombes qui peut augmenter en fonction de bonus (on dira qu'elles sont dans son sac à dos) et chaque bombe à une portée (range) qui peut être modifiée par des bonus cachés dans les boites.
+- le plateau de jeu fait 13x11 cases et certaines cases sont des murs, infranchissables et incassables.
+- il peut y avoir 1 & 3 adversaires sur le plateau
+
+L'ojectif principal est de receuillir plus de points que ses adversaires (1 boites détruites = 1 points) ou, à défaut, de tuer les adversaires ayant plus de points que nous.
+
+
+# Mon approche v1 (Wood -> Bronze)
+
+Mon objectif au lancement de la semaine de code a été de coder un algorithme me permettant de passer rapidement les 1ers niveaux afin de prendre en compte les nouvelles règles.
+L'algorithme que j'ai utiliser etait pour le coup très simple : chercher la case proche de mon bomberman qui lui permettait de détruire le maximum de box et poser une bombe sur cette case.
+Eviter de mourir en se mettant sur la trajectoire d'une bombe quie explose.
+
+Pour connaitre à l'avance les explosions, j'ai créé un simulateur du jeu permettant de calculer un certains nombre de coup à l'avance (déplacement de mon bomberman uniquement). Cela permettait de savoir si sur la trajectoire choisie, il y aurait une explosion de bombe lui étant fatale.
+Pour trouver le chemin, j'ai codé un bon vieux A* avec la subtilité de se déplacer dans le temps (tour de jeu) ainsi que l'espace.
+
+# Mon approche v2 (Bronze -> Gold)
+
+Apres un codingHub avec d'autres participants, j'ai choisi d'implémenter un Monté-Carlo.
+D'une part parce que la partie stratégie haut-niveau du jeu était un mystère pour moi, que je connaissais la théorie du MC sans l'avoir pratiquée et, je dois l'admettre, pour pouver qu'un Monté-Carlo est  meilleur qu'un Monté-Delsaux :p
+
