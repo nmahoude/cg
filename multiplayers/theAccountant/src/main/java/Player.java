@@ -12,6 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * killed.
  **/
 class Player {
+  static final int WOLFF_MOVE = 1000;
 
   
   static GameEngine gameEngineMain = new GameEngine();
@@ -43,34 +44,136 @@ class Player {
         gameEngineMain.createEnemy(enemyId, enemyX, enemyY, enemyLife);
       }
       gameEngineMain.init();
+
+      //debugEnemiesMoveToTheirTargets();
       
       ai.doYourStuff();
 
       System.out.println(ai.command.get()); 
     }
   }
+  private static void debugEnemiesMoveToTheirTargets() {
+    for (Enemy e : gameEngineMain.enemies) {
+      String moves ="";
+      DataPoint dp = e.findNearestDataPoint();
+      List<P> ps = e.stepsToTarget(dp.p);
+      for (P p : ps) {
+        moves+=p.toString()+" -> ";
+      }
+      System.err.println("e: "+e.id+ "will move : "+moves);
+    }
+  }
 
+  static class MCTS {
+    Command command;
+    Map<String, MCTS> childs = new HashMap<>();
+    int score = 0;
+    boolean gameOver = false;
+    
+    void simulate(GameEngine engine, MCTS parent, int depth) {
 
+      if (depth == 0) {
+        score = engine.getScore();
+        return;
+      } else {
+        // random command
+        if (ThreadLocalRandom.current().nextInt(1000) > 0 /* more shoot than move ? */) {
+          // move, find to where ?
+          int newX = engine.wolff.p.x+100*(ThreadLocalRandom.current().nextInt(21)-10);
+          int newY = engine.wolff.p.y+100*(ThreadLocalRandom.current().nextInt(21)-10);
+          command = new Move(new P(newX,newY));
+        } else {
+          // shoot find a potential target
+          List<Enemy> enemies = getPotentialTargets(engine);
+          int size = enemies.size();
+          int index = ThreadLocalRandom.current().nextInt(size);
+          command = new Shoot(enemies.get(index));
+        }
+        engine.lastCommand = command;
+        engine.playTurn();
+
+        if (engine.gameOver()) {
+          score = engine.getScore();
+          gameOver = true;
+          return;
+        } else {
+          MCTS mcts = childs.get(command.get());
+          if (mcts == null ) {
+            mcts = new MCTS();
+            childs.put(command.get(), mcts);
+            mcts.command = command;
+          }
+          mcts.simulate(engine, this, depth-1);
+        }
+      }
+    }
+
+    private List<Enemy> getPotentialTargets(GameEngine engine) {
+      List<Enemy> enemies = new ArrayList<>();
+      
+      for (DataPoint dp : engine.dataPoints) {
+        Enemy nearestEnemy = null;
+        int minDist = Integer.MAX_VALUE;
+        for (Enemy enemy : engine.enemies) {
+          int dist = enemy.p.squareDistance(dp.p);
+          if (dist < minDist) {
+            minDist = dist;
+            nearestEnemy = enemy;
+          }
+        }
+        if (nearestEnemy != null) {
+          enemies.add(nearestEnemy);
+        }
+      }
+      return enemies;
+    }
+
+    public int score() {
+      if (childs.isEmpty()) {
+        return score;
+      } else {
+        int score = -1000;
+        for (Entry<String, MCTS> m : childs.entrySet()) {
+          score = Math.max(score,  m.getValue().score());
+        }
+        return score;
+      }
+    }
+    public MCTS getBestChild() {
+      System.err.println("child count : "+childs.size());
+      int bestScore = -1_000_000;
+      MCTS bestChild = null;
+      for (Entry<String, MCTS> m : childs.entrySet()) {
+        int score = m.getValue().score();
+//        if (score > -1_000) {
+//          System.err.println("child: "+m.getValue().command.get()+" -> "+score);
+//        }
+        if (score > bestScore) {
+          bestScore = score;
+          bestChild = m.getValue();
+        }
+      }
+      return bestChild;
+    }
+  }
   static class AI {
-    static int MAX_DEPTH = 15;
-    static int BREADTH = 2000;
+    static int MAX_DEPTH = 1;
+    static int BREADTH = 200;
     
     Command command ;
     public void doYourStuff() {
-      GameEngine copy = gameEngineMain.duplicate();
-      
-      for (Enemy e : copy.enemies) {
-        System.err.println(e.id+" will reach target in "+e.turnToReachTarget+" turns");
-        System.err.println("I can deal "+copy.wolff.getPotentialDamage(e)+" damages (he has "+e.lifePoints+" pv )");
-        if (1.0*e.lifePoints / e.turnToReachTarget > copy.wolff.getPotentialDamage(e)) {
-          System.err.println("I need to get closer");
-        } else {
-          System.err.println("I can shoot him from here");
-        }
+      MCTS root = new MCTS();
+      for (int i=0;i<BREADTH;i++) {
+        GameEngine copy = gameEngineMain.duplicate();
+        root.simulate(copy, root, MAX_DEPTH);
       }
       
-      //command = new Shoot(gameEngineMain.enemies.get(0));
-      command = new Move(new P(0,0));
+      MCTS best = root.getBestChild();
+      if (best != null) {
+        command = best.command;
+      } else {
+        command = new Move(new P(0,0));
+      }
     }
   }
   
@@ -92,7 +195,7 @@ class Player {
         int vecx = target.x-p.x;
         int vecy = target.x-p.y;
         double norm = Math.sqrt(vecx*vecx+vecy*vecy);
-        if (norm > 1000) {
+        if (norm > WOLFF_MOVE) {
           p = new P((int)(p.x + 1.0*maxMove / norm * vecx)
                   ,(int)(p.y + 1.0*maxMove / norm * vecy));
           return false;
@@ -104,9 +207,9 @@ class Player {
     }
   }
   static class Enemy extends Movable {
-    private static final int ENEMY_WOLFF_RANGE = 2000;
-    private static final int ENEMY_DATAPOINT_RANGE = 500;
-    private static final int ENEMY_MOVE = 500;
+    static final int ENEMY_WOLFF_RANGE = 2000;
+    static final int ENEMY_DATAPOINT_RANGE = 500;
+    static final int ENEMY_MOVE = 500;
     int lifePoints;
     int id;
     int turnToReachTarget;
@@ -117,7 +220,7 @@ class Player {
 
     public void init() {
       DataPoint dp = findNearestDataPoint();
-      turnToReachTarget = Math.round(dp.p.squareDistance(p) / 500)+1; // FIXME bug here
+      turnToReachTarget = Math.round(dp.p.squareDistance(p) / (ENEMY_MOVE*ENEMY_MOVE))+1; // FIXME bug here
     }
     
     boolean checkForDeath(P wolffPos) {
@@ -135,6 +238,24 @@ class Player {
         gameEngine.removeDataPoint(dp);
       }
     }
+    
+    // validated against game engine
+    List<P> stepsToTarget(P target) {
+      List<P> ps = new ArrayList<>();
+      P futurePos = p;
+      while (true) {
+        Vector v = new Vector(target.x-futurePos.x, target.y-futurePos.y);
+        double length = v.length();
+        if (length < ENEMY_DATAPOINT_RANGE) {
+          ps.add(target);
+          return ps;
+        } else {
+          futurePos = new P((int)(futurePos.x+ENEMY_MOVE * v.vx / length), (int)(futurePos.y+ENEMY_MOVE * v.vy / length));
+          ps.add(futurePos);
+        }
+      }
+    }
+    
     private DataPoint findNearestDataPoint() {
       DataPoint closestDP = null;
       int minDist = Integer.MAX_VALUE;
@@ -301,13 +422,21 @@ class Player {
     int getScore() {
       if (dataPoints.isEmpty() || wolffIsDead) {
         return -1000;
-      } else  if (enemies.isEmpty()) {
+      } else if (enemies.isEmpty()) {
         int score = dataPoints.size() * 100;
         score += 10 * totalEnemies-enemies.size();
         score += dataPoints.size() * Math.max(0, (totalEnemiesLife - 3*shots)) * 3;
         return score;
       } else {
-        return 0; //not finished
+        int score = 0;
+        for (DataPoint dp : dataPoints) {
+          score+=dp.worth;
+        }
+        int eLifePoints = 0;
+        for (Enemy e : enemies) {
+          eLifePoints+=e.lifePoints;
+        }
+        return score - eLifePoints; //not finished
       }
     }
     private boolean wolffIsDead() {
@@ -474,5 +603,63 @@ class Player {
       return other.enemy.id == this.enemy.id;
     }
   }
-  
+  static class Vector {
+    final double vx, vy;
+    public Vector(double vx, double vy) {
+      this.vx = vx;
+      this.vy = vy;
+    }
+    @Override
+    public String toString() {
+      return "V("+vx+","+vy+")";
+    }
+    Vector normalize() {
+      return new Vector(vx / length(), vy / length());
+    }
+    Vector rotate(double angle) {
+      return new Vector(vx*Math.cos(angle) - vy*Math.sin(angle),
+          vx*Math.sin(angle) + vy*Math.cos(angle));
+    }
+    Vector add(Vector v) {
+      return new Vector(vx+v.vx, vy+v.vy);
+    }
+    Vector dot(double d) {
+      return new Vector(d*vx, d*vy);
+    }
+    double dot(Vector v) {
+      return vx*v.vx + vy*v.vy;
+    }
+    double length() {
+      return Math.sqrt(vx*vx + vy*vy);
+    }
+    double angle(Vector v) {
+      return Math.acos(this.dot(v) / (this.length() * v.length()));
+    }
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      long temp;
+      temp = Double.doubleToLongBits(vx);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      temp = Double.doubleToLongBits(vy);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      return result;
+    }
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null)
+        return false;
+      if (getClass() != obj.getClass())
+        return false;
+      Vector other = (Vector) obj;
+      if (Double.doubleToLongBits(vx) != Double.doubleToLongBits(other.vx))
+        return false;
+      if (Double.doubleToLongBits(vy) != Double.doubleToLongBits(other.vy))
+        return false;
+      return true;
+    }
+  }
 }
