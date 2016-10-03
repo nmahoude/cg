@@ -58,14 +58,14 @@ class Player {
     void simulate(GameEngine engine, int depth) {
 
       if (depth == 0) {
-        score = engine.getScore();
+        score = engine.getScore()+100-engine.enemies.size();
         return;
       } else {
         // random command
-        if (ThreadLocalRandom.current().nextInt(1000) > 800 /* more shoot than move ? */) {
+        if (ThreadLocalRandom.current().nextInt(1000) > 500 /* more shoot than move ? */) {
           // move, find to where ?
-          int newX = 100*ThreadLocalRandom.current().nextInt(Zone.width/100);
-          int newY = 100*ThreadLocalRandom.current().nextInt(Zone.height/100);
+          int newX = engine.wolff.p.x+100*(ThreadLocalRandom.current().nextInt(20)-10);
+          int newY = engine.wolff.p.y+100*(ThreadLocalRandom.current().nextInt(20)-10);
           command = new Move(new P(newX,newY));
         } else {
           // shoot
@@ -109,7 +109,7 @@ class Player {
       MCTS bestChild = null;
       for (Entry<String, MCTS> m : childs.entrySet()) {
         int score = m.getValue().score();
-        System.err.println("child: "+m.getValue().command.get()+" -> "+score);
+        //System.err.println("child: "+m.getValue().command.get()+" -> "+score);
         if (score > bestScore) {
           bestScore = score;
           bestChild = m.getValue();
@@ -119,8 +119,8 @@ class Player {
     }
   }
   static class AI {
-    static int MAX_DEPTH = 10;
-    static int BREADTH = 5000;
+    static int MAX_DEPTH = 15;
+    static int BREADTH = 2000;
     
     Command command ;
     public void doYourStuff() {
@@ -337,12 +337,12 @@ class Player {
       return null;
     }
     int getScore() {
-      if (dataPoints.isEmpty()) {
-        return 0;
+      if (dataPoints.isEmpty() || wolffIsDead) {
+        return -1000;
       } else  if (enemies.isEmpty()) {
         return dataPoints.size() * Math.max(0, (totalEnemiesLife - 3*shots)) * 3;
       } else {
-        return -1; //not finished
+        return 0; //not finished
       }
     }
     private boolean wolffIsDead() {
