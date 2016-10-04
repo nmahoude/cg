@@ -36,6 +36,24 @@ public class PlayerTest {
     }
     
     @Test
+    public void distanceToOneShot() throws Exception {
+      Player.Enemy e1 = new Player.Enemy(engine);
+      e1.p = new Player.P(0,0);
+      e1.lifePoints = 10;
+      
+      assertThat(e1.distanceToOneShot(), is (2594));
+    }
+    
+    @Test
+    public void distanceToOneShot_When_1LF() throws Exception {
+      Player.Enemy e1 = new Player.Enemy(engine);
+      e1.p = new Player.P(0,0);
+      e1.lifePoints = 1;
+      
+      assertThat(e1.distanceToOneShot(), is (17677));
+    }
+    
+    @Test
     public void enemyReachesDPInTurns_just() throws Exception {
       Player.Enemy e1 = new Player.Enemy(engine);
       e1.p = new Player.P(0,0);

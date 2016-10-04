@@ -83,7 +83,7 @@ class Player {
           int newY = engine.wolff.p.y+100*(ThreadLocalRandom.current().nextInt(21)-10);
           command = new Move(new P(newX,newY));
         } else {
-          // shoot find a potential target
+          // shoot, find a potential target
           List<Enemy> enemies = getPotentialTargets(engine);
           int size = enemies.size();
           int index = ThreadLocalRandom.current().nextInt(size);
@@ -272,6 +272,10 @@ class Player {
       return closestDP;
     }
 
+    public int distanceToOneShot() {
+      return (int)Math.pow(125_000.0/lifePoints, 1.0 / 1.2);
+    }
+    
     public Enemy duplicate(GameEngine newEngine) {
       Enemy e = new Enemy(newEngine);
       e.p = p;
