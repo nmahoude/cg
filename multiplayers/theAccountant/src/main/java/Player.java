@@ -21,6 +21,7 @@ class Player {
     Scanner in = new Scanner(System.in);
 
     // game loop
+    int turn = 0;
     while (true) {
       gameEngineMain.reset();
       
@@ -43,7 +44,10 @@ class Player {
         int enemyLife = in.nextInt();
         gameEngineMain.createEnemy(enemyId, enemyX, enemyY, enemyLife);
       }
-      gameEngineMain.init();
+      if (turn == 0) {
+        gameEngineMain.init();
+      }
+      turn++;
 
       //debugEnemiesMoveToTheirTargets();
       
@@ -161,7 +165,7 @@ class Player {
     static int BREADTH = 200;
     
     Command command ;
-    public void doYourStuff() {
+    public void doYourStuff_old1() {
       MCTS root = new MCTS();
       for (int i=0;i<BREADTH;i++) {
         GameEngine copy = gameEngineMain.duplicate();
@@ -174,6 +178,44 @@ class Player {
       } else {
         command = new Move(new P(0,0));
       }
+    }
+
+    int turn = 0;
+    public void doYourStuff() {
+      // 1. check how much shoot do i need from here : 
+      GameEngine copy = gameEngineMain.duplicate();
+      Enemy e1 = null;
+      Vector dir = null;
+      P target = null;
+      // now check if me move closer 2
+      copy = gameEngineMain.duplicate();
+      //    closer where ?
+      int turns = 5;
+      for (int i=0;i<turns;i++) {
+        e1 = copy.enemies.get(0);
+        dir = new Vector(e1.p.x-gameEngineMain.wolff.p.x, e1.p.y-gameEngineMain.wolff.p.y).normalize();
+        target = new P ((int)(gameEngineMain.wolff.p.x+1000*dir.vx), (int)(gameEngineMain.wolff.p.y+1000*dir.vy));
+        // Move
+        copy.lastCommand = new Move(target);
+        copy.playTurn();
+      }
+      int turnsNeeded = turns;
+
+      // now shoot
+      while (!copy.enemies.isEmpty()) {
+        copy.lastCommand = new Shoot(copy.enemies.get(0));
+        copy.playTurn();
+        turnsNeeded++;
+      }
+      System.err.println("Turns needed (move then shoots): "+(turnsNeeded-turns)+" "+turns);
+      System.err.println("Points calculated : "+copy.getScore());
+
+      if (turn < turns) {
+        command = new Move(target);
+      } else {
+        command = new Shoot(gameEngineMain.enemies.get(0));
+      }
+      turn++;
     }
   }
   
@@ -193,7 +235,7 @@ class Player {
         return true;
       } else {
         int vecx = target.x-p.x;
-        int vecy = target.x-p.y;
+        int vecy = target.y-p.y;
         double norm = Math.sqrt(vecx*vecx+vecy*vecy);
         if (norm > WOLFF_MOVE) {
           p = new P((int)(p.x + 1.0*maxMove / norm * vecx)
@@ -256,7 +298,7 @@ class Player {
       }
     }
     
-    private DataPoint findNearestDataPoint() {
+    public DataPoint findNearestDataPoint() {
       DataPoint closestDP = null;
       int minDist = Integer.MAX_VALUE;
       int minId = Integer.MAX_VALUE;
@@ -320,6 +362,7 @@ class Player {
 
       enemy.lifePoints -= getPotentialDamage(enemy);
       if (enemy.lifePoints <= 0) {
+        enemy.lifePoints = 0;
         gameEngine.removeEnemy(enemy);
       }
     }
@@ -373,6 +416,8 @@ class Player {
         newEngine.enemies.add(e.duplicate(newEngine));
       }
       newEngine.wolff = wolff.duplicate(newEngine);
+      newEngine.totalEnemies = totalEnemies;
+      newEngine.totalEnemiesLife = totalEnemiesLife;
       return newEngine;
     }
     public void createEnemy(int enemyId, int enemyX, int enemyY, int enemyLife) {

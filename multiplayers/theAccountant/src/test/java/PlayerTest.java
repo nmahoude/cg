@@ -112,6 +112,45 @@ public class PlayerTest {
       
       assertThat(e1.lifePoints, is (100-4));
     }
+    
+    @Test
+    public void example2() throws Exception {
+      Player.Enemy e1 = new Player.Enemy(engine);
+      e1.id = 0;
+      e1.lifePoints = 10;
+      e1.p = new Player.P(3100,8000);
+      engine.enemies.add(e1);
+
+      Player.Enemy e2 = new Player.Enemy(engine);
+      e1.id = 1;
+      e2.lifePoints = 10;
+      e2.p = new Player.P(14500, 8100);
+      engine.enemies.add(e2);
+      
+      Player.DataPoint dp1 = new Player.DataPoint(new Player.P(950,7000));
+      engine.dataPoints.add(dp1);
+
+      Player.DataPoint dp2 = new Player.DataPoint(new Player.P(8000,7100));
+      engine.dataPoints.add(dp2);
+      
+      
+      Player.Wolff w = new Player.Wolff(engine);
+      w.p = new Player.P(5000, 1000);
+      engine.wolff = w;
+      
+      engine.lastCommand = new Player.Shoot(e1);
+      engine.playTurn();
+      assertThat(e1.findNearestDataPoint(), is (dp1));
+      assertThat(e1.p, is (new Player.P(2646, 7789)));
+      engine.lastCommand = new Player.Shoot(e1);
+      engine.playTurn();
+      assertThat(e1.p, is (new Player.P(2192, 7578)));
+      engine.lastCommand = new Player.Shoot(e1);
+      engine.playTurn();
+      assertThat(e1.p, is (new Player.P(1738,7367)));
+      
+      assertThat(e1.lifePoints, is (0));
+    }
   }
   
   public static class AITest {
