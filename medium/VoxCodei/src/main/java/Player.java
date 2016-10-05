@@ -53,6 +53,7 @@ class Player {
     public final static char SURVEILLANCE_NODE = '@';
     public final static char EXPLODED_SURVEILLANCE_NODE = 'e';
     public final static char STATIC_NODE = '#';
+    public static final int UNPLACEABLE_BOMB = '-';
 
     private int width;
     private int height;
@@ -72,6 +73,9 @@ class Player {
       this.height = grid.height;
       board = new int[width*height];
       System.arraycopy(grid.board, 0, board, 0, grid.board.length);
+      for (SurveillanceNode sn: grid.surveillanceNodes) {
+        this.surveillanceNodes.add(new SurveillanceNode(sn.position));
+      }
     }
 
     public int countSentinelsToBeDestroyed() {
@@ -286,30 +290,65 @@ class Player {
     int real;
   }
   
-  static class Simulation {
-
-    public void simulate() {
-      
-    }
-  }
   
-  static class Ai {
-    private int leftRounds;
-    private int bombsLeft;
+  static class Simulation {
+    int bombsLeft;
+    int turnsLeft;
+    List<String> actions;
+    
+    public Simulation(int leftRounds, int bombsLeft) {
+      this.turnsLeft = leftRounds;
+      this.bombsLeft = bombsLeft;
+    }
 
-    public String getCommand() {
+
+    public List<String> simulate(Grid grid) {
+      return doOneSimulation(grid);
+    }
+    public List<String> doOneSimulation(Grid gridInitial) {
+      List<String> actions = new ArrayList<>();
+      int initialBombsLeft = bombsLeft;
+      int initialTurnsLeft = turnsLeft;
+      
+      Grid grid = null;
+      do {
+        grid = new Grid(gridInitial);
+        bombsLeft = initialBombsLeft;
+        turnsLeft = initialTurnsLeft;
+        while (turnsLeft > 0) {
+          String action = getAction(grid);
+          actions.add(action);
+          grid.udpate();
+  
+          if (!action.equals("WAIT")) {
+            bombsLeft--;
+          }
+          turnsLeft--;
+        }
+        
+        if (!grid.surveillanceNodes.isEmpty()) {
+          // block first bomb first Action
+          String[] poss = actions.get(0).split(" ");
+          int posx = Integer.parseInt(poss[0]);
+          int posy = Integer.parseInt(poss[1]);
+          gridInitial.board[posx+posy*gridInitial.width] = Grid.UNPLACEABLE_BOMB; 
+          actions.clear();
+        }
+      } while (!grid.surveillanceNodes.isEmpty());
+      return actions;
+    }
+      
+    public String getAction(Grid grid) {  
       List<BombExpectation> bombExpectation = new ArrayList<>();
-      int maxCount = 0;
-      P maxP = null;
-      for (int x=0;x<player.grid.width;x++) {
-        for (int y=0;y<player.grid.height;y++) {
-          if (player.grid.board[x+y*player.grid.width] != Grid.EMPTY) {
+      for (int x=0;x<grid.width;x++) {
+        for (int y=0;y<grid.height;y++) {
+          if (grid.board[x+y*grid.width] != Grid.EMPTY) {
             continue;
           }
           P p = new P(x,y);
           int count = 0;
-          for (SurveillanceNode target : player.grid.surveillanceNodes) {
-            if (target.status == SurveillanceNode.Status.ALIVE && player.grid.isIn4x4(p, target.position)) {
+          for (SurveillanceNode target : grid.surveillanceNodes) {
+            if (target.status == SurveillanceNode.Status.ALIVE && grid.isIn4x4(p, target.position)) {
               count++;
             }
           }
@@ -317,52 +356,68 @@ class Player {
         }
       }
       sortExpectations(bombExpectation);
-      BombExpectation be = getBestFromExpectations(bombExpectation);
+      BombExpectation be = getBestFromExpectations(grid, bombExpectation);
       
       if (be != null) {
-        if (bombsLeft == 1 && player.grid.countAliveSentinels() - be.real > 0) {
+        if (bombsLeft == 1 && grid.countAliveSentinels() - be.real > 0) {
           return "WAIT";
         }
-        player.grid.placeBomb(be.pos.x, be.pos.y);
+        grid.placeBomb(be.pos.x, be.pos.y);
         return ""+be.pos.x+" "+be.pos.y;
       } else {
         return "WAIT";
       }
     }
 
-    private BombExpectation getBestFromExpectations(List<BombExpectation> bombExpectation) {
-      int maxReal = -2;
-      BombExpectation maxBE = null;
-      for (BombExpectation be : bombExpectation) {
-        int realCount = player.grid.sentinelsTouchedByBomb(be.pos.x, be.pos.y);
-        be.real = realCount;
-        if (maxReal > be.potentialCount) {
-          return maxBE;
-        }
-        if (realCount == be.potentialCount) {
-          return be;
-        } else {
-          if (maxReal < realCount) {
-            maxReal = realCount;
-            maxBE = be;
+      private BombExpectation getBestFromExpectations(Grid grid, List<BombExpectation> bombExpectation) {
+        int maxReal = -2;
+        BombExpectation maxBE = null;
+        for (BombExpectation be : bombExpectation) {
+          int realCount = grid.sentinelsTouchedByBomb(be.pos.x, be.pos.y);
+          be.real = realCount;
+          if (maxReal > be.potentialCount) {
+            return maxBE;
+          }
+          if (realCount == be.potentialCount) {
+            return be;
+          } else {
+            if (maxReal < realCount) {
+              maxReal = realCount;
+              maxBE = be;
+            }
           }
         }
+        return null;
       }
-      return null;
+
+      private void sortExpectations(List<BombExpectation> bombExpectation) {
+        bombExpectation.sort(new Comparator<BombExpectation>() {
+          @Override
+          public int compare(BombExpectation b1, BombExpectation b2) {
+            return Integer.compare(b2.potentialCount, b1.potentialCount);
+          }
+        });
+      }
     }
 
-    private void sortExpectations(List<BombExpectation> bombExpectation) {
-      bombExpectation.sort(new Comparator<BombExpectation>() {
-        @Override
-        public int compare(BombExpectation b1, BombExpectation b2) {
-          return Integer.compare(b2.potentialCount, b1.potentialCount);
-        }
-      });
-    }
-
+  
+  static class Ai {
+    private int leftRounds;
+    private int bombsLeft;
+    List<String> actions = null;
+    
     public void update(int leftRounds, int bombsLeft) {
       this.leftRounds = leftRounds;
       this.bombsLeft = bombsLeft;
+    }
+
+    public String getCommand() {
+      if (actions == null) {
+        Simulation s = new Simulation(leftRounds, bombsLeft);
+        actions = s.simulate(player.grid);
+      }
+      String result = actions.remove(0);
+      return result;
     }
     
   }
