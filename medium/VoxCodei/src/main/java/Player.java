@@ -1,10 +1,13 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
 class Player {
   static Scanner in = new Scanner(System.in);
-
+  static Player player;
+  
+  static int rots[][] = { {1, 0}, {0, 1}, {-1, 0}, {0 ,-1}};
   Grid grid;
   int leftRounds;
   int bombsLeft;
@@ -13,141 +16,6 @@ class Player {
     grid = new Grid(width, height, rows);
   }
 
-  public static class SimulationStep {
-    int turnsLeft;
-
-    enum Command {
-      WAIT, BOMB
-    }
-
-    // initial grid
-    Grid grid;
-
-    // command
-    Command command;
-    int x;
-    int y;
-
-    // result of simulation
-    int bombsLeft;
-    double score = 0;
-    SimulationStep next;
-
-    private int iteration;
-
-    public SimulationStep(Grid grid, boolean canWait, int iteration, int turnsLeft, int bombsCount, Command command, int x, int y) {
-      this.iteration = iteration;
-      this.bombsLeft = bombsCount;
-      this.command = command;
-      this.grid = new Grid(grid);
-      this.turnsLeft = turnsLeft;
-      this.x = x;
-      this.y = y;
-    }
-
-    void simulate() {
-      if (!isFirstStep()) {
-        grid.udpate(); // tick bombs (and explode)
-
-        int aliveBefore = grid.countAliveSentinels();
-        int aliveAfter = aliveBefore;
-        if (command != Command.WAIT ) {
-          if (bombsLeft < 0 ) {
-            score = -1000;
-            return;
-          } else {
-            grid.placeBomb(x, y);
-            bombsLeft--;
-            aliveAfter = grid.countAliveSentinels(); 
-          }
-          if (aliveAfter == aliveBefore) {
-            score = -1000;
-            return;
-          }
-        }
-        if (aliveAfter > 0 && bombsLeft == 0) {
-          score = -1000;
-        } else {
-          score = aliveBefore - aliveAfter;
-        }
-      }
-      if (shouldStopSimulation()) {
-        return;
-      } else {
-        // one step further
-        next = getBestNextSimulationStep();
-        if (next != null) {
-          score = score + 0.999*next.score;
-        }
-      }
-    }
-
-    private SimulationStep getBestNextSimulationStep() {
-      double bestScore = -10000;
-      SimulationStep bestSS = null;
-
-      if (canPlaceABomb()) {
-        for (int newX = 0; newX < grid.width; newX++) {
-          for (int newY = 0; newY < grid.height; newY++) {
-            if (grid.board[newX+grid.width*newY] == Grid.EMPTY && grid.sentinelsTouchedByBomb(newX, newY) > 0) {
-              SimulationStep ss = new SimulationStep(grid, true, iteration-1, turnsLeft - 1, bombsLeft, Command.BOMB, newX, newY);
-              ss.simulate();
-              if (ss.score > bestScore) {
-                bestScore = ss.score;
-                bestSS = ss;
-                this.command = Command.BOMB;
-                this.x = newX;
-                this.y = newY;
-              }
-            }
-          }
-        }
-      }
-      if (true) {
-        // don't forget to try WAIT !
-        SimulationStep ss = new SimulationStep(grid, true, iteration-1, turnsLeft - 1, bombsLeft, Command.WAIT, 0,0);
-        ss.simulate();
-        if (ss.score > bestScore) {
-          bestScore = ss.score;
-          bestSS = ss;
-          this.command = Command.WAIT;
-          this.x = 0;
-          this.y = 0;
-        }
-      }
-      return bestSS;
-    }
-
-    private boolean canPlaceABomb() {
-      return bombsLeft > 0;
-    }
-
-    private boolean isFirstStep() {
-      return x == -1;
-    }
-
-    private boolean shouldStopSimulation() {
-      return turnsLeft < 0 || iteration == 0;
-    }
-  }
-
-  public static class SimulationRoot {
-    // where to place bomb
-    Grid grid;
-    int bombsLeft;
-
-    SimulationStep simulate(Player player) {
-      grid = player.grid;
-      
-      int steps = 3;
-      if (grid.width*grid.height > 25) {
-        steps = 2;
-      }
-      SimulationStep base = new SimulationStep(grid, true, steps, player.leftRounds, player.bombsLeft, SimulationStep.Command.WAIT, -1, -1);
-      base.simulate();
-      return base;
-    }
-  }
 
   static class P {
     public P(int x, int y) {
@@ -158,6 +26,28 @@ class Player {
     int x, y;
   }
 
+  static class SurveillanceNode {
+    public SurveillanceNode(P p) {
+      position = p;
+    }
+    P position;
+    enum Status {
+      ALIVE,
+      WILL_BE_DEAD,
+      DEAD
+    }
+    Status status = Status.ALIVE;
+  }
+  static class Bomb {
+    P position;
+    int tickLeft;
+    
+    Bomb(P p) {
+      position = p;
+      tickLeft = 3;
+    }
+  }
+  
   static class Grid {
     public final static char EMPTY = '.';
     public final static char SURVEILLANCE_NODE = '@';
@@ -167,18 +57,21 @@ class Player {
     private int width;
     private int height;
     int[] board;
-    List<P> surveillanceNodes = new ArrayList<>();
-
+    List<SurveillanceNode> surveillanceNodes = new ArrayList<>();
+    List<Bomb> bombs = new ArrayList<>();
+  
     public Grid(int width, int height, List<String> rows) {
       this.width = width;
       this.height = height;
+      board = new int[width*height];
       init(rows);
     }
 
     public Grid(Grid grid) {
       this.width = grid.width;
       this.height = grid.height;
-      this.board = grid.board.clone();
+      board = new int[width*height];
+      System.arraycopy(grid.board, 0, board, 0, grid.board.length);
     }
 
     public int countSentinelsToBeDestroyed() {
@@ -186,7 +79,13 @@ class Player {
     }
 
     public int countAliveSentinels() {
-      return countCellOfType(Grid.SURVEILLANCE_NODE);
+      int count = 0;
+      for (SurveillanceNode sn : surveillanceNodes) {
+        if (sn.status == SurveillanceNode.Status.ALIVE) {
+          count++;
+        }
+      }
+      return count;
     }
 
     private int countCellOfType(int type) {
@@ -211,7 +110,7 @@ class Player {
             board[x+width*y] = EMPTY;
           } else if (row.charAt(x) == SURVEILLANCE_NODE) {
             board[x+width*y] = row.charAt(x);
-            surveillanceNodes.add(new P(x, y));
+            surveillanceNodes.add(new SurveillanceNode(new P(x, y)));
           } else if (row.charAt(x) == STATIC_NODE) {
             board[x+width*y] = row.charAt(x);
           } else {
@@ -226,8 +125,8 @@ class Player {
       int sentinels = 0;
       for (int rot = 0; rot < 4; rot++) {
         for (int d = 1; d < 4; d++) {
-          int ppx = x + d * (int) Math.cos(rot * Math.PI / 2);
-          int ppy = y + d * (int) Math.sin(rot * Math.PI / 2);
+          int ppx = x + d * rots[rot][0];
+          int ppy = y + d * rots[rot][1];
           if (valueOf(ppx, ppy) == STATIC_NODE) {
             break;
           }
@@ -239,32 +138,70 @@ class Player {
       return sentinels;
     }
     void placeBomb(int x, int y) {
-      setValue(3, x, y);
+      Bomb bomb = new Bomb(new P(x,y));
+      bombs.add(bomb);
+      board[x+width*y] = bomb.tickLeft;
+      transformSurveillanceNodeIntoFutureDeadSurveillanceNode(bomb);
+    }
+
+    private void transformSurveillanceNodeIntoFutureDeadSurveillanceNode(Bomb bomb) {
       for (int rot = 0; rot < 4; rot++) {
         for (int d = 1; d < 4; d++) {
-          int ppx = x + d * (int) Math.cos(rot * Math.PI / 2);
-          int ppy = y + d * (int) Math.sin(rot * Math.PI / 2);
-          if (valueOf(ppx, ppy) == SURVEILLANCE_NODE) {
+          int ppx = bomb.position.x + d * rots[rot][0];
+          int ppy = bomb.position.y + d * rots[rot][1];
+          if (ppx <0 || ppx>=width) break;
+          if (ppy <0 || ppy>=height) break;
+          
+          int value = board[ppx+width*ppy];
+          if (value == STATIC_NODE) break;
+          if (value == SURVEILLANCE_NODE) {
             board[ppx+width*ppy] = EXPLODED_SURVEILLANCE_NODE;
+            getSurveillanceNodeAt(ppx, ppy).status = SurveillanceNode.Status.WILL_BE_DEAD; 
           }
         }
       }
     }
 
+    SurveillanceNode getSurveillanceNodeAt(int x, int y) {
+      for (SurveillanceNode sn : surveillanceNodes) {
+        if (sn.position.x == x && sn.position.y == y) {
+          return sn;
+        }
+      }
+      return null;
+    }
     void udpate() {
-      for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-          int cellValue = board[x+width*y];
-          if (cellValue > 0 && cellValue < 4) {
-            board[x+width*y] = cellValue - 1;
-            if (cellValue-1 == 0) {
-              explode(x, y);
-            }
+      for (Bomb bomb : bombs) {
+        bomb.tickLeft--;
+        board[bomb.position.x+width*bomb.position.y] = bomb.tickLeft;
+      }
+      if (!bombs.isEmpty() && bombs.get(0).tickLeft == 0) {
+        Bomb bomb = bombs.remove(0);
+        boolean potentiallySomething = false;
+        for (SurveillanceNode sn : surveillanceNodes) {
+          if (isIn4x4(bomb.position, sn.position)) {
+            potentiallySomething = true;
           }
+        }
+        for (Bomb checkedBomb : bombs) {
+          if (isIn4x4(checkedBomb.position, bomb.position)) {
+            potentiallySomething = true;
+          }
+        }
+        if (potentiallySomething) {
+          explode(bomb.position.x, bomb.position.y);
         }
       }
     }
 
+    boolean isIn4x4(P p, P target) {
+      if ((Math.abs(p.x-target.x) < 4 && p.y == target.y)
+        || (Math.abs(p.y-target.y) < 4 && p.x == target.x)) {
+        return true;
+      }
+      return false;
+    }
+    
     int valueOf(int x, int y) {
       if (x < 0 || x > width - 1 || y < 0 || y > height - 1) {
         return STATIC_NODE;
@@ -273,13 +210,11 @@ class Player {
     }
 
     void setValue(int value, int x, int y) {
-      if (x < 0 || x > width - 1 || y < 0 || y > height - 1) {
-        return;
-      }
       int oldValue = board[x+width*y];
       board[x+width*y] = value;
 
-      if (oldValue == SURVEILLANCE_NODE) {
+      if (oldValue == EXPLODED_SURVEILLANCE_NODE) {
+        surveillanceNodes.remove(getSurveillanceNodeAt(x, y));
       }
       if (oldValue > 0 && oldValue < 4) {
         explode(x, y);
@@ -297,9 +232,13 @@ class Player {
     void explode(int x, int y) {
       for (int rot = 0; rot < 4; rot++) {
         for (int d = 1; d < 4; d++) {
-          int ppx = x + d * (int) Math.cos(rot * Math.PI / 2);
-          int ppy = y + d * (int) Math.sin(rot * Math.PI / 2);
-          explodeOne(ppx, ppy);
+          int ppx = x + d * rots[rot][0];
+          if (ppx <0 || ppx>=width) break;
+          int ppy = y + d * rots[rot][1];
+          if (ppy <0 || ppy>=height) break;
+
+          if (board[x+width*y] == STATIC_NODE) break;
+          setValue(EMPTY, ppx, ppy);
         }
       }
     }
@@ -332,28 +271,111 @@ class Player {
       String mapRow = in.nextLine();
       rows.add(mapRow);
     }
-    Player player = new Player(width, height, rows);
+    player = new Player(width, height, rows);
 
     player.play();
   }
 
+  static class BombExpectation {
+    public BombExpectation(P p, int count) {
+      pos = p;
+      potentialCount = count;
+    }
+    P pos;
+    int potentialCount;
+    int real;
+  }
+  
+  static class Simulation {
+
+    public void simulate() {
+      
+    }
+  }
+  
+  static class Ai {
+    private int leftRounds;
+    private int bombsLeft;
+
+    public String getCommand() {
+      List<BombExpectation> bombExpectation = new ArrayList<>();
+      int maxCount = 0;
+      P maxP = null;
+      for (int x=0;x<player.grid.width;x++) {
+        for (int y=0;y<player.grid.height;y++) {
+          if (player.grid.board[x+y*player.grid.width] != Grid.EMPTY) {
+            continue;
+          }
+          P p = new P(x,y);
+          int count = 0;
+          for (SurveillanceNode target : player.grid.surveillanceNodes) {
+            if (target.status == SurveillanceNode.Status.ALIVE && player.grid.isIn4x4(p, target.position)) {
+              count++;
+            }
+          }
+          bombExpectation.add(new BombExpectation(p, count));
+        }
+      }
+      sortExpectations(bombExpectation);
+      BombExpectation be = getBestFromExpectations(bombExpectation);
+      
+      if (be != null) {
+        if (bombsLeft == 1 && player.grid.countAliveSentinels() - be.real > 0) {
+          return "WAIT";
+        }
+        player.grid.placeBomb(be.pos.x, be.pos.y);
+        return ""+be.pos.x+" "+be.pos.y;
+      } else {
+        return "WAIT";
+      }
+    }
+
+    private BombExpectation getBestFromExpectations(List<BombExpectation> bombExpectation) {
+      int maxReal = -2;
+      BombExpectation maxBE = null;
+      for (BombExpectation be : bombExpectation) {
+        int realCount = player.grid.sentinelsTouchedByBomb(be.pos.x, be.pos.y);
+        be.real = realCount;
+        if (maxReal > be.potentialCount) {
+          return maxBE;
+        }
+        if (realCount == be.potentialCount) {
+          return be;
+        } else {
+          if (maxReal < realCount) {
+            maxReal = realCount;
+            maxBE = be;
+          }
+        }
+      }
+      return null;
+    }
+
+    private void sortExpectations(List<BombExpectation> bombExpectation) {
+      bombExpectation.sort(new Comparator<BombExpectation>() {
+        @Override
+        public int compare(BombExpectation b1, BombExpectation b2) {
+          return Integer.compare(b2.potentialCount, b1.potentialCount);
+        }
+      });
+    }
+
+    public void update(int leftRounds, int bombsLeft) {
+      this.leftRounds = leftRounds;
+      this.bombsLeft = bombsLeft;
+    }
+    
+  }
   private void play() {
-    SimulationRoot s = new SimulationRoot();
-    SimulationStep currentSS = null;
+    Ai ai = new Ai();
     
     while (true) {
       leftRounds = in.nextInt();
       bombsLeft = in.nextInt();
+      ai.update(leftRounds, bombsLeft);
       
-      currentSS = s.simulate(this);
+      System.out.println(ai.getCommand());
       
-      if (currentSS.command == SimulationStep.Command.WAIT) {
-        System.out.println("WAIT");
-      } else {
-        System.out.println("" + currentSS.x + " " + currentSS.y);
-        grid.placeBomb(currentSS.x, currentSS.y);
-        System.err.println("will destroy "+currentSS.score+" bombs");
-      }
       grid.udpate();
     }
   }

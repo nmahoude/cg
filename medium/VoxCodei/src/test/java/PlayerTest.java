@@ -69,12 +69,6 @@ public class PlayerTest {
     player.bombsLeft = 1;
     player.leftRounds = 1;
     
-    Player.SimulationRoot s = new Player.SimulationRoot();
-    Player.SimulationStep ss = s.simulate(player);
-    
-    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
-    assertThat(ss.x, is(0));
-    assertThat(ss.y, is(1));
   }
   
   @Test
@@ -86,12 +80,6 @@ public class PlayerTest {
     player.bombsLeft = 1;
     player.leftRounds = 15;
     
-    Player.SimulationRoot s = new Player.SimulationRoot();
-    Player.SimulationStep ss = s.simulate(player);
-    
-    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
-    assertThat(ss.x, is(0));
-    assertThat(ss.y, is(0));
   }
   
   @Test
@@ -103,12 +91,6 @@ public class PlayerTest {
     player.bombsLeft = 1;
     player.leftRounds = 4;
     
-    Player.SimulationRoot s = new Player.SimulationRoot();
-    Player.SimulationStep ss = s.simulate(player);
-    
-    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
-    assertThat(ss.x, is(1));
-    assertThat(ss.y, is(1));
   }
   
   @Test
@@ -120,12 +102,6 @@ public class PlayerTest {
     player.bombsLeft = 3;
     player.leftRounds = 15;
     
-    Player.SimulationRoot s = new Player.SimulationRoot();
-    Player.SimulationStep ss = s.simulate(player);
-    
-    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
-    assertThat(ss.x, is(1));
-    assertThat(ss.y, is(1));
   }
   
   @Test
@@ -144,10 +120,6 @@ public class PlayerTest {
     player.bombsLeft = 9;
     player.leftRounds = 14;
     
-    Player.SimulationRoot s = new Player.SimulationRoot();
-    Player.SimulationStep ss = s.simulate(player);
-    
-    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
   }
   @Test
   public void undestrucctible() {
@@ -165,12 +137,6 @@ public class PlayerTest {
     player.bombsLeft = 4;
     player.leftRounds = 15;
     
-    Player.SimulationRoot s = new Player.SimulationRoot();
-    Player.SimulationStep ss = s.simulate(player);
-    
-    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
-    assertThat(ss.x, is(2));
-    assertThat(ss.y, is(3));
   }
   
   @Test
@@ -185,10 +151,6 @@ public class PlayerTest {
     player.bombsLeft = 1;
     player.leftRounds = 15;
     
-    Player.SimulationRoot s = new Player.SimulationRoot();
-    Player.SimulationStep ss = s.simulate(player);
-    
-    assertThat(ss.command, is(Player.SimulationStep.Command.WAIT));
   }
   
   @Test
@@ -203,14 +165,5 @@ public class PlayerTest {
     player.bombsLeft = 2;
     player.leftRounds = 15;
     
-    Player.SimulationRoot s = new Player.SimulationRoot();
-    Player.SimulationStep ss = s.simulate(player);
-    
-    assertThat(ss.command, is(Player.SimulationStep.Command.BOMB));
-    assertThat(ss.x, is(3));
-    assertThat(ss.y, is(2));
-
-    assertThat(ss.next.command, is(Player.SimulationStep.Command.WAIT));
-    assertThat(ss.next.next.command, is(Player.SimulationStep.Command.WAIT));
   }
 }
