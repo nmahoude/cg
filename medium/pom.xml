@@ -9,5 +9,6 @@
   <packaging>pom</packaging>
   <modules>
     <module>TheLastCrusade</module>
+    <module>MarsLander2</module>
   </modules>
 </project>
