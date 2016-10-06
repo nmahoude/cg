@@ -6,6 +6,22 @@
     <groupId>nmahoude.codingame</groupId>
     <artifactId>all</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../..</relativePath>
   </parent>
+    <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
   
 </project>

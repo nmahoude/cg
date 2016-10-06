@@ -2,17 +2,9 @@ package trigonometry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.closeTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-
-import trigonometry.Trigonometry.Circle;
-import trigonometry.Trigonometry.FrictionEngine;
-import trigonometry.Trigonometry.Point;
-import trigonometry.Trigonometry.Trajectory;
-import trigonometry.Trigonometry.Vector;
-
-
 
 public class TrigonometryTest {
 
@@ -56,8 +48,8 @@ public class TrigonometryTest {
     Vector v = new Vector(1,0);
     Vector rotateV = v.rotate(Math.PI/2);
 
-    assertThat(rotateV.vx, closeTo(0, Trigonometry.PRECISION));
-    assertThat(rotateV.vy, closeTo(1, Trigonometry.PRECISION));
+    assertThat(rotateV.vx, closeTo(0, Circle.PRECISION));
+    assertThat(rotateV.vy, closeTo(1, Circle.PRECISION));
   }
   
   @Test
@@ -65,8 +57,8 @@ public class TrigonometryTest {
     Vector v = new Vector(1,0);
     Vector rotateV = v.rotate(-Math.PI/2);
 
-    assertThat(rotateV.vx, closeTo(0, Trigonometry.PRECISION));
-    assertThat(rotateV.vy, closeTo(-1, Trigonometry.PRECISION));
+    assertThat(rotateV.vx, closeTo(0, Circle.PRECISION));
+    assertThat(rotateV.vy, closeTo(-1, Circle.PRECISION));
   }
 
   @Test
@@ -74,8 +66,8 @@ public class TrigonometryTest {
     Vector v = new Vector(1,0);
     Vector rotateV = v.rotate(Math.PI);
 
-    assertThat(rotateV.vx, closeTo(-1, Trigonometry.PRECISION));
-    assertThat(rotateV.vy, closeTo(0, Trigonometry.PRECISION));
+    assertThat(rotateV.vx, closeTo(-1, Circle.PRECISION));
+    assertThat(rotateV.vy, closeTo(0, Circle.PRECISION));
   }
 
   @Test
@@ -110,7 +102,7 @@ public class TrigonometryTest {
     Point p1 = new Point(10,10);
     Point p2 = new Point(20,20);
 
-    assertThat(p1.distTo(p2), closeTo(14.142, Trigonometry.PRECISION));
+    assertThat(p1.distTo(p2), closeTo(14.142, Circle.PRECISION));
   }
 
   @Test
@@ -198,31 +190,6 @@ public class TrigonometryTest {
     Vector v2 = new Vector(5,5);
     
     assertThat(v1.angle(v2), closeTo(Math.PI/4, 0.001));
-  }
-  
-  @Test
-  public void trajectory_simpleCase() throws Exception {
-    Point p1 = new Point(0,0);
-    Vector s1 = new Vector(10,0);
-
-    Trajectory trajectory = new Trajectory(p1, s1);
-    trajectory.simulate();
-    
-    assertThat(trajectory.position, is(new Point(10,0)));
-    assertThat(trajectory.speed, is(s1));
-  }
-
-  @Test
-  public void trajectory_frictionCase() throws Exception {
-    Point p1 = new Point(0,0);
-    Vector s1 = new Vector(10,0);
-
-    Trajectory trajectory = new Trajectory(p1, s1);
-    trajectory.engine = new FrictionEngine(0.85);
-    trajectory.simulate();
-    
-    assertThat(trajectory.position.equals(new Point(8.5,0)), is(true));
-    assertThat(trajectory.speed.equals(s1.dot(0.85)), is(true));
   }
   
   @Test

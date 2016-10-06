@@ -4,22 +4,16 @@
   <artifactId>all</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
-  
+
   <modules>
     <module>libraries/trigonometry</module>
-    <module>codersStrikeBack</module>
-    <module>SkynetV1</module>
-    <module>NetworkCabling</module>
-    <module>SmashTheCode</module>
-    <module>Winamax</module>
-    <module>VoxCodei</module>
-    <module>Teads</module>
+    <module>easy</module>
     <module>weekly</module>
     <module>medium</module>
     <module>hard</module>
     <module>multiplayers</module>
   </modules>
-  
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -35,9 +29,27 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
-    <build>
+
+  <build>
+    <pluginManagement>
       <plugins>
+        <plugin>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.0.1</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>jar-no-fork</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>

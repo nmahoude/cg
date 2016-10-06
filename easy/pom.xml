@@ -8,7 +8,6 @@
   <artifactId>easy</artifactId>
   <packaging>pom</packaging>
   <modules>
-    <module>TheLastCrusade</module>
     <module>MarsLander1</module>
   </modules>
 </project>

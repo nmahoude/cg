@@ -36,7 +36,7 @@ public class SolutionTest {
     
     new Solution.ElevatorStep(Solution.k, 0).simulate();
     
-    assertThat(Solution.bestStep.step, is(1997));
+    assertThat(Solution.bestStep.step, is(4));
   }
   
 }
