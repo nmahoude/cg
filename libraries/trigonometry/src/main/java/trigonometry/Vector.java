@@ -11,26 +11,26 @@ public class Vector {
   public String toString() {
     return "V("+vx+","+vy+")";
   }
-  Vector normalize() {
+  public Vector normalize() {
     return new Vector(vx / length(), vy / length());
   }
-  Vector rotate(double angle) {
+  public Vector rotate(double angle) {
     return new Vector(vx*Math.cos(angle) - vy*Math.sin(angle),
         vx*Math.sin(angle) + vy*Math.cos(angle));
   }
-  Vector add(Vector v) {
+  public Vector add(Vector v) {
     return new Vector(vx+v.vx, vy+v.vy);
   }
-  Vector dot(double d) {
+  public Vector dot(double d) {
     return new Vector(d*vx, d*vy);
   }
-  double dot(Vector v) {
+  public double dot(Vector v) {
     return vx*v.vx + vy*v.vy;
   }
   public double length() {
     return Math.sqrt(vx*vx + vy*vy);
   }
-  double angle(Vector v) {
+  public double angle(Vector v) {
     return Math.acos(this.dot(v) / (this.length() * v.length()));
   }
   @Override

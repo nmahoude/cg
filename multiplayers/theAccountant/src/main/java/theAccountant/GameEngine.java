@@ -88,6 +88,7 @@ public class GameEngine {
         return e;
       }
     }
+    System.err.println("Enemy not found : "+id);
     return null;
   }
   int getScore() {

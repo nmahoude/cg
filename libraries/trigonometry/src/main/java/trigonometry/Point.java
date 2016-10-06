@@ -14,26 +14,26 @@ public class Point {
     return "P("+x+","+y+")";
   }
   
-  Point add(Point addedPoint) {
+  public Point add(Point addedPoint) {
     return new Point(x+addedPoint.x, y+addedPoint.y);
   }
-  Point add(Vector vec) {
+  public Point add(Vector vec) {
     return new Point(x+vec.vx, y+vec.vy);
   }
   public double distTo(Point p) {
     return Math.sqrt( (p.x-x)*(p.x-x) + (p.y-y)*(p.y-y) );
   }
 
-  double distTo(Point p, Vector v) {
+  public double distTo(Point p, Vector v) {
     Point p2 = p.add(v);
     return distTo(p, p2);
   }
 
-  double distTo(Point p1, Point p2) {
+  public double distTo(Point p1, Point p2) {
     return Math.abs( (p2.y-p1.y)*x - (p2.x-p1.x)*y + p2.x*p1.y - p2.y*p1.x) / 
       Math.sqrt((p2.y-p1.y)*(p2.y-p1.y) + (p2.x-p1.x)*(p2.x-p1.x));
   }
-  Vector sub(Point p2) {
+  public Vector sub(Point p2) {
     return new Vector(x-p2.x, y-p2.y);
   }
   
