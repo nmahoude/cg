@@ -3,6 +3,8 @@ package theAccountant;
 import java.util.ArrayList;
 import java.util.List;
 
+import trigonometry.Point;
+
 
 public class Ai {
   Command command ;
@@ -19,7 +21,13 @@ public class Ai {
     if (commands == null || commands.isEmpty()) {
       System.err.println("Finding new commands");
       Enemy target = chooseOneTarget(engine.enemies);
-      commands = new StayAndShoot(engine).getCommands(target);
+      if (target == null) {
+        System.err.println("Best target is null, escape move");
+        commands.clear();
+        commands.add(new Move(new Point(0,0)));
+      } else {
+        commands = new StayAndShoot(engine).getCommands(target);
+      }
       System.err.println("Commands: "+commands);
     }
     command = commands.remove(0);
