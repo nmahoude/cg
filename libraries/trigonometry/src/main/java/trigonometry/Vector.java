@@ -59,5 +59,8 @@ public class Vector {
       return false;
     return true;
   }
+  public Vector sub(Vector v) {
+    return new Vector(vx-v.vx, vy-v.vy);
+  }
 
 }

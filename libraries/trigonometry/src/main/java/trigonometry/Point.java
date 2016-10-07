@@ -67,4 +67,13 @@ public class Point {
   public double squareDistance(Point p) {
     return (x-p.x)*(x-p.x)+(y-p.y)*(y-p.y);
   }
+  public boolean isAbove(Point p0, Point p1) {
+    if (y < p0.y && y < p1.y) {
+      return false;
+    }
+    Vector n= this.sub(p0);
+    Vector v = p1.sub(p0);
+    Vector result = n.sub(v.dot(v.dot(n))); 
+    return result.vy > 0;
+  }
 }

@@ -1,16 +1,29 @@
+import java.util.List;
 import java.util.Scanner;
 
-class Player {
+import trigonometry.Point;
+import trigonometry.Vector;
 
+public class Player {
+  static Land land = new Land();
+  
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
-    int surfaceN = in.nextInt(); // the number of points used to draw the
+    Ship ship = new Ship();
                                  // surface of Mars.
+    int surfaceN = in.nextInt(); // the number of points used to draw the
+    land.points = new Point[surfaceN];
+    int prevX = -1;
+    int prevY = -1;
     for (int i = 0; i < surfaceN; i++) {
-      int landX = in.nextInt(); // X coordinate of a surface point. (0 to 6999)
-      int landY = in.nextInt(); // Y coordinate of a surface point. By linking
-                                // all the points together in a sequential
-                                // fashion, you form the surface of Mars.
+      int landX = in.nextInt(); 
+      int landY = in.nextInt();
+      land.points[i] = new Point(landX, landY);
+      if (prevY == landY) {
+        ship.setTarget(prevX, landX, prevY);
+      }
+      prevY = landY;
+      prevX = landX;
     }
 
     // game loop
@@ -25,224 +38,179 @@ class Player {
       int rotate = in.nextInt(); // the rotation angle in degrees (-90 to 90).
       int power = in.nextInt(); // the thrust power (0 to 4).
 
-      System.out.println("0 0");
+      ship.position = new Point(X, Y);
+      ship.speed = new Vector(hSpeed, vSpeed);
+      
+      if (ship.isOverTarget()) {
+        System.err.println("Over Target: "+X+","+Y);
+        ship.slowToLand();
+      } else {
+        // need to rotate to go in correct direction
+        ship.goToTarget();
+      }
     }
+  }
+
+  private static int getDistanceFromTraj(List<Point> traj) {
+    Point lastPoint = null;
+    int distance = 0;
+    for (Point p : traj) {
+      if (lastPoint == null) {
+        lastPoint = p;
+        continue;
+      }
+      distance+=p.sub(lastPoint).length();
+      lastPoint = p;
+    }
+    return distance;
   }
 
   static class Ship {
+    private static final int MAX_HORIZONTAL_SPEED = 20;
+    private static final double GRAVITY = 3.711;
     static Vector gravity = new Vector(0, -3.711);
-    int speed;
+    Vector speed;
+    Vector rotation;
     Point position;
-    Vector rotation = new Vector(0,1); // original direction
+    private int prevX;
+    private int landX;
+    private int prevY;
     
     void update(int thrust) {
-      position = position.add(rotation.dot(thrust).add(gravity));
-    }
-    
-  }
-  
-  /**
-   *  Trigonometry _ V 1.0
-   */
-  static final double PRECISION = 0.001;
-  static class Point {
-    final double x,y;
-
-    public Point(double x, double y) {
-      super();
-      this.x = x;
-      this.y = y;
-    }
-    @Override
-    public String toString() {
-      return "P("+x+","+y+")";
-    }
-    
-    Point add(Point addedPoint) {
-      return new Point(x+addedPoint.x, y+addedPoint.y);
-    }
-    Point add(Vector vec) {
-      return new Point(x+vec.vx, y+vec.vy);
-    }
-    double distTo(Point p) {
-      return Math.sqrt( (p.x-x)*(p.x-x) + (p.y-y)*(p.y-y) );
+      position = position.add(speed.add(rotation.dot(thrust).add(gravity)));
     }
 
-    double distTo(Point p, Vector v) {
-      Point p2 = p.add(v);
-      return distTo(p, p2);
+    public void slowToLand() {
+      int rot = 0;
+      if (Math.abs(speed.vx) > MAX_HORIZONTAL_SPEED) {
+        rot = getAngleToSlow();
+        System.out.println(""+rot+" 4");
+      } else if (speed.vx != 0) {
+        rot = getAngleToSlow();
+        System.out.println(""+rot+" 4");
+      } else {
+        if (Math.abs(speed.vy) > 39) {
+          System.out.println("0 4");
+        } else if (position.y > prevY) {
+          System.out.println("0 2");
+        } else {
+          System.out.println("0 4");
+        }
+      }
     }
 
-    double distTo(Point p1, Point p2) {
-      return Math.abs( (p2.y-p1.y)*x - (p2.x-p1.x)*y + p2.x*p1.y - p2.y*p1.x) / 
-        Math.sqrt((p2.y-p1.y)*(p2.y-p1.y) + (p2.x-p1.x)*(p2.x-p1.x));
-    }
-    Vector sub(Point p2) {
-      return new Vector(x-p2.x, y-p2.y);
-    }
-    
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      long temp;
-      temp = Double.doubleToLongBits(x);
-      result = prime * result + (int) (temp ^ (temp >>> 32));
-      temp = Double.doubleToLongBits(y);
-      result = prime * result + (int) (temp ^ (temp >>> 32));
-      return result;
+    private int getAngleToSlow() {
+      double s = speed.length();
+      double rot = Math.toDegrees(speed.vx  / s);
+      if (Math.abs(rot) < 5) rot = 0;
+      return (int)rot;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj)
-        return true;
-      if (obj == null)
-        return false;
-      if (getClass() != obj.getClass())
-        return false;
-      Point other = (Point) obj;
-      if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
-        return false;
-      if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
-        return false;
-      return true;
+    public void goToTarget() {
+      int highest = getNextHigh();
+      System.err.println("Next hight is "+highest);
+      if (highest+100 > position.y) {
+        System.err.println("oops under");
+        if (Math.abs(speed.vx) > 40 || Math.abs(speed.vy) > 40) {
+          System.err.println("need to go up");
+          int rot = getAngleToTargetWithUp();
+          System.out.println(""+rot+" 4");
+        } else {
+          System.err.println("up up up");
+          System.out.println("0 4");
+        }
+      } else {
+        if (Math.abs(speed.vx) > 40 || Math.abs(speed.vy) > 40) {
+          int rot = getAngleToSlow();
+          System.out.println(""+rot+" 4");
+        } else if (position.y < prevY) {
+          System.out.println("0 4");
+        } else {
+          System.out.println(""+getAngleToTarget()+" 4");
+        }
+      }
     }
-    
-  }
-  
-  static class Vector {
-    final double vx, vy;
-    public Vector(double vx, double vy) {
-      this.vx = vx;
-      this.vy = vy;
-    }
-    @Override
-    public String toString() {
-      return "V("+vx+","+vy+")";
-    }
-    Vector normalize() {
-      return new Vector(vx / length(), vy / length());
-    }
-    Vector rotate(double angle) {
-      return new Vector(vx*Math.cos(angle) - vy*Math.sin(angle),
-          vx*Math.sin(angle) + vy*Math.cos(angle));
-    }
-    Vector add(Vector v) {
-      return new Vector(vx+v.vx, vy+v.vy);
-    }
-    Vector dot(double d) {
-      return new Vector(d*vx, d*vy);
-    }
-    double dot(Vector v) {
-      return vx*v.vx + vy*v.vy;
-    }
-    double length() {
-      return Math.sqrt(vx*vx + vy*vy);
-    }
-    double angle(Vector v) {
-      return Math.acos(this.dot(v) / (this.length() * v.length()));
-    }
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      long temp;
-      temp = Double.doubleToLongBits(vx);
-      result = prime * result + (int) (temp ^ (temp >>> 32));
-      temp = Double.doubleToLongBits(vy);
-      result = prime * result + (int) (temp ^ (temp >>> 32));
-      return result;
-    }
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj)
-        return true;
-      if (obj == null)
-        return false;
-      if (getClass() != obj.getClass())
-        return false;
-      Vector other = (Vector) obj;
-      if (Double.doubleToLongBits(vx) != Double.doubleToLongBits(other.vx))
-        return false;
-      if (Double.doubleToLongBits(vy) != Double.doubleToLongBits(other.vy))
-        return false;
-      return true;
-    }
-  }
-  
-  static class Circle {
-    final Point center;
-    final double radius;
-    
-    Circle(Point center, double radius) {
-      this.center = center;
-      this.radius = radius;
-    }
-    
-    boolean isIn(Point p) {
-      return center.distTo(p) <= radius;
-    }
-    boolean isOn(Point p) {
-      return Math.abs(center.distTo(p) - radius) < PRECISION;
-    }
-  }
 
-  static class Engine {
-    Vector getNewSpeed(Trajectory trajectory) {
-      return trajectory.speed;
+    public int distToTarget() {
+      return (int)Math.abs(position.x - (prevX+landX)/2);
     }
-    Point getNewPosition(Trajectory trajectory) {
-      return trajectory.position.add(trajectory.speed);
-    }
-  }
 
-  static class FrictionEngine extends Engine {
-    private double frictionCoeff;
-    public FrictionEngine(double frictionCoeff) {
-      this.frictionCoeff = frictionCoeff;
+    private int getNextHigh() {
+      if (position.x < prevX) {
+        int nextSegment1Index = -1;
+        //1. find the current segment of ship
+        for (int i=0;i<land.points.length;i++) {
+          if (land.points[i].x > position.x) {
+            nextSegment1Index = i;
+            break;
+          }
+        }
+        //System.err.println("nextSegment : "+nextSegment1Index + "with high: "+land.points[nextSegment1Index].y);
+        // 2. check if there is higher ground from here to landing pad
+        int highest = prevY;
+        for (int i=nextSegment1Index;i<land.points.length;i++) {
+          if (land.points[i].x > prevX) {
+            break;
+          }
+          if (land.points[i].y > highest) {
+            highest = (int) land.points[i].y;
+          }
+        }
+        return highest;
+      } else {
+        int nextSegment1Index = -1;
+        //1. find the current segment of ship
+        for (int i=land.points.length-1;i>=0;i--) {
+          if (land.points[i].x < position.x) {
+            nextSegment1Index = i;
+            break;
+          }
+        }
+        // 2. check if there is higher ground from here to landing pad
+        int highest = prevY;
+        for (int i=nextSegment1Index;i>=0;i--) {
+          if (land.points[i].x > prevX) {
+            break;
+          }
+          if (land.points[i].y > position.y && land.points[i].y > highest) {
+            highest = (int) land.points[i].y;
+          }
+        }
+        return highest;
+      }
     }
-    @Override
-    Vector getNewSpeed(Trajectory trajectory) {
-      return trajectory.speed.dot(frictionCoeff);
+
+    public boolean isOverTarget() {
+      return position.x > prevX && position.x < landX;
     }
-  }
-  static class Trajectory {
-    Vector speed;
-    Point position;
-    Engine engine = new Engine();
+
+    public int getAngleToTarget() {
+      int angle = (int) Math.toDegrees(Math.acos(GRAVITY / 4.0));
+      if (position.x < prevX)
+          return -angle;
+      else if (landX < position.x)
+          return angle;
+      else
+          return 0;
+    }
+    public int getAngleToTargetWithUp() {
+      int angle = (int) Math.toDegrees(Math.acos(GRAVITY / 4.0));
+      angle /=2;
+      if (position.x < prevX)
+          return -angle;
+      else if (landX < position.x)
+          return angle;
+      else
+          return 0;
+    }
     
-    public Trajectory(Point position, Vector speed) {
-      this.position = position;
-      this.speed = speed;
-    }
-    void  simulate() {
-      simulate(1);
-    }
-    void simulate(int step) {
-      this.speed = engine.getNewSpeed(this);
-      this.position = engine.getNewPosition(this);
-    }
-  }
-  
-  static class BezierCurve {
-    Point p0, p1, p2;
-    
-    void calculateToPassThrough(Point p) {
-      // simple case : t = 0.5
-      p1 = new Point(
-          2*p.x - p0.x/2.0 - p2.x/2.0,
-          2*p.y - p0.y/2.0 - p2.y/2.0
-          );
-    }
-    Point f(double t) {
-      double coef1 = (1-t)*(1-t);
-      double coef2 = 2*t*(1-t);
-      double coef3 = t*t;
-      return new Point(
-          coef1 * p0.x + coef2*p1.x + coef3*p2.x,
-          coef1 * p0.y + coef2*p1.y + coef3*p2.y
-          );
-    }
+    public void setTarget(int prevX, int landX, int prevY) {
+      this.prevX = prevX;
+      this.landX = landX;
+      this.prevY = prevY;
+      
+      System.err.println("Target landing is between "+prevX+" and "+landX+" at alltitude "+prevY);
+      
+    } 
   }
 }
