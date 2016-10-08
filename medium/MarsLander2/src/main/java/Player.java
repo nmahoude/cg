@@ -109,7 +109,7 @@ public class Player {
     public void goToTarget() {
       int highest = getNextHigh();
       System.err.println("Next hight is "+highest);
-      if (highest+100 > position.y) {
+      if (highest+350 > position.y) {
         System.err.println("oops under");
         if (Math.abs(speed.vx) > 40 || Math.abs(speed.vy) > 40) {
           System.err.println("need to go up");
@@ -195,7 +195,7 @@ public class Player {
     }
     public int getAngleToTargetWithUp() {
       int angle = (int) Math.toDegrees(Math.acos(GRAVITY / 4.0));
-      angle /=2;
+      angle /=8;
       if (position.x < prevX)
           return -angle;
       else if (landX < position.x)
