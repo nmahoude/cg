@@ -9,6 +9,32 @@ import org.junit.Test;
 public class BoardTest {
 
   @Test
+  public void checkPreCalculatedHeights() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "....4.",
+        "....4.",
+        "....4.",
+        "....4.",
+        "....4.",
+        "....4.",
+        "....4.",
+        "....4.",
+        "....4.",
+        "..3.4.",
+        ".23.4.",
+        "123145");
+    
+    assertThat(board.heights[0], is(1));
+    assertThat(board.heights[1], is(2));
+    assertThat(board.heights[2], is(3));
+    assertThat(board.heights[3], is(1));
+    assertThat(board.heights[4], is(12));
+    assertThat(board.heights[5], is(1));
+  }
+  
+  
+  @Test
   public void place2RedBlocks() throws Exception {
     Board board =new Board();
     prepareBoard(board,
@@ -27,9 +53,40 @@ public class BoardTest {
     
     for (int i=0;i<1_000_000;i++) {
       board.putBlocks(1, 0, 0, 3);
+      //board.destroyBlocks();
     }
   }
   
+  @Test
+  public void updateFullBoardWithNonCombo() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "111222",
+        "111222",
+        "777777",
+        "123456",
+        "123456",
+        "123456",
+        "777777",
+        "111222",
+        "333444",
+        "111222",
+        "333444",
+        "111222");
+    
+    for (int i=0;i<1_000;i++) {
+      for (int x=0;x<3;x++) {
+        board.cells[x][11] = 1;
+        board.cells[x][10] = 1;
+      }
+      for (int x=3;x<6;x++) {
+        board.cells[x][11] = 2;
+        board.cells[x][10] = 2;
+      }
+      board.destroyBlocks();
+    }
+  }
+
   @Test
   public void updateBoard() throws Exception {
     Board board =new Board();
@@ -144,7 +201,9 @@ public class BoardTest {
     assertThat(board.cells[3][2], is(0));
     assertThat(board.cells[5][1], is(0));
   }
-  private void prepareBoard(Board board, String... rows) {
+  static void prepareBoard(Board board, String... rows) {
+    board.prepare();
+    
     int index = 0;
     for (String row : rows) {
       board.updateRow(12-++index, row);

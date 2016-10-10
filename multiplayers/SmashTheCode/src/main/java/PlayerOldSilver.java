@@ -3,7 +3,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-class Player {
+public class PlayerOldSilver {
   private static final int MAX_ITERATIONS = 3;
   private static Scanner in;
   
@@ -164,7 +164,7 @@ class Player {
 
   public static class StepSimulation {
     boolean successful = false;
-    Player.Board board;
+    PlayerOldSilver.Board board;
     Block[] blocks;
     int step;
     int maxIterations;
@@ -177,7 +177,7 @@ class Player {
     double score; // only output is a score
     public StepSimulation bestSS;
     
-    public StepSimulation(Player.Board board, Block[] blocks, int step, int maxIterations, int column, int rotation) {
+    public StepSimulation(PlayerOldSilver.Board board, Block[] blocks, int step, int maxIterations, int column, int rotation) {
       this.board = board;
       this.blocks = blocks;
       this.step = step;
@@ -687,7 +687,7 @@ class Player {
 
   public static void main(String args[]) {
     in = new Scanner(System.in);
-    new Player().play();
+    new PlayerOldSilver().play();
   }
 
   int col = 0;

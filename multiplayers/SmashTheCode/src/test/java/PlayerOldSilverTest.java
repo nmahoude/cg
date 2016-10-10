@@ -9,16 +9,17 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class PlayerTest {
+@Ignore
+public class PlayerOldSilverTest {
   private static final boolean debug_performance = true;
-  Player player = new Player();
-  private Player.SimulationWeight weights;
+  PlayerOldSilver player = new PlayerOldSilver();
+  private PlayerOldSilver.SimulationWeight weights;
 
   @Before
   public void setup() {
-    player = new Player();
+    player = new PlayerOldSilver();
     
-    weights = new Player.SimulationWeight(
+    weights = new PlayerOldSilver.SimulationWeight(
         1,
         -1,
         -1,
@@ -27,7 +28,7 @@ public class PlayerTest {
         );
   }
 
-  private void prepareBoard(Player.Board board, String... rows) {
+  private void prepareBoard(PlayerOldSilver.Board board, String... rows) {
     int index = 0;
     for (String row : rows) {
       board.updateRow(index++, row);
@@ -37,20 +38,20 @@ public class PlayerTest {
 
   @Test
   public void updateScore_370() {
-    Player.updateOponentScore(370);
+    PlayerOldSilver.updateOponentScore(370);
     
-    assertThat(Player.currentThreatSkulls, is(5));
+    assertThat(PlayerOldSilver.currentThreatSkulls, is(5));
   }
   
   @Test
   public void put2Color_rotation0() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     board.updateRow(0, "......");
     board.updateRow(1, "......");
     board.updateRow(2, "......");
     board.updateRow(3, "......");
 
-    board.placeBlock(new Player.Block(1, 4), 0, 0);
+    board.placeBlock(new PlayerOldSilver.Block(1, 4), 0, 0);
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
     assertThat(board.row(2), is("......"));
@@ -59,13 +60,13 @@ public class PlayerTest {
 
   @Test
   public void put2Color_rotation1() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     board.updateRow(0, "......");
     board.updateRow(1, "......");
     board.updateRow(2, "......");
     board.updateRow(3, "......");
 
-    board.placeBlock(new Player.Block(1, 4), 0, 1);
+    board.placeBlock(new PlayerOldSilver.Block(1, 4), 0, 1);
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
     assertThat(board.row(2), is("4....."));
@@ -74,13 +75,13 @@ public class PlayerTest {
 
   @Test
   public void put2Color_rotation2() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     board.updateRow(0, "......");
     board.updateRow(1, "......");
     board.updateRow(2, "......");
     board.updateRow(3, "......");
 
-    board.placeBlock(new Player.Block(1, 4), 1, 2);
+    board.placeBlock(new PlayerOldSilver.Block(1, 4), 1, 2);
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
     assertThat(board.row(2), is("......"));
@@ -89,13 +90,13 @@ public class PlayerTest {
 
   @Test
   public void put2Color_rotation3() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     board.updateRow(0, "......");
     board.updateRow(1, "......");
     board.updateRow(2, "......");
     board.updateRow(3, "......");
 
-    board.placeBlock(new Player.Block(1, 4), 0, 3);
+    board.placeBlock(new PlayerOldSilver.Block(1, 4), 0, 3);
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
     assertThat(board.row(2), is("1....."));
@@ -104,7 +105,7 @@ public class PlayerTest {
 
   @Test
   public void getFuturePosWhenEmpty() throws Exception {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     board.updateRow(0, ".43333");
     board.updateRow(1, ".43333");
     board.updateRow(2, ".33333");
@@ -116,7 +117,7 @@ public class PlayerTest {
 
   @Test
   public void getFuturePosWhenNotEmpty() throws Exception {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     board.updateRow(0, ".43333");
     board.updateRow(1, ".43333");
     board.updateRow(2, "133333");
@@ -128,7 +129,7 @@ public class PlayerTest {
 
   @Test
   public void countNeighbours_square() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         "......",
@@ -141,7 +142,7 @@ public class PlayerTest {
 
   @Test
   public void countNeighbours_randomSquare() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         "...44.",
@@ -155,7 +156,7 @@ public class PlayerTest {
 
   @Test
   public void countNeighbours_rectangle() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         ".4444.",
@@ -168,7 +169,7 @@ public class PlayerTest {
 
   @Test
   public void countNeighbours_convulated() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         ".4..44",
         ".44.4.",
@@ -181,7 +182,7 @@ public class PlayerTest {
 
   @Test
   public void countNeighbours_full() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "444444",
         "444444",
@@ -194,13 +195,13 @@ public class PlayerTest {
 
   @Test
   public void destroy_simpleLineH() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         "......",
         "......",
         "4444..");
-    board.destroyGroups(Arrays.asList(new Player.P(0,0)));
+    board.destroyGroups(Arrays.asList(new PlayerOldSilver.P(0,0)));
 
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
@@ -210,14 +211,14 @@ public class PlayerTest {
 
   @Test
   public void destroy_simpleLineV() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "4.....",
         "4.....",
         "4.....",
         "4.....");
 
-    board.destroyGroups(Arrays.asList(new Player.P(0,0)));
+    board.destroyGroups(Arrays.asList(new PlayerOldSilver.P(0,0)));
 
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
@@ -227,14 +228,14 @@ public class PlayerTest {
 
   @Test
   public void destroy_square() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         ".44...",
         ".44...",
         "......");
 
-    board.destroyGroups(Arrays.asList(new Player.P(1,1)));
+    board.destroyGroups(Arrays.asList(new PlayerOldSilver.P(1,1)));
 
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
@@ -244,7 +245,7 @@ public class PlayerTest {
 
   @Test
   public void destroyFirst_DontDestroyNotPlacedBlocks() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         ".44...",
@@ -256,7 +257,7 @@ public class PlayerTest {
     board.placedBlockX2 = 0;
     board.placedBlockY2 = 1;
     
-    board.destroyGroups(Arrays.asList(new Player.P(0,0)));
+    board.destroyGroups(Arrays.asList(new PlayerOldSilver.P(0,0)));
 
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is(".44..."));
@@ -266,7 +267,7 @@ public class PlayerTest {
   
   @Test
   public void destroy_square_withSkulls() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         "......",
@@ -282,82 +283,82 @@ public class PlayerTest {
 
   @Test
   public void destroy_emptyBoard() throws Exception {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         "......",
         "......",
         "......");
 
-    board.destroyGroups(Arrays.asList(new Player.P(0,0)));
+    board.destroyGroups(Arrays.asList(new PlayerOldSilver.P(0,0)));
 
     assertThat(board.getPoints(), is(0));
   }
 
   @Test
   public void destroy_fullBoardWithoutMatch() throws Exception {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "133113",
         "134513",
         "124523",
         "224522");
 
-    board.destroyGroups(Arrays.asList(new Player.P(0,0)));
+    board.destroyGroups(Arrays.asList(new PlayerOldSilver.P(0,0)));
 
     assertThat(board.getPoints(), is(0));
   }
 
   @Test
   public void destroy_squareGive40Points() throws Exception {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         "..33..",
         "..33..",
         "......");
 
-    board.destroyGroups(Arrays.asList(new Player.P(2,2)));
+    board.destroyGroups(Arrays.asList(new PlayerOldSilver.P(2,2)));
 
     assertThat(board.getPoints(), is(40));
   }
 
   @Test
   public void destroy_6x2Give40Points() throws Exception {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         "..333.",
         "..333.",
         "......");
 
-    board.destroyGroups(Arrays.asList(new Player.P(2,1)));
+    board.destroyGroups(Arrays.asList(new PlayerOldSilver.P(2,1)));
     assertThat(board.getPoints(), is(120));
   }
 
   @Test
   public void destroy_BigBlockLimitedToGB8() throws Exception {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         "333333",
         "333333",
         "......");
 
-    board.destroyGroups(Arrays.asList(new Player.P(0,1)));
+    board.destroyGroups(Arrays.asList(new PlayerOldSilver.P(0,1)));
     assertThat(board.getPoints(), is(960));
   }
 
   @Test
   public void destroy_2colorsSimple() throws Exception {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         ".4433.",
         ".4433.",
         "......");
 
-    board.destroyGroups(Arrays.asList(new Player.P(1,1), new Player.P(3, 1)));
+    board.destroyGroups(Arrays.asList(new PlayerOldSilver.P(1,1), new PlayerOldSilver.P(3, 1)));
 
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
@@ -367,22 +368,22 @@ public class PlayerTest {
 
   @Test
   public void updateBoard_listOfDisplacedBlock() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         "......",
         "33....",
         "......");
 
-    List<Player.P> toCheck = board.update();
+    List<PlayerOldSilver.P> toCheck = board.update();
 
-    assertThat(toCheck.contains(new Player.P(0,0)), is(true));
-    assertThat(toCheck.contains(new Player.P(1,0)), is(true));
+    assertThat(toCheck.contains(new PlayerOldSilver.P(0,0)), is(true));
+    assertThat(toCheck.contains(new PlayerOldSilver.P(1,0)), is(true));
   }
 
   @Test
   public void updateBoard_easy() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         "......",
@@ -399,7 +400,7 @@ public class PlayerTest {
 
   @Test
   public void updateBoard_sparse() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "..3...",
         "3...3.",
@@ -416,7 +417,7 @@ public class PlayerTest {
 
   @Test
   public void updateBoard_AllDifferent() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "2.3.3.",
         "351...",
@@ -433,16 +434,16 @@ public class PlayerTest {
 
   @Test
   public void bestCol_1_Iteration_easy() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         "......",
         "3.....",
         "3.....");
 
-    Player.Block[] blocks = new Player.Block[] { new Player.Block(3, 3) };
+    PlayerOldSilver.Block[] blocks = new PlayerOldSilver.Block[] { new PlayerOldSilver.Block(3, 3) };
     
-    Player.Simulation s = new Player.Simulation(weights, board, blocks, 1);
+    PlayerOldSilver.Simulation s = new PlayerOldSilver.Simulation(weights, board, blocks, 1);
 
     assertThat(s.simulatedResult().board.row(0), is("......"));
     assertThat(s.simulatedResult().board.row(1), is("......"));
@@ -452,15 +453,15 @@ public class PlayerTest {
 
   @Test
   public void bestCol_1_Iteration_medium() {
-    Player.Board board = new Player.Board(6, 4);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 4);
     prepareBoard(board,
         "......",
         "4.....",
         "3.....",
         "3.....");
 
-    Player.Block[] blocks = new Player.Block[] { new Player.Block(3, 3) };
-    Player.Simulation s = new Player.Simulation(weights, board, blocks, 1);
+    PlayerOldSilver.Block[] blocks = new PlayerOldSilver.Block[] { new PlayerOldSilver.Block(3, 3) };
+    PlayerOldSilver.Simulation s = new PlayerOldSilver.Simulation(weights, board, blocks, 1);
 
     assertThat(s.simulatedResult().board.row(0), is("......"));
     assertThat(s.simulatedResult().board.row(1), is("......"));
@@ -470,7 +471,7 @@ public class PlayerTest {
   
   @Test
   public void bestCol_mediumCase_2Iter() {
-    Player.Board board = new Player.Board(6, 6);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 6);
     prepareBoard(board,
         "......",
         "......",
@@ -479,8 +480,8 @@ public class PlayerTest {
         "..5...",
         "..5...");
 
-    Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5), new Player.Block(5, 5) };
-    Player.Simulation s = new Player.Simulation(weights, board, blocks, 1);
+    PlayerOldSilver.Block[] blocks = new PlayerOldSilver.Block[] { new PlayerOldSilver.Block(5, 5), new PlayerOldSilver.Block(5, 5) };
+    PlayerOldSilver.Simulation s = new PlayerOldSilver.Simulation(weights, board, blocks, 1);
 
     assertThat(board.row(0), is("......"));
     assertThat(board.row(1), is("......"));
@@ -490,7 +491,7 @@ public class PlayerTest {
 
   @Test
   public void testChain() {
-    Player.Board board = new Player.Board(6, 6);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 6);
     prepareBoard(board,
         "......",
         "......",
@@ -499,8 +500,8 @@ public class PlayerTest {
         "55....",
         "444...");
 
-    Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5), new Player.Block(5, 5) };
-    Player.Simulation s = new Player.Simulation(weights, board, blocks, 1);
+    PlayerOldSilver.Block[] blocks = new PlayerOldSilver.Block[] { new PlayerOldSilver.Block(5, 5), new PlayerOldSilver.Block(5, 5) };
+    PlayerOldSilver.Simulation s = new PlayerOldSilver.Simulation(weights, board, blocks, 1);
 
     assertThat(s.simulatedResult().board.row(0), is("......"));
     assertThat(s.simulatedResult().board.row(1), is("......"));
@@ -512,7 +513,7 @@ public class PlayerTest {
   
   @Test
   public void boardIsFull() {
-    Player.Board board = new Player.Board(6, 6);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 6);
     prepareBoard(board,
         "123451",
         "234512",
@@ -521,16 +522,16 @@ public class PlayerTest {
         "123451",
         "234512");
 
-    Player.Block[] blocks = new Player.Block[] { new Player.Block(5, 5), new Player.Block(5, 5) };
-    Player.Simulation s = new Player.Simulation(weights, board, blocks, 1);
+    PlayerOldSilver.Block[] blocks = new PlayerOldSilver.Block[] { new PlayerOldSilver.Block(5, 5), new PlayerOldSilver.Block(5, 5) };
+    PlayerOldSilver.Simulation s = new PlayerOldSilver.Simulation(weights, board, blocks, 1);
   }
 
   
   @Test
   public void case1_iter1() {
-    Player.Board board = new Player.Board(6, 12);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 12);
     
-    Player.Simulation s = case1(board, 1);
+    PlayerOldSilver.Simulation s = case1(board, 1);
     
     assertThat(s.firstStep().column, is(4));
     assertThat(s.firstStep().rotation, is(2));
@@ -538,9 +539,9 @@ public class PlayerTest {
 
   @Test
   public void case1_iter2_bestDecisionIsDifferentThanIter1() {
-    Player.Board board = new Player.Board(6, 12);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 12);
 
-    Player.Simulation case1 = case1(board, 2);
+    PlayerOldSilver.Simulation case1 = case1(board, 2);
     
     assertThat(case1.firstStep().column, is(4));
     assertThat(case1.firstStep().rotation, is(2));
@@ -553,16 +554,16 @@ public class PlayerTest {
     int MAX = 1;
     long time1 = System.currentTimeMillis();
     for (int i=0;i<MAX;i++) {
-      Player.Board board = new Player.Board(6, 12);
+      PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 12);
   
-      Player.Simulation case1 = case1(board, 3);
+      PlayerOldSilver.Simulation case1 = case1(board, 3);
       
     }
     long time2 = System.currentTimeMillis();
     assertThat(time2-time1, lessThan(100L));
   }
 
-  private Player.Simulation case1(Player.Board board, int iter) {
+  private PlayerOldSilver.Simulation case1(PlayerOldSilver.Board board, int iter) {
     prepareBoard(board,
         "......",
         "......",
@@ -577,17 +578,17 @@ public class PlayerTest {
         "011242",
         "212521");
 
-    Player.Block[] blocks = new Player.Block[] { 
-        new Player.Block(3,4), 
-        new Player.Block(5,4), 
-        new Player.Block(5,3), 
-        new Player.Block(1,1), 
-        new Player.Block(3,5), 
-        new Player.Block(3,5), 
-        new Player.Block(2,2), 
-        new Player.Block(5,1) 
+    PlayerOldSilver.Block[] blocks = new PlayerOldSilver.Block[] { 
+        new PlayerOldSilver.Block(3,4), 
+        new PlayerOldSilver.Block(5,4), 
+        new PlayerOldSilver.Block(5,3), 
+        new PlayerOldSilver.Block(1,1), 
+        new PlayerOldSilver.Block(3,5), 
+        new PlayerOldSilver.Block(3,5), 
+        new PlayerOldSilver.Block(2,2), 
+        new PlayerOldSilver.Block(5,1) 
     };
-    Player.Simulation s = new Player.Simulation(weights, board, blocks, iter);
+    PlayerOldSilver.Simulation s = new PlayerOldSilver.Simulation(weights, board, blocks, iter);
     return s;
   }
   
@@ -596,7 +597,7 @@ public class PlayerTest {
    */
   @Test
   public void calcOpponentPoints() {
-    Player.Board board = new Player.Board(6, 12);
+    PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 12);
     prepareBoard(board,
         "......",
         "......",
@@ -612,11 +613,11 @@ public class PlayerTest {
         "333445");
 
 
-    Player.Block[] blocks = new Player.Block[] { 
-        new Player.Block(3,4), 
-        new Player.Block(5,1)
+    PlayerOldSilver.Block[] blocks = new PlayerOldSilver.Block[] { 
+        new PlayerOldSilver.Block(3,4), 
+        new PlayerOldSilver.Block(5,1)
         };
-    Player.Simulation s = new Player.Simulation(weights, board, blocks, 1);
+    PlayerOldSilver.Simulation s = new PlayerOldSilver.Simulation(weights, board, blocks, 1);
 
     assertThat(s.firstStep().totalPoints, is(360));
   }
@@ -624,7 +625,7 @@ public class PlayerTest {
   
   @Test
   public void whyDontYouCloseTheBlock() {
-      Player.Board board = new Player.Board(6, 12);
+      PlayerOldSilver.Board board = new PlayerOldSilver.Board(6, 12);
       prepareBoard(board,
           "......",
           "......",
@@ -639,18 +640,18 @@ public class PlayerTest {
           "000500",
           "043044");
       
-      Player.Block[] blocks = new Player.Block[] { 
-          new Player.Block(4,4), 
-          new Player.Block(5,5), 
-          new Player.Block(2,1), 
-          new Player.Block(5,5), 
-          new Player.Block(3,5), 
-          new Player.Block(2,2), 
-          new Player.Block(5,1) 
+      PlayerOldSilver.Block[] blocks = new PlayerOldSilver.Block[] { 
+          new PlayerOldSilver.Block(4,4), 
+          new PlayerOldSilver.Block(5,5), 
+          new PlayerOldSilver.Block(2,1), 
+          new PlayerOldSilver.Block(5,5), 
+          new PlayerOldSilver.Block(3,5), 
+          new PlayerOldSilver.Block(2,2), 
+          new PlayerOldSilver.Block(5,1) 
       };
-      Player.currentThreatSkulls = 4;
+      PlayerOldSilver.currentThreatSkulls = 4;
       
-      Player.Simulation s = new Player.Simulation(weights, board, blocks, 2);
+      PlayerOldSilver.Simulation s = new PlayerOldSilver.Simulation(weights, board, blocks, 2);
   }
 
   // @Test

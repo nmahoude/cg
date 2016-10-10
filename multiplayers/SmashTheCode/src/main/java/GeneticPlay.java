@@ -7,8 +7,8 @@ public class GeneticPlay {
   }
   void play() {
     int[] points = new int[100];
-    Player.Board[] sBoards = new Player.Board[100];
-    Player.SimulationWeight[] sWeights = new Player.SimulationWeight[100];
+    PlayerOldSilver.Board[] sBoards = new PlayerOldSilver.Board[100];
+    PlayerOldSilver.SimulationWeight[] sWeights = new PlayerOldSilver.SimulationWeight[100];
     for (int i=0;i<100;i++) {
       sWeights[i] = randomWeights();
     }
@@ -18,10 +18,10 @@ public class GeneticPlay {
       System.out.println("**** GENERATION **** "+(generation++));
       
       for (int i=0;i<100;i++) {
-        sBoards[i] = new Player.Board(6,12);
+        sBoards[i] = new PlayerOldSilver.Board(6,12);
         points[i] = 0;
       }
-      Player.Block[] blocks = new Player.Block[8];
+      PlayerOldSilver.Block[] blocks = new PlayerOldSilver.Block[8];
       init(blocks);
       
       for (int step=0;step < MAX_STEPS;step++) {
@@ -29,7 +29,7 @@ public class GeneticPlay {
         for (int i=0;i<100;i++) {
           if (sBoards[i] != null) {
             try {
-              Player.Simulation simulation = new Player.Simulation(sWeights[i], sBoards[i], blocks, 3);
+              PlayerOldSilver.Simulation simulation = new PlayerOldSilver.Simulation(sWeights[i], sBoards[i], blocks, 3);
               points[i] += simulation.firstStep().points;
               sBoards[i] = simulation.firstStep().board;
             } catch(Exception e) {
@@ -63,8 +63,8 @@ public class GeneticPlay {
       }    
     }
   }
-  private Player.SimulationWeight randomWeights() {
-    return new Player.SimulationWeight(
+  private PlayerOldSilver.SimulationWeight randomWeights() {
+    return new PlayerOldSilver.SimulationWeight(
         Math.random()*2 - 1.0,
         Math.random()*2 - 1.0,
         Math.random()*2 - 1.0,
@@ -85,17 +85,17 @@ public class GeneticPlay {
     }
     return maxIndex;
   }
-  private Player.Block createRandomBlock() {
+  private PlayerOldSilver.Block createRandomBlock() {
     int color1 = (int)(Math.random() * 6);
     int color2 = (int)(Math.random() * 6);
-    return new Player.Block(color1, color2);
+    return new PlayerOldSilver.Block(color1, color2);
   }
-  private void init(Player.Block[] blocks) {
+  private void init(PlayerOldSilver.Block[] blocks) {
     for (int i=0;i<8;i++) {
       blocks[i] = createRandomBlock();
     }
   }
-  private void shift(Player.Block[] blocks) {
+  private void shift(PlayerOldSilver.Block[] blocks) {
     for (int i=0;i<8-1;i++) {
       blocks[i] = blocks[i+1];
     }

@@ -19,11 +19,11 @@ public class Player {
             game.myScore = in.nextInt();
             game.prepare();
             for (int i = 0; i < 12; i++) {
-              game.myBoard.updateRow(i, in.next());
+              game.myBoard.updateRow(11-i, in.next());
             }
             game.otherScore = in.nextInt();
             for (int i = 0; i < 12; i++) {
-              game.otherBoard.updateRow(i, in.next());
+              game.otherBoard.updateRow(11-i, in.next());
             }
             
             ai.think();
