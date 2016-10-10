@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
-class Player {
+public class Player {
   static Scanner in;
   
   static final int ENTITY_PLAYER = 0;
