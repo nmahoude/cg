@@ -15,7 +15,7 @@ public class Ai {
     
     int bestRot = 0;
     int bestX = 0;
-    int bestScore = 1_000_000;
+    int bestScore = 0;
     
     for (int rot = 0;rot<4;rot++) {
       for (int x=0;x<6;x++) {
@@ -28,7 +28,8 @@ public class Ai {
         for (int i=0;i<6;i++) {
           maxHeight=Math.max(boardCopy.heights[i], maxHeight);
         }
-        if (maxHeight < bestScore) {
+        int score = boardCopy.points-maxHeight;
+        if (score > bestScore) {
           bestScore = maxHeight;
           bestRot = rot;
           bestX = x;

@@ -60,25 +60,68 @@ public class Board {
     destroyBlocks();
   }
 
+  int points = 0;
+  int CP;
+  int B;
+  int CB;
+  int GB;
+  boolean colorDestroyed[] = new boolean[6];
   final public void destroyBlocks() {
     boolean destruction = false;
-    for (int x = 6; --x > 0;) {
-      for (int y = heights[x]; --y > 0;) {
-        int color = cells[x][y];
-        if (color > 0 && color <= 7) {
-          // int destroyed = destroyNeighbours(color, x, y, 0);
-          int destroyed = nonRecursiveDestroyNeighbours(color, x, y);
-          if (destroyed >= 4) {
-            destruction = true;
+
+    CP = 0;
+    B = 0;
+    points = 0;
+
+    do {
+      destruction = false;
+      for (int x = 6; --x > 0;) {
+        for (int y = heights[x]; --y > 0;) {
+          int color = cells[x][y];
+          if (color > 0 && color <= 7) {
+            // int destroyed = destroyNeighbours(color, x, y, 0);
+            int destroyed = nonRecursiveDestroyNeighbours(color, x, y);
+            if (destroyed >= 4) {
+              B+=destroyed;
+              GB += destroyed >= 11 ? 8 : destroyed -4;
+              GB = Math.min(8, GB);
+              destruction = true;
+              colorDestroyed[color] = true;
+            }
           }
         }
       }
+      if (destruction) {
+        CB = getColorBonus();
+        points += getPoints();
+        B = 0;
+        GB = 0;
+        CB = 0;
+        CP = (CP == 0) ? 8 : 2*CP;
+        
+        updateBoard();
+        // reset some values
+      }
+    } while(destruction);
+  }
+  int getPoints() {
+    return (10 * B) * Math.min(999, Math.max(1, CP + CB + GB));
+  }
+  int getColorBonus() {
+    int CB = 1;
+    for (int i=0;i<6;i++) {
+      CB*= colorDestroyed[i] ? 2 : 1;
+      colorDestroyed[i] = false; // reset color destroyed
     }
-    if (destruction) {
-      updateBoard();
+    if (CB <= 2) {
+      CB = 0;
+    } else {
+      CB/=2;
     }
+    return CB;
   }
 
+  
   final public void updateBoard() {
     for (int x = 5; --x >= 0;) {
       int index = 0;
@@ -178,7 +221,7 @@ public class Board {
         }
       }
     }
-    if (visited.size() > 4) {
+    if (visited.size() >= 4) {
       // validate the kills, do nothing :)
       return visited.size();
     } else {

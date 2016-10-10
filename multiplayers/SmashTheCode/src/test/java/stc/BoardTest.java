@@ -201,6 +201,116 @@ public class BoardTest {
     assertThat(board.cells[3][2], is(0));
     assertThat(board.cells[5][1], is(0));
   }
+  
+  @Test
+  public void score_simpleOneColor4Blocks() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "11....",
+        "11....");
+    
+    board.destroyBlocks();
+    
+    assertThat(board.points, is(40));
+  }
+  
+  @Test
+  public void score_simple2SpotsOneColor() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "11..11",
+        "11..11");
+    
+    board.destroyBlocks();
+    
+    assertThat(board.points, is(80));
+  }
+  
+  @Test
+  public void score_simple1SpotsOneColor12blocks() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "111111",
+        "111111");
+    
+    board.destroyBlocks();
+    
+    assertThat(board.points, is(960));
+  }
+  
+  @Test
+  public void score_double() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "11....",
+        "33....",
+        "33....",
+        "11....");
+    
+    board.destroyBlocks();
+    
+    assertThat(board.points, is(360));
+  }
+  @Test
+  public void score_simpleBonus2colors() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "11..44",
+        "11..44");
+    
+    board.destroyBlocks();
+    
+    assertThat(board.points, is(160));
+  }
+  
   static void prepareBoard(Board board, String... rows) {
     board.prepare();
     
