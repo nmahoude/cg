@@ -58,6 +58,29 @@ public class BoardTest {
   }
   
   @Test
+  public void copyBoardsPerformance() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......");
+
+    Board copy = new Board();
+    for (int i=0;i<1_000_000;i++) {
+      board.copy(copy);
+    }
+  }
+  
+  @Test
   public void updateFullBoardWithNonCombo() throws Exception {
     Board board =new Board();
     prepareBoard(board,

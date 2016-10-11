@@ -19,6 +19,7 @@ public class Board {
       }
       board.heights[x] = heights[x];
     }
+    board.points = points;
     return board;
   }
   
@@ -36,19 +37,31 @@ public class Board {
     }
   }
 
-  final void putBlocks(int color1, int color2, int rotation, int baseColumn) {
+  final boolean putBlocks(int color1, int color2, int rotation, int baseColumn) {
     int otherColumn = baseColumn;
     switch (rotation) {
     case 0:
       otherColumn = baseColumn + 1;
+      if (heights[baseColumn]>=11 || heights[otherColumn]>=11) {
+        return false;
+      }
       break;
     case 1:
       otherColumn = baseColumn;
+      if (heights[baseColumn]>=10) {
+        return false;
+      }
       break;
     case 2:
       otherColumn = baseColumn - 1;
+      if (heights[baseColumn]>=11 || heights[otherColumn]>=11) {
+        return false;
+      }
       break;
     case 3:
+      if (heights[baseColumn]>=10) {
+        return false;
+      }
       int temp = color1;
       color1 = color2;
       color2 = temp;
@@ -58,6 +71,7 @@ public class Board {
     putBlock(color1, baseColumn);
     putBlock(color2, otherColumn);
     destroyBlocks();
+    return true;
   }
 
   int points = 0;
@@ -71,7 +85,6 @@ public class Board {
 
     CP = 0;
     B = 0;
-    points = 0;
 
     do {
       destruction = false;
@@ -298,7 +311,7 @@ public class Board {
 
   final void putBlock(int color, int column) {
     int height = heights[column];
-    if (height == 11) {
+    if (height >= 11) {
       return;
     }
     cells[column][height] = color;
@@ -315,12 +328,18 @@ public class Board {
   }
 
   void debug() {
+    String row = "BoardTest.prepareBoard(game.myBoard,\n";
     for (int y = 12 - 1; y >= 0; y--) {
-      String row = "";
+      row+="\"";
       for (int x = 0; x < 6; x++) {
         row += cells[x][y];
       }
-      System.err.println(row);
+      if (y == 0) {
+        row+="\");"; 
+      } else {
+        row+="\",\n";
+      }
     }
+    System.err.println(row);
   }
 }

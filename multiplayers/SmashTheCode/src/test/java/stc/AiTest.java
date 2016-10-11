@@ -12,7 +12,7 @@ public class AiTest {
   public void minimizeHeight() throws Exception {
     Game game = new Game();
     GameTest.setNextBlocks(game, 
-        "12",
+        "11",
         "23",
         "44"
         );
@@ -28,11 +28,70 @@ public class AiTest {
         "......",
         "......",
         "......",
-        "11....");
+        "....11");
     
     Ai ai = new Ai(game);
     ai.think();
     
-    assertThat(ai.command, is(not("0 0")));
+  }
+  
+  @Test
+  public void twoRounds() throws Exception {
+    Game game = new Game();
+    GameTest.setNextBlocks(game, 
+        "12",
+        "21",
+        "44"
+        );
+    BoardTest.prepareBoard(game.myBoard,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "....11");
+    
+    Ai ai = new Ai(game);
+    ai.think();
+    ai.think();
+  }
+  @Test
+  public void debugWhy1_2() throws Exception {
+    Game game = new Game();
+    GameTest.setNextBlocks(game, 
+        "41",
+        "41",
+        "51",
+        "34",
+        "12",
+        "41",
+        "24",
+        "24"
+        );
+  
+    BoardTest.prepareBoard(game.myBoard,
+        "092000",
+        "092099",
+        "051999",
+        "999999",
+        "912922",
+        "914331",
+        "933159",
+        "153553",
+        "924299",
+        "344134",
+        "529991",
+        "552921");
+    
+    Ai ai = new Ai(game);
+    ai.think();
+    
+    assertThat(ai.command, is(not("1 0")));
   }
 }
