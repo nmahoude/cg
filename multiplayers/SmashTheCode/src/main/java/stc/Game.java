@@ -14,4 +14,15 @@ public class Game {
   }
 
   
+  public final void debug() {
+    String blocks = "GameTest.setNextBlocks(game,\n";
+    for (int i=0;i<8;i++) {
+      blocks += "\""+nextBalls[i]+""+nextBalls2[i]+"\"";
+      if (i != 7) {
+        blocks +=",\n";
+      }
+    }
+    blocks+="\n);";
+    System.err.println(blocks);
+  }
 }

@@ -1,24 +1,54 @@
 package stc;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DFSNode {
-
-  Board board = new Board();
+  final static Deque<Board> boards = new ArrayDeque<>();
+  
+  static void add(int n) {
+    for (int i=0;i<n;i++) {
+      Board board = new Board();
+      boards.offer(board);
+    }
+  }
+  static {
+    add(100_000);
+  }
+  final static Board getBoard() {
+    Board b = boards.poll();
+    if (b == null) {
+      b = new Board();
+    }
+    return b;
+  }
+  final static void releaseBoard(Board b) {
+    boards.offer(b);
+  }
+  
+  
+  Board board = getBoard();
   Map<Integer, DFSNode> childs = new HashMap<>();
   int points = 0;
   int score = 0;
   boolean isImpossible = false;
   
+  
   double getBestScore() {
+    int sumHeights=0;
+    for (int x=6;--x>0;) {
+      sumHeights+=board.heights[x];
+    }
+    
     if (childs.isEmpty()) {
       if (isImpossible) {
         return -100;
       } else {
-        return score;
+        return points+72-sumHeights;
       }
     } else {
       double maxScore = -1;
@@ -29,18 +59,12 @@ public class DFSNode {
           maxScore = score;
         }
       }
-      return Math.max(0.8*maxScore, score);
+      return Math.max(0.6*maxScore, 0);
     }
   }
   public final void simulate(Game game, int depth) {
     points = board.points;
-    score = board.points;
     
-    int sumHeights=0;
-    for (int x=6;--x>0;) {
-      sumHeights+=board.heights[x];
-    }
-    score = score + (72-sumHeights);
     if (depth >= 8) {
       return;
     }
@@ -49,7 +73,8 @@ public class DFSNode {
     
     if (depth <=0) {
       // all cases
-      for (int rot = 0;rot<4;rot++) {
+      int maxRotation = color1 == color2 ? 2 : 4;
+      for (int rot = maxRotation;--rot>0;) {
         for (int x=0;x<6;x++) {
           if ((x== 0 && rot == 2) || (x==5 && rot==0)) {
             continue;
@@ -59,8 +84,9 @@ public class DFSNode {
       }
     } else {
       // only some cases
-      for (int i=4;--i>0;) {
-        int rot = ThreadLocalRandom.current().nextInt(4);
+      int maxRotation = color1 == color2 ? 2 : 4;
+      for (int i=22-6*depth;--i>0;) {
+        int rot = ThreadLocalRandom.current().nextInt(maxRotation);
         int x = ThreadLocalRandom.current().nextInt(6);
         if ((x== 0 && rot == 2) || (x==5 && rot==0)) {
           continue;
@@ -94,7 +120,6 @@ public class DFSNode {
     if (childs.isEmpty()) {
       return "";
     } else {
-      String command = "";
       String bestCommand = "";
       DFSNode bestChild = null;
       
@@ -108,7 +133,17 @@ public class DFSNode {
           bestChild = child;
         }
       }
-      return bestCommand+"->"+bestChild.debugCourse();
+      if (bestChild != null) {
+        return bestCommand+"->"+bestChild.debugCourse();
+      } else {
+        return "NO";
+      }
     }
+  }
+  public void release() {
+    releaseBoard(board);
+    for ( Entry<Integer, DFSNode> childEntry : childs.entrySet()) {
+      childEntry.getValue().release();
+    }    
   }
 }

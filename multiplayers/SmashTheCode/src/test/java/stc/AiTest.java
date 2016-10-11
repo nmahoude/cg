@@ -2,8 +2,9 @@ package stc;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class AiTest {
@@ -34,8 +35,36 @@ public class AiTest {
     ai.think();
     
   }
+  @Test
+  public void oneRounds() throws Exception {
+    DFSNode dummy = new DFSNode();
+    
+    Game game = new Game();
+    GameTest.setNextBlocks(game, 
+        "12",
+        "21",
+        "44"
+        );
+    BoardTest.prepareBoard(game.myBoard,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "....11");
+    
+    Ai ai = new Ai(game);
+    ai.think();
+  }
   
   @Test
+  @Ignore
   public void twoRounds() throws Exception {
     Game game = new Game();
     GameTest.setNextBlocks(game, 
@@ -61,7 +90,9 @@ public class AiTest {
     ai.think();
     ai.think();
   }
+  
   @Test
+  @Ignore
   public void debugWhy1_2() throws Exception {
     Game game = new Game();
     GameTest.setNextBlocks(game, 
