@@ -8,10 +8,12 @@ public class Player {
   
   static {
     // create some DFS node
-    DFSNode.add(400_000);
+    DFSNode.add(100_000);
   }
   static Game game = new Game();
   static Ai ai = new Ai(game);
+  static long longestAiTime = 0;
+  static long shortestAiTime = Long.MAX_VALUE;
   
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -31,7 +33,19 @@ public class Player {
               game.otherBoard.updateRow(11-i, in.next());
             }
             
+            //game.printTestCase();
+            
+            long time1 = System.currentTimeMillis();
             ai.think();
+            long time2 = System.currentTimeMillis();
+            long aiTime = time2-time1;
+            longestAiTime = Math.max(longestAiTime, aiTime);
+            shortestAiTime = Math.min(shortestAiTime, aiTime);
+            
+            System.err.println("AI in "+aiTime+" ms. ("+shortestAiTime+" / "+longestAiTime+")");
+            
+            //ai.debug();
+            
             System.out.println(ai.output());
         }
     }

@@ -9,6 +9,101 @@ import org.junit.Test;
 public class BoardTest {
 
   @Test
+  public void maxHeight_allZero() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......");
+    assertThat(board.getMaxHeights(), is(0));
+  }
+  
+  @Test
+  public void maxHeight_oneAll() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "...1..",
+        "...1..",
+        "...1..",
+        "...1..",
+        "...1..",
+        "...1..",
+        "...1..",
+        "...1..",
+        "...1..",
+        "...1..",
+        "...1..",
+        "...1..");
+    assertThat(board.getMaxHeights(), is(12));
+  }
+  @Test
+  public void maxHeight_allAt3() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "123456",
+        "123456",
+        "123456");
+    assertThat(board.getMaxHeights(), is(3));
+  }
+  
+  @Test
+  public void maxHeight_putBlocksHorizontalAndCount() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "123456",
+        "123456",
+        "123456");
+    board.putBlocks(5, 6, 0, 0);
+    assertThat(board.getMaxHeights(), is(4));
+  }
+  
+  @Test
+  public void maxHeight_putBlocksVerticalAndCount() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "123456",
+        "123456",
+        "123456");
+    board.putBlocks(5, 6, 1, 0);
+    assertThat(board.getMaxHeights(), is(5));
+  }
+  @Test
   public void checkPreCalculatedHeights() throws Exception {
     Board board =new Board();
     prepareBoard(board,

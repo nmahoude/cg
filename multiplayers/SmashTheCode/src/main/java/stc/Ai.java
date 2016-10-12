@@ -6,6 +6,8 @@ public class Ai {
   private Game game;
   String command = "";
   DFSNode root = null;
+  private double bestScore;
+  private DFSNode bestChild;
 
   public Ai(Game game) {
     this.game = game;
@@ -15,35 +17,54 @@ public class Ai {
     if (root != null) {
       root.release();
     }
-    root = new DFSNode();
+    root = DFSNode.getNode();
     game.myBoard.copy(root.board);
-    //game.debug();
-    //root.board.debug();
+//    game.debug();
+//    root.board.debug();
     root.simulate(game, 0);
     
     Integer comm = null;
-    double bestScore = -1;
-    DFSNode bestChild = null;
+    bestScore = Integer.MIN_VALUE;
+    bestChild = null;
     for (Entry<Integer, DFSNode> childEntry : root.childs.entrySet()) {
       DFSNode child = childEntry.getValue();
-      double score = child.getBestScore();
-      if (score > bestScore) {
-        bestScore = score;
+      double score = child.getScore();
+      double bScore = child.getBestScore();
+      if (score > 420-Math.max(0,root.board.getSumHeights()-50)*10) {
+        bestScore = 1000*score;
+        bestChild = child;
+        comm = childEntry.getKey();
+      } else if (bScore > bestScore) {
+        bestScore = bScore;
         bestChild = child;
         comm = childEntry.getKey();
       }
     }
     if (comm != null) {
       int commAsInt = comm.intValue();
-      root = bestChild;
-      command = ""+(commAsInt % 6)+" "+(commAsInt/6);
       System.err.println("best score : "+bestScore);
-      System.err.println("course: "+command+"->"+bestChild.debugCourse());
+      command = ""+(commAsInt % 6)+" "+(commAsInt/6);
     } else {
       command = "0 0 Perdu";
     }
   }
   public final String output() {
     return command;
+  }
+
+  public void debug() {
+    System.err.println("Direct root child score :");
+    for (Entry<Integer, DFSNode> childEntry : root.childs.entrySet()) {
+      DFSNode child = childEntry.getValue();
+      int key = childEntry.getKey();
+      double score = child.getScore();
+      double bestScore = child.getBestScore();
+      System.err.println(""+(key % 6)+" "+(key/6)+" -> "+score+ " (best:"+bestScore+")");
+    }
+
+    System.err.println("best score : "+bestScore);
+    System.err.println("--------");
+    //System.err.println("course: "+command+"->"+bestChild.debugCourse2());
+    System.err.println("--------");
   }
 }

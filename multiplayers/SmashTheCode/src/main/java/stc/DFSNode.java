@@ -37,21 +37,18 @@ public class DFSNode {
   
   
   double getScore() {
-    int sumHeights=0;
-    for (int x=6;--x>0;) {
-      sumHeights=Math.max(sumHeights,board.heights[x]);
-    }
+    int maxHeight = board.getMaxHeights();
     if (isImpossible) {
       return -100;
     } else {
-      return points+12-10*sumHeights-depth*4;
+      return points+14-10*maxHeight-depth*4+board.localScore*20;
     }
   }
   double getBestScore() {
     if (childs.isEmpty()) {
       return getScore();
     } else {
-      double maxScore = -1;
+      double maxScore = Integer.MIN_VALUE;
       for ( Entry<Integer, DFSNode> childEntry : childs.entrySet()) {
         DFSNode child = childEntry.getValue();
         double score = child.getBestScore();
@@ -59,7 +56,7 @@ public class DFSNode {
           maxScore = score;
         }
       }
-      return Math.max(maxScore, getScore());
+      return Math.max(0.8*maxScore, getScore());
     }
   }
   public final void simulate(Game game, int depth) {
@@ -75,9 +72,9 @@ public class DFSNode {
     if (depth <=0) {
       // all cases
       int maxRotation = color1 == color2 ? 2 : 4;
-      for (int rot = maxRotation;--rot>0;) {
+      for (int rot = maxRotation;--rot>=0;) {
         for (int x=0;x<6;x++) {
-          if ((x== 0 && rot == 2) || (x==5 && rot==0)) {
+          if (impossibleCases(rot, x)) {
             continue;
           }
           DFSNode child = simulateChild(game, depth, color1, color2, rot, x);
@@ -86,16 +83,19 @@ public class DFSNode {
     } else {
       // only some cases
       int maxRotation = color1 == color2 ? 2 : 4;
-      for (int i=(int)(22-1.8*depth*depth);--i>0;) {
+      for (int i=(int)(22-2.0*depth*depth)-1;--i>=0;) {
         int rot = ThreadLocalRandom.current().nextInt(maxRotation);
         int x = ThreadLocalRandom.current().nextInt(6);
-        if ((x== 0 && rot == 2) || (x==5 && rot==0)) {
+        if (impossibleCases(rot, x)) {
           continue;
         }
         DFSNode child = simulateChild(game, depth, color1, color2, rot, x);
       }
     }
     
+  }
+  private boolean impossibleCases(int rot, int x) {
+    return (x == 0 && rot == 2) || (x == 5 && rot == 0);
   }
   private DFSNode simulateChild(Game game, int depth, int color1, int color2, int rot, int x) {
     DFSNode child = childs.get(x+6*rot);
@@ -147,5 +147,31 @@ public class DFSNode {
     }    
     childs.clear();
     releaseDFSNode(this);
+  }
+  public String debugCourse2() {
+    this.board.debug();
+    System.err.println("For "+board.points+" points");
+    if (childs.isEmpty()) {
+      return "";
+    } else {
+      String bestCommand = "";
+      DFSNode bestChild = null;
+      
+      double maxScore = -1;
+      for ( Entry<Integer, DFSNode> childEntry : childs.entrySet()) {
+        DFSNode child = childEntry.getValue();
+        double score = child.getBestScore();
+        if (score > maxScore) {
+          maxScore = score;
+          bestCommand = ""+(childEntry.getKey() % 6)+" "+(childEntry.getKey()/6);
+          bestChild = child;
+        }
+      }
+      if (bestChild != null) {
+        return bestCommand+"->"+bestChild.debugCourse2();
+      } else {
+        return "NO";
+      }
+    }
   }
 }

@@ -21,6 +21,7 @@ public class Board {
       board.heights[x] = heights[x];
     }
     board.points = points;
+    board.localScore = 0;
     return board;
   }
   
@@ -29,7 +30,7 @@ public class Board {
       if (row.charAt(x) >= '1' && row.charAt(x) <= '5') {
         cells[x][y] = row.charAt(x) - '0';
         heights[x] = Math.max(y+1, heights[x]);
-      } else if (row.charAt(x) == '0' || row.charAt(x) == '@') {
+      } else if (row.charAt(x) == '0' || row.charAt(x) == '@' || row.charAt(x) == '☠') {
         cells[x][y] = SKULL;
         heights[x] = Math.max(y+1, heights[x]);
       } else {
@@ -76,6 +77,7 @@ public class Board {
   }
 
   int points = 0;
+  int localScore = 0; // get some score stats about move
   int ChainPower;
   int clearedBlocks;
   int ColorBonus;
@@ -107,8 +109,8 @@ public class Board {
         }
         ps = null;
       } else {
-        for (int x = 6; --x > 0;) {
-          for (int y = heights[x]; --y > 0;) {
+        for (int x = 6; --x >= 0;) {
+          for (int y = heights[x]; --y >= 0;) {
             int color = cells[x][y];
             if (color > 0 && color <= 7) {
               int destroyed = nonRecursiveDestroyNeighbours(color, x, y);
@@ -196,9 +198,9 @@ public class Board {
     return count;
   }
 
-  Deque<P> toBeVisited = new ArrayDeque<>();
-  Deque<P> visited = new ArrayDeque<>();
-  List<P> skulls = new ArrayList<>();
+  Deque<P> toBeVisited = new ArrayDeque<>(72);
+  Deque<P> visited = new ArrayDeque<>(72);
+  List<P> skulls = new ArrayList<>(72);
 
   final int nonRecursiveDestroyNeighbours(int color, int x, int y) {
     toBeVisited.clear();
@@ -332,6 +334,8 @@ public class Board {
     int height = heights[column];
     if (height >= 11) {
       return null;
+    } else if (height > 0 && cells[column][height-1] == color) {
+      localScore+=1;
     }
     cells[column][height] = color;
     heights[column] = height+1;
@@ -352,7 +356,14 @@ public class Board {
     for (int y = 12 - 1; y >= 0; y--) {
       row+="\"";
       for (int x = 0; x < 6; x++) {
-        row += cells[x][y];
+        int color = cells[x][y];
+        if (color == EMPTY) {
+          row+=".";
+        } else if (color == SKULL) {
+          row+="☠";
+        } else {
+          row += color;
+        }
       }
       if (y == 0) {
         row+="\");"; 
@@ -361,5 +372,21 @@ public class Board {
       }
     }
     System.err.println(row);
+  }
+
+  public int getMaxHeights() {
+    int maxHeights=0;
+    for (int x=6;--x>=0;) {
+      maxHeights=Math.max(maxHeights,heights[x]);
+    }
+    return maxHeights;
+  }
+
+  public int getSumHeights() {
+    int sumHeights=0;
+    for (int x=6;--x>=0;) {
+      sumHeights+=heights[x];
+    }
+    return sumHeights;
   }
 }

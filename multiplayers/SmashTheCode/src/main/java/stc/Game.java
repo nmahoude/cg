@@ -24,4 +24,9 @@ public class Game {
     blocks+="\n);";
     System.err.println(blocks);
   }
+
+  public void printTestCase() {
+    debug();
+    myBoard.debug();
+  }
 }
