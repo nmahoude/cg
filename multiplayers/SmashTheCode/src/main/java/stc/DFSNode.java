@@ -8,48 +8,48 @@ import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DFSNode {
-  final static Deque<Board> boards = new ArrayDeque<>();
+  final static Deque<DFSNode> nodes = new ArrayDeque<>();
   
   static void add(int n) {
     for (int i=0;i<n;i++) {
-      Board board = new Board();
-      boards.offer(board);
+      DFSNode node = new DFSNode();
+      nodes.offer(node);
     }
   }
-  static {
-    add(100_000);
-  }
-  final static Board getBoard() {
-    Board b = boards.poll();
-    if (b == null) {
-      b = new Board();
+  final static DFSNode getNode() {
+    DFSNode n = nodes.poll();
+    if (n == null) {
+      n = new DFSNode();
     }
-    return b;
+    return n;
   }
-  final static void releaseBoard(Board b) {
-    boards.offer(b);
+  final static void releaseDFSNode(DFSNode n) {
+    nodes.offer(n);
   }
   
   
-  Board board = getBoard();
+  Board board = new Board();
   Map<Integer, DFSNode> childs = new HashMap<>();
   int points = 0;
   int score = 0;
   boolean isImpossible = false;
+  private int depth;
   
   
-  double getBestScore() {
+  double getScore() {
     int sumHeights=0;
     for (int x=6;--x>0;) {
-      sumHeights+=board.heights[x];
+      sumHeights=Math.max(sumHeights,board.heights[x]);
     }
-    
+    if (isImpossible) {
+      return -100;
+    } else {
+      return points+12-10*sumHeights-depth*4;
+    }
+  }
+  double getBestScore() {
     if (childs.isEmpty()) {
-      if (isImpossible) {
-        return -100;
-      } else {
-        return points+72-sumHeights;
-      }
+      return getScore();
     } else {
       double maxScore = -1;
       for ( Entry<Integer, DFSNode> childEntry : childs.entrySet()) {
@@ -59,10 +59,11 @@ public class DFSNode {
           maxScore = score;
         }
       }
-      return Math.max(0.6*maxScore, 0);
+      return Math.max(maxScore, getScore());
     }
   }
   public final void simulate(Game game, int depth) {
+    this.depth = depth;
     points = board.points;
     
     if (depth >= 8) {
@@ -85,7 +86,7 @@ public class DFSNode {
     } else {
       // only some cases
       int maxRotation = color1 == color2 ? 2 : 4;
-      for (int i=22-6*depth;--i>0;) {
+      for (int i=(int)(22-1.8*depth*depth);--i>0;) {
         int rot = ThreadLocalRandom.current().nextInt(maxRotation);
         int x = ThreadLocalRandom.current().nextInt(6);
         if ((x== 0 && rot == 2) || (x==5 && rot==0)) {
@@ -99,7 +100,7 @@ public class DFSNode {
   private DFSNode simulateChild(Game game, int depth, int color1, int color2, int rot, int x) {
     DFSNode child = childs.get(x+6*rot);
     if (child == null) {
-      child = new DFSNode();
+      child = getNode();
       childs.put(x+6*rot, child);
       board.copy(child.board);
       if (child.board.putBlocks(color1, color2, rot, x)) {
@@ -141,9 +142,10 @@ public class DFSNode {
     }
   }
   public void release() {
-    releaseBoard(board);
     for ( Entry<Integer, DFSNode> childEntry : childs.entrySet()) {
       childEntry.getValue().release();
     }    
+    childs.clear();
+    releaseDFSNode(this);
   }
 }

@@ -1,6 +1,6 @@
 package stc;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
@@ -11,6 +11,9 @@ public class AiTest {
 
   @Test
   public void minimizeHeight() throws Exception {
+    // preload
+    DFSNode.add(500_000);
+    
     Game game = new Game();
     GameTest.setNextBlocks(game, 
         "11",
@@ -31,9 +34,12 @@ public class AiTest {
         "......",
         "....11");
     
+    long time1 = System.currentTimeMillis();
     Ai ai = new Ai(game);
     ai.think();
-    
+    long time2 = System.currentTimeMillis();
+    System.err.println("T2/T1: "+time1+","+time2);
+    assertThat((time2-time1 < 100), is(true));
   }
   @Test
   public void oneRounds() throws Exception {

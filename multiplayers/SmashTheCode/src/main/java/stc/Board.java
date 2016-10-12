@@ -2,6 +2,7 @@ package stc;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.Set;
@@ -68,49 +69,67 @@ public class Board {
       otherColumn = baseColumn;
       break;
     }
-    putBlock(color1, baseColumn);
-    putBlock(color2, otherColumn);
-    destroyBlocks();
+    P p1 = putBlock(color1, baseColumn);
+    P p2 = putBlock(color2, otherColumn);
+    destroyBlocks(Arrays.asList(p1, p2));
     return true;
   }
 
   int points = 0;
-  int CP;
-  int B;
-  int CB;
-  int GB;
+  int ChainPower;
+  int clearedBlocks;
+  int ColorBonus;
+  int GroupBonus;
   boolean colorDestroyed[] = new boolean[6];
-  final public void destroyBlocks() {
+  
+  final public void destroyBlocks(List<P> ps) {
     boolean destruction = false;
 
-    CP = 0;
-    B = 0;
+    ChainPower = 0;
+    clearedBlocks = 0;
 
     do {
       destruction = false;
-      for (int x = 6; --x > 0;) {
-        for (int y = heights[x]; --y > 0;) {
-          int color = cells[x][y];
+      
+      if (ps != null) {
+        for (P p : ps) {
+          int color = cells[p.x][p.y];
           if (color > 0 && color <= 7) {
-            // int destroyed = destroyNeighbours(color, x, y, 0);
-            int destroyed = nonRecursiveDestroyNeighbours(color, x, y);
+            int destroyed = nonRecursiveDestroyNeighbours(color, p.x, p.y);
             if (destroyed >= 4) {
-              B+=destroyed;
-              GB += destroyed >= 11 ? 8 : destroyed -4;
-              GB = Math.min(8, GB);
+              clearedBlocks+=destroyed;
+              GroupBonus += destroyed >= 11 ? 8 : destroyed -4;
+              GroupBonus = Math.min(8, GroupBonus);
               destruction = true;
               colorDestroyed[color] = true;
             }
           }
         }
+        ps = null;
+      } else {
+        for (int x = 6; --x > 0;) {
+          for (int y = heights[x]; --y > 0;) {
+            int color = cells[x][y];
+            if (color > 0 && color <= 7) {
+              int destroyed = nonRecursiveDestroyNeighbours(color, x, y);
+              if (destroyed >= 4) {
+                clearedBlocks+=destroyed;
+                GroupBonus += destroyed >= 11 ? 8 : destroyed -4;
+                GroupBonus = Math.min(8, GroupBonus);
+                destruction = true;
+                colorDestroyed[color] = true;
+              }
+            }
+          }
+        }
       }
       if (destruction) {
-        CB = getColorBonus();
+        ColorBonus = getColorBonus();
         points += getPoints();
-        B = 0;
-        GB = 0;
-        CB = 0;
-        CP = (CP == 0) ? 8 : 2*CP;
+        clearedBlocks = 0;
+        GroupBonus = 0;
+        ColorBonus = 0;
+        ChainPower = (ChainPower == 0) ? 8 : 2*ChainPower;
         
         updateBoard();
         // reset some values
@@ -118,7 +137,7 @@ public class Board {
     } while(destruction);
   }
   int getPoints() {
-    return (10 * B) * Math.min(999, Math.max(1, CP + CB + GB));
+    return (10 * clearedBlocks) * Math.min(999, Math.max(1, ChainPower + ColorBonus + GroupBonus));
   }
   int getColorBonus() {
     int CB = 1;
@@ -309,13 +328,14 @@ public class Board {
     }
   }
 
-  final void putBlock(int color, int column) {
+  final P putBlock(int color, int column) {
     int height = heights[column];
     if (height >= 11) {
-      return;
+      return null;
     }
     cells[column][height] = color;
     heights[column] = height+1;
+    return P.ps[column][height];
   }
 
   final public void prepare() {

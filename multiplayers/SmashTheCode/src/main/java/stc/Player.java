@@ -5,6 +5,11 @@ import java.io.*;
 import java.math.*;
 
 public class Player {
+  
+  static {
+    // create some DFS node
+    DFSNode.add(400_000);
+  }
   static Game game = new Game();
   static Ai ai = new Ai(game);
   

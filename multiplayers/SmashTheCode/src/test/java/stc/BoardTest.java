@@ -106,7 +106,7 @@ public class BoardTest {
         board.cells[x][11] = 2;
         board.cells[x][10] = 2;
       }
-      board.destroyBlocks();
+      board.destroyBlocks(null);
     }
   }
 
@@ -242,7 +242,7 @@ public class BoardTest {
         "11....",
         "11....");
     
-    board.destroyBlocks();
+    board.destroyBlocks(null);
     
     assertThat(board.points, is(40));
   }
@@ -264,7 +264,7 @@ public class BoardTest {
         "11..11",
         "11..11");
     
-    board.destroyBlocks();
+    board.destroyBlocks(null);
     
     assertThat(board.points, is(80));
   }
@@ -286,7 +286,7 @@ public class BoardTest {
         "111111",
         "111111");
     
-    board.destroyBlocks();
+    board.destroyBlocks(null);
     
     assertThat(board.points, is(960));
   }
@@ -308,7 +308,7 @@ public class BoardTest {
         "33....",
         "11....");
     
-    board.destroyBlocks();
+    board.destroyBlocks(null);
     
     assertThat(board.points, is(360));
   }
@@ -329,7 +329,7 @@ public class BoardTest {
         "11..44",
         "11..44");
     
-    board.destroyBlocks();
+    board.destroyBlocks(null);
     
     assertThat(board.points, is(160));
   }

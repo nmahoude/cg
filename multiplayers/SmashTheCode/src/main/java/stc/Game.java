@@ -13,7 +13,6 @@ public class Game {
     otherBoard.prepare();
   }
 
-  
   public final void debug() {
     String blocks = "GameTest.setNextBlocks(game,\n";
     for (int i=0;i<8;i++) {

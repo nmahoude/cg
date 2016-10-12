@@ -17,8 +17,8 @@ public class Ai {
     }
     root = new DFSNode();
     game.myBoard.copy(root.board);
-    game.debug();
-    root.board.debug();
+    //game.debug();
+    //root.board.debug();
     root.simulate(game, 0);
     
     Integer comm = null;
