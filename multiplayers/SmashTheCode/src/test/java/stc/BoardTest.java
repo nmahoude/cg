@@ -1,9 +1,8 @@
 package stc;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class BoardTest {
@@ -152,6 +151,67 @@ public class BoardTest {
     }
   }
   
+  @Test
+  public void colorBlocksPoint_one() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "1.....");
+    
+    board.nonRecursiveDestroyNeighbours(1,0,0);
+    assertThat(board.colorBlocksPoint, is(1));
+  }
+  
+  @Test
+  public void colorBlocksPoint_two() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "11....");
+    
+    board.nonRecursiveDestroyNeighbours(1,0,0);
+    assertThat(board.colorBlocksPoint, is(2));
+  }
+  @Test
+  public void colorBlocksPoint_three() throws Exception {
+    Board board =new Board();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "1.....",
+        "11....");
+    
+    board.nonRecursiveDestroyNeighbours(1,0,0);
+    assertThat(board.colorBlocksPoint, is(3));
+  }
   @Test
   public void copyBoardsPerformance() throws Exception {
     Board board =new Board();

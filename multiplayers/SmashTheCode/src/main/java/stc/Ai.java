@@ -30,7 +30,7 @@ public class Ai {
       DFSNode child = childEntry.getValue();
       double score = child.getScore();
       double bScore = child.getBestScore();
-      if (score > 420-Math.max(0,root.board.getSumHeights()-50)*10) {
+      if (score > 70*6*3) {
         bestScore = 1000*score;
         bestChild = child;
         comm = childEntry.getKey();

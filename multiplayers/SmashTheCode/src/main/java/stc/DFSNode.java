@@ -41,7 +41,7 @@ public class DFSNode {
     if (isImpossible) {
       return -100;
     } else {
-      return points+14-10*maxHeight-depth*4+board.localScore*20;
+      return points+board.colorBlocksPoint-9*board.skullCount;
     }
   }
   double getBestScore() {
@@ -56,7 +56,7 @@ public class DFSNode {
           maxScore = score;
         }
       }
-      return Math.max(0.8*maxScore, getScore());
+      return Math.max(0.6*maxScore, getScore());
     }
   }
   public final void simulate(Game game, int depth) {
@@ -83,7 +83,7 @@ public class DFSNode {
     } else {
       // only some cases
       int maxRotation = color1 == color2 ? 2 : 4;
-      for (int i=(int)(22-2.0*depth*depth)-1;--i>=0;) {
+      for (int i=(int)(22-2.2*depth*depth)-1;--i>=0;) {
         int rot = ThreadLocalRandom.current().nextInt(maxRotation);
         int x = ThreadLocalRandom.current().nextInt(6);
         if (impossibleCases(rot, x)) {

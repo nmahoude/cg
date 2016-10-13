@@ -12,7 +12,9 @@ public class Board {
   public static final int SKULL = 9;
   int[][] cells = new int[6][12];
   int[] heights = new int[6];
-
+  int colorBlocksPoint = 0;
+  int skullCount = 0;
+  
   public final Board copy(Board board) {
     for (int x=0;x<6;x++) {
       for (int y=0;y<12;y++) {
@@ -22,6 +24,7 @@ public class Board {
     }
     board.points = points;
     board.localScore = 0;
+    skullCount = board.skullCount;
     return board;
   }
   
@@ -33,6 +36,7 @@ public class Board {
       } else if (row.charAt(x) == '0' || row.charAt(x) == '@' || row.charAt(x) == '☠') {
         cells[x][y] = SKULL;
         heights[x] = Math.max(y+1, heights[x]);
+        skullCount++;
       } else {
         cells[x][y] = EMPTY;
       }
@@ -89,7 +93,7 @@ public class Board {
 
     ChainPower = 0;
     clearedBlocks = 0;
-
+    
     do {
       destruction = false;
       
@@ -206,7 +210,8 @@ public class Board {
     toBeVisited.clear();
     visited.clear();
     skulls.clear();
-
+    colorBlocksPoint = 0;
+    
     toBeVisited.add(P.ps[x][y]);
     cells[x][y] = 0;
     while (!toBeVisited.isEmpty()) {
@@ -221,6 +226,7 @@ public class Board {
         } else if (value == SKULL) {
           skulls.add(P.ps[p.x + 1][p.y]);
           cells[p.x + 1][p.y] = 0;
+          skullCount--;
         }
       }
       if (p.x > 0) {
@@ -231,6 +237,7 @@ public class Board {
         } else if (value == SKULL) {
           skulls.add(P.ps[p.x - 1][p.y]);
           cells[p.x - 1][p.y] = 0;
+          skullCount--;
         }
       }
       if (p.y < 11) {
@@ -241,6 +248,7 @@ public class Board {
         } else if (value == SKULL) {
           skulls.add(P.ps[p.x][p.y + 1]);
           cells[p.x][p.y + 1] = 0;
+          skullCount--;
         }
 
       }
@@ -252,20 +260,24 @@ public class Board {
         } else if (value == SKULL) {
           skulls.add(P.ps[p.x][p.y - 1]);
           cells[p.x][p.y - 1] = 0;
+          skullCount--;
         }
       }
     }
-    if (visited.size() >= 4) {
+    int visitedCells = visited.size();
+    if (visitedCells >= 4) {
       // validate the kills, do nothing :)
-      return visited.size();
+      return visitedCells;
     } else {
-      // revert the change which will be small because we don't have 4 colored
-      // balls
+      // count colorBlocksPoint (1, 4 or 9)
+      colorBlocksPoint += visitedCells;
+      // revert the change which will be small because we don't have 4 colored balls
       for (P p : visited) {
         cells[p.x][p.y] = color;
       }
       for (P p : skulls) {
         cells[p.x][p.y] = SKULL;
+        skullCount++;
       }
       return 0;
     }
@@ -334,8 +346,6 @@ public class Board {
     int height = heights[column];
     if (height >= 11) {
       return null;
-    } else if (height > 0 && cells[column][height-1] == color) {
-      localScore+=1;
     }
     cells[column][height] = color;
     heights[column] = height+1;
