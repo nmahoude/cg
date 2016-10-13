@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import trigonometry.Point;
+import trigonometry.Vector;
 
 
 public class Ai {
@@ -13,11 +14,71 @@ public class Ai {
   Ai(GameEngine engine) {
     this.engine = engine;
   }
-  
-  
-  
+
   
   public void doYourStuff() {
+    double minDistToMe = Integer.MAX_VALUE;
+    Enemy closestEnemyToMe =  null;
+
+    double minDistToDP = Integer.MAX_VALUE;
+    Enemy closestEnemyToDP =  null;
+    
+    
+    for (Enemy e: engine.enemies) {
+      double dist2 = engine.wolff.p.squareDistance(e.p);
+      if (dist2 < minDistToMe) {
+        minDistToMe = dist2;
+        closestEnemyToMe = e;
+      }
+      
+      Point dpTarget = e.findNearestDataPoint().p;
+      double dist22 = dpTarget.squareDistance(e.p); 
+      if (dist22 < minDistToDP) {
+        minDistToDP = dist22;
+        closestEnemyToDP = e;
+      }
+      
+    }
+    
+    Point dpTarget = closestEnemyToMe.findNearestDataPoint().p;
+    Point nextPos = closestEnemyToMe.nextPosToTarget(dpTarget);
+    double nextDist = nextPos.squareDistance(engine.wolff.p);
+    
+    double meToEnemyNearestToDp = engine.wolff.p.squareDistance(closestEnemyToDP.p);
+    
+    if (nextDist < Math.pow(Enemy.ENEMY_WOLFF_RANGE, 2)) {
+      System.err.println("Escape");
+      Vector vec = closestEnemyToMe.p.sub(engine.wolff.p); 
+      command = new Move(new Point(engine.wolff.p.x-vec.vx, engine.wolff.p.y-vec.vy));
+//    } else if (meToEnemyNearestToDp < closestEnemyToMe.distanceToOneShot()*closestEnemyToMe.distanceToOneShot()) {
+//      System.err.println("One shot");
+//      command = new Shoot(closestEnemyToDP);
+//    } else if (meToEnemyNearestToDp > Math.pow(Enemy.ENEMY_WOLFF_RANGE+Wolff.WOLFF_MOVE+Enemy.ENEMY_MOVE, 2)) {
+//      System.err.println("too far");
+//      Vector vec = closestEnemyToDP.p.sub(engine.wolff.p); 
+//      command = new Move(new Point(engine.wolff.p.x+vec.vx, engine.wolff.p.y+vec.vy));
+//    } else if (minDistToMe < closestEnemyToMe.distanceToOneShot()*closestEnemyToMe.distanceToOneShot()) {
+//      System.err.println("One shot");
+//      command = new Shoot(closestEnemyToMe);
+    } else {
+      System.err.println("Don't know what to do, fire");
+      command = new Shoot(closestEnemyToMe);
+    }
+    // 100%
+    /**
+        if (minDist < Math.pow(Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE, 2)) {
+            Vector vec = closestEnemy.p.sub(engine.wolff.p);
+            command = new Move(new Point(engine.wolff.p.x - vec.vx, engine.wolff.p.y - vec.vy));
+        } else if (minDist > Math.pow(Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE, 2) * 4) {
+            Vector vec = closestEnemy.p.sub(engine.wolff.p);
+            command = new Move(new Point(engine.wolff.p.x + vec.vx, engine.wolff.p.y + vec.vy));
+        } else {
+            command = new Shoot(closestEnemy);
+        }
+     */
+  }
+  
+  public void doYourStuff_old() {
     if (commands == null || commands.isEmpty()) {
       System.err.println("Finding new commands");
       Enemy target = chooseOneTarget(engine.enemies);

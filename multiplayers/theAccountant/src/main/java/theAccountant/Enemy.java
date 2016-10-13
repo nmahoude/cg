@@ -33,6 +33,17 @@ public class Enemy extends Movable {
     move(dp.p);
   }
 
+  public Point nextPosToTarget(Point target) {
+    int vecx = (int)(target.x-p.x);
+    int vecy = (int)(target.y-p.y);
+    double norm = Math.sqrt(vecx*vecx+vecy*vecy);
+    double actual = norm;
+    if (actual > ENEMY_MOVE) {
+      actual = ENEMY_MOVE;
+    }
+    return new Point(p.x+vecx*actual/norm, p.y+vecy*actual/norm);
+  }
+
   public void checkReachTarget() {
     DataPoint dp = findNearestDataPoint();
     if (dp.p.squareDistance(p) < ENEMY_DATAPOINT_RANGE*ENEMY_DATAPOINT_RANGE) {
