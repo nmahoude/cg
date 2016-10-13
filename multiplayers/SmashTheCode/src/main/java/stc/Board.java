@@ -23,7 +23,6 @@ public class Board {
       board.heights[x] = heights[x];
     }
     board.points = points;
-    board.localScore = 0;
     skullCount = board.skullCount;
     return board;
   }

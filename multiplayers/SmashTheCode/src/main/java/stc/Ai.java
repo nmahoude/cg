@@ -17,11 +17,20 @@ public class Ai {
     if (root != null) {
       root.release();
     }
+
+    int nextSkullThreat = calculateSkullsThreatsInRound();
+    int myDepth = 8;
+    if (nextSkullThreat > 4) {
+      myDepth = 1;
+    } else if (nextSkullThreat > 2) {
+      myDepth = 2;
+    }
+
     root = DFSNode.getNode();
     game.myBoard.copy(root.board);
 //    game.debug();
 //    root.board.debug();
-    root.simulate(game, 0);
+    root.simulate(game, 0, myDepth);
     
     Integer comm = null;
     bestScore = Integer.MIN_VALUE;
@@ -48,6 +57,17 @@ public class Ai {
       command = "0 0 Perdu";
     }
   }
+  private int calculateSkullsThreatsInRound() {
+    root = DFSNode.getNode();
+    game.otherBoard.copy(root.board);
+
+    root.simulate(game, 0, 2);
+    
+    int bestPoints = root.getBestPoints();
+    root.release();
+    return bestPoints / (70*6);
+  }
+
   public final String output() {
     return command;
   }

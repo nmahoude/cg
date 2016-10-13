@@ -34,6 +34,7 @@ public class DFSNode {
   int score = 0;
   boolean isImpossible = false;
   private int depth;
+  private int maxDepth;
   
   
   double getScore() {
@@ -41,7 +42,7 @@ public class DFSNode {
     if (isImpossible) {
       return -100;
     } else {
-      return points+board.colorBlocksPoint-9*board.skullCount;
+      return points+14-10*maxHeight+board.colorBlocksPoint-9*board.skullCount;
     }
   }
   double getBestScore() {
@@ -56,14 +57,15 @@ public class DFSNode {
           maxScore = score;
         }
       }
-      return Math.max(0.6*maxScore, getScore());
+      return Math.max(0.8*maxScore, getScore());
     }
   }
-  public final void simulate(Game game, int depth) {
+  public final void simulate(Game game, int depth, int maxDepth) {
     this.depth = depth;
+    this.maxDepth = maxDepth;
     points = board.points;
     
-    if (depth >= 8) {
+    if (depth >= maxDepth) {
       return;
     }
     int color1 = game.nextBalls[depth];
@@ -104,7 +106,7 @@ public class DFSNode {
       childs.put(x+6*rot, child);
       board.copy(child.board);
       if (child.board.putBlocks(color1, color2, rot, x)) {
-        child.simulate(game, depth+1);
+        child.simulate(game, depth+1, maxDepth);
       } else {
         child.isImpossible = true;
       }
@@ -112,7 +114,7 @@ public class DFSNode {
       if (child.isImpossible) {
         return child;
       } else {
-        child.simulate(game, depth+1);
+        child.simulate(game, depth+1, maxDepth);
       }
     }
     return child;
@@ -173,5 +175,20 @@ public class DFSNode {
         return "NO";
       }
     }
+  }
+  public int getBestPoints() {
+    int bestPoints = 0;
+    if (childs.isEmpty()) {
+      return board.points;
+    } else {
+      for ( Entry<Integer, DFSNode> childEntry : childs.entrySet()) {
+        DFSNode child = childEntry.getValue();
+        int points = child.getBestPoints();
+        if (points > bestPoints) {
+          bestPoints = points;
+        }
+      }
+    }
+    return bestPoints;
   }
 }
