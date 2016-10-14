@@ -8,6 +8,7 @@ import java.util.Scanner;
 class Solution {
 
   static Map<Character, String> morseCodes = new HashMap<>();
+  static String morseCode;
   static {
     morseCodes.put('A', ".-");
     morseCodes.put('B', "-...");
@@ -36,101 +37,13 @@ class Solution {
     morseCodes.put('Y', "-.--");
     morseCodes.put('Z', "--..");
   }
-  static Node root = new Node();
-  static String morseCode;
+
+  static List<String> dictionnaryAsMorse = new ArrayList<>();
+  static Map<Integer, Long> indexesToRemainingWordsCache = new HashMap<>();
   static int finalIndex;
-  static Map<Integer, Long> indexToWordCountCache = new HashMap<>();
   
-  static class Node {
-    String morseLetter;
-    int morseLetterLength;
-    Map<String, Node> childs = new HashMap<>();
-    private boolean exactWordFound;
-    private String letter;
-    private Node parent;
-    private boolean finalWord;
-
-    
-    public Node() {
-    }
-
-    @Override
-    public String toString() {
-      return ""+letter+" ("+morseCode+")";
-    }
-    
-    public final long acceptMorse(int index) {
-      if (morseLetter ==null) {
-        // start of word, check index
-        Long indextoWordCount = indexToWordCountCache.get(index);
-        if (indextoWordCount != null) {
-          System.err.println("Using cache : "+index+" index to "+indextoWordCount+" word count");
-          return indextoWordCount.longValue();
-        }
-      } else {
-        for (int i=0;i<morseLetterLength;i++) {
-          if ((i+index >= finalIndex)
-           || (morseCode.charAt(index+i) != morseLetter.charAt(i))) {
-            return 0;
-          }
-        }
-        index = index+morseLetterLength;
-      }
-      
-      long count = 0;
-      if (finalWord) {
-        if (index >= finalIndex) {
-          count+= 1;
-        } else {
-          long futureWord=root.acceptMorse(index);
-          if (morseLetter != null) {
-            System.err.println("Puting in cache : "+index+" index to "+futureWord+" word count");
-            indexToWordCountCache.put(Integer.valueOf(index), Long.valueOf(futureWord));
-            count+=futureWord;
-          }
-        }
-      }
-      if (!childs.isEmpty()) {
-        for (Node child : childs.values()) {
-          count+=child.acceptMorse(index);
-        }
-      }
-      return count;
-    }
-
-    private String getFinalWorld() {
-      Node current = this;
-      String value ="";
-      while (current!=null) {
-        value = value+letter;
-        current = current.parent;
-      }
-      return value;
-    }
-    
-    public final void acceptWord(String dictionnaryWord) {
-      if (dictionnaryWord.isEmpty()) {
-        finalWord = true;
-        return;
-      }
-      String letter = ""+dictionnaryWord.charAt(0);
-      String morseLetter = morseCodes.get(letter.charAt(0));
-      String reminder = dictionnaryWord.substring(1);
-      Node child = childs.get(letter);
-      if (child == null) {
-        child = new Node();
-        child.parent = this;
-        child.letter = letter;
-        child.morseLetter = morseLetter;
-        child.morseLetterLength =morseLetter.length();
-        childs.put(letter, child);
-      }
-      child.acceptWord(reminder);
-    }
-  }
-
   public static void main(String args[]) {
-    indexToWordCountCache.clear();
+    indexesToRemainingWordsCache.clear();
     
     Scanner in = new Scanner(System.in);
     morseCode = in.next();
@@ -139,9 +52,50 @@ class Solution {
     int N = in.nextInt();
     for (int i = 0; i < N; i++) {
       String W = in.next();
-      root.acceptWord(W);
+      acceptWord(W);
     }
 
-    System.out.println(""+root.acceptMorse(0));
+    System.out.println(""+countWordFromIndex(0));
+  }
+
+  static long countWordFromIndex(int index) {
+    System.err.println("Counting from "+index);
+    long count = 0;
+    String substringToCheck = morseCode.substring(index);
+    
+    Long cacheCount = indexesToRemainingWordsCache.get(Integer.valueOf(index));
+    if (cacheCount != null) {
+      System.err.println("Use cache for word at index "+index+" instead of recalculating");
+      return cacheCount.longValue();
+    }
+
+    // Damn, we need to recalculate
+    for (String morseWord : dictionnaryAsMorse) {
+      if (substringToCheck.startsWith(morseWord)) {
+        int newIndex = index+morseWord.length();
+        if (newIndex == finalIndex) {
+          count += 1;
+        } else {
+          long countFromIndex = countWordFromIndex(newIndex);
+          count+=countFromIndex;
+        }
+      }
+    }
+    
+    System.err.println("Putting index "+index+" with cache "+count);
+    indexesToRemainingWordsCache.put(index, count);
+    return count;
+  }
+
+  private static String wordToMorse(String w) {
+    String asMorse = "";
+    for (int i=0;i<w.length();i++) {
+      asMorse+=morseCodes.get(w.charAt(i));
+    }
+    return asMorse;
+  }
+
+  public static void acceptWord(String word) {
+    dictionnaryAsMorse.add(wordToMorse(word));
   }
 }
