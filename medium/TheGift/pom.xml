@@ -2,16 +2,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>nmahoude.codingame</groupId>
-    <artifactId>all</artifactId>
+    <artifactId>medium</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>medium</artifactId>
-  <packaging>pom</packaging>
-  <modules>
-    <module>TheLastCrusade</module>
-    <module>MarsLander2</module>
-    <module>StockExchangeLosses</module>
-    <module>MayanCalculation</module>
-    <module>TheGift</module>
-  </modules>
+  <artifactId>TheGift</artifactId>
 </project>
