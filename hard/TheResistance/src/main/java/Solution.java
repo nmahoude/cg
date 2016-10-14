@@ -7,126 +7,141 @@ import java.util.Scanner;
 
 class Solution {
 
-  static Map<String, String> morseCodes = new HashMap<>();
+  static Map<Character, String> morseCodes = new HashMap<>();
   static {
-    morseCodes.put(".-", "A");
-    morseCodes.put("-...", "B");
-    morseCodes.put("-.-.", "C");
-    morseCodes.put("-..", "D");
-    morseCodes.put(".", "E");
-    morseCodes.put("..-.", "F");
-    morseCodes.put("--.", "G");
-    morseCodes.put("....", "H");
-    morseCodes.put("..", "I");
-    morseCodes.put(".---", "J");
-    morseCodes.put("-.-", "K");
-    morseCodes.put(".-..", "L");
-    morseCodes.put("--", "M");
-    morseCodes.put("-.", "N");
-    morseCodes.put("---", "O");
-    morseCodes.put(".--.", "P");
-    morseCodes.put("--.-", "Q");
-    morseCodes.put(".-.", "R");
-    morseCodes.put("...", "S");
-    morseCodes.put("-", "T");
-    morseCodes.put("..-", "U");
-    morseCodes.put("...-", "V");
-    morseCodes.put(".--", "W");
-    morseCodes.put("-..-", "X");
-    morseCodes.put("-.--", "Y");
-    morseCodes.put("--..", "Z");
+    morseCodes.put('A', ".-");
+    morseCodes.put('B', "-...");
+    morseCodes.put('C', "-.-.");
+    morseCodes.put('D', "-..");
+    morseCodes.put('E', ".");
+    morseCodes.put('F', "..-.");
+    morseCodes.put('G', "--.");
+    morseCodes.put('H', "....");
+    morseCodes.put('I', ".." );
+    morseCodes.put('J', ".---");
+    morseCodes.put('K', "-.-");
+    morseCodes.put('L', ".-..");
+    morseCodes.put('M', "--");
+    morseCodes.put('N', "-.");
+    morseCodes.put('O', "---");
+    morseCodes.put('P', ".--.");
+    morseCodes.put('Q', "--.-");
+    morseCodes.put('R', ".-.");
+    morseCodes.put('S', "...");
+    morseCodes.put('T', "-");
+    morseCodes.put('U', "..-");
+    morseCodes.put('V', "...-");
+    morseCodes.put('W', ".--");
+    morseCodes.put('X', "-..-");
+    morseCodes.put('Y', "-.--");
+    morseCodes.put('Z', "--..");
   }
-  static List<String> dictionnary = new ArrayList<>();
+  static Node root = new Node();
+  static String morseCode;
+  static int finalIndex;
+  static Map<Integer, Long> indexToWordCountCache = new HashMap<>();
   
   static class Node {
-    String wordToHere = "";
-    String remainder ="";
-    String phrase = "";
+    String morseLetter;
+    int morseLetterLength;
     Map<String, Node> childs = new HashMap<>();
     private boolean exactWordFound;
+    private String letter;
+    private Node parent;
+    private boolean finalWord;
 
     
-    public Node(String wordToHere, String remainder) {
-      this.wordToHere = wordToHere;
-      this.remainder = remainder;
+    public Node() {
     }
 
-    public void findChilds() {
-      if (remainder.isEmpty()) {
-        return;
-      }
-      String testedWord;
-      String remainder2;
-      for (Entry<String, String> morseKey : morseCodes.entrySet()) {
-        String morse = morseKey.getKey();
-        if (!remainder.startsWith(morse)) {
-          continue;
-        }
-        String letter = morseKey.getValue();
-
-        testedWord = wordToHere+letter;
-        remainder2 = remainder.substring(morse.length());
-        boolean foundOneWord = false;
-        foundOneWord = isInDictionnary(testedWord, remainder2);
-        if (foundOneWord && !remainder2.isEmpty()) {
-          Node child = new Node(testedWord, remainder2);
-          child.findChilds();
-          childs.put(testedWord, child);
-        } else {
-        }
-
-      }
+    @Override
+    public String toString() {
+      return ""+letter+" ("+morseCode+")";
     }
-
-    private boolean isInDictionnary(String testedWord, String remainder2) {
-      boolean foundOneWord = false;
-      for (String s : dictionnary) {
-        if (s.startsWith(testedWord)) {
-          if (s.equals(testedWord)) {
-            Node node = new Node("", remainder2);
-            node.phrase +=testedWord;
-            childs.put("EXACT", node);
-            node.findChilds();
-            if (remainder2.isEmpty()) {
-              exactWordFound=true;
-            }
+    
+    public final long acceptMorse(int index) {
+      if (morseLetter ==null) {
+        // start of word, check index
+        Long indextoWordCount = indexToWordCountCache.get(index);
+        if (indextoWordCount != null) {
+          System.err.println("Using cache : "+index+" index to "+indextoWordCount+" word count");
+          return indextoWordCount.longValue();
+        }
+      } else {
+        for (int i=0;i<morseLetterLength;i++) {
+          if ((i+index >= finalIndex)
+           || (morseCode.charAt(index+i) != morseLetter.charAt(i))) {
+            return 0;
           }
-          foundOneWord = true;
+        }
+        index = index+morseLetterLength;
+      }
+      
+      long count = 0;
+      if (finalWord) {
+        if (index >= finalIndex) {
+          count+= 1;
+        } else {
+          long futureWord=root.acceptMorse(index);
+          if (morseLetter != null) {
+            System.err.println("Puting in cache : "+index+" index to "+futureWord+" word count");
+            indexToWordCountCache.put(Integer.valueOf(index), Long.valueOf(futureWord));
+            count+=futureWord;
+          }
         }
       }
-      return foundOneWord;
-    }
-
-    public void print() {
-      if (childs.isEmpty()) {
-        System.out.println(wordToHere);
-      }
-    }
-
-    public int count() {
-      int count = exactWordFound ? 1 : 0;
-      for (Node child : childs.values()) {
-        count+=child.count();
+      if (!childs.isEmpty()) {
+        for (Node child : childs.values()) {
+          count+=child.acceptMorse(index);
+        }
       }
       return count;
+    }
+
+    private String getFinalWorld() {
+      Node current = this;
+      String value ="";
+      while (current!=null) {
+        value = value+letter;
+        current = current.parent;
+      }
+      return value;
+    }
+    
+    public final void acceptWord(String dictionnaryWord) {
+      if (dictionnaryWord.isEmpty()) {
+        finalWord = true;
+        return;
+      }
+      String letter = ""+dictionnaryWord.charAt(0);
+      String morseLetter = morseCodes.get(letter.charAt(0));
+      String reminder = dictionnaryWord.substring(1);
+      Node child = childs.get(letter);
+      if (child == null) {
+        child = new Node();
+        child.parent = this;
+        child.letter = letter;
+        child.morseLetter = morseLetter;
+        child.morseLetterLength =morseLetter.length();
+        childs.put(letter, child);
+      }
+      child.acceptWord(reminder);
     }
   }
 
   public static void main(String args[]) {
+    indexToWordCountCache.clear();
+    
     Scanner in = new Scanner(System.in);
-    String L = in.next();
-
+    morseCode = in.next();
+    finalIndex = morseCode.length();
+    
     int N = in.nextInt();
     for (int i = 0; i < N; i++) {
       String W = in.next();
-      dictionnary.add(W);
+      root.acceptWord(W);
     }
 
-    Node root = new Node("", L);
-    root.findChilds();
-    // Write an action using System.out.println()
-    // To debug: System.err.println("Debug messages...");
-   
-    System.out.println(""+root.count());
+    System.out.println(""+root.acceptMorse(0));
   }
 }
