@@ -43,14 +43,39 @@ public class Ai {
     double nextDist = nextPos.squareDistance(engine.wolff.p);
     double meToEnemyNearestToDp = engine.wolff.p.squareDistance(closestEnemyToDP.p);
 
+    System.err.println("Dist to oneShot "+closestEnemyToMe.id + " = "+ closestEnemyToMe.squareDistanceToOneShot() +" , vs dist="+ minDistToMe);
     if (minDistToMe < Math.pow(Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE, 2)) {
+      System.err.println("escape closest");
       Vector vec = closestEnemyToMe.p.sub(engine.wolff.p);
       command = new Move(new Point(engine.wolff.p.x - vec.vx, engine.wolff.p.y - vec.vy));
-    } else if (minDistToMe > Math.pow(Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE*2 + Wolff.WOLFF_MOVE, 2)) {
-      Vector vec = closestEnemyToMe.p.sub(engine.wolff.p);
-      command = new Move(new Point(engine.wolff.p.x + vec.vx, engine.wolff.p.y + vec.vy));
     } else {
-      command = new Shoot(closestEnemyToMe);
+      if (engine.enemies.size() == 1) {
+        if (closestEnemyToMe.squareDistanceToOneShot() > minDistToMe) {
+          command = new Shoot(closestEnemyToMe);
+        } else if (minDistToMe > Math.pow(Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE + Wolff.WOLFF_MOVE, 2)){
+          System.err.println("too far");
+          Vector vec = closestEnemyToMe.p.sub(engine.wolff.p);
+          command = new Move(new Point(engine.wolff.p.x + vec.vx, engine.wolff.p.y + vec.vy));
+        } else {
+          command = new Shoot(closestEnemyToMe);
+        }
+      }
+      else if (closestEnemyToMe.squareDistanceToOneShot() > minDistToMe) {
+        System.err.println("One shot");
+        command = new Shoot(closestEnemyToMe);
+      } else if (minDistToMe > Math.pow(Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE*2 + Wolff.WOLFF_MOVE, 2)) {
+        System.err.println("too far");
+        Vector vec = closestEnemyToMe.p.sub(engine.wolff.p);
+        command = new Move(new Point(engine.wolff.p.x + vec.vx, engine.wolff.p.y + vec.vy));
+      } else if (minDistToMe > Math.pow(Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE + Wolff.WOLFF_MOVE, 2)) {
+        System.err.println("too far, but not full length");
+        Vector vec = closestEnemyToMe.p.sub(engine.wolff.p);
+        vec = vec.dot(500.0/vec.length());
+        command = new Move(new Point(engine.wolff.p.x + vec.vx, engine.wolff.p.y + vec.vy));
+      } else {
+        System.err.println("shoot closest");
+        command = new Shoot(closestEnemyToMe);
+      }
     }
     // 100%
     /**

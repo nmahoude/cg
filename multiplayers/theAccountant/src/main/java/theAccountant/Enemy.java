@@ -102,4 +102,9 @@ public class Enemy extends Movable {
     turnToReachTarget = (int)Math.round(1.0*dp.p.distTo(p) / ENEMY_MOVE); // FIXME bug here
   }
 
+  public double squareDistanceToOneShot() {
+    int distanceToOneShot = distanceToOneShot();
+    return distanceToOneShot*distanceToOneShot;
+  }
+
 }
