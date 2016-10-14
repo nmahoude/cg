@@ -2,13 +2,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>nmahoude.codingame</groupId>
-    <artifactId>all</artifactId>
+    <artifactId>hard</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>hard</artifactId>
-  <packaging>pom</packaging>
-  <modules>
-    <module>theLastCrusade2</module>
-    <module>TheResistance</module>
-  </modules>
+  <artifactId>TheResistance</artifactId>
 </project>
