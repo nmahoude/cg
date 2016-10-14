@@ -107,4 +107,8 @@ public class Enemy extends Movable {
     return distanceToOneShot*distanceToOneShot;
   }
 
+  public Point add(Vector v) {
+    return new Point(p.x+v.vx, p.y+v.vy);
+  }
+
 }

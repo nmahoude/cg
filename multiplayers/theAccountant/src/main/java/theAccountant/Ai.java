@@ -42,36 +42,29 @@ public class Ai {
     Point nextPos = closestEnemyToMe.nextPosToTarget(dpTarget);
     double nextDist = nextPos.squareDistance(engine.wolff.p);
     double meToEnemyNearestToDp = engine.wolff.p.squareDistance(closestEnemyToDP.p);
-
-    System.err.println("Dist to oneShot "+closestEnemyToMe.id + " = "+ closestEnemyToMe.squareDistanceToOneShot() +" , vs dist="+ minDistToMe);
-    if (minDistToMe < Math.pow(Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE, 2)) {
-      System.err.println("escape closest");
-      Vector vec = closestEnemyToMe.p.sub(engine.wolff.p);
-      command = new Move(new Point(engine.wolff.p.x - vec.vx, engine.wolff.p.y - vec.vy));
-    } else {
-      if (engine.enemies.size() == 1) {
-        if (closestEnemyToMe.squareDistanceToOneShot() > minDistToMe) {
-          command = new Shoot(closestEnemyToMe);
-        } else if (minDistToMe > Math.pow(Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE + Wolff.WOLFF_MOVE, 2)){
-          System.err.println("too far");
-          Vector vec = closestEnemyToMe.p.sub(engine.wolff.p);
-          command = new Move(new Point(engine.wolff.p.x + vec.vx, engine.wolff.p.y + vec.vy));
-        } else {
-          command = new Shoot(closestEnemyToMe);
-        }
-      }
-      else if (closestEnemyToMe.squareDistanceToOneShot() > minDistToMe) {
-        System.err.println("One shot");
-        command = new Shoot(closestEnemyToMe);
-      } else if (minDistToMe > Math.pow(Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE*2 + Wolff.WOLFF_MOVE, 2)) {
-        System.err.println("too far");
+    int distToEnemy = (int) Math.ceil(Math.sqrt(minDistToMe));
+    System.err.println("Dist to oneShot " + closestEnemyToMe.id + " = " + closestEnemyToMe.distanceToOneShot() + " , vs dist=" + distToEnemy);
+    if (distToEnemy < Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE) {
+        System.err.println("Escape");
         Vector vec = closestEnemyToMe.p.sub(engine.wolff.p);
-        command = new Move(new Point(engine.wolff.p.x + vec.vx, engine.wolff.p.y + vec.vy));
-      } else {
-        System.err.println("shoot closest");
-        command = new Shoot(closestEnemyToMe);
-      }
+        command = new Move(new Point(engine.wolff.p.x - vec.vx, engine.wolff.p.y - vec.vy));
+    } else {
+        int nextDistToEnemy = (int) Math.ceil(Math.sqrt(nextPos.sub(engine.wolff.p).length()));
+        if (nextDistToEnemy > distToEnemy) {
+            // enemy go further
+            System.err.println("chase enemy");
+            Vector vec = closestEnemyToMe.p.sub(engine.wolff.p);
+            command = new Move(new Point(engine.wolff.p.x + vec.vx, engine.wolff.p.y + vec.vy));
+        } else if (distToEnemy > (Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE) * 2) {
+            System.err.println("Go nearer");
+            Vector vec = closestEnemyToMe.p.sub(engine.wolff.p);
+            command = new Move(new Point(engine.wolff.p.x + vec.vx, engine.wolff.p.y + vec.vy));
+        } else {
+            System.err.println("Shoot");
+            command = new Shoot(closestEnemyToMe);
+        }
     }
+
     // 100%
     /**
      * if (minDist < Math.pow(Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE, 2)) {
