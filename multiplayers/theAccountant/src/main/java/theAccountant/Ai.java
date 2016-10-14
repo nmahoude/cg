@@ -67,11 +67,6 @@ public class Ai {
         System.err.println("too far");
         Vector vec = closestEnemyToMe.p.sub(engine.wolff.p);
         command = new Move(new Point(engine.wolff.p.x + vec.vx, engine.wolff.p.y + vec.vy));
-      } else if (minDistToMe > Math.pow(Enemy.ENEMY_WOLFF_RANGE + Enemy.ENEMY_MOVE + Wolff.WOLFF_MOVE, 2)) {
-        System.err.println("too far, but not full length");
-        Vector vec = closestEnemyToMe.p.sub(engine.wolff.p);
-        vec = vec.dot(500.0/vec.length());
-        command = new Move(new Point(engine.wolff.p.x + vec.vx, engine.wolff.p.y + vec.vy));
       } else {
         System.err.println("shoot closest");
         command = new Shoot(closestEnemyToMe);
