@@ -53,9 +53,10 @@ class Solution {
 
     public void findChilds() {
       if (remainder.isEmpty()) {
-        System.err.println("When empty : "+wordToHere);
         return;
       }
+      String testedWord;
+      String remainder2;
       for (Entry<String, String> morseKey : morseCodes.entrySet()) {
         String morse = morseKey.getKey();
         if (!remainder.startsWith(morse)) {
@@ -63,33 +64,37 @@ class Solution {
         }
         String letter = morseKey.getValue();
 
-        System.err.println("found morse : "+morse +" -> "+letter);
-        String testedWord = wordToHere+letter;
-        String remainder2 = remainder.substring(morse.length());
+        testedWord = wordToHere+letter;
+        remainder2 = remainder.substring(morse.length());
         boolean foundOneWord = false;
-        for (String s : dictionnary) {
-          if (s.startsWith(testedWord)) {
-            if (s.equals(testedWord)) {
-              System.err.println("*** Exact word found !*** : "+s+"/"+testedWord);
-              phrase+=testedWord;
-              testedWord="";
-              if (remainder2.isEmpty()) {
-                exactWordFound=true;
-              }
-            }
-            foundOneWord = true;
-          }
-        }
-        if (foundOneWord) {
-          System.err.println("Found at least one word which start by: "+testedWord+" remainder="+remainder2);
+        foundOneWord = isInDictionnary(testedWord, remainder2);
+        if (foundOneWord && !remainder2.isEmpty()) {
           Node child = new Node(testedWord, remainder2);
           child.findChilds();
           childs.put(testedWord, child);
         } else {
-          System.err.println("No word start with "+testedWord);
         }
 
       }
+    }
+
+    private boolean isInDictionnary(String testedWord, String remainder2) {
+      boolean foundOneWord = false;
+      for (String s : dictionnary) {
+        if (s.startsWith(testedWord)) {
+          if (s.equals(testedWord)) {
+            Node node = new Node("", remainder2);
+            node.phrase +=testedWord;
+            childs.put("EXACT", node);
+            node.findChilds();
+            if (remainder2.isEmpty()) {
+              exactWordFound=true;
+            }
+          }
+          foundOneWord = true;
+        }
+      }
+      return foundOneWord;
     }
 
     public void print() {
@@ -117,11 +122,6 @@ class Solution {
       dictionnary.add(W);
     }
 
-    System.err.println("L: "+L);
-    System.err.println("Dictonnary: ");
-    for (String d : dictionnary) {
-      System.err.println(d);
-    }
     Node root = new Node("", L);
     root.findChilds();
     // Write an action using System.out.println()
