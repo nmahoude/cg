@@ -13,5 +13,6 @@
     <module>StockExchangeLosses</module>
     <module>MayanCalculation</module>
     <module>TheGift</module>
+    <module>Bender</module>
   </modules>
 </project>
