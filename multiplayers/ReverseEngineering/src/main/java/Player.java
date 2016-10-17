@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
@@ -11,7 +12,15 @@ class Player {
     private static char[] letter = { 'A', 'B', 'C', 'D', 'E'};
     private static char[] predefined = { 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', ' ' };
 
+    
     private static char[][] board = null;
+    
+    static int directions[][] = {
+        { 1,0},
+        { 0, -1},
+        { -1, 0},
+        { 0, 1}
+    };
     enum Direction {
       RIGHT("A"),
       UP("C"),
@@ -27,6 +36,39 @@ class Player {
     
     static class P {
       int x, y;
+      public P() {
+      }
+      public P (int x, int y) {
+        this.x = x;
+        this.y = y;
+      }
+      @Override
+      public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + x;
+        result = prime * result + y;
+        return result;
+      }
+      @Override
+      public boolean equals(Object obj) {
+        if (this == obj)
+          return true;
+        if (obj == null)
+          return false;
+        if (getClass() != obj.getClass())
+          return false;
+        P other = (P) obj;
+        if (x != other.x)
+          return false;
+        if (y != other.y)
+          return false;
+        return true;
+      }
+      @Override
+      public String toString() {
+        return "("+x+","+y+")";
+      }
     }
     static P[] pos = null;
     static P myPos = null;
@@ -89,22 +131,13 @@ class Player {
             List<Direction> availableDirections = new ArrayList<>();
             fillAvailableDirection(availableDirections);
             
-            int rand = ThreadLocalRandom.current().nextInt(availableDirections.size());
-            Direction direction = availableDirections.get(rand);
-            
-            
-            if (pos[2].y > myPos.y && availableDirections.contains(Direction.UP)) {
-              direction = Direction.UP;
+            List<P> bestPath = findClosestUnexploredCell(myPos, Collections.emptyList());
+            System.err.println("Best path : ");
+            for (P p : bestPath) {
+              System.err.print(p.toString()+"->");
             }
-            if (pos[2].y < myPos.y && availableDirections.contains(Direction.DOWN)) {
-              direction = Direction.DOWN;
-            }
-            if (pos[2].x < myPos.x && availableDirections.contains(Direction.LEFT)) {
-              direction = Direction.LEFT;
-            }
-            if (pos[2].x > myPos.x && availableDirections.contains(Direction.RIGHT)) {
-              direction = Direction.RIGHT;
-            }
+            System.err.println("");
+            Direction direction = calculateDirectionFromPath(myPos, bestPath);
             scoreType1++;
             
             System.err.println(direction.toString());
@@ -113,6 +146,47 @@ class Player {
         }
     }
 
+    private static Direction calculateDirectionFromPath(P myPos, List<P> bestPath) {
+      P p1 = bestPath.get(1);
+      if (p1.x == myPos.x) {
+        return p1.y > myPos.y ? Direction.DOWN : Direction.UP;
+      } else {
+        return p1.x > myPos.x ? Direction.RIGHT : Direction.LEFT;
+      }
+    }
+
+    static List<P> findClosestUnexploredCell(P originalPos, List<P> callerPositions) {
+      List<P> visitedPositions = new ArrayList<>(callerPositions);
+      visitedPositions.add(originalPos);
+      if (board[originalPos.x][originalPos.y] == UNKNOWN_CELL) {
+        return visitedPositions;
+      }
+
+      int bestPathLength = Integer.MAX_VALUE;
+      List<P> bestPath = null;
+      for (int d=0;d<4;d++) {
+        P testedPos = new P(originalPos.x+directions[d][0], originalPos.y+directions[d][1]);
+        if (board[testedPos.x][testedPos.y] == WALL) {
+          continue;
+        }
+        if (visitedPositions.contains(testedPos)) {
+          continue;
+        }
+        for (int enemy=0;enemy<nbPos-1;enemy++) {
+          if (testedPos.equals(pos[enemy])) {
+            continue;
+          }
+        }
+        List<P> path = findClosestUnexploredCell(testedPos, visitedPositions);
+        if (path != null &&  path.size() < bestPathLength) {
+          bestPathLength = path.size();
+          bestPath = path;
+        }
+      }
+      return bestPath;
+    }
+
+    
     private static void debugBoard() {
       System.err.println("Board");
       for (int y=0;y<height;y++) {
