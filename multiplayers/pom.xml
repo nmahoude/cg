@@ -11,5 +11,6 @@
     <module>hypersonic</module>
     <module>theAccountant</module>
     <module>ReverseEngineering</module>
+    <module>backToTheCode</module>
   </modules>
 </project>
