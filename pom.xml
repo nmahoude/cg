@@ -12,6 +12,7 @@
     <module>medium</module>
     <module>hard</module>
     <module>multiplayers</module>
+    <module>veryHard</module>
   </modules>
 
   <dependencies>
