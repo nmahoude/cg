@@ -25,7 +25,7 @@ public class PlayerTest {
     player.lastPos = new Player.P(0,99);
     player.calculateNextAction(Player.COLDER);
 
-    assertThat(player.projectedPos.y, is(74));
+    assertThat(player.projectedPos.y, is(74-1));
     assertThat(player.rect, is(new Player.Rectangle(0, 50, 0, 99)));
   }
   
@@ -39,6 +39,6 @@ public class PlayerTest {
     player.calculateNextAction(Player.WARMER);
 
     assertThat(player.projectedPos.y, is(24));
-    assertThat(player.rect, is(new Player.Rectangle(0, 50, 0, 99)));
+    assertThat(player.rect, is(new Player.Rectangle(0, 0, 0, 49)));
   }
 }

@@ -83,14 +83,14 @@ class Player {
     REPROJECT,
     FORGET,
   }
-  static Action nextAction = Action.CUT_VERTICAL;
+  Action nextAction = Action.CUT_VERTICAL;
   
-  static final String UNKNOWN = "UNKNWON";
+  static final String UNKNOWN = "UNKNOWN";
   static final String COLDER = "COLDER";
   static final String WARMER = "WARMER";
   static final String SAME = "SAME";
 
-  boolean foundX = false;
+  boolean foundY = false;
 
   P lastPos = new P();
   P projectedPos = new P();
@@ -113,7 +113,6 @@ class Player {
 
     Player player = new Player(W, H);
     player.setInitPos(in.nextInt(), in.nextInt());
-
     // game loop
     while (true) {
       String bombTemp = in.next(); 
@@ -128,6 +127,8 @@ class Player {
   void setInitPos(int x, int y) {
     currentPos.x = x;
     currentPos.y = y;
+    lastPos.x = x;
+    lastPos.y = y;
   }
 
   void updatePos() {
@@ -135,30 +136,54 @@ class Player {
     currentPos.y = projectedPos.y;
   }
   public void calculateNextAction(String bombTemp) {
-    if (COLDER.equals(bombTemp)) {
-      // reduce rect
-      rect.y1 = (lastPos.y+currentPos.y+1) / 2;
-    } else if (WARMER.equals(bombTemp)) {
-      rect.y2 = (lastPos.y+currentPos.y+1) / 2;
-    }
+    System.err.println("old rect:");
     rect.debug();
+    // cur the possible rect
+    if (nextAction == Action.REPROJECT) {
+    } else if (nextAction == Action.FORGET) {
+      nextAction = Action.CUT_HORIZONTAL;
+    } else {
+      if (COLDER.equals(bombTemp)) {
+        if (currentPos.y > lastPos.y) {
+          rect.y2 = (lastPos.y+currentPos.y+1) / 2;
+        } else {
+          rect.y1 = (lastPos.y+currentPos.y+1) / 2;
+        }
+        nextAction = Action.REPROJECT;
+      } else if (WARMER.equals(bombTemp)) {
+        if (currentPos.y > lastPos.y) {
+          rect.y1 = (lastPos.y+currentPos.y) / 2;
+        } else {
+          rect.y2 = (lastPos.y+currentPos.y) / 2;
+        }
+      }
+    }
 
+    // find next projection point
     projectedPos.x = currentPos.x;
     projectedPos.y = currentPos.y;
-    if (UNKNOWN.equals(bombTemp)) {
-      projectedPos.y = 0;
-    } else if (COLDER.equals(bombTemp)) {
-      projectedPos.y = rect.middle().y;
-    } else if (WARMER.equals(bombTemp)) {
-      projectedPos.y = rect.middle().y;
+    if (nextAction == Action.REPROJECT) {
+      projectedPos.y = rect.middle().y-1;
+      nextAction = Action.FORGET;
+    } else {
+      if (UNKNOWN.equals(bombTemp)) {
+        projectedPos.y = rect.y2-(currentPos.y-rect.y1);
+      } else if (COLDER.equals(bombTemp)) {
+        projectedPos.y = rect.middle().y;
+      } else if (WARMER.equals(bombTemp)) {
+        projectedPos.y = rect.middle().y;
+      }
     }
     
-
+    System.err.println("Batman(last): " + lastPos.x + "," + lastPos.y);
     System.err.println("Batman(curr): " + currentPos.x + "," + currentPos.y);
     System.err.println("Batman(proj): " + projectedPos.x + "," + projectedPos.y);
-    System.out.println("" + projectedPos.x + " " + projectedPos.y);
-
+    System.err.println("new rect :");
+    rect.debug();
+    
     lastPos.x = currentPos.x;
     lastPos.y = currentPos.y;
+    currentPos.x = projectedPos.x;
+    currentPos.y = projectedPos.y;
   }
 }
