@@ -1,5 +1,7 @@
 import java.util.*;
 
+import javax.swing.JTable.PrintMode;
+
 import java.io.*;
 import java.math.*;
 
@@ -83,7 +85,7 @@ class Player {
     REPROJECT,
     FORGET,
   }
-  Action nextAction = Action.CUT_VERTICAL;
+  Action nextAction = Action.CUT_HORIZONTAL;
   
   static final String UNKNOWN = "UNKNOWN";
   static final String COLDER = "COLDER";
@@ -141,20 +143,40 @@ class Player {
     // cur the possible rect
     if (nextAction == Action.REPROJECT) {
     } else if (nextAction == Action.FORGET) {
-      nextAction = Action.CUT_HORIZONTAL;
+      if (!foundY) {
+        nextAction = Action.CUT_HORIZONTAL;
+      } else {
+        nextAction = Action.CUT_VERTICAL;
+      }
     } else {
       if (COLDER.equals(bombTemp)) {
-        if (currentPos.y > lastPos.y) {
-          rect.y2 = (lastPos.y+currentPos.y+1) / 2;
+        if (nextAction == Action.CUT_HORIZONTAL) {
+          if (currentPos.y > lastPos.y) {
+            rect.y2 = (lastPos.y+currentPos.y+1) / 2;
+          } else {
+            rect.y1 = (lastPos.y+currentPos.y+1) / 2;
+          }
         } else {
-          rect.y1 = (lastPos.y+currentPos.y+1) / 2;
+          if (currentPos.x > lastPos.x) {
+            rect.x2 = (lastPos.x+currentPos.x+1) / 2;
+          } else {
+            rect.x1 = (lastPos.x+currentPos.x+1) / 2;
+          }
         }
         nextAction = Action.REPROJECT;
       } else if (WARMER.equals(bombTemp)) {
-        if (currentPos.y > lastPos.y) {
-          rect.y1 = (lastPos.y+currentPos.y) / 2;
+        if (nextAction == Action.CUT_HORIZONTAL) {
+          if (currentPos.y > lastPos.y) {
+            rect.y1 = Math.max((lastPos.y+currentPos.y) / 2, lastPos.y+1);
+          } else {
+            rect.y2 = Math.min((lastPos.y+currentPos.y) / 2, lastPos.y-1);
+          }
         } else {
-          rect.y2 = (lastPos.y+currentPos.y) / 2;
+          if (currentPos.x > lastPos.x) {
+            rect.x1 = Math.max((lastPos.x+currentPos.x) / 2, lastPos.x+1);
+          } else {
+            rect.x2 = Math.min((lastPos.x+currentPos.x) / 2, lastPos.x-1);
+          }
         }
       }
     }
@@ -163,23 +185,48 @@ class Player {
     projectedPos.x = currentPos.x;
     projectedPos.y = currentPos.y;
     if (nextAction == Action.REPROJECT) {
-      projectedPos.y = rect.middle().y-1;
+      if (!foundY) {
+        projectedPos.y = rect.middle().y-1;
+      } else {
+        projectedPos.x = rect.middle().x-1;
+      }
       nextAction = Action.FORGET;
     } else {
       if (UNKNOWN.equals(bombTemp)) {
-        projectedPos.y = rect.y2-(currentPos.y-rect.y1);
+        if (!foundY) {
+          projectedPos.y = rect.y2-(currentPos.y-rect.y1);
+        } else {
+          projectedPos.x = rect.x2-(currentPos.x-rect.x1);
+        }
       } else if (COLDER.equals(bombTemp)) {
-        projectedPos.y = rect.middle().y;
+        if (!foundY) {
+          projectedPos.y = rect.middle().y;
+        } else {
+          projectedPos.x = rect.middle().x;
+        }
       } else if (WARMER.equals(bombTemp)) {
-        projectedPos.y = rect.middle().y;
+        if (!foundY) {
+          projectedPos.y = rect.middle().y;
+        } else {
+          projectedPos.x = rect.middle().x;
+        }
+      } else if (SAME.equals(bombTemp)) {
+        if (!foundY) {
+          foundY = true;
+          nextAction = Action.REPROJECT;
+          projectedPos.y = (lastPos.y + currentPos.y) / 2;
+        } else {
+          projectedPos.x = (lastPos.x + currentPos.x) / 2;
+        }
       }
     }
+    
+    System.err.println("new rect :");
+    rect.debug();
     
     System.err.println("Batman(last): " + lastPos.x + "," + lastPos.y);
     System.err.println("Batman(curr): " + currentPos.x + "," + currentPos.y);
     System.err.println("Batman(proj): " + projectedPos.x + "," + projectedPos.y);
-    System.err.println("new rect :");
-    rect.debug();
     
     lastPos.x = currentPos.x;
     lastPos.y = currentPos.y;
