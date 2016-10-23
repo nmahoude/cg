@@ -257,6 +257,7 @@ class Player {
     }
 
     static int minBestDist = Integer.MAX_VALUE;
+    
     static List<P> findClosestUnexploredCell(P originalPos) {
       minBestDist = Integer.MAX_VALUE;
       return findClosestUnexploredCell(originalPos, Collections.emptyList());
@@ -355,9 +356,6 @@ class Player {
     }
 
     private static void updateBoard(String cellUp, String cellRight, String cellDown, String cellLeft) {
-      for (Ghost g : ghosts) {
-        board[g.pos.x][g.pos.y] = ' ';
-      }
       board[pacman.pos.x][pacman.pos.y] = ' ';
       
       if (pacman.pos.y > 0) {
