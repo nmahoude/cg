@@ -1,236 +1,193 @@
 import java.util.*;
 
-import javax.swing.JTable.PrintMode;
+import org.omg.PortableInterceptor.HOLDING;
 
 import java.io.*;
 import java.math.*;
 
 class Player {
-  static class P {
-    int x;
-    int y;
-
-    P() {
+    static class P {
+      int x;
+      int y;
+      
+      P() {
+      }
+      P(int x, int y) {
+        this.x = x;
+        this.y = y;
+      }
     }
-
-    P(int x, int y) {
-      this.x = x;
-      this.y = y;
-    }
-  }
-
-  static class Rectangle {
-    int x1, y1;
-    int x2, y2;
-
-    Rectangle(int x1, int y1, int x2, int y2) {
-      this.x1 = x1;
-      this.y1 = y1;
-      this.x2 = x2;
-      this.y2 = y2;
-    }
-
-    P middle() {
-      return new P( x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2 );
-    }
-
-    void debug() {
-      System.err.println("x1,y1: " + x1 + "," + y1);
-      System.err.println("  x2,y2: " + x2 + "," + y2);
-    }
-
-    public void copyFrom(Rectangle rect) {
-      this.x1 = rect.x1;
-      this.x2 = rect.x2;
-      this.y1 = rect.y1;
-      this.y2 = rect.y2;
-    }
-
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + x1;
-      result = prime * result + x2;
-      result = prime * result + y1;
-      result = prime * result + y2;
-      return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj)
-        return true;
-      if (obj == null)
-        return false;
-      if (getClass() != obj.getClass())
-        return false;
-      Rectangle other = (Rectangle) obj;
-      if (x1 != other.x1)
-        return false;
-      if (x2 != other.x2)
-        return false;
-      if (y1 != other.y1)
-        return false;
-      if (y2 != other.y2)
-        return false;
-      return true;
-    }
-    
-  }
-
-  enum Action {
-    CUT_VERTICAL, 
-    CUT_HORIZONTAL, 
-    REPROJECT,
-    FORGET,
-  }
-  Action nextAction = Action.CUT_HORIZONTAL;
   
-  static final String UNKNOWN = "UNKNOWN";
-  static final String COLDER = "COLDER";
-  static final String WARMER = "WARMER";
-  static final String SAME = "SAME";
-
-  boolean foundY = false;
-
-  P lastPos = new P();
-  P projectedPos = new P();
-  P currentPos = new P();
-  Rectangle rect;
-  private int width;
-  private int height;
-
-  public Player(int width, int height) {
-    this.width = width;
-    this.height = height;
-    rect = new Rectangle(0, 0, width-1, height-1);
-  }
-  
-  public static void main(String args[]) {
-    Scanner in = new Scanner(System.in);
-    int W = in.nextInt(); // width of the building.
-    int H = in.nextInt(); // height of the building.
-    int N = in.nextInt(); // maximum number of turns before game over.
-
-    Player player = new Player(W, H);
-    player.setInitPos(in.nextInt(), in.nextInt());
-    // game loop
-    while (true) {
-      String bombTemp = in.next(); 
-      System.err.println("bombTemp: " + bombTemp);
-
-      player.calculateNextAction(bombTemp);
-
-      System.out.println(player.projectedPos.x+" "+player.projectedPos.y);
-    }
-  }
-
-  void setInitPos(int x, int y) {
-    currentPos.x = x;
-    currentPos.y = y;
-    lastPos.x = x;
-    lastPos.y = y;
-  }
-
-  void updatePos() {
-    currentPos.x = projectedPos.x;
-    currentPos.y = projectedPos.y;
-  }
-  public void calculateNextAction(String bombTemp) {
-    System.err.println("old rect:");
-    rect.debug();
-    // cur the possible rect
-    if (nextAction == Action.REPROJECT) {
-    } else if (nextAction == Action.FORGET) {
-      if (!foundY) {
-        nextAction = Action.CUT_HORIZONTAL;
-      } else {
-        nextAction = Action.CUT_VERTICAL;
-      }
-    } else {
-      if (COLDER.equals(bombTemp)) {
-        if (nextAction == Action.CUT_HORIZONTAL) {
-          if (currentPos.y > lastPos.y) {
-            rect.y2 = (lastPos.y+currentPos.y+1) / 2;
-          } else {
-            rect.y1 = (lastPos.y+currentPos.y+1) / 2;
-          }
-        } else {
-          if (currentPos.x > lastPos.x) {
-            rect.x2 = (lastPos.x+currentPos.x+1) / 2;
-          } else {
-            rect.x1 = (lastPos.x+currentPos.x+1) / 2;
-          }
+    static class Rectangle {
+        int x1,y1;
+        int x2,y2;
+        
+        Rectangle(int x1, int y1, int x2, int y2) {
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x2 = x2;
+            this.y2 = y2;
         }
-        nextAction = Action.REPROJECT;
-      } else if (WARMER.equals(bombTemp)) {
-        if (nextAction == Action.CUT_HORIZONTAL) {
-          if (currentPos.y > lastPos.y) {
-            rect.y1 = Math.max((lastPos.y+currentPos.y) / 2, lastPos.y+1);
-          } else {
-            rect.y2 = Math.min((lastPos.y+currentPos.y) / 2, lastPos.y-1);
-          }
-        } else {
-          if (currentPos.x > lastPos.x) {
-            rect.x1 = Math.max((lastPos.x+currentPos.x) / 2, lastPos.x+1);
-          } else {
-            rect.x2 = Math.min((lastPos.x+currentPos.x) / 2, lastPos.x-1);
-          }
+        
+        int[] middle() {
+            return new int[] { x1 + (x2-x1)/2,  y1+(y2-y1)/2};
         }
-      }
+        void debug() {
+            System.err.println("x1,y1: "+x1+","+y1);
+            System.err.println("  x2,y2: "+x2+","+y2);
+        }
     }
 
-    // find next projection point
-    projectedPos.x = currentPos.x;
-    projectedPos.y = currentPos.y;
-    if (nextAction == Action.REPROJECT) {
-      if (!foundY) {
-        projectedPos.y = rect.middle().y-1;
-      } else {
-        projectedPos.x = rect.middle().x-1;
-      }
-      nextAction = Action.FORGET;
-    } else {
-      if (UNKNOWN.equals(bombTemp)) {
-        if (!foundY) {
-          projectedPos.y = rect.y2-(currentPos.y-rect.y1);
-        } else {
-          projectedPos.x = rect.x2-(currentPos.x-rect.x1);
-        }
-      } else if (COLDER.equals(bombTemp)) {
-        if (!foundY) {
-          projectedPos.y = rect.middle().y;
-        } else {
-          projectedPos.x = rect.middle().x;
-        }
-      } else if (WARMER.equals(bombTemp)) {
-        if (!foundY) {
-          projectedPos.y = rect.middle().y;
-        } else {
-          projectedPos.x = rect.middle().x;
-        }
-      } else if (SAME.equals(bombTemp)) {
-        if (!foundY) {
-          foundY = true;
-          nextAction = Action.REPROJECT;
-          projectedPos.y = (lastPos.y + currentPos.y) / 2;
-        } else {
-          projectedPos.x = (lastPos.x + currentPos.x) / 2;
-        }
-      }
+    enum Cut {
+      VERTICAL,
+      HORIZONTAL,
+      IGNORE,
     }
+    private static final String UNKNOWN = "UNKNWON";
+    private static final String COLDER = "COLDER";
+    private static final String WARMER = "WARMER";
+    private static final String SAME = "SAME";
     
-    System.err.println("new rect :");
-    rect.debug();
-    
-    System.err.println("Batman(last): " + lastPos.x + "," + lastPos.y);
-    System.err.println("Batman(curr): " + currentPos.x + "," + currentPos.y);
-    System.err.println("Batman(proj): " + projectedPos.x + "," + projectedPos.y);
-    
-    lastPos.x = currentPos.x;
-    lastPos.y = currentPos.y;
-    currentPos.x = projectedPos.x;
-    currentPos.y = projectedPos.y;
-  }
+    static Cut nextCut;
+    private static Cut lastCut;
+
+    static P lastPos = new P();
+    static P currentPos = new P();
+    static P projectedPos = new P();
+    private static boolean ignoreNextCut;
+
+    public static void main(String args[]) {
+        Scanner in = new Scanner(System.in);
+        int W = in.nextInt(); // width of the building.
+        int H = in.nextInt(); // height of the building.
+        int N = in.nextInt(); // maximum number of turns before game over.
+
+        lastPos.x = currentPos.x;
+        lastPos.y = currentPos.y;
+        currentPos.x = in.nextInt();
+        currentPos.y = in.nextInt();
+        
+        int originX = 0;
+        int originY = 0;
+        int sizeX = W;
+        int sizeY = H;
+        int lastCutY = 0;
+        int lastCutX = 0;
+        
+        
+        // game loop
+        lastCut = null;
+        nextCut = Cut.HORIZONTAL;
+        Rectangle rect = new Rectangle(0,0,W-1,H-1);
+        while (true) {
+            String bombTemp = in.next(); // the direction of the bombs from batman's current location (U, UR, R, DR, D, DL, L or UL)
+            System.err.println("Ignore next is "+ignoreNextCut);
+            System.err.println("bombTemp: "+bombTemp);
+            System.err.println("old rect:");
+            rect.debug();
+            System.err.println("Batman(curr): "+currentPos.x+","+currentPos.y);
+
+            
+            int deltax = lastPos.x+projectedPos.x % 2 == 0 ? 0 : 1;
+            int deltay = lastPos.y+projectedPos.y % 2 == 0 ? 0 : 1;
+            if (ignoreNextCut) {
+              ignoreNextCut = false;
+            } else if (bombTemp.equals(UNKNOWN)) {
+              
+            } else if (bombTemp.equals(WARMER)) {
+              
+              if (lastCut == Cut.VERTICAL) {
+                if (projectedPos.x == rect.x1) {
+                  rect.x2 = (lastPos.x+projectedPos.x+deltax) / 2;
+                } else {
+                  rect.x1 = (lastPos.x+projectedPos.x+deltax) / 2;
+                }
+              } else if (lastCut == Cut.HORIZONTAL) {
+                if (projectedPos.y == rect.y1) {
+                  rect.y2 = (lastPos.y+projectedPos.y+deltay) / 2;
+                } else {
+                  rect.y1 = (lastPos.y+projectedPos.y+deltay) / 2;
+                }
+              }
+            } else if (bombTemp.equals(COLDER)) {
+              ignoreNextCut = true;
+              if (lastCut == Cut.VERTICAL) {
+                if (projectedPos.x == rect.x1) {
+                  rect.x1 = (lastPos.x+projectedPos.x+deltax) / 2;
+                  currentPos.x = rect.x1;
+                } else {
+                  rect.x2 = (lastPos.x+projectedPos.x+deltax) / 2;
+                  currentPos.x = rect.x2;
+                }
+              } else if (lastCut == Cut.HORIZONTAL) {
+                if (projectedPos.y == rect.y1) {
+                  rect.y1 = (lastPos.y+projectedPos.y+deltay) / 2;
+                  currentPos.y = rect.y1;
+                } else {
+                  rect.y2 = (lastPos.y+projectedPos.y+deltay) / 2;
+                  currentPos.y = rect.y2;
+                }
+              }
+              nextCut = lastCut;
+            } else if (bombTemp.equals(SAME)) {
+              if (lastCut == Cut.HORIZONTAL) {
+                rect.y1 = (lastPos.y+projectedPos.y+ deltay) / 2;
+                rect.y2 = rect.y1;
+                nextCut = Cut.VERTICAL;
+                currentPos.y = rect.y1;
+                System.err.println("***LOCK Y***");
+              } else {
+                rect.x1 = (lastPos.x+projectedPos.x+deltax) / 2;
+                rect.x2 = rect.x1;
+                currentPos.x = rect.x1;
+                nextCut = Cut.HORIZONTAL;
+                System.err.println("***LOCK X***");
+              }
+            }
+            
+            System.err.println("New rect:");
+            rect.debug();
+
+            projectedPos.x = currentPos.x;
+            projectedPos.y = currentPos.y;
+            if (ignoreNextCut) {
+              if (nextCut == Cut.VERTICAL) {
+                projectedPos.x = rect.middle()[0];
+              } else {
+                projectedPos.y = rect.middle()[1];
+              }
+            } else 
+            if (nextCut == Cut.VERTICAL) {
+              // find best way to cut
+              if (currentPos.x - rect.x1 > rect.x2 - currentPos.x) {
+                projectedPos.x = rect.x1;
+              } else {
+                projectedPos.x = rect.x2;
+              }
+            } else if (nextCut == Cut.HORIZONTAL) {
+              if (currentPos.y - rect.y1 > rect.y2 - currentPos.y) {
+                projectedPos.y = rect.y1;
+              } else {
+                projectedPos.y = rect.y2;
+              }
+            }
+              
+            System.err.println("Batman(proj): "+projectedPos.x+","+projectedPos.y);
+
+
+            lastCut = nextCut;
+            if (lastCut == Cut.HORIZONTAL && rect.x1 != rect.x2) {
+              nextCut = Cut.VERTICAL;
+            }
+            if (lastCut == Cut.VERTICAL && rect.y1 != rect.y2) {
+              nextCut = Cut.HORIZONTAL;
+            }
+
+            lastPos.x = currentPos.x;
+            lastPos.y = currentPos.y;
+            currentPos.x = projectedPos.x;
+            currentPos.y = projectedPos.y;
+            System.out.println(""+projectedPos.x+" "+projectedPos.y);
+        }
+    }
 }
