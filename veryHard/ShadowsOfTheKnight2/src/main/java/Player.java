@@ -55,6 +55,7 @@ class Player {
     static P currentPos = new P();
     static P projectedPos = new P();
     private static boolean ignoreNextCut;
+    private static boolean ignoreLastNextCut;
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
@@ -92,6 +93,7 @@ class Player {
             int deltay = lastPos.y+projectedPos.y % 2 == 0 ? 0 : 1;
             if (ignoreNextCut) {
               ignoreNextCut = false;
+              ignoreLastNextCut = true;
             } else if (bombTemp.equals(UNKNOWN)) {
               
             } else if (bombTemp.equals(WARMER)) {
@@ -150,7 +152,14 @@ class Player {
 
             projectedPos.x = currentPos.x;
             projectedPos.y = currentPos.y;
-            if (ignoreNextCut) {
+            if (ignoreLastNextCut) {
+              ignoreLastNextCut = false;
+              if (nextCut == Cut.VERTICAL) {
+                projectedPos.y += 1;
+              } else {
+                projectedPos.x += 1;
+              }
+            } else if (ignoreNextCut) {
               if (nextCut == Cut.VERTICAL) {
                 projectedPos.x = rect.middle()[0];
               } else {
