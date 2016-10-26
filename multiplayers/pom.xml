@@ -12,5 +12,6 @@
     <module>theAccountant</module>
     <module>ReverseEngineering</module>
     <module>backToTheCode</module>
+    <module>BackToTheCode</module>
   </modules>
 </project>
