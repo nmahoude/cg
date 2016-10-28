@@ -1,7 +1,5 @@
 package montecarlo;
 
-import static org.hamcrest.CoreMatchers.containsString;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;

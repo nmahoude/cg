@@ -2,19 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>nmahoude.codingame</groupId>
-    <artifactId>multiplayers</artifactId>
+    <artifactId>hard</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>hypersonic</artifactId>
-  <dependencies>
-    <dependency>
-      <groupId>org.openjdk.jmh</groupId>
-      <artifactId>jmh-core</artifactId>
-      <version>1.15</version>
-    </dependency>
-
-  </dependencies>
-  <build>
+  <artifactId>TheLabyrinth</artifactId>
+  
+    <build>
     <plugins>
       <plugin>
         <groupId>org.ndx.codingame</groupId>

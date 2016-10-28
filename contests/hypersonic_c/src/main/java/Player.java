@@ -187,7 +187,8 @@ class Player {
 
     void updatePlayerDeath(P position) {
       for (int p=0;p<4;p++) {
-        if (state.players[p] != null && state.players[p].p.equals(position)) {
+        if (state.players[p] != null 
+            && state.players[p].p.equals(position)) {
           state.players[p].setDead();
         }
       }

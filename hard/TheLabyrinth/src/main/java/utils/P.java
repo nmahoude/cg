@@ -1,10 +1,12 @@
-package hypersonic.utils;
+package utils;
 
 public class P {
-  static P[][] ps = new P[20][20]; // maximum board
+  private static final int MAX_H = 2000;
+  private static final int MAX_W = 2000;
+  static P[][] ps = new P[MAX_W][MAX_H]; // maximum board
   static {
-    for (int x=0;x<20;x++) {
-      for (int y=0;y<20;y++) {
+    for (int x=0;x<MAX_W;x++) {
+      for (int y=0;y<MAX_H;y++) {
         ps[x][y] = new P(x,y);
       }
     }
