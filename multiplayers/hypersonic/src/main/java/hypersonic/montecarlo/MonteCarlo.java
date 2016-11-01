@@ -7,6 +7,8 @@ import hypersonic.Simulation;
 
 public class MonteCarlo {
 
+  private static final int SIMULATION_COUNT = 200;
+  private static final int MAX_STEPS = 19;
   Node root = new Node();
   
   public void init() {
@@ -14,8 +16,12 @@ public class MonteCarlo {
   }
   
   public void simulate(Simulation simulation) {
-    root.simulation = simulation;
-    root.simulate(8, 5);
+    root.simulation = new Simulation();
+    
+    for (int i=SIMULATION_COUNT;i>=0;i--) {
+      root.simulation.copyFrom(simulation);
+      root.simulate(MAX_STEPS);
+    }
   }
   
   public Move findNextBestMove() {

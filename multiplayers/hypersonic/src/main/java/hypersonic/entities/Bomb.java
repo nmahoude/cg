@@ -7,18 +7,18 @@ public class Bomb extends Entity {
   public int timer;
   public int range;
   
-  public Bomb(P position, int timer, int range) {
-    super(EntityType.BOMB, position);
+  public Bomb(Board board, int owner, P position, int timer, int range) {
+    super(board, owner, EntityType.BOMB, position);
     this.timer = timer;
     this.range = range;
   }
-  public void explode(Board board) {
+  public void explode() {
     board.explode(this);
   }
-  public final void update(Board board) {
+  public final void update() {
     timer--;
     if (timer == 0) {
-      explode(board);
+      explode();
     }
   }
 }

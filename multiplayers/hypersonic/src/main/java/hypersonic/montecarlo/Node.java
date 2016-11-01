@@ -33,23 +33,21 @@ public class Node {
     return simulation.getScoreHeuristic();
   }
   
-  public void simulate(int depth, int tries) {
-    if (depth == 0) {
+  public void simulate(int remainingDepth) {
+    if (remainingDepth == 0) {
       return;
     }
-    for (int i=0;i<tries;i++) {
-      List<Move> moves = simulation.getPossibleMoves();
-      int choice = ThreadLocalRandom.current().nextInt(moves.size());
-      Move move = moves.get(choice);
-    
-      Node child = childs.get(move);
-      if (child == null) {
-        child = new Node();
-        child.simulation.copyFrom(this.simulation);
-        child.simulation.simulate(move);
-        childs.put(move, child);
-      }
-      child.simulate(depth-1, tries);
+    List<Move> moves = simulation.getPossibleMoves();
+    int choice = ThreadLocalRandom.current().nextInt(moves.size());
+    Move move = moves.get(choice);
+  
+    Node child = childs.get(move);
+    if (child == null) {
+      child = new Node();
+      child.simulation.copyFrom(this.simulation);
+      child.simulation.simulate(move);
+      childs.put(move, child);
     }
+    child.simulate(remainingDepth-1);
   }
 }

@@ -68,7 +68,7 @@ public class Simulation {
     
     board.destructedBox = 0;
     for (Bomb bomb : board.bombs) {
-      bomb.update(board);
+      bomb.update();
     }
   }
   private void simulateMove(Move move) {
@@ -102,7 +102,7 @@ public class Simulation {
     }
     
     if (dropBomb) {
-      board.addBomb(new Bomb(board.me.position, 8, board.me.currentRange));
+      board.addBomb(new Bomb(board, board.me.owner, board.me.position, 8, board.me.currentRange));
       board.me.bombsLeft-=1;
     }
     board.me.position = new P(newX, newY);

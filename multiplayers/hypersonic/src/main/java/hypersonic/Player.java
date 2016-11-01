@@ -77,16 +77,16 @@ public class Player {
       int param1 = in.nextInt();
       int param2 = in.nextInt();
       if (entityType == 0) {
-        Bomberman player = new Bomberman(owner, new P(x, y), param1, param2);
+        Bomberman player = new Bomberman(board, owner, new P(x, y), param1, param2);
         board.addPlayer(player);
-        if (player.id == myId) {
+        if (player.owner == myId) {
           board.me = player;
         }
       } else if (entityType == 1) {
-        Bomb bomb = new Bomb(new P(x, y), param1, param2);
+        Bomb bomb = new Bomb(board, owner, new P(x, y), param1, param2);
         board.addBomb(bomb);
       } else if (entityType == 2) {
-        Item item = new Item(new P(x, y), param1, param2);
+        Item item = new Item(board, owner, new P(x, y), param1, param2);
         board.addItem(item);
       }
     }
