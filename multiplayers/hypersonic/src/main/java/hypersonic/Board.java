@@ -1,6 +1,7 @@
 package hypersonic;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import hypersonic.entities.Bomb;
@@ -67,10 +68,13 @@ public class Board {
 
   public void simulate() {
     // simulate one turn
-    for (Bomb b : bombs) {
+    Iterator<Bomb> ite = bombs.iterator();
+    for (;ite.hasNext();) {
+      Bomb b = ite.next();
       b.timer -= 1;
       if (b.timer == 0) {
         b.explode(this);
+        ite.remove();
       }
     }
   }

@@ -23,6 +23,7 @@ public class Path {
   char[][] cells;
   private int width;
   private int height;
+  public P controlRoom = null;
   
   public Path(int width, int height, char[][] cells, P from, P target) {
     this.width = width;
@@ -99,6 +100,9 @@ public class Path {
       return;
     }
     char value = cells[toCell.x][toCell.y];
+    if (value == 'C') {
+      controlRoom = new P(toCell.x, toCell.y);
+    }
     if (value == '.' || ((value == '?' || value == 'T' || value == 'C' ) && target.equals(toCell))) {
       PathItem pi = new PathItem();
       pi.pos = toCell;
@@ -108,5 +112,5 @@ public class Path {
       openList.add(pi);
     }
   }
-}
+}   
 /** End of PATH */

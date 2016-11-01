@@ -48,7 +48,7 @@ public class Player {
           if (value == 'T') {
             exit = new P(x,y);
           } else if (value == 'C') {
-            controlRoom = new P(x,y);
+            //controlRoom = new P(x,y);
           }
         }
       }
@@ -62,8 +62,6 @@ public class Player {
         System.err.println("Found control room at"+controlRoom+", go to it !");
       }
       
-
-
       if (mode == Mode.TO_EXIT) {
         if (returnPath == null) {
           Path astar = new Path(width, height, cells, kirk, exit);
@@ -80,6 +78,9 @@ public class Player {
       if (mode == Mode.TO_CONTROLROOM) {
         Path astar = new Path(width, height, cells, kirk, controlRoom);
         List<PathItem> path = astar.find();
+        if (astar.controlRoom != null) {
+          controlRoom = astar.controlRoom;
+        }
         if (!path.isEmpty()) {
           PathItem first = path.get(1);
           P pos = first.getPosition();

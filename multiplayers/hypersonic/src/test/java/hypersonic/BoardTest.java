@@ -11,13 +11,26 @@ import hypersonic.utils.P;
 
 public class BoardTest {
 
+  private static Board board;
+
+
   public static class Explosions {
+    @Test
+    public void bombsExplodesAfter8turns() throws Exception {
+      Board board = createBasicBoard();
+      Bomb bomb = createBomb(board).at(2,0).withRange(3).build();
+
+      simulateToBombExplosion(board);
+
+      assertThat(board.bombs.isEmpty(), is(true));
+      assertThat(board.cells[2][1], is((int)Board.EMPTY));
+    }
+
     @Test
     public void bombsExplodesBoxes() throws Exception {
       Board board = createBasicBoard();
-      
-      Bomb bomb = new Bomb(new P(2,2), 1, 3);
-      board.addBomb(bomb);
+      Bomb bomb = createBomb(board).at(2,2).withTimer(1).withRange(3).build();
+
       bomb.explode(board);
       
       assertThat(board.cells[2][1], is((int)Board.EMPTY));
@@ -126,6 +139,50 @@ public class BoardTest {
     board.init();
     for (int y=0;y<11;y++)
       board.init(y, rows[y]);
+  }
+  
+  private static BombBuilder createBomb(Board board) {
+    return new BombBuilder(board);
+  }
+  private static class BombBuilder {
+    private Board board;
+    private int x;
+    private int y;
+    private int range = 3;
+    private int timer = 8;
+
+    public BombBuilder(Board board) {
+      this.board = board;
+    }
+
+    public BombBuilder at(int x, int y) {
+      this.x = x;
+      this.y = y;
+      return this;
+    }
+
+    public BombBuilder withRange(int range) {
+      this.range = range;
+      return this;
+    }
+
+    public BombBuilder withTimer(int timer) {
+      this.timer  = timer;
+      return this;
+    }
+
+    public Bomb build() {
+      Bomb bomb = new Bomb(new P(x,y), timer, range);
+      board.addBomb(bomb);
+      return bomb;
+    }
+  }
+
+
+  private static void simulateToBombExplosion(Board board) {
+    for (int i=0;i<8;i++) {
+      board.simulate();
+    }
   }
 
 }

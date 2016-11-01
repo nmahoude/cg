@@ -1,7 +1,9 @@
 package hypersonic.montecarlo;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import hypersonic.Move;
 import hypersonic.Simulation;
@@ -31,14 +33,15 @@ public class Node {
     return simulation.getScoreHeuristic();
   }
   
-  public void simulate(int depth) {
+  public void simulate(int depth, int tries) {
     if (depth == 0) {
       return;
     }
-    for (Move move : Move.values()) {
-      if (!simulation.isMovePossible(move)) {
-        continue;
-      }
+    for (int i=0;i<tries;i++) {
+      List<Move> moves = simulation.getPossibleMoves();
+      int choice = ThreadLocalRandom.current().nextInt(moves.size());
+      Move move = moves.get(choice);
+    
       Node child = childs.get(move);
       if (child == null) {
         child = new Node();
@@ -46,7 +49,7 @@ public class Node {
         child.simulation.simulate(move);
         childs.put(move, child);
       }
-      child.simulate(depth-1);
+      child.simulate(depth-1, tries);
     }
   }
 }

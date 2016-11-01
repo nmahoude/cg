@@ -1,5 +1,8 @@
 package hypersonic;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.utils.P;
@@ -8,11 +11,23 @@ public class Simulation {
   Board board;
   
   public final int getScoreHeuristic() {
-    return board.me.position.y;
+    return board.destructedBox;
   }
   public final boolean isFinished() {
     return false;
   }
+  
+  public List<Move> getPossibleMoves() {
+    List<Move> moves = new ArrayList<>();
+    for (Move move : Move.values()) {
+      if (isMovePossible(move)) {
+        moves.add(move);
+      }
+    }
+    return moves;
+  }
+  
+  
   public final boolean isMovePossible(Move move) {
     Bomberman me = board.me;
     switch(move) {

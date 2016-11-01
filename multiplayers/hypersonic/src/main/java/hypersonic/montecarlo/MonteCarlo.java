@@ -15,7 +15,7 @@ public class MonteCarlo {
   
   public void simulate(Simulation simulation) {
     root.simulation = simulation;
-    root.simulate(3);
+    root.simulate(8, 5);
   }
   
   public Move findNextBestMove() {

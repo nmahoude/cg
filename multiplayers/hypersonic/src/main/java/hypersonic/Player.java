@@ -25,7 +25,6 @@ public class Player {
       mc.simulate(sim);
       Move move = mc.findNextBestMove();
       outputMove(board.me, move);
-      //System.out.println("MOVE 0 0");
     }
   }
   private void outputMove(Bomberman me, Move move) {
