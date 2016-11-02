@@ -16,13 +16,14 @@ public class Player {
   static P kirk;
   static P exit;
   static P controlRoom;
-  
+
   static Mode mode = Mode.EXPLORE;
   static int height;
   static int width;
 
   static List<PathItem> returnPath = null;
-  
+  private static P controlRoomToBe;
+
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
     height = in.nextInt();
@@ -35,33 +36,37 @@ public class Player {
 
     // game loop
     while (true) {
+      long tt0 = System.currentTimeMillis();
       int kirkY = in.nextInt(); // row where Kirk is located.
       int kirkX = in.nextInt(); // column where Kirk is located.
-      kirk = new P(kirkX, kirkY);
-      
+      kirk = P.get(kirkX, kirkY);
+
       for (int y = 0; y < height; y++) {
         String row = in.next(); // C of the characters in '#.TC?' (i.e. one line
                                 // of the ASCII maze).
         for (int x = 0; x < row.length(); x++) {
           char value = row.charAt(x);
           cells[x][y] = value;
+          if (value == '?') {
+          }
           if (value == 'T') {
-            exit = new P(x,y);
+            exit = P.get(x, y);
           } else if (value == 'C') {
-            //controlRoom = new P(x,y);
+            controlRoomToBe = P.get(x, y);
           }
         }
       }
 
-      //debugCells();
+      debugCells();
 
       String action = "PERDU";
-      System.err.println("Kick is at " + kirk);
+      System.err.println("Kick is at " + kirk + "in mode " + mode);
+
       if (controlRoom != null && mode == Mode.EXPLORE) {
         mode = Mode.TO_CONTROLROOM;
-        System.err.println("Found control room at"+controlRoom+", go to it !");
+        System.err.println("Found control room at" + controlRoom + ", go to it !");
       }
-      
+
       if (mode == Mode.TO_EXIT) {
         if (returnPath == null) {
           Path astar = new Path(width, height, cells, kirk, exit);
@@ -72,9 +77,8 @@ public class Player {
           PathItem first = returnPath.remove(0);
           P pos = first.getPosition();
           action = pToAction(kirk, pos);
-       }
+        }
       }
-      
       if (mode == Mode.TO_CONTROLROOM) {
         Path astar = new Path(width, height, cells, kirk, controlRoom);
         List<PathItem> path = astar.find();
@@ -89,34 +93,48 @@ public class Player {
             System.err.println("Kirk found controlRoom, next rush to exit");
           }
           action = pToAction(kirk, pos);
-       }
+        }
       }
       if (mode == Mode.EXPLORE) {
+        System.err.println("Exploring");
         Explore e = new Explore(width, height, cells);
+        long t1 = System.currentTimeMillis();
         P target = e.findClosedReachableCell(kirk);
+        long t2 = System.currentTimeMillis();
+        System.err.println("Explore took : "+(t2-t1)+"");
         if (target != null) {
           Path astar = new Path(width, height, cells, kirk, target);
           List<PathItem> path = astar.find();
+          long t3= System.currentTimeMillis();
+          System.err.println("AStar took : "+(t3-t2)+"");
           if (!path.isEmpty()) {
-             PathItem first = path.get(1);
-             P pos = first.getPosition();
-             action = pToAction(kirk, pos);
+            PathItem first = path.get(1);
+            P pos = first.getPosition();
+            action = pToAction(kirk, pos);
           } else {
             System.err.println("Path is empty");
           }
         } else {
           System.err.println("Plus de '?' à trouver");
+          controlRoom = controlRoomToBe;
+          mode = Mode.TO_CONTROLROOM;
+          System.err.println("Switching to mode " + mode + " no more '?' to find");
+          System.out.println("RIGHT");
+          continue;
+          
         }
       } else {
       }
 
+      long tt1 = System.currentTimeMillis();
+      System.err.println("All took : "+(tt1-tt0)+"");
       System.out.println(action); // Kirk's next move (UP DOWN LEFT or RIGHT).
     }
   }
 
   private static String pToAction(P kirk, P pos) {
     System.err.println("Find move from " + kirk + " to " + pos);
-    
+
     String action = "";
     if (pos.x == kirk.x + 1) {
       action = "RIGHT";
@@ -135,8 +153,13 @@ public class Player {
   private static void debugCells() {
     System.err.println("Labyrinth : ");
     for (int y = 0; y < height; y++) {
+      System.err.print("\"");
       for (int x = 0; x < width; x++) {
         System.err.print(cells[x][y]);
+      }
+      System.err.print("\"");
+      if (y != height-1) {
+        System.err.print(",");
       }
       System.err.println("");
     }

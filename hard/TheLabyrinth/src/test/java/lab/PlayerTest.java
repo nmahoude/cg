@@ -1,5 +1,8 @@
 package lab;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.List;
 
 import org.junit.Test;
@@ -52,7 +55,105 @@ public class PlayerTest {
       System.err.println("Plus de '?' à trouver");
     }
   }
-
+  
+  @Test
+  public void exploringEmptyBoard() throws Exception {
+    Player player = new Player();
+    
+    player.width = 30;
+    player.height = 15;
+    player.cells = new char[player.width][player.height];
+    initCells(player,    
+        "##############################",
+        "#T...........................#",
+        "##...........................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#...........................C#",
+        "##############################"
+        );
+    player.kirk = new P(2,6);
+    
+    Explore e = new Explore(player.width, player.height, player.cells);
+    long t1 = System.currentTimeMillis();
+    P target = e.findClosedReachableCell(player.kirk);
+    long t2 = System.currentTimeMillis();
+    
+    assertThat((t2-t1) > 1000, is(false));
+  }
+  
+  @Test
+  public void EmptyBoard() throws Exception {
+    Player player = new Player();
+    
+    player.width = 30;
+    player.height = 15;
+    player.cells = new char[player.width][player.height];
+    initCells(player,    
+        "##############################",
+        "#T...........................#",
+        "##...........................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#............................#",
+        "#...........................C#",
+        "##############################"
+        );
+    player.kirk = new P(2,6);
+    
+    Path astar = new Path(player.width, player.height, player.cells, player.kirk, P.get(28,13));
+    List<PathItem> path = astar.find();
+    assertThat(path.isEmpty(), is(false));
+  }
+  
+  @Test
+  public void cantfindWayBack() throws Exception {
+    Player player = new Player();
+    
+    player.width = 30;
+    player.height = 15;
+    player.cells = new char[player.width][player.height];
+    initCells(player,    
+        "??????????????????############",
+        "??????????????????..T........#",
+        "??????????????????##########.#",
+        "??????????????????.........#.#",
+        "??????????????????????????.#.#",
+        "??????????????????????????.#.#",
+        "??????????????????????????##.#",
+        "??????????????????????????##.#",
+        "??????????????????????????##.#",
+        "??????????????????????????.#.#",
+        "??????????????????????????.#.#",
+        "??????????????????????????.#.#",
+        "??????????????????????????##.#",
+        "??????????????????????????.#.#",
+        "??????????????????????????####"
+        );
+    player.kirk = new P(28,12);
+    
+    P target = P.get(17,1);
+    Path astar = new Path(player.width, player.height, player.cells, player.kirk, target);
+    List<PathItem> path = astar.find();
+    
+    assertThat(path.isEmpty(), is(false));
+  }
+  
   private void initCells(Player player, String...rows) {
     for (int y=0;y<player.height;y++) {
       for (int x=0;x<player.width;x++) {

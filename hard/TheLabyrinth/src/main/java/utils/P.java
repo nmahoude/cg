@@ -11,7 +11,10 @@ public class P {
       }
     }
   }
-  static P get(int x,int y) {
+  public static P get(int x,int y) {
+    if (x<0 || y<0) {
+      return ps[MAX_W-1][MAX_H-1];
+    }
     return ps[x][y];
   }
   
@@ -40,7 +43,7 @@ public class P {
 
   @Override
   public int hashCode() {
-    final int prime = 31;
+    final int prime = 113;
     int result = 1;
     result = prime * result + x;
     result = prime * result + y;

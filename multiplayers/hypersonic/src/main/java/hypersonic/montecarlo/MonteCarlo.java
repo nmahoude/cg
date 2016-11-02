@@ -17,9 +17,9 @@ public class MonteCarlo {
   
   public void simulate(Simulation simulation) {
     root.simulation = new Simulation();
+    root.simulation.copyFrom(simulation);
     
     for (int i=SIMULATION_COUNT;i>=0;i--) {
-      root.simulation.copyFrom(simulation);
       root.simulate(MAX_STEPS);
     }
   }

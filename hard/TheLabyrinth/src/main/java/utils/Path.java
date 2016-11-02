@@ -70,7 +70,9 @@ public class Path {
       if (pos.equals(target)) {
         return visiting;
       }
-
+      if (closedList.containsKey(pos)) {
+        continue;
+      }
       closedList.put(pos, visiting);
       if (pos.y > 0) {
         addToOpenList(visiting, pos , P.get(pos.x, pos.y-1), target);
@@ -101,9 +103,9 @@ public class Path {
     }
     char value = cells[toCell.x][toCell.y];
     if (value == 'C') {
-      controlRoom = new P(toCell.x, toCell.y);
+      controlRoom = P.get(toCell.x, toCell.y);
     }
-    if (value == '.' || ((value == '?' || value == 'T' || value == 'C' ) && target.equals(toCell))) {
+    if (value == '.'  || value == 'T' || ((value == '?' || value == 'C' ) && target.equals(toCell))) {
       PathItem pi = new PathItem();
       pi.pos = toCell;
       pi.cumulativeLength = visiting.cumulativeLength + 1;

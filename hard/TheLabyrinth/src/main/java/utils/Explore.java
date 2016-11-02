@@ -1,7 +1,9 @@
 package utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Explore {
   private int width;
@@ -15,14 +17,15 @@ public class Explore {
     this.cells = cells;
     
   }
+
   public P findClosedReachableCell(P kirk) {
-    List<P> exploredPs = new ArrayList<>();
+    Map<P, P> exploredPs = new HashMap<>();
     List<P> toExploredPs = new ArrayList<>();
     
     toExploredPs.add(kirk);
     while (!toExploredPs.isEmpty()) {
       P p = toExploredPs.remove(0);
-      exploredPs.add(p);
+      exploredPs.put(p, p);
       char value = cells[p.x][p.y];
       if (value == '#') {
         continue;
@@ -33,11 +36,13 @@ public class Explore {
       }
       if (value == '.' || value == 'T') {
         for (int r=0;r<4;r++) {
-          P newP = new P(p.x+rot[r][0], p.y+rot[r][1]);
-          if (isOnBoard(newP) && !exploredPs.contains(newP)) {
+          P newP = P.get(p.x+rot[r][0], p.y+rot[r][1]);
+          if (isOnBoard(newP) && !exploredPs.containsKey(newP) && !toExploredPs.contains(newP)) {
             toExploredPs.add(newP);
           }
         }
+      } else {
+        exploredPs.put(p,p);
       }
     }
     return null;
