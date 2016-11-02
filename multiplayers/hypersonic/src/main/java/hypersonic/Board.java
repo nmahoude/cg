@@ -28,13 +28,13 @@ public class Board {
       { 0, -1 }
   };
 
-  int cells[][] = new int[13][11];
+  public int cells[][] = new int[13][11];
 
   List<P> boxes = new ArrayList<>();
   List<Bomb> bombs = new ArrayList<>();
   List<Item> items = new ArrayList<>();
-  List<Bomberman> players = new ArrayList<>();
-  Bomberman me;
+  public List<Bomberman> players = new ArrayList<>();
+  public Bomberman me;
 
   int destructedBox;
 
@@ -191,7 +191,22 @@ public class Board {
   }
 
   public void copyFrom(Board board) {
-    me = new Bomberman(this, board.me.owner, board.me.position, board.me.bombsLeft, board.me.currentRange);
+    boxes.addAll(board.boxes);
+    
+    for (Bomb b : board.bombs) {
+      bombs.add(b.duplicate(this));
+    }
+    for (Item i : board.items) {
+      items.add(i.duplicate(this));
+    }
+    for (Bomberman b : board.players) {
+      Bomberman copy = b.duplicate(this);
+      if (b == board.me) {
+        this.me = copy;
+      }
+      players.add(copy);
+    }
+    
     for (int y=0;y<11;y++) {
       for (int x=0;x<13;x++) {
         cells[x][y] = board.cells[x][y];

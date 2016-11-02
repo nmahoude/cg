@@ -7,8 +7,8 @@ import hypersonic.Simulation;
 
 public class MonteCarlo {
 
-  private static final int SIMULATION_COUNT = 200;
-  private static final int MAX_STEPS = 19;
+  private static final int SIMULATION_COUNT = 5_000;
+  public static final int MAX_DEPTH = 10 ;
   Node root = new Node();
   
   public void init() {
@@ -16,11 +16,12 @@ public class MonteCarlo {
   }
   
   public void simulate(Simulation simulation) {
+    root.childs.clear();
     root.simulation = new Simulation();
     root.simulation.copyFrom(simulation);
     
     for (int i=SIMULATION_COUNT;i>=0;i--) {
-      root.simulate(MAX_STEPS);
+      root.simulate(0);
     }
   }
   
@@ -29,7 +30,7 @@ public class MonteCarlo {
     Move bestMove = null;
     for (Entry<Move, Node> entry : root.childs.entrySet()) {
       int score = entry.getValue().getBestScore();
-      System.err.println(""+entry.getKey()+" with score of "+entry.getValue().getScore()+" best is "+score);
+      System.err.println(""+entry.getKey()+"("+entry.getValue().count+" sim) with score of "+entry.getValue().getScore()+" best is "+score);
       if (score > bestScore) {
         bestScore = score;
         bestMove = entry.getKey();

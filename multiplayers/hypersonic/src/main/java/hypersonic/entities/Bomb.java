@@ -21,4 +21,8 @@ public class Bomb extends Entity {
       explode();
     }
   }
+  public Bomb duplicate(Board board) {
+    Bomb b = new Bomb(board,owner, position, timer, range);
+    return b;
+  }
 }

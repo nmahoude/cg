@@ -8,10 +8,13 @@ import hypersonic.entities.Bomberman;
 import hypersonic.utils.P;
 
 public class Simulation {
-  Board board;
+  public Board board;
   
   public final int getScoreHeuristic() {
-    return board.destructedBox;
+    if (board.me.isDead) {
+      return -999;
+    }
+    return board.me.points;
   }
   public final boolean isFinished() {
     return false;
@@ -64,12 +67,11 @@ public class Simulation {
     board.copyFrom(simulation.board);
   }
   public final void simulate(Move move) {
-    simulateMove(move);
-    
     board.destructedBox = 0;
     for (Bomb bomb : board.bombs) {
       bomb.update();
     }
+    simulateMove(move);
   }
   private void simulateMove(Move move) {
     int newX = board.me.position.x;

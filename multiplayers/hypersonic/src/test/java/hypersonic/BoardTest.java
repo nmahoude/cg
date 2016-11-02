@@ -332,7 +332,7 @@ public class BoardTest {
   }
 
 
-  private static Board createBasicBoard() {
+  public static Board createBasicBoard() {
     Board board = new Board();
     initBoard(board, 
      ".............",
@@ -351,16 +351,16 @@ public class BoardTest {
   }
 
 
-  private static void initBoard(Board board, String... rows) {
+  public static void initBoard(Board board, String... rows) {
     board.init();
     for (int y=0;y<11;y++)
       board.init(y, rows[y]);
   }
   
-  private static BombBuilder createBomb(Board board) {
+  public static BombBuilder createBomb(Board board) {
     return new BombBuilder(board);
   }
-  private static class BombBuilder {
+  public static class BombBuilder {
     private Board board;
     private int x;
     private int y;
@@ -401,16 +401,16 @@ public class BoardTest {
   }
 
 
-  private static void simulateToBombExplosion(Board board) {
+  public static void simulateToBombExplosion(Board board) {
     for (int i=0;i<8;i++) {
       board.simulate();
     }
   }
 
-  static private ItemBuilder createItem(Board board) {
+  public static ItemBuilder createItem(Board board) {
     return new ItemBuilder(board);
   }
-  static class ItemBuilder {
+  public static class ItemBuilder {
 
     private Board board;
     private int type;

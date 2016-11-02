@@ -22,4 +22,14 @@ public class Bomberman extends Entity {
       board.walkOn(this, p);
     }
   }
+
+  public Bomberman duplicate(Board board) {
+    Bomberman b = new Bomberman(board, owner, position, bombsLeft, currentRange);
+    return b;
+  }
+  
+  @Override
+  public String toString() {
+    return "Bomberman("+owner+"): pos="+position+" bLeft:"+bombsLeft+" cRange:"+currentRange +" isDead:"+isDead;
+  }
 }

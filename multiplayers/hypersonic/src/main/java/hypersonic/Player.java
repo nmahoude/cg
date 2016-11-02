@@ -81,6 +81,7 @@ public class Player {
         board.addPlayer(player);
         if (player.owner == myId) {
           board.me = player;
+          System.err.println("ME == bLeft: "+player.bombsLeft+ " / range:"+player.currentRange);
         }
       } else if (entityType == 1) {
         Bomb bomb = new Bomb(board, owner, new P(x, y), param1, param2);
