@@ -79,22 +79,7 @@ public class Player {
           action = pToAction(kirk, pos);
         }
       }
-      if (mode == Mode.TO_CONTROLROOM) {
-        Path astar = new Path(width, height, cells, kirk, controlRoom);
-        List<PathItem> path = astar.find();
-        if (astar.controlRoom != null) {
-          controlRoom = astar.controlRoom;
-        }
-        if (!path.isEmpty()) {
-          PathItem first = path.get(1);
-          P pos = first.getPosition();
-          if (pos.equals(controlRoom)) {
-            mode = Mode.TO_EXIT;
-            System.err.println("Kirk found controlRoom, next rush to exit");
-          }
-          action = pToAction(kirk, pos);
-        }
-      }
+
       if (mode == Mode.EXPLORE) {
         System.err.println("Exploring");
         Explore e = new Explore(width, height, cells);
@@ -119,13 +104,25 @@ public class Player {
           controlRoom = controlRoomToBe;
           mode = Mode.TO_CONTROLROOM;
           System.err.println("Switching to mode " + mode + " no more '?' to find");
-          System.out.println("RIGHT");
-          continue;
-          
         }
       } else {
       }
-
+      if (mode == Mode.TO_CONTROLROOM) {
+        Path astar = new Path(width, height, cells, kirk, controlRoom);
+        List<PathItem> path = astar.find();
+        if (astar.controlRoom != null) {
+          controlRoom = astar.controlRoom;
+        }
+        if (!path.isEmpty()) {
+          PathItem first = path.get(1);
+          P pos = first.getPosition();
+          if (pos.equals(controlRoom)) {
+            mode = Mode.TO_EXIT;
+            System.err.println("Kirk found controlRoom, next rush to exit");
+          }
+          action = pToAction(kirk, pos);
+        }
+      }
       long tt1 = System.currentTimeMillis();
       System.err.println("All took : "+(tt1-tt0)+"");
       System.out.println(action); // Kirk's next move (UP DOWN LEFT or RIGHT).
