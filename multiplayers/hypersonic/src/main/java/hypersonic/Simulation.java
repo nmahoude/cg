@@ -14,7 +14,7 @@ public class Simulation {
     if (board.me.isDead) {
       return -999;
     }
-    return board.me.points;
+    return board.me.points+board.me.bombsLeft+board.me.currentRange;
   }
   public final boolean isFinished() {
     return false;
@@ -63,8 +63,7 @@ public class Simulation {
     }
   }
   public final void copyFrom(Simulation simulation) {
-    board = new Board();
-    board.copyFrom(simulation.board);
+    board = simulation.board.duplicate();
   }
   public final void simulate(Move move) {
     board.destructedBox = 0;
@@ -107,6 +106,6 @@ public class Simulation {
       board.addBomb(new Bomb(board, board.me.owner, board.me.position, 8, board.me.currentRange));
       board.me.bombsLeft-=1;
     }
-    board.me.position = new P(newX, newY);
+    board.walkOn(board.me, P.get(newX, newY));
   }
 }

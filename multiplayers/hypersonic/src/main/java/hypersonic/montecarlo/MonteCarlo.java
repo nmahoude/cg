@@ -7,16 +7,16 @@ import hypersonic.Simulation;
 
 public class MonteCarlo {
 
-  private static final int SIMULATION_COUNT = 5_000;
-  public static final int MAX_DEPTH = 10 ;
-  Node root = new Node();
+  private static final int SIMULATION_COUNT = 1_500;
+  public static final int MAX_DEPTH = 20 ;
+  public Node root = new Node();
   
   public void init() {
     root = new Node();
   }
   
   public void simulate(Simulation simulation) {
-    root.childs.clear();
+    root.clear();
     root.simulation = new Simulation();
     root.simulation.copyFrom(simulation);
     

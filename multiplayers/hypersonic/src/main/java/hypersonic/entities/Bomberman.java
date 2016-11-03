@@ -25,6 +25,8 @@ public class Bomberman extends Entity {
 
   public Bomberman duplicate(Board board) {
     Bomberman b = new Bomberman(board, owner, position, bombsLeft, currentRange);
+    b.points = points;
+    b.isDead = isDead;
     return b;
   }
   

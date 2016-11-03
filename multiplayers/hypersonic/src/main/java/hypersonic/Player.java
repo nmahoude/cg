@@ -22,7 +22,10 @@ public class Player {
     while (true) {
       getSimulationState();
       
+      mc.root.retrocedBoards();
+      System.err.println("Current board cache is "+Board.availableBoards.size());
       mc.simulate(sim);
+      System.err.println("(after sim) board cache is "+Board.availableBoards.size());
       Move move = mc.findNextBestMove();
       outputMove(board.me, move);
     }
@@ -81,7 +84,7 @@ public class Player {
         board.addPlayer(player);
         if (player.owner == myId) {
           board.me = player;
-          System.err.println("ME == bLeft: "+player.bombsLeft+ " / range:"+player.currentRange);
+          System.err.println("ME == pos: "+player.position+" bLeft: "+player.bombsLeft+ " / range:"+player.currentRange);
         }
       } else if (entityType == 1) {
         Bomb bomb = new Bomb(board, owner, new P(x, y), param1, param2);

@@ -56,21 +56,21 @@ public class BoardTest {
     }
 
     @Test
-    public void playerMoveOnItemDoesntConsumeIt() throws Exception {
+    public void playerMoveOnItemConsumeIt() throws Exception {
       Board board = createBasicBoard();
-      board.cells[3][0] = Board.ITEM_1;
+      board.cells[cell(3,0)] = Board.ITEM_1;
       board.me = new Bomberman(board, 1, new P(2,0), 1, 3);
       
       board.me.move(new P(3,0));
       
       assertThat(board.me.position, is(new P(3,0)));
-      assertThat(board.cells[3][0], is((int)Board.ITEM_1));
+      assertThat(board.cells[cell(3,0)], is((int)Board.EMPTY));
     }
 
     @Test
     public void playerMoveOnRangeUpItem() throws Exception {
       Board board = createBasicBoard();
-      board.cells[3][0] = Board.ITEM_1;
+      board.cells[cell(3,0)] = Board.ITEM_1;
       board.me = new Bomberman(board, 1, new P(2,0), 1, 3);
       
       board.me.move(new P(3,0));
@@ -82,7 +82,7 @@ public class BoardTest {
     @Test
     public void playerMoveOnBombUpItem() throws Exception {
       Board board = createBasicBoard();
-      board.cells[3][0] = Board.ITEM_2;
+      board.cells[cell(3,0)] = Board.ITEM_2;
       board.me = new Bomberman(board, 1, new P(2,0), 1, 3);
       
       board.me.move(new P(3,0));
@@ -102,7 +102,7 @@ public class BoardTest {
       simulateToBombExplosion(board);
 
       assertThat(board.bombs.isEmpty(), is(true));
-      assertThat(board.cells[2][1], is((int)Board.EMPTY));
+      assertThat(board.cells[cell(2,1)], is((int)Board.EMPTY));
     }
 
     @Test
@@ -113,7 +113,7 @@ public class BoardTest {
       simulateToBombExplosion(board);
 
       assertThat(board.bombs.isEmpty(), is(true));
-      assertThat(board.cells[3][2], is(not((int)Board.EMPTY)));
+      assertThat(board.cells[cell(3,2)], is(not((int)Board.EMPTY)));
     }
 
     @Test
@@ -123,10 +123,10 @@ public class BoardTest {
 
       bomb.explode();
       
-      assertThat(board.cells[2][1], is((int)Board.EMPTY));
-      assertThat(board.cells[1][2], is((int)Board.EMPTY));
-      assertThat(board.cells[2][3], is((int)Board.EMPTY));
-      assertThat(board.cells[3][2], is((int)Board.EMPTY));
+      assertThat(board.cells[cell(2,1)], is((int)Board.EMPTY));
+      assertThat(board.cells[cell(1,2)], is((int)Board.EMPTY));
+      assertThat(board.cells[cell(2,3)], is((int)Board.EMPTY));
+      assertThat(board.cells[cell(3,2)], is((int)Board.EMPTY));
     }
     
     @Test
@@ -178,7 +178,7 @@ public class BoardTest {
 
       bomb.explode();
       
-      assertThat(board.cells[2][1], is(not((int)Board.EMPTY)));
+      assertThat(board.cells[cell(2,1)], is(not((int)Board.EMPTY)));
     }
 
     @Test
@@ -202,8 +202,8 @@ public class BoardTest {
       
       board.explode(bomb);
       
-      assertThat(board.cells[1][0], is((int)Board.EMPTY));
-      assertThat(board.cells[2][0], is(not((int)Board.EMPTY)));
+      assertThat(board.cells[cell(1,0)], is((int)Board.EMPTY));
+      assertThat(board.cells[cell(2,0)], is(not((int)Board.EMPTY)));
     }
 
     @Test
@@ -228,8 +228,8 @@ public class BoardTest {
       
       board.explode(bomb);
       
-      assertThat(board.cells[1][0], is((int)Board.EMPTY));
-      assertThat(board.cells[2][0], is(not((int)Board.EMPTY)));
+      assertThat(board.cells[cell(1,0)], is((int)Board.EMPTY));
+      assertThat(board.cells[cell(2,0)], is(not((int)Board.EMPTY)));
     }
 
     @Test
@@ -253,7 +253,7 @@ public class BoardTest {
 
       board.explode(bomb);
       
-      assertThat(board.cells[2][0], is(not((int)Board.EMPTY)));
+      assertThat(board.cells[cell(2,0)], is(not((int)Board.EMPTY)));
     }
 
     @Test
@@ -277,7 +277,7 @@ public class BoardTest {
       
       bomb.explode();
       
-      assertThat((char)board.cells[2][1], is(Board.EMPTY));
+      assertThat((char)board.cells[cell(2,1)], is(Board.EMPTY));
     }
     
     @Test
@@ -433,5 +433,9 @@ public class BoardTest {
       return item;
     }
   };
+  static int cell(int x, int y) {
+    return x+13*y;
+  }
+
 
 }

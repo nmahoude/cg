@@ -1,6 +1,9 @@
 package hypersonic;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 
@@ -10,6 +13,12 @@ import hypersonic.entities.Item;
 import hypersonic.utils.P;
 
 public class Board {
+  static public Deque<Board> availableBoards = new ArrayDeque<>();
+  static {
+    for (int i=0;i<10000;i++) {
+      availableBoards.push(new Board());
+    }
+  }
   public static final char EMPTY = '.';
   public static final char WALL = 'X';
   
@@ -28,7 +37,7 @@ public class Board {
       { 0, -1 }
   };
 
-  public int cells[][] = new int[13][11];
+  public int cells[];
 
   List<P> boxes = new ArrayList<>();
   List<Bomb> bombs = new ArrayList<>();
@@ -38,6 +47,54 @@ public class Board {
 
   int destructedBox;
 
+  public Board() {
+    cells = new int[13*11];
+  }
+  private Board(Board board) {
+  }
+
+  private void clean() {
+    boxes.clear();
+    bombs.clear();
+    items.clear();
+    players.clear();
+    me = null;
+    destructedBox = 0;
+    // cells will be copied later
+  }
+
+  public static void retrocede(Board board) {
+    availableBoards.push(board);
+  }
+  
+  public Board duplicate() {
+    Board board;
+    if (availableBoards.isEmpty()) {
+      board = new Board();
+    } else {
+      board = availableBoards.pop();
+    }
+    board.clean();
+    board.boxes.addAll(this.boxes);
+    
+    for (Bomb b : this.bombs) {
+      board.bombs.add(b.duplicate(board));
+    }
+    for (Item i : this.items) {
+      board.items.add(i.duplicate(board));
+    }
+    for (Bomberman b : this.players) {
+      Bomberman copy = b.duplicate(board);
+      if (b == this.me) {
+        board.me = copy;
+      }
+      board.players.add(copy);
+    }
+    
+    System.arraycopy(cells, 0, board.cells, 0, 13*11);
+    return board;
+  }
+  
   public void init() {
     boxes.clear();
     bombs.clear();
@@ -50,7 +107,7 @@ public class Board {
   public void init(int y, String row) {
     for (int x = 0; x < 13; x++) {
       char value = row.charAt(x);
-      cells[x][y] = value;
+      cells[x+13*y] = value;
       if (value >= '0' && value <= '3') {
         addBox(x, y);
       }
@@ -89,7 +146,7 @@ public class Board {
 
   public void addBomb(Bomb bomb) {
     bombs.add(bomb);
-    cells[bomb.position.x][bomb.position.y] = BOMB;
+    cells[bomb.position.x+13*bomb.position.y] = BOMB;
   }
 
   public void explode(Bomb bomb) {
@@ -98,55 +155,67 @@ public class Board {
     while (!bombsToExplode.isEmpty()) {
       Bomb b = bombsToExplode.remove(0);
       Bomberman orginalBomberman = getBomberManWithId(b.owner);
+      if (orginalBomberman != null) {
+        orginalBomberman.bombsLeft+=1;
+      }
       int range = b.range;
       P p = b.position;
-      cells[p.x][p.y] = EMPTY;
+      cells[p.x+13*p.y] = EMPTY;
       
+      checkExplosion(bombsToExplode, orginalBomberman, p.x, p.y);
       for (int r = 0; r < 4; r++) {
         int dx = rot[r][0];
         int dy = rot[r][1];
-
-        for (int d = 0; d <= range; d++) {
+        for (int d = 1; d < range; d++) {
           int x = p.x + d*dx;
           int y = p.y + d*dy;
-          if (isOnBoard(x, y)) {
-            if (cells[x][y] == WALL) {
-              break; // stop explosion
-            }
-            for (Bomberman bomberman : players) {
-              if (bomberman.position.equals(new P(x,y))) {
-                bomberman.isDead = true;
-              }
-            }
-            if (cells[x][y] >= BOX && cells[x][y] <= BOX_2) {
-              destructedBox++;
-              if (orginalBomberman != null) {
-                orginalBomberman.points++;
-              }
-              if (cells[x][y] == BOX) {
-                cells[x][y] = EMPTY;
-              } else if (cells[x][y] == BOX_1) {
-                cells[x][y] = ITEM_1;
-                items.add(new Item(this, 0, new P(x,y), 1, 0));
-              } else {
-                cells[x][y] = ITEM_2;
-                items.add(new Item(this, 0, new P(x,y), 2, 0));
-              }
-              break; // stop explosion in this direction
-            } else if (cells[x][y] == ITEM_1 || cells[x][y] == ITEM_2) {
-              cells[x][y] = EMPTY;
-              break;
-            } else if (cells[x][y] == 'b') {
-              bombsToExplode.add(getBombAt(x, y));
-              cells[x][y] = EMPTY;
-              break;
-            }
-          } else {
-            break; // out of board
+          boolean shouldBreak = checkExplosion(bombsToExplode, orginalBomberman, x, y);
+          if (shouldBreak) {
+            break;
           }
         }
       }
     }
+  }
+
+  private boolean checkExplosion(List<Bomb> bombsToExplode, Bomberman orginalBomberman, int x, int y) {
+    if (isOnBoard(x, y)) {
+      int value = cells[x+13*y];
+      if (value == WALL) {
+        return true; // stop explosion
+      }
+      for (Bomberman bomberman : players) {
+        if (bomberman.position.equals(new P(x,y))) {
+          bomberman.isDead = true;
+        }
+      }
+      if (value >= BOX && value <= BOX_2) {
+        destructedBox++;
+        if (orginalBomberman != null) {
+          orginalBomberman.points++;
+        }
+        if (value == BOX) {
+          cells[x+13*y] = EMPTY;
+        } else if (value == BOX_1) {
+          cells[x+13*y] = ITEM_1;
+          items.add(new Item(this, 0, new P(x,y), 1, 0));
+        } else {
+          cells[x+13*y] = ITEM_2;
+          items.add(new Item(this, 0, new P(x,y), 2, 0));
+        }
+        return true; // stop explosion
+      } else if (value == ITEM_1 || value == ITEM_2) {
+        cells[x+13*y] = EMPTY;
+        return true; // stop explosion
+      } else if (value == 'b') {
+        bombsToExplode.add(getBombAt(x, y));
+        cells[x+13*y] = EMPTY;
+        return true; // stop explosion
+      }
+    } else {
+      return true; // stop explosion
+    }
+    return false;
   }
 
   private Bomberman getBomberManWithId(int owner) {
@@ -184,56 +253,39 @@ public class Board {
   public void addItem(Item item) {
     items.add(item);
     if (item.type == 1) {
-      cells[item.position.x][item.position.y] = ITEM_1;
+      cells[item.position.x+13*item.position.y] = ITEM_1;
     } else {
-      cells[item.position.x][item.position.y] = ITEM_2;
-    }
-  }
-
-  public void copyFrom(Board board) {
-    boxes.addAll(board.boxes);
-    
-    for (Bomb b : board.bombs) {
-      bombs.add(b.duplicate(this));
-    }
-    for (Item i : board.items) {
-      items.add(i.duplicate(this));
-    }
-    for (Bomberman b : board.players) {
-      Bomberman copy = b.duplicate(this);
-      if (b == board.me) {
-        this.me = copy;
-      }
-      players.add(copy);
-    }
-    
-    for (int y=0;y<11;y++) {
-      for (int x=0;x<13;x++) {
-        cells[x][y] = board.cells[x][y];
-      }
+      cells[item.position.x+13*item.position.y] = ITEM_2;
     }
   }
 
   public boolean canMoveTo(int x, int y) {
-    return isOnBoard(x, y) && cells[x][y] == EMPTY;
+    if (!isOnBoard(x, y)) {
+      return false;
+    }
+    
+    int value = cells[x+13*y];
+    return value == EMPTY || value == ITEM_1 || value == ITEM_2;
   }
 
   public void walkOn(Bomberman player, P p) {
-    int value = cells[p.x][p.y];
+    int value = cells[p.x+13*p.y];
     if ( value == ITEM_1) {
       player.currentRange+=1;
     } else if (value == ITEM_2) {
       player.bombsLeft++;
     }
     player.position = p;
+    cells[p.x+13*p.y] = EMPTY;
   }
   
   public boolean canWalkOn(P p) {
-    return cells[p.x][p.y] != Board.WALL 
-        && cells[p.x][p.y] != Board.BOX
-        && cells[p.x][p.y] != Board.BOX_1
-        && cells[p.x][p.y] != Board.BOX_2
-        && cells[p.x][p.y] != Board.BOMB
+    int value = cells[p.x+13*p.y];
+    return value != Board.WALL 
+        && value != Board.BOX
+        && value != Board.BOX_1
+        && value != Board.BOX_2
+        && value != Board.BOMB
         ;
   }
 }
