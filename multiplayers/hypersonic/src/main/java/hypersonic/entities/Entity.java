@@ -4,8 +4,8 @@ import hypersonic.Board;
 import hypersonic.utils.P;
 
 public class Entity {
-  public final Board board;
-  public final int owner;
+  public Board board;
+  public int owner;
   public final EntityType entityType;
   public P position;
   

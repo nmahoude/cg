@@ -19,6 +19,14 @@ public class Board {
       availableBoards.push(new Board());
     }
   }
+  public static void retrocede(Board board) {
+    for (Bomb b : board.bombs) {
+      Bomb.cache.retrocede(b);
+    }
+    availableBoards.push(board);
+  }
+
+  
   public static final char EMPTY = '.';
   public static final char WALL = 'X';
   
@@ -63,9 +71,6 @@ public class Board {
     // cells will be copied later
   }
 
-  public static void retrocede(Board board) {
-    availableBoards.push(board);
-  }
   
   public Board duplicate() {
     Board board;

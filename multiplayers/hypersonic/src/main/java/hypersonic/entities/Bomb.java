@@ -1,9 +1,17 @@
 package hypersonic.entities;
 
 import hypersonic.Board;
+import hypersonic.utils.Cache;
 import hypersonic.utils.P;
 
 public class Bomb extends Entity {
+  public static Cache<Bomb> cache = new Cache<>();
+  static {
+    for (int i=0;i<10000;i++) {
+      cache.push(new Bomb(null, i, null, i, i));
+    }
+  }
+
   public int timer;
   public int range;
   
@@ -21,8 +29,19 @@ public class Bomb extends Entity {
       explode();
     }
   }
+  
   public Bomb duplicate(Board board) {
-    Bomb b = new Bomb(board,owner, position, timer, range);
+    Bomb b;
+    if (cache.isEmpty()) {
+      b = new Bomb(board,owner, position, timer, range);
+    } else {
+      b = cache.pop();
+      b.board = board;
+      b.owner = owner;
+      b.position = position;
+      b.timer = timer;
+      b.range = range;
+    }
     return b;
   }
 }
