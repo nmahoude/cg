@@ -120,7 +120,7 @@ public class Board {
   }
 
   public void addBox(int x, int y) {
-    boxes.add(new P(x, y));
+    boxes.add(P.get(x, y));
   }
 
   public P findClosestBox() {
@@ -190,7 +190,7 @@ public class Board {
         return true; // stop explosion
       }
       for (Bomberman bomberman : players) {
-        if (bomberman.position.equals(new P(x,y))) {
+        if (bomberman.position.equals(P.get(x,y))) {
           bomberman.isDead = true;
         }
       }
@@ -203,10 +203,10 @@ public class Board {
           cells[x+13*y] = EMPTY;
         } else if (value == BOX_1) {
           cells[x+13*y] = ITEM_1;
-          items.add(new Item(this, 0, new P(x,y), 1, 0));
+          items.add(new Item(this, 0, P.get(x,y), 1, 0));
         } else {
           cells[x+13*y] = ITEM_2;
-          items.add(new Item(this, 0, new P(x,y), 2, 0));
+          items.add(new Item(this, 0, P.get(x,y), 2, 0));
         }
         return true; // stop explosion
       } else if (value == ITEM_1 || value == ITEM_2) {

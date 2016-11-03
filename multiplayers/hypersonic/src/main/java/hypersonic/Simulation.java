@@ -14,7 +14,7 @@ public class Simulation {
     if (board.me.isDead) {
       return -999;
     }
-    return board.me.points+board.me.bombsLeft+board.me.currentRange;
+    return board.me.points+board.me.bombCount+board.me.currentRange;
   }
   public final boolean isFinished() {
     return false;
@@ -106,6 +106,8 @@ public class Simulation {
       board.addBomb(new Bomb(board, board.me.owner, board.me.position, 8, board.me.currentRange));
       board.me.bombsLeft-=1;
     }
-    board.walkOn(board.me, P.get(newX, newY));
+    if (newX != board.me.position.x || newY != board.me.position.y) {
+      board.walkOn(board.me, P.get(newX, newY));
+    }
   }
 }

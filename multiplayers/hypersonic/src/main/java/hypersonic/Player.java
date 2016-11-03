@@ -71,6 +71,8 @@ public class Player {
     initEntities();
   }
   private void initEntities() {
+    int bombsOnBoard[] = new int[4];
+    
     int entities = in.nextInt();
     for (int i = 0; i < entities; i++) {
       int entityType = in.nextInt();
@@ -80,20 +82,25 @@ public class Player {
       int param1 = in.nextInt();
       int param2 = in.nextInt();
       if (entityType == 0) {
-        Bomberman player = new Bomberman(board, owner, new P(x, y), param1, param2);
+        Bomberman player = new Bomberman(board, owner, P.get(x, y), param1, param2);
         board.addPlayer(player);
         if (player.owner == myId) {
           board.me = player;
-          System.err.println("ME == pos: "+player.position+" bLeft: "+player.bombsLeft+ " / range:"+player.currentRange);
         }
       } else if (entityType == 1) {
-        Bomb bomb = new Bomb(board, owner, new P(x, y), param1, param2);
+        Bomb bomb = new Bomb(board, owner, P.get(x, y), param1, param2);
         board.addBomb(bomb);
+        bombsOnBoard[owner]+=1;
       } else if (entityType == 2) {
-        Item item = new Item(board, owner, new P(x, y), param1, param2);
+        Item item = new Item(board, owner, P.get(x, y), param1, param2);
         board.addItem(item);
       }
     }
+    // update bombsCount
+    for (Bomberman b : board.players) {
+      b.bombCount = b.bombsLeft + bombsOnBoard[b.owner];
+    }
+    System.err.println("ME == pos: "+board.me.position+" bLeft: "+board.me.bombsLeft+ "/"+board.me.bombCount+" - range:"+board.me.currentRange);
   }
 
   private void initBoard() {

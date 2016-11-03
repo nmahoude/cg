@@ -1,7 +1,5 @@
 package hypersonic.entities;
 
-import org.junit.Ignore;
-
 import hypersonic.Board;
 import hypersonic.utils.P;
 

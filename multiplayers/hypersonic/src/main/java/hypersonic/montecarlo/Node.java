@@ -17,7 +17,8 @@ public class Node {
   Simulation simulation = new Simulation();
   
   Map<Move, Node> childs = new HashMap<>();
-  private List<Move> moves;
+  List<Move> moves;
+  Move move;
   
   public int getBestScore() {
     if (childs.isEmpty()) {
@@ -49,18 +50,19 @@ public class Node {
       moves = simulation.getPossibleMoves();
     }
     int choice = ThreadLocalRandom.current().nextInt(moves.size());
-    Move move = moves.get(choice);
+    Move nextMove = moves.get(choice);
 
 //    System.err.println("depth = "+(remainingDepth));
 //    System.err.println("me : "+simulation.board.me);
 //    System.err.println("choosing move : "+move+ " from "+moves.toString());
     
-    Node child = childs.get(move);
+    Node child = childs.get(nextMove);
     if (child == null) {
       child = new Node();
+      child.move = nextMove;
       child.simulation.copyFrom(this.simulation);
-      child.simulation.simulate(move);
-      childs.put(move, child);
+      child.simulation.simulate(nextMove);
+      childs.put(nextMove, child);
     }
     if (child.simulation.board.me.isDead) {
       return;
@@ -80,5 +82,23 @@ public class Node {
   public void clear() {
     childs.clear();
     moves = null;
+  }
+
+  public void getNodeList(List<Node> nodes) {
+    if (childs.isEmpty()) {
+      return;
+    } else {
+      int bestScore = Integer.MIN_VALUE;
+      Node bestNode = null;
+      for (Node child : childs.values()) {
+        int score = child.getBestScore();
+        if (bestScore < score) {
+          bestScore = score;
+          bestNode = child;
+        }
+      }
+      nodes.add(bestNode);
+      bestNode.getNodeList(nodes);
+    }
   }
 }

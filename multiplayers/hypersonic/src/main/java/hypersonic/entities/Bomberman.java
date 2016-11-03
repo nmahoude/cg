@@ -10,6 +10,7 @@ public class Bomberman extends Entity {
 
   public boolean isDead = false;
   public int  points = 0;
+  public int bombCount = 0;
   
   public Bomberman(Board board, int owner, P position, int bombsLeft, int currentRange) {
     super(board, owner, EntityType.PLAYER, position);
@@ -27,6 +28,7 @@ public class Bomberman extends Entity {
     Bomberman b = new Bomberman(board, owner, position, bombsLeft, currentRange);
     b.points = points;
     b.isDead = isDead;
+    b.bombCount = bombCount;
     return b;
   }
   
