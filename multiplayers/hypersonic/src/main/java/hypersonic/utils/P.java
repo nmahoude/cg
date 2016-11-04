@@ -9,7 +9,7 @@ public class P {
       }
     }
   }
-  public static P get(int x,int y) {
+  public static P get(final int x,final int y) {
     return ps[x][y];
   }
   
@@ -17,17 +17,17 @@ public class P {
   final public int x;
   final public int y;
 
-  public P(int x, int y) {
+  public P(final int x, final int y) {
     super();
     this.x = x;
     this.y = y;
   }
 
-  public int squareDistance(P p) {
+  public int squareDistance(final P p) {
     return (p.x - x) * (p.x - x) + (p.y - y) * (p.y - y);
   }
 
-  int manhattanDistance(P p) {
+  public int manhattanDistance(final P p) {
     return Math.abs(x - p.x) + Math.abs(y - p.y);
   }
 
@@ -46,14 +46,14 @@ public class P {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj)
       return true;
     if (obj == null)
       return false;
     if (getClass() != obj.getClass())
       return false;
-    P other = (P) obj;
+    final P other = (P) obj;
     return x == other.x && y == other.y;
   }
 }

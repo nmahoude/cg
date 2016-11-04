@@ -9,7 +9,7 @@ import hypersonic.Simulation;
 
 public class MonteCarlo {
 
-  private static final int SIMULATION_COUNT = 1_000;
+  private static final int SIMULATION_COUNT = 1_200;
   public static final int MAX_DEPTH = 18 ;
   public Node root = new Node();
   
@@ -17,7 +17,7 @@ public class MonteCarlo {
     root = new Node();
   }
   
-  public void simulate(Simulation simulation) {
+  public void simulate(final Simulation simulation) {
     root.clear();
     root.simulation = new Simulation();
     root.simulation.copyFrom(simulation);
@@ -26,15 +26,15 @@ public class MonteCarlo {
       root.simulate(0);
     }
   }
-  
+
   public Move findNextBestMove() {
-    int bestScore = Integer.MIN_VALUE;
+    double bestScore = Integer.MIN_VALUE;
     Move bestMove = null;
-    for (Entry<Move, Node> entry : root.childs.entrySet()) {
-      int score = entry.getValue().getBestScore();
-      System.err.println("-----");
-      System.err.println("["+entry.getKey()+"] ("+entry.getValue().count+" sim) with score of "+entry.getValue().getScore()+", total: "+score);
-      debugBestMove(entry.getValue());
+    for (final Entry<Move, Node> entry : root.childs.entrySet()) {
+      final double score = entry.getValue().getBestScore();
+      //System.err.println("-----");
+      //System.err.println("["+entry.getKey()+"] ("+entry.getValue().count+" sim) with score of "+entry.getValue().getScore()+", total: "+score);
+      //debugBestMove(entry.getValue());
       if (score > bestScore) {
         bestScore = score;
         bestMove = entry.getKey();
@@ -45,16 +45,16 @@ public class MonteCarlo {
   }
 
   // try to explain why certain choices
-  private void debugBestMove(Node n) {
-    List<Node> nodes = new ArrayList<>();
+  private void debugBestMove(final Node n) {
+    final List<Node> nodes = new ArrayList<>();
     nodes.add(n);
     n.getNodeList(nodes);
     System.err.print("Path : ");
     int count=0;
-    for (Node node : nodes) {
-      System.err.print("->"+node.move+"("+node.simulation.board.me.position+","+node.getScore()+")");
+    for (final Node node : nodes) {
+      System.err.print(""+node.move+"("/*+node.simulation.board.me.position+","*/+node.getScore()+")");
       count++;
-      if (count >= 8) {
+      if (count >= 20) {
         count = 0;
         System.err.println("");
         break;
@@ -62,4 +62,23 @@ public class MonteCarlo {
     }
     System.err.println("");
   }
+  
+  void debugAllMoves(final Node n) {
+    final List<Node> nodes = new ArrayList<>();
+    nodes.add(n);
+    n.getNodeList(nodes);
+    System.out.print("Path : ");
+    int count=0;
+    for (final Node node : nodes) {
+      System.out.print(""+node.move+"("/*+node.simulation.board.me.position+","*/+node.getScore()+")");
+      count++;
+      if (count >= 20) {
+        count = 0;
+        System.out.println("");
+        break;
+      }
+    }
+    System.out.println("");
+  }
+  
 }

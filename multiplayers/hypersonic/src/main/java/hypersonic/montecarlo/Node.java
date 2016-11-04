@@ -8,8 +8,18 @@ import java.util.concurrent.ThreadLocalRandom;
 import hypersonic.Board;
 import hypersonic.Move;
 import hypersonic.Simulation;
+import hypersonic.entities.Bomb;
+import hypersonic.entities.Bomberman;
+import hypersonic.utils.Cache;
 
 public class Node {
+  public static Cache<Node> cache = new Cache<>();
+  static {
+    for (int i=0;i<10000;i++) {
+      cache.push(new Node());
+    }
+  }
+  
   // state
   int depth = 0;
   int count = 0;
@@ -20,13 +30,13 @@ public class Node {
   List<Move> moves;
   Move move;
   
-  public int getBestScore() {
+  public double getBestScore() {
     if (childs.isEmpty()) {
       return getScore();
     } else {
-      int bestScore = Integer.MIN_VALUE;
-      for (Node child : childs.values()) {
-        int score = child.getBestScore();
+      double bestScore = Integer.MIN_VALUE;
+      for (final Node child : childs.values()) {
+        final double score = child.getBestScore();
         if (bestScore < score) {
           bestScore = score;
         }
@@ -35,34 +45,25 @@ public class Node {
     }
   }
 
-  int getScore() {
+  double getScore() {
     return simulation.getScoreHeuristic();
   }
   
-  public void simulate(int depth) {
+  public void simulate(final int depth) {
     count++;
     this.depth = depth;
     if (depth == MonteCarlo.MAX_DEPTH) {
       return;
     }
     
-    if (moves == null) {
-      moves = simulation.getPossibleMoves();
-    }
-    int choice = ThreadLocalRandom.current().nextInt(moves.size());
-    Move nextMove = moves.get(choice);
+    final Move nextMove = findPossibleRandomMove();
 
 //    System.err.println("depth = "+(remainingDepth));
 //    System.err.println("me : "+simulation.board.me);
 //    System.err.println("choosing move : "+move+ " from "+moves.toString());
-    
     Node child = childs.get(nextMove);
     if (child == null) {
-      child = new Node();
-      child.move = nextMove;
-      child.simulation.copyFrom(this.simulation);
-      child.simulation.simulate(nextMove);
-      childs.put(nextMove, child);
+      child = createChild(nextMove);
     }
     if (child.simulation.board.me.isDead) {
       return;
@@ -70,28 +71,71 @@ public class Node {
     child.simulate(depth+1);
   }
 
-  public void retrocedBoards() {
+  private void simulateWorstCaseScenario(final Simulation simulation) {
+    for (final Bomberman bomberman : simulation.board.players) {
+      if (bomberman != simulation.board.me && bomberman.bombsLeft > 0 && bomberman.position.manhattanDistance(simulation.board.me.position) < 3) {
+        simulation.board.addBomb(Bomb.create(simulation.board, bomberman.owner, bomberman.position, Bomb.DEFAULT_TIMER, bomberman.currentRange));
+      }
+    }
+  }
+
+  private Node createChild(final Move nextMove) {
+    Node child;
+    if (cache.isEmpty()) {
+      child = new Node();
+    } else {
+      child = cache.pop();
+    }
+    child.move = nextMove;
+    child.simulation.copyFrom(this.simulation);
+    if (depth == 0) {
+      simulateWorstCaseScenario(child.simulation);
+    }
+    child.simulation.simulate(nextMove);
+    childs.put(nextMove, child);
+    return child;
+  }
+
+  private Move findPossibleRandomMove() {
+    if (moves == null) {
+      moves = simulation.getPossibleMoves();
+    }
+    final int choice = ThreadLocalRandom.current().nextInt(moves.size());
+    final Move nextMove = moves.get(choice);
+    return nextMove;
+  }
+
+  public void retrocedRoot() {
+    for (final Node child : childs.values()) {
+      child.retroced();
+    }
+  }
+  public void retroced() {
     if (simulation.board != null) {
       Board.retrocede(simulation.board);
     }
-    for (Node child : childs.values()) {
-      child.retrocedBoards();
+    for (final Node child : childs.values()) {
+      child.retroced();
     }
+    clear();
+    cache.retrocede(this);
   }
 
   public void clear() {
     childs.clear();
     moves = null;
+    move = null;
+    count = 0;
   }
 
-  public void getNodeList(List<Node> nodes) {
+  public void getNodeList(final List<Node> nodes) {
     if (childs.isEmpty()) {
       return;
     } else {
-      int bestScore = Integer.MIN_VALUE;
+      double bestScore = Integer.MIN_VALUE;
       Node bestNode = null;
-      for (Node child : childs.values()) {
-        int score = child.getBestScore();
+      for (final Node child : childs.values()) {
+        final double score = child.getBestScore();
         if (bestScore < score) {
           bestScore = score;
           bestNode = child;

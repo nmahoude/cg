@@ -6,11 +6,11 @@ import java.util.Deque;
 public class Cache<T> {
   Deque<T> available = new ArrayDeque<>();
   
-  public void retrocede(T t) {
+  public void retrocede(final T t) {
     available.push(t);
   }
 
-  public void push(T t) {
+  public void push(final T t) {
     available.push(t);
   }
 
@@ -20,5 +20,9 @@ public class Cache<T> {
 
   public T pop() {
     return available.pop();
+  }
+
+  public int size() {
+    return available.size();
   }
 }

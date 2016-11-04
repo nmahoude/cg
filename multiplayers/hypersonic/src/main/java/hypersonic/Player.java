@@ -15,22 +15,32 @@ public class Player {
   private static int myId;
 
   void play() {
-    Simulation sim = new Simulation();
+    final Simulation sim = new Simulation();
     sim.board = board;
-    MonteCarlo mc = new MonteCarlo();
-
+    final MonteCarlo mc = new MonteCarlo();
+ 
     while (true) {
       getSimulationState();
       
-      mc.root.retrocedBoards();
-      System.err.println("Current board cache is "+Board.availableBoards.size());
+      mc.root.retrocedRoot();
+//      System.err.println("board cache is "+Board.cache.size());
+//      System.err.println("node cache is "+Node.cache.size());
+//      System.err.println("bomberman cache is "+Bomberman.cache.size());
+//      System.err.println("bombs cache is "+Bomb.cache.size());
+//      System.err.println("items cache is "+Item.cache.size());
       mc.simulate(sim);
-      System.err.println("(after sim) board cache is "+Board.availableBoards.size());
-      Move move = mc.findNextBestMove();
+//      System.err.println("After sim :");
+//      System.err.println("board cache is "+Board.cache.size());
+//      System.err.println("node cache is "+Node.cache.size());
+//      System.err.println("bomberman cache is "+Bomberman.cache.size());
+//      System.err.println("bombs cache is "+Bomb.cache.size());
+//      System.err.println("items cache is "+Item.cache.size());
+
+      final Move move = mc.findNextBestMove();
       outputMove(board.me, move);
     }
   }
-  private void outputMove(Bomberman me, Move move) {
+  private void outputMove(final Bomberman me, final Move move) {
     int newX = board.me.position.x;
     int newY = board.me.position.y;
     boolean dropBomb = false;
@@ -71,33 +81,33 @@ public class Player {
     initEntities();
   }
   private void initEntities() {
-    int bombsOnBoard[] = new int[4];
+    final int bombsOnBoard[] = new int[4];
     
-    int entities = in.nextInt();
+    final int entities = in.nextInt();
     for (int i = 0; i < entities; i++) {
-      int entityType = in.nextInt();
-      int owner = in.nextInt();
-      int x = in.nextInt();
-      int y = in.nextInt();
-      int param1 = in.nextInt();
-      int param2 = in.nextInt();
+      final int entityType = in.nextInt();
+      final int owner = in.nextInt();
+      final int x = in.nextInt();
+      final int y = in.nextInt();
+      final int param1 = in.nextInt();
+      final int param2 = in.nextInt();
       if (entityType == 0) {
-        Bomberman player = new Bomberman(board, owner, P.get(x, y), param1, param2);
+        final Bomberman player = new Bomberman(board, owner, P.get(x, y), param1, param2);
         board.addPlayer(player);
         if (player.owner == myId) {
           board.me = player;
         }
       } else if (entityType == 1) {
-        Bomb bomb = new Bomb(board, owner, P.get(x, y), param1, param2);
+        final Bomb bomb = Bomb.create(board, owner, P.get(x, y), param1, param2);
         board.addBomb(bomb);
         bombsOnBoard[owner]+=1;
       } else if (entityType == 2) {
-        Item item = new Item(board, owner, P.get(x, y), param1, param2);
+        final Item item = Item.create(board, owner, P.get(x, y), param1, param2);
         board.addItem(item);
       }
     }
     // update bombsCount
-    for (Bomberman b : board.players) {
+    for (final Bomberman b : board.players) {
       b.bombCount = b.bombsLeft + bombsOnBoard[b.owner];
     }
     System.err.println("ME == pos: "+board.me.position+" bLeft: "+board.me.bombsLeft+ "/"+board.me.bombCount+" - range:"+board.me.currentRange);
@@ -106,17 +116,17 @@ public class Player {
   private void initBoard() {
     board.init();
     for (int y = 0; y < 11; y++) {
-      String row = in.next();
+      final String row = in.next();
       board.init(y, row);
     }
   }
-  public static void main(String args[]) {
+  public static void main(final String args[]) {
     in = new Scanner(System.in);
-    int width = in.nextInt();
-    int height = in.nextInt();
+    final int width = in.nextInt();
+    final int height = in.nextInt();
     myId = in.nextInt();
     
-    Player p = new Player();
+    final Player p = new Player();
     p.play();
   }
 }
