@@ -40,9 +40,12 @@ public class DFSNode {
   double getScore() {
     int maxHeight = board.getMaxHeights();
     if (isImpossible) {
-      return -100;
+      return -1000;
     } else {
-      return points+14-10*maxHeight+board.colorBlocksPoint-9*board.skullCount;
+      //return points+14-10*maxHeight+board.colorBlocksPoint-9*board.skullCount;
+      return points+board.colorBlocksPoint-9*board.skullCount
+          -5*( board.heights[0] + board.heights[4] + board.heights[5])
+          +5*( board.heights[1] + board.heights[2] + board.heights[3] ); 
     }
   }
   double getBestScore() {

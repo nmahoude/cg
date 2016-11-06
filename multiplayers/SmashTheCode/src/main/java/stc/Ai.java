@@ -8,6 +8,8 @@ public class Ai {
   DFSNode root = null;
   private double bestScore;
   private DFSNode bestChild;
+  private int myDepth;
+  private int sumHeights;
 
   public Ai(Game game) {
     this.game = game;
@@ -19,7 +21,18 @@ public class Ai {
     }
 
     int nextSkullThreat = calculateSkullsThreatsInRound();
-    int myDepth = 8;
+    
+    myDepth = 8;
+    
+    // reduce depth based on opponent danger
+//    if (game.otherBoard.getSumHeights() > 50) {
+//      myDepth = 4;
+//    }
+    
+    sumHeights = game.myBoard.getSumHeights();
+    if (sumHeights > 50) {
+      myDepth = 2;
+    } 
 //    if (nextSkullThreat > 4) {
 //      myDepth = 4;
 //    } else if (nextSkullThreat > 2) {
@@ -39,7 +52,7 @@ public class Ai {
       DFSNode child = childEntry.getValue();
       double score = child.getScore();
       double bScore = child.getBestScore();
-      if (score > 70*6*3) {
+      if (score > 3*70*6*3) {
         bestScore = 1000*score;
         bestChild = child;
         comm = childEntry.getKey();
@@ -61,7 +74,7 @@ public class Ai {
     root = DFSNode.getNode();
     game.otherBoard.copy(root.board);
 
-    root.simulate(game, 0, 2);
+    root.simulate(game, 0, 1);
     
     int bestPoints = root.getBestPoints();
     root.release();
@@ -69,7 +82,7 @@ public class Ai {
   }
 
   public final String output() {
-    return command;
+    return command+ " d="+myDepth+", s(h)="+sumHeights;
   }
 
   public void debug() {
