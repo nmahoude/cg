@@ -254,12 +254,12 @@ public class BoardTest {
     
     for (int i=0;i<1_000;i++) {
       for (int x=0;x<3;x++) {
-        board.cells[x][11] = 1;
-        board.cells[x][10] = 1;
+        board.cells[x+6*11] = 1;
+        board.cells[x+6*10] = 1;
       }
       for (int x=3;x<6;x++) {
-        board.cells[x][11] = 2;
-        board.cells[x][10] = 2;
+        board.cells[x+6*11] = 2;
+        board.cells[x+6*10] = 2;
       }
       board.destroyBlocks(null);
     }
@@ -285,15 +285,15 @@ public class BoardTest {
     board.updateBoard();
   
     // 1st col
-    assertThat(board.cells[0][0], is(1));
-    assertThat(board.cells[0][1], is(0));
+    assertThat(board.cells[0+6*0], is(1));
+    assertThat(board.cells[0+6*1], is(0));
     assertThat(board.heights[0],  is(1));
     
     // 2nd col
-    assertThat(board.cells[1][0], is(2));
-    assertThat(board.cells[1][1], is(2));
-    assertThat(board.cells[1][2], is(2));
-    assertThat(board.cells[1][3], is(0));
+    assertThat(board.cells[1+6*0], is(2));
+    assertThat(board.cells[1+6*1], is(2));
+    assertThat(board.cells[1+6*2], is(2));
+    assertThat(board.cells[1+6*3], is(0));
     assertThat(board.heights[1],  is(3));
     
   }
@@ -320,10 +320,10 @@ public class BoardTest {
     int count = board.destroyNeighbours(1,0,0,0);
     
     assertThat(count, is(14));
-    assertThat(board.cells[0][0], is(0));
-    assertThat(board.cells[0][1], is(0));
-    assertThat(board.cells[1][1], is(0));
-    assertThat(board.cells[0][3], is(0));
+    assertThat(board.cells[0+6*0], is(0));
+    assertThat(board.cells[0+6*1], is(0));
+    assertThat(board.cells[1+6*1], is(0));
+    assertThat(board.cells[0+6*3], is(0));
   }
   
   @Test
@@ -346,13 +346,13 @@ public class BoardTest {
     int count = board.destroyNeighbours(1,0,0,0);
     
     assertThat(count, is(0));
-    assertThat(board.cells[0][0], is(1));
-    assertThat(board.cells[0][1], is(1));
-    assertThat(board.cells[1][1], is(1));
-    assertThat(board.cells[0][3], is(1));
+    assertThat(board.cells[0+6*0], is(1));
+    assertThat(board.cells[0+6*1], is(1));
+    assertThat(board.cells[1+6*1], is(1));
+    assertThat(board.cells[0+6*3], is(1));
 
     // skull
-    assertThat(board.cells[1][0], is(9));
+    assertThat(board.cells[1+6*0], is(9));
   }
 
   @Test
@@ -375,9 +375,9 @@ public class BoardTest {
     int count = board.destroyNeighbours(1,0,0,0);
     
     assertThat(count, is(14));
-    assertThat(board.cells[0][2], is(0));
-    assertThat(board.cells[3][2], is(0));
-    assertThat(board.cells[5][1], is(0));
+    assertThat(board.cells[0+6*2], is(0));
+    assertThat(board.cells[3+6*2], is(0));
+    assertThat(board.cells[5+6*1], is(0));
   }
   
   @Test

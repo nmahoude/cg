@@ -20,11 +20,11 @@ public class Ai {
 
     int nextSkullThreat = calculateSkullsThreatsInRound();
     int myDepth = 8;
-    if (nextSkullThreat > 4) {
-      myDepth = 1;
-    } else if (nextSkullThreat > 2) {
-      myDepth = 2;
-    }
+//    if (nextSkullThreat > 4) {
+//      myDepth = 4;
+//    } else if (nextSkullThreat > 2) {
+//      myDepth = 8;
+//    }
 
     root = DFSNode.getNode();
     game.myBoard.copy(root.board);

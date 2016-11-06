@@ -71,7 +71,7 @@ public class DFSNode {
     int color1 = game.nextBalls[depth];
     int color2 = game.nextBalls2[depth];
     
-    if (depth <=0) {
+    if (depth <=2) {
       // all cases
       int maxRotation = color1 == color2 ? 2 : 4;
       for (int rot = maxRotation;--rot>=0;) {

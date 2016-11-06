@@ -1,8 +1,6 @@
 package stc;
 
-import java.util.*;
-import java.io.*;
-import java.math.*;
+import java.util.Scanner;
 
 public class Player {
   
@@ -44,7 +42,7 @@ public class Player {
             
             System.err.println("AI in "+aiTime+" ms. ("+shortestAiTime+" / "+longestAiTime+")");
             
-            ai.debug();
+            //ai.debug();
             
             System.out.println(ai.output());
         }

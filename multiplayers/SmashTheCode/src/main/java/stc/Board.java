@@ -10,16 +10,14 @@ import java.util.Set;
 public class Board {
   public static final int EMPTY = 0;
   public static final int SKULL = 9;
-  int[][] cells = new int[6][12];
+  int[] cells = new int[6*12];
   int[] heights = new int[6];
   int colorBlocksPoint = 0;
   int skullCount = 0;
   
   public final Board copy(Board board) {
+    System.arraycopy(cells, 0, board.cells, 0, 6*12);
     for (int x=0;x<6;x++) {
-      for (int y=0;y<12;y++) {
-        board.cells[x][y]= cells[x][y];
-      }
       board.heights[x] = heights[x];
     }
     board.points = points;
@@ -30,14 +28,14 @@ public class Board {
   public final void updateRow(int y, String row) {
     for (int x = 0; x < 6; x++) {
       if (row.charAt(x) >= '1' && row.charAt(x) <= '5') {
-        cells[x][y] = row.charAt(x) - '0';
+        cells[x+6*y] = row.charAt(x) - '0';
         heights[x] = Math.max(y+1, heights[x]);
       } else if (row.charAt(x) == '0' || row.charAt(x) == '@' || row.charAt(x) == '☠') {
-        cells[x][y] = SKULL;
+        cells[x+6*y] = SKULL;
         heights[x] = Math.max(y+1, heights[x]);
         skullCount++;
       } else {
-        cells[x][y] = EMPTY;
+        cells[x+6*y] = EMPTY;
       }
     }
   }
@@ -98,7 +96,7 @@ public class Board {
       
       if (ps != null) {
         for (P p : ps) {
-          int color = cells[p.x][p.y];
+          int color = cells[p.x+6*p.y];
           if (color > 0 && color <= 7) {
             int destroyed = nonRecursiveDestroyNeighbours(color, p.x, p.y);
             if (destroyed >= 4) {
@@ -114,7 +112,7 @@ public class Board {
       } else {
         for (int x = 6; --x >= 0;) {
           for (int y = heights[x]; --y >= 0;) {
-            int color = cells[x][y];
+            int color = cells[x+6*y];
             if (color > 0 && color <= 7) {
               int destroyed = nonRecursiveDestroyNeighbours(color, x, y);
               if (destroyed >= 4) {
@@ -163,39 +161,39 @@ public class Board {
     for (int x = 5; --x >= 0;) {
       int index = 0;
       for (int y = 0; y < 12; y++) {
-        int value = cells[x][y];
+        int value = cells[x+6*y];
         if (value != 0) {
-          cells[x][index++] = cells[x][y];
+          cells[x+6*(index++)] = cells[x+6*y];
         }
       }
       heights[x] = index;
       for (int y = index; y < 12; y++) {
-        cells[x][y] = 0;
+        cells[x+6*y] = 0;
       }
     }
   }
 
   final int destroyNeighbours(int color, int x, int y, int count) {
-    if (cells[x][y] == color) {
-      cells[x][y] = EMPTY;
+    if (cells[x+6*y] == color) {
+      cells[x+6*y] = EMPTY;
       count++;
       count = x < 5 ? destroyNeighbours(color, x + 1, y, count) : count;
       count = x > 0 ? destroyNeighbours(color, x - 1, y, count) : count;
       count = y < 11 ? destroyNeighbours(color, x, y + 1, count) : count;
       count = y > 0 ? destroyNeighbours(color, x, y - 1, count) : count;
       if (count < 4) {
-        cells[x][y] = color;
+        cells[x+6*y] = color;
         return 0;
       } else {
         // check for skulls
-        if (x < 5 && cells[x + 1][y] == SKULL)
-          cells[x + 1][y] = 0;
-        if (x > 0 && cells[x - 1][y] == SKULL)
-          cells[x - 1][y] = 0;
-        if (y < 11 && cells[x][y + 1] == SKULL)
-          cells[x][y + 1] = 0;
-        if (y > 0 && cells[x][y - 1] == SKULL)
-          cells[x][y - 1] = 0;
+        if (x < 5 && cells[x + 1+6*y] == SKULL)
+          cells[x + 1+6*y] = 0;
+        if (x > 0 && cells[x - 1+6*y] == SKULL)
+          cells[x - 1+6*y] = 0;
+        if (y < 11 && cells[x+6*(y + 1)] == SKULL)
+          cells[x+6*(y + 1)] = 0;
+        if (y > 0 && cells[x+6*(y - 1)] == SKULL)
+          cells[x+6*(y - 1)] = 0;
       }
     }
     return count;
@@ -211,54 +209,54 @@ public class Board {
     skulls.clear();
     colorBlocksPoint = 0;
     
-    toBeVisited.add(P.ps[x][y]);
-    cells[x][y] = 0;
+    toBeVisited.add(P.ps[x+6*y]);
+    cells[x+6*y] = 0;
     while (!toBeVisited.isEmpty()) {
       P p = toBeVisited.poll();
       visited.add(p);
 
       if (p.x < 5) {
-        int value = cells[p.x + 1][p.y];
+        int value = cells[p.x + 1+6*p.y];
         if (value == color) {
-          toBeVisited.push(P.ps[p.x + 1][p.y]);
-          cells[p.x + 1][p.y] = 0;
+          toBeVisited.push(P.ps[p.x + 1+6*p.y]);
+          cells[p.x + 1+6*p.y] = 0;
         } else if (value == SKULL) {
-          skulls.add(P.ps[p.x + 1][p.y]);
-          cells[p.x + 1][p.y] = 0;
+          skulls.add(P.ps[p.x + 1+6*p.y]);
+          cells[p.x + 1+6*p.y] = 0;
           skullCount--;
         }
       }
       if (p.x > 0) {
-        int value = cells[p.x - 1][p.y];
+        int value = cells[p.x - 1+6*p.y];
         if (value == color) {
-          toBeVisited.offer(P.ps[p.x - 1][p.y]);
-          cells[p.x - 1][p.y] = 0;
+          toBeVisited.offer(P.ps[p.x - 1+6*p.y]);
+          cells[p.x - 1+6*p.y] = 0;
         } else if (value == SKULL) {
-          skulls.add(P.ps[p.x - 1][p.y]);
-          cells[p.x - 1][p.y] = 0;
+          skulls.add(P.ps[p.x - 1+6*p.y]);
+          cells[p.x - 1+6*p.y] = 0;
           skullCount--;
         }
       }
       if (p.y < 11) {
-        int value = cells[p.x][p.y + 1];
+        int value = cells[p.x+6*(p.y + 1)];
         if (value == color) {
-          toBeVisited.offer(P.ps[p.x][p.y + 1]);
-          cells[p.x][p.y + 1] = 0;
+          toBeVisited.offer(P.ps[p.x+6*(p.y + 1)]);
+          cells[p.x+6*(p.y + 1)] = 0;
         } else if (value == SKULL) {
-          skulls.add(P.ps[p.x][p.y + 1]);
-          cells[p.x][p.y + 1] = 0;
+          skulls.add(P.ps[p.x+6*(p.y + 1)]);
+          cells[p.x+6*(p.y + 1)] = 0;
           skullCount--;
         }
 
       }
       if (p.y > 0) {
-        int value = cells[p.x][p.y - 1];
+        int value = cells[p.x+6*(p.y - 1)];
         if (value == color) {
-          toBeVisited.offer(P.ps[p.x][p.y - 1]);
-          cells[p.x][p.y - 1] = 0;
+          toBeVisited.offer(P.ps[p.x+6*(p.y - 1)]);
+          cells[p.x+6*(p.y - 1)] = 0;
         } else if (value == SKULL) {
-          skulls.add(P.ps[p.x][p.y - 1]);
-          cells[p.x][p.y - 1] = 0;
+          skulls.add(P.ps[p.x+6*(p.y - 1)]);
+          cells[p.x+6*(p.y - 1)] = 0;
           skullCount--;
         }
       }
@@ -272,10 +270,10 @@ public class Board {
       colorBlocksPoint += visitedCells;
       // revert the change which will be small because we don't have 4 colored balls
       for (P p : visited) {
-        cells[p.x][p.y] = color;
+        cells[p.x+6*p.y] = color;
       }
       for (P p : skulls) {
-        cells[p.x][p.y] = SKULL;
+        cells[p.x+6*p.y] = SKULL;
         skullCount++;
       }
       return 0;
@@ -285,59 +283,59 @@ public class Board {
   final public void checkNeighbours(int color, P p) {
     if (p.x < 5) {
       // checkCellForColorOrSkull(color, p.x+1,p.y, toBeVisited, skulls);
-      int value = cells[p.x + 1][p.y];
+      int value = cells[p.x + 1+6*p.y];
       if (value == color) {
-        toBeVisited.push(P.ps[p.x + 1][p.y]);
-        cells[p.x + 1][p.y] = 0;
+        toBeVisited.push(P.ps[p.x + 1+6*p.y]);
+        cells[p.x + 1+6*p.y] = 0;
       } else if (value == SKULL) {
-        skulls.add(P.ps[p.x + 1][p.y]);
-        cells[p.x + 1][p.y] = 0;
+        skulls.add(P.ps[p.x + 1+6*p.y]);
+        cells[p.x + 1+6*p.y] = 0;
       }
     }
     if (p.x > 0) {
       // checkCellForColorOrSkull(color, p.x-1,p.y, toBeVisited, skulls);
-      int value = cells[p.x - 1][p.y];
+      int value = cells[p.x - 1+6*p.y];
       if (value == color) {
-        toBeVisited.push(P.ps[p.x - 1][p.y]);
-        cells[p.x - 1][p.y] = 0;
+        toBeVisited.push(P.ps[p.x - 1+6*p.y]);
+        cells[p.x - 1+6*p.y] = 0;
       } else if (value == SKULL) {
-        skulls.add(P.ps[p.x - 1][p.y]);
-        cells[p.x - 1][p.y] = 0;
+        skulls.add(P.ps[p.x - 1+6*p.y]);
+        cells[p.x - 1+6*p.y] = 0;
       }
     }
     if (p.y < 11) {
       // checkCellForColorOrSkull(color, p.x,p.y+1, toBeVisited, skulls);
-      int value = cells[p.x][p.y + 1];
+      int value = cells[p.x+6*(p.y + 1)];
       if (value == color) {
-        toBeVisited.push(P.ps[p.x][p.y + 1]);
-        cells[p.x][p.y + 1] = 0;
+        toBeVisited.push(P.ps[p.x+6*(p.y + 1)]);
+        cells[p.x+6*(p.y + 1)] = 0;
       } else if (value == SKULL) {
-        skulls.add(P.ps[p.x][p.y + 1]);
-        cells[p.x][p.y + 1] = 0;
+        skulls.add(P.ps[p.x+6*(p.y + 1)]);
+        cells[p.x+6*(p.y + 1)] = 0;
       }
 
     }
     if (p.y > 0) {
       // checkCellForColorOrSkull(color, p.x,p.y-1, toBeVisited, skulls);
-      int value = cells[p.x][p.y - 1];
+      int value = cells[p.x+6*(p.y - 1)];
       if (value == color) {
-        toBeVisited.push(P.ps[p.x][p.y - 1]);
-        cells[p.x][p.y - 1] = 0;
+        toBeVisited.push(P.ps[p.x+6*(p.y - 1)]);
+        cells[p.x+6*(p.y - 1)] = 0;
       } else if (value == SKULL) {
-        skulls.add(P.ps[p.x][p.y - 1]);
-        cells[p.x][p.y - 1] = 0;
+        skulls.add(P.ps[p.x+6*(p.y - 1)]);
+        cells[p.x+6*(p.y - 1)] = 0;
       }
     }
   }
 
   public final void checkCellForColorOrSkull(int color, int x, int y, Deque<P> toBeVisited, Set<P> skulls) {
-    int value = cells[x][y];
+    int value = cells[x+6*y];
     if (value == color) {
-      toBeVisited.push(P.ps[x][y]);
-      cells[x][y] = 0;
+      toBeVisited.push(P.ps[x+6*y]);
+      cells[x+6*y] = 0;
     } else if (value == SKULL) {
-      skulls.add(P.ps[x][y]);
-      cells[x][y] = 0;
+      skulls.add(P.ps[x+6*y]);
+      cells[x+6*y] = 0;
     }
   }
 
@@ -346,9 +344,9 @@ public class Board {
     if (height >= 11) {
       return null;
     }
-    cells[column][height] = color;
+    cells[column+6*height] = color;
     heights[column] = height+1;
-    return P.ps[column][height];
+    return P.ps[column+6*height];
   }
 
   final public void prepare() {
@@ -365,7 +363,7 @@ public class Board {
     for (int y = 12 - 1; y >= 0; y--) {
       row+="\"";
       for (int x = 0; x < 6; x++) {
-        int color = cells[x][y];
+        int color = cells[x+6*y];
         if (color == EMPTY) {
           row+=".";
         } else if (color == SKULL) {

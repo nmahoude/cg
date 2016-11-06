@@ -2,11 +2,11 @@ package stc;
 
 
 public class P {
-  public final static P ps[][] = new P[6][12];
+  public final static P ps[] = new P[6*12];
   static {
     for (int y = 0; y < 12; y++) {
       for (int x = 0; x < 6; x++) {
-        ps[x][y] = new P(x, y);
+        ps[x+6*y] = new P(x, y);
       }
     }
   }
