@@ -3,14 +3,15 @@ package hypersonic.montecarlo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ThreadLocalRandom;
 
 import hypersonic.Move;
 import hypersonic.Simulation;
 
 public class MonteCarlo {
 
-  private static final int SIMULATION_COUNT = 1_200;
-  public static final int MAX_DEPTH = 18 ;
+  private static final int SIMULATION_COUNT = 1_500;
+  public static final int MAX_DEPTH = 15 ;
   public Node root = new Node();
   
   public void init() {
@@ -25,6 +26,32 @@ public class MonteCarlo {
     for (int i=SIMULATION_COUNT;i>=0;i--) {
       root.simulate(0);
     }
+  }
+
+  public Move simulateBeam(final Simulation simulation) {
+    final Simulation sim = new Simulation();
+    
+    double bestScore = Integer.MAX_VALUE;
+    Move bestMove = null;
+    
+    final List<Move> chain = new ArrayList<>(MAX_DEPTH);
+    for (int i=SIMULATION_COUNT;i>=0;i--) {
+      sim.copyFrom(simulation);
+      chain.clear();
+      for (int depth=0;depth<MAX_DEPTH;depth++) {
+        final List<Move> moves = simulation.getPossibleMoves();
+        final int choice = ThreadLocalRandom.current().nextInt(moves.size());
+        final Move nextMove = moves.get(choice);
+        chain.add(nextMove);
+        sim.simulate(nextMove);
+      }
+      final double score = sim.getScoreHeuristic();
+      if (score > bestScore ) {
+        bestScore = score;
+        bestMove = chain.get(0); 
+      }
+    }
+    return bestMove;
   }
 
   public Move findNextBestMove() {

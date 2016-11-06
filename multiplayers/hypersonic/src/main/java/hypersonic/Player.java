@@ -29,6 +29,8 @@ public class Player {
 //      System.err.println("bombs cache is "+Bomb.cache.size());
 //      System.err.println("items cache is "+Item.cache.size());
       mc.simulate(sim);
+      final Move move = mc.findNextBestMove();
+      //final Move move = mc.simulateBeam(sim);
 //      System.err.println("After sim :");
 //      System.err.println("board cache is "+Board.cache.size());
 //      System.err.println("node cache is "+Node.cache.size());
@@ -36,7 +38,6 @@ public class Player {
 //      System.err.println("bombs cache is "+Bomb.cache.size());
 //      System.err.println("items cache is "+Item.cache.size());
 
-      final Move move = mc.findNextBestMove();
       outputMove(board.me, move);
     }
   }
