@@ -13,5 +13,6 @@
     <module>ReverseEngineering</module>
     <module>backToTheCode</module>
     <module>BackToTheCode</module>
+    <module>TheGreatEscape</module>
   </modules>
 </project>
