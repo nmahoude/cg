@@ -3,14 +3,14 @@ package hypersonic;
 
 public enum Move {
   UP(" ↑"),
-  UP_BOMB("☢↑"),
   LEFT(" ←"),
-  LEFT_BOMB("☢←"),
   RIGHT(" →"),
-  RIGHT_BOMB("☢→"),
   DOWN(" ↓"),
-  DOWN_BOMB("☢↓"),
   STAY(" •"),
+  UP_BOMB("☢↑"),
+  LEFT_BOMB("☢←"),
+  RIGHT_BOMB("☢→"),
+  DOWN_BOMB("☢↓"),
   STAY_BOMB("☢•");
   
   String name;
