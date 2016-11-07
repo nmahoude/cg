@@ -10,11 +10,15 @@ public class P {
       }
     }
   }
-
+  public static P get(int x, int y) {
+    return ps[x+6*y];
+  }
+  
   public P(int x2, int y2) {
     x = x2;
     y = y2;
   }
 
-  int x, y;
+  public final int x, y;
+  
 }
