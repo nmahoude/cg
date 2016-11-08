@@ -2,8 +2,8 @@ package stc2;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static stc2.BitBoard.ALL_LAYER;
 import static stc2.BitBoard.BLUE_LAYER;
+import static stc2.BitBoard.COMPLETE_LAYER_MASK;
 import static stc2.BitBoard.RED_LAYER;
 
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class BitBoardTest {
     prepareEmptyBoard(board);
 
     assertThat(board.layers[BLUE_LAYER].isEmpty(), is(true));
-    assertThat(board.layers[ALL_LAYER].isEmpty(), is(true));
+    assertThat(board.layers[COMPLETE_LAYER_MASK].isEmpty(), is(true));
   }
 
 
@@ -43,7 +43,7 @@ public class BitBoardTest {
     P position = board.pushBall(color, column);
     
     assertThat(board.layers[color].isCellSetAt(column, 0), is(true));
-    assertThat(board.layers[ALL_LAYER].isCellSetAt(column, 0), is(true));
+    assertThat(board.layers[COMPLETE_LAYER_MASK].isCellSetAt(column, 0), is(true));
     assertThat(position.x, is (column));
     assertThat(position.y, is (0));
   }
@@ -60,7 +60,7 @@ public class BitBoardTest {
     }
     
     assertThat(board.layers[1].isCellSetAt(0, 11), is(true));
-    assertThat(board.layers[ALL_LAYER].isCellSetAt(0, 11), is(true));
+    assertThat(board.layers[COMPLETE_LAYER_MASK].isCellSetAt(0, 11), is(true));
   }
   
   @Test
@@ -83,9 +83,137 @@ public class BitBoardTest {
     assertThat(board.layers[RED_LAYER].isEmpty(), is(true));
     
     assertThat(board.layers[BLUE_LAYER].bitCount(), is(72));
-    assertThat(board.layers[ALL_LAYER].bitCount(), is(72));
+    assertThat(board.layers[COMPLETE_LAYER_MASK].bitCount(), is(72));
   }
 
+  @Test
+  public void updateBoard_empty() throws Exception {
+    BitBoard board =new BitBoard();
+    prepareEmptyBoard(board);
+  
+    board.update();
+    
+    assertThat(board.getDebugString(), is(buildDebugString(
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......"
+        )));
+  }
+   
+  @Test
+  public void updateBoard_fullWithoutHoles() throws Exception {
+    BitBoard board =new BitBoard();
+    prepareBoard(board,
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "54321☠",
+        "54321☠");
+  
+    board.update();
+    
+    assertThat(board.getDebugString(), is(buildDebugString(
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "54321☠",
+        "54321☠"
+        )));
+  }
+  
+  @Test
+  public void updateBoard_lastRowEmpty() throws Exception {
+    BitBoard board =new BitBoard();
+    prepareBoard(board,
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "54321☠",
+        "......");
+  
+    board.update();
+    
+    assertThat(board.getDebugString(), is(buildDebugString(
+        "......",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "54321☠"
+        )));
+  }
+  
+  @Test
+  public void updateBoard_Cheesed() throws Exception {
+    BitBoard board =new BitBoard();
+    prepareBoard(board,
+        "0.2.45",
+        ".1.34.",
+        "0.2.4.",
+        "012345",
+        ".1234.",
+        "..2345",
+        "0123..",
+        "012345",
+        ".123..",
+        "012.45",
+        "5.3.10",
+        "......");
+  
+    board.update();
+    
+    assertThat(board.getDebugString(), is(buildDebugString(
+        "......",
+        "......",
+        "..2...",
+        "..2.4.",
+        "..2.4.",
+        "☠1234.",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "☠12345",
+        "51331☠"
+        )));
+  }
+  
   @Test
   public void debugString() throws Exception {
     BitBoard board =new BitBoard();
@@ -146,7 +274,7 @@ public class BitBoardTest {
     for (String row : rows) {
       board.updateRow(12-++index, row);
     }
-    board.buildFullLayer();
+    board.buildCompleteLayerMask();
   }
 
   private String buildDebugString(String...rows) {

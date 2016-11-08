@@ -129,14 +129,12 @@ public class BitLayer {
 
   public static int getNeighborBitsOnOneRow(int value, int pos) {
     int invMask = ~value & FULL;
-    int lastPos = -1;
-    int nextPos = getNextSettedBit(invMask, 0);
-    while (nextPos < pos) {
-      invMask = invMask & ~(FULL & yFullMask[nextPos]);
-      lastPos = nextPos;
-      nextPos = getNextSettedBit(invMask, nextPos);
+    int firstPos = pos - Integer.numberOfLeadingZeros(invMask << (32-pos));
+    if (firstPos <= 0) {
+      firstPos = 0;
     }
-    return getMaskFromTo(lastPos+1, nextPos);
+    int secondPos = pos+1 + Integer.numberOfTrailingZeros(invMask >>> (pos+1));
+    return getMaskFromTo(Math.min(firstPos, 11), Math.min(secondPos, 12));
   }
 
   public static int getSettedBits(int mask) {
@@ -173,7 +171,7 @@ public class BitLayer {
     if (value == 0) {
       return;
     }
-    int pos = Integer.numberOfTrailingZeros(value)+1;
+    int pos = Integer.numberOfTrailingZeros(value);
     int mask = getNeighborBitsOnOneRow(value, pos);
     info.count += Integer.bitCount(mask);
     info.neighborsMask.setCol(x, mask);
@@ -267,5 +265,58 @@ public class BitLayer {
   public void unset(BitLayer neighborsMask) {
     col1 = col1 & ~neighborsMask.col1;
     col2 = col2 & ~neighborsMask.col2;
+  }
+
+  public static void generateMvs(int mask, int[] mvs) {
+    int mp, mv;
+    int mk = ~mask << 1; // We will count 0's to right.
+    for (int i = 0; i < 5; i++) {
+      mp = mk ^ (mk << 1);
+      mp = mp ^ (mp << 2);
+      mp = mp ^ (mp << 4);
+      mp = mp ^ (mp << 8);
+      mp = mp ^ (mp << 16);
+      mv = mp & mask; // Bits to move.
+      mvs[i] = mv;
+      mask = mask ^ mv | (mv >> (1 << i)); // Compress m.
+      mk = mk & ~mp;
+    }
+  }
+
+  public static int[] generateMvs(int mask) {
+    int mvs[] = new int[5];
+    generateMvs(mask, mvs);
+    return mvs;
+  }
+  
+  public static int compress(int value, int mask, int mvs[]) {
+    int t;
+    value = value & mask;
+    t = value & mvs[0]; value = value ^ t | (t >> 1);
+    t = value & mvs[1]; value = value ^ t | (t >> 2);
+    t = value & mvs[2]; value = value ^ t | (t >> 4);
+    t = value & mvs[3]; value = value ^ t | (t >> 8);
+    t = value & mvs[4]; value = value ^ t | (t >> 16);
+    return value;
+  }
+  
+  public static int compress(int value, int mask) {
+    int mk, mp, mv, t;
+    int i;
+    value = value & mask; // Clear irrelevant bits.
+    mk = ~mask << 1; // We will count 0's to right.
+    for (i = 0; i < 5; i++) {
+      mp = mk ^ (mk << 1);
+      mp = mp ^ (mp << 2);
+      mp = mp ^ (mp << 4);
+      mp = mp ^ (mp << 8);
+      mp = mp ^ (mp << 16);
+      mv = mp & mask; // Bits to move.
+      mask = mask ^ mv | (mv >> (1 << i)); // Compress m.
+      t = value & mv;
+      value = value ^ t | (t >> (1 << i)); // Compress x.
+      mk = mk & ~mp;
+    }
+    return value;
   }
 }

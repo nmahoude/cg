@@ -5,7 +5,12 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+@RunWith(JUnitParamsRunner.class)
 public class BitLayerTest {
 
   private BitLayer layer;
@@ -189,6 +194,13 @@ public class BitLayerTest {
     assertThat(BitLayer.toString(mask), is("000000011100"));
   }
   
+  @Test
+  public void findBitNeighborsForOneRow_decal() throws Exception {
+    setLayerFromString(0, "000000000110");
+    int mask = BitLayer.getNeighborBitsOnOneRow(layer.getCol(0), 1);
+    assertThat(BitLayer.toString(mask), is("000000000110"));
+  }
+
   @Test
   public void findBitNeighborsForOneRow_single() throws Exception {
     setLayerFromString(0, "000100011101");
@@ -517,6 +529,54 @@ public class BitLayerTest {
     assertThat(y, is(11));
   }
 
+  @Test
+  @Parameters({
+    // value     , mask         | expectedResult
+    "000000000000, 000000000000 | 000000000000",
+    "111111111111, 000000000000 | 000000000000",
+    "000000000000, 111111111111 | 000000000000",
+    
+    "000000000001, 000000000001 | 000000000001",
+    "000000000011, 000000000001 | 000000000001",
+    "111111111111, 101010101010 | 000000111111",
+    "101010101010, 101010101010 | 000000111111",
+    "010101010101, 101010101010 | 000000000000",
+    "100010001000, 101010101010 | 000000101010",
+    "100000000000, 101010101010 | 000000100000",
+  })
+  public void compress_loop(String strValue, String strMask, String strExpected) throws Exception {
+    int value = Integer.parseInt(strValue, 2);
+    int mask = Integer.parseInt(strMask, 2);
+    int expected = Integer.parseInt(strExpected, 2);
+    
+    assertThat(Integer.toBinaryString(BitLayer.compress(value, mask)), is (Integer.toBinaryString(expected)));
+  }
+
+  @Test
+  @Parameters({
+    // value     , mask         | expectedResult
+    "000000000000, 000000000000 | 000000000000",
+    "111111111111, 000000000000 | 000000000000",
+    "000000000000, 111111111111 | 000000000000",
+    
+    "000000000001, 000000000001 | 000000000001",
+    "000000000011, 000000000001 | 000000000001",
+    "111111111111, 101010101010 | 000000111111",
+    "101010101010, 101010101010 | 000000111111",
+    "010101010101, 101010101010 | 000000000000",
+    "100010001000, 101010101010 | 000000101010",
+    "100000000000, 101010101010 | 000000100000",
+  })
+  public void compress_Optmize(String strValue, String strMask, String strExpected) throws Exception {
+    int value = Integer.parseInt(strValue, 2);
+    int mask = Integer.parseInt(strMask, 2);
+    int expected = Integer.parseInt(strExpected, 2);
+    
+    int[] mvs = BitLayer.generateMvs(mask);
+    assertThat(Integer.toBinaryString(BitLayer.compress(value, mask, mvs)), is (Integer.toBinaryString(expected)));
+    
+    assertThat(Integer.toBinaryString(BitLayer.compress(value, mask)), is (Integer.toBinaryString(expected)));
+  }
   
   // ----------------- utils ------------------------------
   private String buildDebugString(String...rows) {

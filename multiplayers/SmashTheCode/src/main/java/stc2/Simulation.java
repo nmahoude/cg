@@ -1,12 +1,15 @@
 package stc2;
 
+import java.util.Arrays;
 import java.util.List;
 
 import stc.P;
 
 public class Simulation {
   BitBoard board;
-
+  BitLayer workDestroyLayer = new BitLayer();
+  BitLayer workTestLayer = new BitLayer();
+  
   int points;
   int chainPower;
   int clearedBlocks;
@@ -22,11 +25,17 @@ public class Simulation {
         for (P p : ps) {
           destruction |= destroyFrom(p.x, p.y);
         }
+        ps = null;
       } else {
+        // TODO be smarter 
         // need to try all, we are on the second wave
         // be smart and don't do 0 bits
         // be smarted and don't retest groups with less than 4 neighbors
-        throw new UnsupportedOperationException("Not implemented");
+        for (int x=0;x<6;x++) {
+          for (int y=0;y<12;y++) {
+            destruction |= destroyFrom(x, y);
+          }
+        }
       }
       if (destruction) {
         updateScores();
@@ -44,8 +53,8 @@ public class Simulation {
     chainPower = (chainPower == 0) ? 8 : 2*chainPower;
   }
   
-  private void updateBoard() {
-    throw new UnsupportedOperationException("Not implemented");
+  void updateBoard() {
+    board.update();
   }
 
   int getPoints() {
@@ -68,11 +77,15 @@ public class Simulation {
 
   public boolean destroyFrom(int x, int y) {
     int colorLayer = getColorFromLayers(x, y);
-    colorDestroyed[colorLayer-1] = true;
+    if (colorLayer == 0) {
+      return false;
+    }
 
-    NeighborInfo neighborInfo = board.layers[colorLayer].getNeighbors(x, y);
+    workDestroyLayer.copyFrom(board.layers[colorLayer]);
+    NeighborInfo neighborInfo = workDestroyLayer.getNeighbors(x, y);
     int count = neighborInfo.count;
     if (count >= 4) {
+      colorDestroyed[colorLayer-1] = true;
       clearedBlocks+=count;
       updateGroupBonus(count);
 
@@ -95,7 +108,7 @@ public class Simulation {
         return i;
       }
     }
-    throw new UnsupportedOperationException("Can't find color");
+    return 0;
   }
 
   public boolean putBalls(int color1, int color2, int rotation, int baseColumn) {
@@ -123,6 +136,7 @@ public class Simulation {
         break;
     }
     
+    destroyBlocks(Arrays.asList(posToCheck1, posToCheck2));
     return true;
   }
 }

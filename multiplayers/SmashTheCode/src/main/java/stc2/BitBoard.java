@@ -12,7 +12,7 @@ public class BitBoard {
   public static final int PINK_LAYER = 3;
   public static final int RED_LAYER = 4;
   public static final int YELLOW_LAYER = 5;
-  public static final int ALL_LAYER = 6;
+  public static final int COMPLETE_LAYER_MASK = 6;
   private static final char[] cellTable = { '☠', '1', '2', '3', '4', '5' };
 
   BitLayer layers[] = new BitLayer[7]; 
@@ -42,9 +42,10 @@ public class BitBoard {
     }
   }
 
-  public void buildFullLayer() {
+  public void buildCompleteLayerMask() {
+    layers[COMPLETE_LAYER_MASK].reset();
     for (int i=0;i<6;i++) {
-      layers[ALL_LAYER].merge(layers[i]);
+      layers[COMPLETE_LAYER_MASK].merge(layers[i]);
     }
   }
   
@@ -84,14 +85,14 @@ public class BitBoard {
 
   P pushBall(int color, int column) {
     int y;
-    y = layers[ALL_LAYER].pushFromTopOfColumn(column);
+    y = layers[COMPLETE_LAYER_MASK].pushFromTopOfColumn(column);
     layers[color].setCell(column, y);
     
     return P.get(column, y);
   }
 
   public boolean canPutBalls(int rotation, int baseColumn) {
-    BitLayer allLayers = layers[ALL_LAYER];
+    BitLayer allLayers = layers[COMPLETE_LAYER_MASK];
     
     if ((baseColumn == 0 && rotation == 2) || (baseColumn == 5 && rotation == 0)) {
       return false;
@@ -110,4 +111,19 @@ public class BitBoard {
     }
     return false;
   }
+
+  public void update() {
+    buildCompleteLayerMask();
+    int mask;
+    int mvs[] = new int[5];
+    
+    for (int col =0;col<6;col++) {
+      mask = layers[COMPLETE_LAYER_MASK].getCol(col);
+      BitLayer.generateMvs(mask, mvs);
+      for (int l=0;l<7;l++) {
+        layers[l].setCol(col, BitLayer.compress(layers[l].getCol(col), mask, mvs));
+      }
+    }
+  }
+
 }
