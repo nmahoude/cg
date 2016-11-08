@@ -194,7 +194,7 @@ public class SimulationTest {
     
     simulation.destroyBlocks(null);
     
-    assertThat(simulation.points, is((10*12)*Math.max(0+0+0,1)));
+    assertThat(simulation.points, is((10*12)*Math.max(8+0+0,1)));
   }
   
   @Test
