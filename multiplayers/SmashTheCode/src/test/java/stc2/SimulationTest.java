@@ -1,7 +1,7 @@
 package stc2;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -156,6 +156,36 @@ public class SimulationTest {
   }
   
   @Test
+  public void putBalls_twoIteration() throws Exception {
+    BitBoardTest.prepareEmptyBoard(board);
+
+    assertThat(simulation.putBalls(1,1, 3,0), is(true));
+    assertThat(simulation.points, is(0));
+    assertThat(simulation.putBalls(1,1, 3,1), is(true));
+    assertThat(simulation.points, is(40));
+  }
+  
+  @Test
+  public void debug() throws Exception {
+    BitBoardTest.prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "15....",
+        "52....",
+        "22....");
+
+    simulation.putBalls(2,4, 0, 2);
+    assertThat(simulation.points, is(40));
+  }
+  
+  @Test
   public void score_simple2SpotsOneColor() throws Exception {
     BitBoardTest.prepareBoard(board,
         "......",
@@ -240,5 +270,77 @@ public class SimulationTest {
     simulation.destroyBlocks(null);
     
     assertThat(simulation.points, is(160));
+  }
+
+  @Test
+  public void groupsCount_2_of_1() throws Exception {
+    BitBoardTest.prepareBoard(board,
+        "1.....",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "1.....");
+    
+    simulation.destroyBlocks(null);
+    
+    assertThat(simulation.groupsCount[0], is(0));
+    assertThat(simulation.groupsCount[1], is(2));
+    assertThat(simulation.groupsCount[2], is(0));
+    assertThat(simulation.groupsCount[3], is(0));
+  }
+
+  @Test
+  public void groupsCount_2_of_2() throws Exception {
+    BitBoardTest.prepareBoard(board,
+        "....11",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "11....");
+    
+    simulation.destroyBlocks(null);
+    
+    assertThat(simulation.groupsCount[0], is(0));
+    assertThat(simulation.groupsCount[1], is(0));
+    assertThat(simulation.groupsCount[2], is(2));
+    assertThat(simulation.groupsCount[3], is(0));
+  }
+
+  @Test
+  public void groupsCount_2_of_3() throws Exception {
+    BitBoardTest.prepareBoard(board,
+        "....11",
+        ".....1",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "1.....",
+        "11....");
+    
+    simulation.destroyBlocks(null);
+    
+    assertThat(simulation.groupsCount[0], is(0));
+    assertThat(simulation.groupsCount[1], is(0));
+    assertThat(simulation.groupsCount[2], is(0));
+    assertThat(simulation.groupsCount[3], is(2));
   }
 }

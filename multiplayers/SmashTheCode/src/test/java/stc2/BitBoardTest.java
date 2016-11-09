@@ -148,7 +148,7 @@ public class BitBoardTest {
   public void updateBoard_lastRowEmpty() throws Exception {
     BitBoard board =new BitBoard();
     prepareBoard(board,
-        "☠12345",
+        "111111",
         "☠12345",
         "☠12345",
         "☠12345",
@@ -165,7 +165,7 @@ public class BitBoardTest {
     
     assertThat(board.getDebugString(), is(buildDebugString(
         "......",
-        "☠12345",
+        "111111",
         "☠12345",
         "☠12345",
         "☠12345",
@@ -272,7 +272,7 @@ public class BitBoardTest {
     }
     int index = 0;
     for (String row : rows) {
-      board.updateRow(12-++index, row);
+      board.updateRow(index++, row);
     }
     board.buildCompleteLayerMask();
   }
@@ -280,7 +280,7 @@ public class BitBoardTest {
   private String buildDebugString(String...rows) {
     String result = "";
     for (int y=0;y<12;y++) {
-      result+=rows[11-y]+"\n";
+      result+=rows[y]+"\n";
     }
     return result;
   }

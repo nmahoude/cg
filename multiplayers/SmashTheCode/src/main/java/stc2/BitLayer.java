@@ -15,6 +15,7 @@ public class BitLayer {
       0b0, 0b1, 0b11, 0b111, 0b1111,0b11111,
       0b111111,0b1111111, 0b11111111, 0b111111111, 0b1111111111, 0b11111111111, 0b111111111111 
   };
+
   long col1 = 0; // 0->2
   long col2 = 0; // 3->5
   
@@ -26,7 +27,7 @@ public class BitLayer {
     this.col2 = layer.col2;
   }
   
-  public void reset() {
+  public void clear() {
     col1 = 0;
     col2 = 0;
   }
@@ -167,11 +168,12 @@ public class BitLayer {
   }
   
   private void countNeighborsRecursive(int x, int previousMask, NeighborInfo info) {
-    int value = getCol(x) & previousMask;
-    if (value == 0) {
+    int value = getCol(x);
+    int intersection = value & previousMask;
+    if (intersection == 0) {
       return;
     }
-    int pos = Integer.numberOfTrailingZeros(value);
+    int pos = Integer.numberOfTrailingZeros(intersection);
     int mask = getNeighborBitsOnOneRow(value, pos);
     info.count += Integer.bitCount(mask);
     info.neighborsMask.setCol(x, mask);
@@ -238,7 +240,7 @@ public class BitLayer {
     col2 = col2 | bitLayer.col2;
   }
 
-  public Object isEmpty() {
+  public boolean isEmpty() {
     return col1 == 0 && col2 == 0;
   }
 
@@ -318,5 +320,19 @@ public class BitLayer {
       mk = mk & ~mp;
     }
     return value;
+  }
+
+  public void fill() {
+    col1 = 0b111111111111111111111111111111111111111111111111L;
+    col2 = 0b111111111111111111111111111111111111111111111111L;
+  }
+  
+  @Override
+  public String toString() {
+    return getDebugString();
+  }
+
+  public boolean isMaskSetted(long mask0, long mask1) {
+    return (col1 & mask0 | col2 & mask1) != 0;
   }
 }

@@ -23,9 +23,13 @@ public class BitBoard {
   }
   
   public void copyFrom(BitBoard bboard) {
-    for (int i=0;i<=6;i++) {
-      layers[i].copyFrom(bboard.layers[i]);
-    }
+    layers[0].copyFrom(bboard.layers[0]);
+    layers[1].copyFrom(bboard.layers[1]);
+    layers[2].copyFrom(bboard.layers[2]);
+    layers[3].copyFrom(bboard.layers[3]);
+    layers[4].copyFrom(bboard.layers[4]);
+    layers[5].copyFrom(bboard.layers[5]);
+    layers[6].copyFrom(bboard.layers[6]);
   }
   
   public void updateRow(int y, String row) {
@@ -33,9 +37,9 @@ public class BitBoard {
       char value = row.charAt(x);
       if (isColor(value)) {
         int layer = value-'0';
-        layers[layer].setCell(x,y);
+        layers[layer].setCell(x,11-y);
       } else if (isSkull(value)) {
-        layers[0].setCell(x,y);
+        layers[0].setCell(x,11-y);
       } else if (isEmpty(value)) { 
         // nothing
       }
@@ -43,7 +47,7 @@ public class BitBoard {
   }
 
   public void buildCompleteLayerMask() {
-    layers[COMPLETE_LAYER_MASK].reset();
+    layers[COMPLETE_LAYER_MASK].clear();
     for (int i=0;i<6;i++) {
       layers[COMPLETE_LAYER_MASK].merge(layers[i]);
     }
@@ -61,9 +65,6 @@ public class BitBoard {
     return value >= '1' && value <= '5';
   }
 
-  
-  
-  
   public String getDebugString() {
     char[] output = new char[7*12];
     for (int y=0;y<12;y++) {
@@ -71,11 +72,35 @@ public class BitBoard {
     }
     for (int x = 0; x < 6; x++) {
       for (int y = 0; y < 12; y++) {
-        output[x + 7 * y] = '.';
+        output[x + 7 * (11-y)] = '.';
         for (int l = 0; l < 6; l++) {
           BitLayer layer = layers[l];
           if (layer.isCellSetAt(x, y)) {
-            output[x + 7 * y] = cellTable[l];
+            output[x + 7 * (11-y)] = cellTable[l];
+          }
+        }
+      }
+    }
+    return new String(output);
+  }
+
+  public String getJunitString() {
+    int decal = 1;
+    int rowDecal = 10;
+    char[] output = new char[10*12];
+    for (int y=0;y<12;y++) {
+      output[0+rowDecal*y] = '"';
+      output[7+rowDecal*y] = '"';
+      output[8+rowDecal*y] = ',';
+      output[9+rowDecal*y] = '\n';
+    }
+    for (int x = 0; x < 6; x++) {
+      for (int y = 0; y < 12; y++) {
+        output[decal+x + rowDecal * (11-y)] = '.';
+        for (int l = 0; l < 6; l++) {
+          BitLayer layer = layers[l];
+          if (layer.isCellSetAt(x, y)) {
+            output[decal+x + rowDecal * (11-y)] = cellTable[l];
           }
         }
       }
@@ -98,18 +123,37 @@ public class BitBoard {
       return false;
     }
     
+    boolean result = false;
     switch (rotation) {
     case 0:
-      return (allLayers.getCol(baseColumn) & TOP_ROW_MASK) == 0
+      result = (allLayers.getCol(baseColumn) & TOP_ROW_MASK) == 0
           && (allLayers.getCol(baseColumn+1) & TOP_ROW_MASK) == 0;
+//      if (!result) {
+//        System.err.println("rot, pos : "+rotation+","+baseColumn);
+//        System.err.println("Mask stopped "+allLayers.getCol(baseColumn)+" or "+allLayers.getCol(baseColumn+1));
+//        System.err.println(layers[1].getDebugString());
+//      }
+      break;
     case 1:
     case 3:
-      return (allLayers.getCol(baseColumn) & TOP_2_ROWS_MASK) == 0;
+      result = (allLayers.getCol(baseColumn) & TOP_2_ROWS_MASK) == 0;
+//      if (!result) {
+//        System.err.println("rot, pos : "+rotation+","+baseColumn);
+//        System.err.println("Mask stopped "+allLayers.getCol(baseColumn)+" or "+allLayers.getCol(baseColumn));
+//        System.err.println(layers[1].getDebugString());
+//      }
+      break;
     case 2:
-      return (allLayers.getCol(baseColumn) & TOP_ROW_MASK) == 0
+      result = (allLayers.getCol(baseColumn) & TOP_ROW_MASK) == 0
       && (allLayers.getCol(baseColumn-1) & TOP_ROW_MASK) == 0;
+//      if (!result) {
+//        System.err.println("rot, pos : "+rotation+","+baseColumn);
+//        System.err.println("Mask stopped "+allLayers.getCol(baseColumn)+" or "+allLayers.getCol(baseColumn-1));
+//        System.err.println(layers[1].getDebugString());
+//      }
+      break;
     }
-    return false;
+    return result;
   }
 
   public void update() {
@@ -124,6 +168,33 @@ public class BitBoard {
         layers[l].setCol(col, BitLayer.compress(layers[l].getCol(col), mask, mvs));
       }
     }
+  }
+
+  public int getColorFromLayers(long[] mask) {
+    long mask0 = mask[0];
+    long mask1 = mask[1];
+
+    if ((layers[1].isMaskSetted(mask0, mask1)))
+      return 1;
+    if ((layers[2].isMaskSetted(mask0, mask1)))
+      return 2;
+    if ((layers[3].isMaskSetted(mask0, mask1)))
+      return 3;
+    if ((layers[4].isMaskSetted(mask0, mask1)))
+      return 4;
+    if ((layers[5].isMaskSetted(mask0, mask1)))
+      return 5;
+    return 0;
+  }
+
+  public void clear() {
+    layers[0].clear();
+    layers[1].clear();
+    layers[2].clear();
+    layers[3].clear();
+    layers[4].clear();
+    layers[5].clear();
+    layers[6].clear();
   }
 
 }

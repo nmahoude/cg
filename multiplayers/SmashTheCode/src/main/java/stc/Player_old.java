@@ -2,7 +2,7 @@ package stc;
 
 import java.util.Scanner;
 
-public class Player {
+public class Player_old {
   
   static {
     // create some DFS node
