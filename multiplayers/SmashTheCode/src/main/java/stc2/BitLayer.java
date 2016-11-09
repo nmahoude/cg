@@ -23,8 +23,7 @@ public class BitLayer {
   }
   
   public BitLayer(BitLayer layer) {
-    this.col1 = layer.col1;
-    this.col2 = layer.col2;
+    set(layer);
   }
   
   public void clear() {
@@ -145,15 +144,11 @@ public class BitLayer {
     return yFullMask[to] & ~yFullMask[from];
   }
   
-  public NeighborInfo getNeighbors(int x, int y) {
-    NeighborInfo neighborsInfo = new NeighborInfo();
-    neighborsInfo.x = x;
-    neighborsInfo.y = y;
-    
+  public void getNeighbors(NeighborInfo neighborsInfo, int x, int y) {
     int value = getCol(x);
     int mask = getNeighborBitsOnOneRow(value, y);
     if (mask == 0) {
-      return neighborsInfo;
+      return;
     }
     neighborsInfo.neighborsMask.setCol(x, mask);
     setCol(x, value & ~mask); // remove counted cells
@@ -164,7 +159,7 @@ public class BitLayer {
     if (x<5) {
       countNeighborsRecursive(x+1, mask, neighborsInfo);
     }
-    return neighborsInfo;
+    return;
   }
   
   private void countNeighborsRecursive(int x, int previousMask, NeighborInfo info) {
@@ -334,5 +329,10 @@ public class BitLayer {
 
   public boolean isMaskSetted(long mask0, long mask1) {
     return (col1 & mask0 | col2 & mask1) != 0;
+  }
+
+  public void set(BitLayer bitLayer) {
+    this.col1 = bitLayer.col1;
+    this.col2 = bitLayer.col2;
   }
 }

@@ -29,8 +29,8 @@ public class Player {
         }
         game.otherBoard.buildCompleteLayerMask();
         
-        System.err.println(game.debugPairs());
-        System.err.println(game.myBoard.getJunitString());
+//        System.err.println(game.debugPairs());
+//        System.err.println(game.myBoard.getJunitString());
         
         long time1 = System.currentTimeMillis();
         mcts.simulate();

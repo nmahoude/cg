@@ -91,6 +91,7 @@ public class BitLayerTest {
 
   @Test
   public void neighborsCount_0() throws Exception {
+    NeighborInfo info = new NeighborInfo();
     setLayersFromString(
         "0000000000001",
         "0000000000000",
@@ -100,11 +101,14 @@ public class BitLayerTest {
         "0000000000000"
         );
     
-    assertThat(layer.getNeighbors(0,0).count, is(1));
+    layer.getNeighbors(info, 0,0);
+    
+    assertThat(info.count, is(1));
   }
 
   @Test
   public void neighborsCount_1() throws Exception {
+    NeighborInfo info = new NeighborInfo();
     setLayersFromString(
         "000000000001",
         "000000000001",
@@ -114,11 +118,14 @@ public class BitLayerTest {
         "000000000001"
         );
     
-    assertThat(layer.getNeighbors(0,0).count, is(6));
+    layer.getNeighbors(info, 0,0);
+    
+    assertThat(info.count, is(6));
   }
   
   @Test
   public void neighborsCount_full() throws Exception {
+    NeighborInfo info = new NeighborInfo();
     setLayersFromString(
         "111111111111",
         "111111111111",
@@ -128,7 +135,9 @@ public class BitLayerTest {
         "111111111111"
         );
     
-    assertThat(layer.getNeighbors(0,0).count, is(72));
+    layer.getNeighbors(info, 0,0);
+    
+    assertThat(info.count, is(72));
   }
   
   @Test

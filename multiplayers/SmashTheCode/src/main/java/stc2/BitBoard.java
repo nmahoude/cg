@@ -48,9 +48,12 @@ public class BitBoard {
 
   public void buildCompleteLayerMask() {
     layers[COMPLETE_LAYER_MASK].clear();
-    for (int i=0;i<6;i++) {
-      layers[COMPLETE_LAYER_MASK].merge(layers[i]);
-    }
+    layers[COMPLETE_LAYER_MASK].merge(layers[SKULL_LAYER]);
+    layers[COMPLETE_LAYER_MASK].merge(layers[BLUE_LAYER]);
+    layers[COMPLETE_LAYER_MASK].merge(layers[GREEN_LAYER]);
+    layers[COMPLETE_LAYER_MASK].merge(layers[PINK_LAYER]);
+    layers[COMPLETE_LAYER_MASK].merge(layers[RED_LAYER]);
+    layers[COMPLETE_LAYER_MASK].merge(layers[YELLOW_LAYER]);
   }
   
   private boolean isEmpty(char value) {
@@ -164,6 +167,7 @@ public class BitBoard {
     for (int col =0;col<6;col++) {
       mask = layers[COMPLETE_LAYER_MASK].getCol(col);
       BitLayer.generateMvs(mask, mvs);
+
       for (int l=0;l<7;l++) {
         layers[l].setCol(col, BitLayer.compress(layers[l].getCol(col), mask, mvs));
       }

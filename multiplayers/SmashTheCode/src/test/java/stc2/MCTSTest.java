@@ -67,18 +67,13 @@ public class MCTSTest {
         "344☠☠3",
         "452213");
 
-    MCTS mtcs = new MCTS();
-    mtcs.game = game;
-
+    MCTS mcts = new MCTS();
+    mcts.game = game;
+    mcts.MAX_PLY = 1_000_000;
     long time1 = System.currentTimeMillis();
-    mtcs.simulate();
+    mcts.simulate();
     long time2 = System.currentTimeMillis();
     System.out.println("time : " + (time2 - time1));
-
-    assertThat(mtcs.bestPoints[0], is(CoreMatchers.not(-1.0)));
-    assertThat(mtcs.bestPoints[0], is(0.0));
-    assertThat(mtcs.bestCombos[0], is(CoreMatchers.not(0)));
-    assertThat(mtcs.bestCombos[1], is(CoreMatchers.not(0)));
 
   }
 }

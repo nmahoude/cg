@@ -1,8 +1,8 @@
 package stc;
 
 public class Game {
-  int nextBalls[] = new int[8];
-  int nextBalls2[] = new int[8];
+  public int nextBalls[] = new int[8];
+  public int nextBalls2[] = new int[8];
   
   Board myBoard = new Board();
   Board otherBoard = new Board();

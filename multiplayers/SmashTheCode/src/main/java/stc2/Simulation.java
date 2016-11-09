@@ -9,7 +9,8 @@ public class Simulation {
   BitBoard board;
   BitLayer workDestroyLayer = new BitLayer();
   BitLayer workTestLayer = new BitLayer();
-  
+  NeighborInfo neighborsInfo = new NeighborInfo();
+
   int points;
   int chainPower;
   int clearedBlocks;
@@ -25,29 +26,32 @@ public class Simulation {
     clearedBlocks = 0;
     colorBonus = 0;
     groupBonus = 0;
-    for (int i=0;i<6;i++) {
-      colorDestroyed[i] = false;
-    }
-    for (int i=0;i<4;i++) {
-      groupsCount[i] = 0;
-    }
-    
+    colorDestroyed[0] = false;
+    colorDestroyed[1] = false;
+    colorDestroyed[2] = false;
+    colorDestroyed[3] = false;
+    colorDestroyed[4] = false;
+    colorDestroyed[5] = false;
+    groupsCount[0] = 0;
+    groupsCount[1] = 0;
+    groupsCount[2] = 0;
+    groupsCount[3] = 0;
   }
   
+  BitLayer toCheckLayer = new BitLayer();
   public void destroyBlocks(List<P> ps) {
-    BitLayer toCheckLayer = new BitLayer();
     
     boolean destruction;
     do {
-      toCheckLayer.merge(board.layers[BitBoard.COMPLETE_LAYER_MASK]);
+      toCheckLayer.set(board.layers[BitBoard.COMPLETE_LAYER_MASK]);
       destruction = false;
       if (ps != null) {
         for (P p : ps) {
-          destruction |= destroyFrom(p.x, p.y, toCheckLayer);
+          destruction |= destroyFrom(p.x, p.y);
         }
         ps = null;
       } else {
-        destruction = doFullDestruct(toCheckLayer, destruction);
+        destruction = doFullDestruct();
       }
       if (destruction) {
         updateScores();
@@ -56,10 +60,11 @@ public class Simulation {
     } while(destruction);
   }
 
-  private boolean doFullDestruct(BitLayer toCheckLayer, boolean destruction) {
+  private boolean doFullDestruct() {
+    boolean destruction = false;
     for (int y=0;y<12 && !toCheckLayer.isEmpty();y++) {
       for (int x=0;x<6 && !toCheckLayer.isEmpty();x++) {
-        destruction |= destroyFrom(x, y, toCheckLayer);
+        destruction |= destroyFrom(x, y);
       }
     }
     return destruction;
@@ -96,11 +101,11 @@ public class Simulation {
     return CB;
   }
 
-  public boolean destroyFrom(int x, int y, BitLayer toCheckedLayer) {
-    long mask[] = new long[2];
+  long mask[] = new long[2];
+  public boolean destroyFrom(int x, int y) {
     getMaskFor(mask, x,y);
     
-    if (!toCheckedLayer.isMaskSetted(mask[0], mask[1])) {
+    if (!toCheckLayer.isMaskSetted(mask[0], mask[1])) {
       return false;
     }
     int colorLayer = board.getColorFromLayers(mask);
@@ -109,18 +114,19 @@ public class Simulation {
     }
 
     workDestroyLayer.copyFrom(board.layers[colorLayer]);
-    NeighborInfo neighborInfo = workDestroyLayer.getNeighbors(x, y);
+    neighborsInfo.neighborsMask.clear();
+    workDestroyLayer.getNeighbors(neighborsInfo, x, y);
     
     // unset bits on the toCheckLayer
-    toCheckedLayer.unset(neighborInfo.neighborsMask);
-    int count = neighborInfo.count;
+    toCheckLayer.unset(neighborsInfo.neighborsMask);
+    int count = neighborsInfo.count;
     if (count >= 4) {
       colorDestroyed[colorLayer-1] = true;
       clearedBlocks+=count;
       updateGroupBonus(count);
 
-      board.layers[colorLayer].unset(neighborInfo.neighborsMask);
-      board.layers[BitBoard.SKULL_LAYER].removeSkullsFrom(neighborInfo.neighborsMask);
+      board.layers[colorLayer].unset(neighborsInfo.neighborsMask);
+      board.layers[BitBoard.SKULL_LAYER].removeSkullsFrom(neighborsInfo.neighborsMask);
       return true;
     } else {
       groupsCount[count]++;
@@ -169,6 +175,10 @@ public class Simulation {
     if (!board.canPutBalls(rotation, baseColumn)) {
       return false;
     }
+    return putBallsNoCheck(color1, color2, rotation, baseColumn);
+  }
+
+  public boolean putBallsNoCheck(int color1, int color2, int rotation, int baseColumn) {
     P posToCheck1 = null;
     P posToCheck2 = null;
     switch (rotation) {

@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>libraries/trigonometry</module>
+		<module>libraries</module>
 		<module>easy</module>
 		<module>weekly</module>
 		<module>medium</module>
