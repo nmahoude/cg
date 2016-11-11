@@ -166,6 +166,26 @@ public class SimulationTest {
   }
   
   @Test
+  public void debugACase() throws Exception {
+    BitBoardTest.prepareBoard(board,
+    "......",
+    "......",
+    "......",
+    "......",
+    "......",
+    "..3...",
+    "..1...",
+    ".55...",
+    ".225..",
+    ".251..",
+    "4513..",
+    "33113.");
+    assertThat(simulation.putBalls(4, 2, 1, 0), is(true));
+    assertThat(board.layers[BitBoard.COMPLETE_LAYER_MASK].bitCount(), is (2));
+  }
+  
+  
+  @Test
   public void debug() throws Exception {
     BitBoardTest.prepareBoard(board,
         "......",

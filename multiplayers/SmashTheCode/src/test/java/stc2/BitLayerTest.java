@@ -1,7 +1,7 @@
 package stc2;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -199,30 +199,47 @@ public class BitLayerTest {
   @Test
   public void findBitNeighborsForOneRow() throws Exception {
     setLayerFromString(0, "000100011101");
-    int mask = BitLayer.getNeighborBitsOnOneRow(layer.getCol(0), 2);
+    int mask = BitLayer.getNeighborBitsOnOneRowForPos(layer.getCol(0), 2);
     assertThat(BitLayer.toString(mask), is("000000011100"));
   }
   
   @Test
   public void findBitNeighborsForOneRow_decal() throws Exception {
     setLayerFromString(0, "000000000110");
-    int mask = BitLayer.getNeighborBitsOnOneRow(layer.getCol(0), 1);
+    int mask = BitLayer.getNeighborBitsOnOneRowForPos(layer.getCol(0), 1);
     assertThat(BitLayer.toString(mask), is("000000000110"));
   }
 
   @Test
   public void findBitNeighborsForOneRow_single() throws Exception {
     setLayerFromString(0, "000100011101");
-    int mask = BitLayer.getNeighborBitsOnOneRow(layer.getCol(0), 0);
+    int mask = BitLayer.getNeighborBitsOnOneRowForPos(layer.getCol(0), 0);
     assertThat(BitLayer.toString(mask), is("000000000001"));
   }
   
   @Test
   public void findBitNeighborsForOneRow_all() throws Exception {
     setLayerFromString(0, "111111111111");
-    int mask = BitLayer.getNeighborBitsOnOneRow(layer.getCol(0), 0);
+    int mask = BitLayer.getNeighborBitsOnOneRowForPos(layer.getCol(0), 0);
     assertThat(BitLayer.toString(mask), is("111111111111"));
   }
+  
+  @Test
+  @Parameters( {
+    "000000000000, 111111111111 | 000000000000",
+    "111111111111, 000000000000 | 000000000000",
+    "111111111111, 111111111111 | 111111111111",
+    "000100100000, 111100111111 | 111100111111",
+    "000100100000, 001111110000 | 001111110000",
+    "000100000000, 101110111111 | 001110000000"
+  })
+  public void getNeighborsFromIntersection(String inter, String v, String exp) throws Exception {
+    int intersection = Integer.parseInt(inter, 2);
+    int value = Integer.parseInt(v, 2);
+    int expected = Integer.parseInt(exp, 2);
+    assertThat(BitLayer.getNeighborsFromIntersection(intersection, value), is (expected));
+  }
+  
   
   @Test
   public void getMaskFromTo_all() throws Exception {

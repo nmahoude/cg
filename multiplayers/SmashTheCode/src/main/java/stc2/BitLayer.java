@@ -127,7 +127,7 @@ public class BitLayer {
     return target;
   }
 
-  public static int getNeighborBitsOnOneRow(int value, int pos) {
+  public static int getNeighborBitsOnOneRowForPos(int value, int pos) {
     int invMask = ~value & FULL;
     int firstPos = pos - Integer.numberOfLeadingZeros(invMask << (32-pos));
     if (firstPos <= 0) {
@@ -146,7 +146,7 @@ public class BitLayer {
   
   public void getNeighbors(NeighborInfo neighborsInfo, int x, int y) {
     int value = getCol(x);
-    int mask = getNeighborBitsOnOneRow(value, y);
+    int mask = getNeighborBitsOnOneRowForPos(value, y);
     if (mask == 0) {
       return;
     }
@@ -168,8 +168,9 @@ public class BitLayer {
     if (intersection == 0) {
       return;
     }
-    int pos = Integer.numberOfTrailingZeros(intersection);
-    int mask = getNeighborBitsOnOneRow(value, pos);
+    
+    int mask = getNeighborsFromIntersection(intersection, value);
+    
     info.count += Integer.bitCount(mask);
     info.neighborsMask.setCol(x, mask);
     setCol(x, value & ~mask);
@@ -180,7 +181,24 @@ public class BitLayer {
       countNeighborsRecursive(x+1, mask, info);
     }
     return;
+  }  static int getNeighborsFromIntersection(int intersection, int value) {
+    int currentMask = intersection;
+    currentMask = value & (currentMask | currentMask << 1 | currentMask >>> 1);
+    currentMask = value & (currentMask | currentMask << 1 | currentMask >>> 1);
+    currentMask = value & (currentMask | currentMask << 1 | currentMask >>> 1);
+    currentMask = value & (currentMask | currentMask << 1 | currentMask >>> 1);
+    currentMask = value & (currentMask | currentMask << 1 | currentMask >>> 1);
+    currentMask = value & (currentMask | currentMask << 1 | currentMask >>> 1);
+    currentMask = value & (currentMask | currentMask << 1 | currentMask >>> 1);
+    currentMask = value & (currentMask | currentMask << 1 | currentMask >>> 1);
+    currentMask = value & (currentMask | currentMask << 1 | currentMask >>> 1);
+    currentMask = value & (currentMask | currentMask << 1 | currentMask >>> 1);
+    currentMask = value & (currentMask | currentMask << 1 | currentMask >>> 1);
+    currentMask = value & (currentMask | currentMask << 1 | currentMask >>> 1);
+    return currentMask;
   }
+
+
 
   public String getColAsString(int x) {
     int value = getCol(x);

@@ -1,12 +1,14 @@
 package stc2;
 
 public class Game {
-  int nextBalls[] = new int[8];
-  int nextBalls2[] = new int[8];
+  public int nextBalls[] = new int[8];
+  public int nextBalls2[] = new int[8];
   
-  BitBoard myBoard = new BitBoard();
-  BitBoard otherBoard = new BitBoard();
+  public BitBoard myBoard = new BitBoard();
+  public BitBoard otherBoard = new BitBoard();
   
+  
+  public int lastSkullsCount;
   public int myScore;
   public int otherScore;
   

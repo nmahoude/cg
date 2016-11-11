@@ -7,8 +7,7 @@ public class Player {
   static MCTS mcts = new MCTS();
   
   public static void main(String args[]) {
-    mcts.game = game;
-    
+    mcts.attachGame(game);
     Scanner in = new Scanner(System.in);
     // game loop
     while (true) {
@@ -18,10 +17,12 @@ public class Player {
         }
         game.myScore = in.nextInt();
         game.prepare();
+        
         for (int i = 0; i < 12; i++) {
           game.myBoard.updateRow(i, in.next());
         }
         game.myBoard.buildCompleteLayerMask();
+        int skullsCount = game.myBoard.layers[BitBoard.SKULL_LAYER].bitCount();
 
         game.otherScore = in.nextInt();
         for (int i = 0; i < 12; i++) {
@@ -33,10 +34,13 @@ public class Player {
 //        System.err.println(game.myBoard.getJunitString());
         
         long time1 = System.currentTimeMillis();
-        mcts.simulate();
+        System.err.println("Skulls b4/af: "+game.lastSkullsCount+" / "+skullsCount);
+        mcts.simulate(skullsCount == game.lastSkullsCount);
         long time2 = System.currentTimeMillis();
         long aiTime = time2-time1;
         System.err.println("AI Time : "+aiTime);
+        
+        game.lastSkullsCount = mcts.getSkullCountAfterMove();
         System.out.println(mcts.output());
     }
 }

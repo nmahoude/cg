@@ -64,6 +64,125 @@ public class BitBoardTest {
   }
   
   @Test
+  public void getColHeight_testFilledColumn() throws Exception {
+    BitBoard board =new BitBoard();
+    prepareBoard(board,
+        "111111",
+        "111111",
+        "111111",
+        "111111",
+        "111111",
+        "111111",
+        "111111",
+        "111111",
+        "111111",
+        "111111",
+        "111111",
+        "111111");
+
+    assertThat(board.getColHeight(0), is(12));
+  }
+
+  @Test
+  public void getColHeight_testEmptyColumn() throws Exception {
+    BitBoard board =new BitBoard();
+    prepareBoard(board,
+        ".11111",
+        ".11111",
+        ".11111",
+        ".11111",
+        ".11111",
+        ".11111",
+        ".11111",
+        ".11111",
+        ".11111",
+        ".11111",
+        ".11111",
+        ".11111");
+
+    assertThat(board.getColHeight(0), is(0));
+  }
+  
+  @Test
+  public void getColHeight_testSemiFilledColumn() throws Exception {
+    BitBoard board =new BitBoard();
+    prepareBoard(board,
+        ".11111",
+        ".11111",
+        ".11111",
+        ".11111",
+        ".11111",
+        ".11111",
+        "011111",
+        "111111",
+        "211111",
+        "311111",
+        "411111",
+        "511111");
+
+    assertThat(board.getColHeight(0), is(6));
+  }
+  
+  @Test
+  public void getTotalHeight_testRandomColumns() throws Exception {
+    BitBoard board =new BitBoard();
+    prepareBoard(board,
+        ".1.1.1",
+        ".1.1.1",
+        ".1.1.1",
+        ".1.1.1",
+        ".1.1.1",
+        ".1.1.1",
+        "01.1.1",
+        "11.111",
+        "21.111",
+        "31.111",
+        "41.111",
+        "51.111");
+
+    assertThat(board.getTotalColumnHeight(), is(47));
+  }
+  
+  @Test
+  public void getMinimalColumnHeight_testRandomColumns() throws Exception {
+    BitBoard board =new BitBoard();
+    prepareBoard(board,
+        ".1.1.1",
+        ".1.1.1",
+        ".1.1.1",
+        ".1.1.1",
+        ".1.1.1",
+        ".1.1.1",
+        "01.1.1",
+        "11.111",
+        "21.111",
+        "311111",
+        "411111",
+        "511111");
+
+    assertThat(board.getMinimalColumnHeight(), is(3));
+  }
+    
+  @Test
+  public void getMinimalColumnHeight_testRandomColumns2() throws Exception {
+    BitBoard board =new BitBoard();
+    prepareBoard(board,
+        ".1.1.1",
+        ".1.1.1",
+        ".1.1.1",
+        ".151.1",
+        ".151.1",
+        ".151.1",
+        "015101",
+        "115111",
+        "215111",
+        "311111",
+        "411111",
+        "511111");
+
+    assertThat(board.getMinimalColumnHeight(), is(6));
+  }
+  @Test
   public void prepareABlueBoard() throws Exception {
     BitBoard board =new BitBoard();
     prepareBoard(board,

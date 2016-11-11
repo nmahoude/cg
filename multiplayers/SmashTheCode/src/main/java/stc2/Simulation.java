@@ -11,7 +11,7 @@ public class Simulation {
   BitLayer workTestLayer = new BitLayer();
   NeighborInfo neighborsInfo = new NeighborInfo();
 
-  int points;
+  public int points;
   int chainPower;
   int clearedBlocks;
   int colorBonus;
@@ -20,7 +20,7 @@ public class Simulation {
 
   int groupsCount[] = new int[4];
   
-  public void init() {
+  public void clear() {
     points = 0;
     chainPower = 0;
     clearedBlocks = 0;
@@ -203,4 +203,5 @@ public class Simulation {
     destroyBlocks(Arrays.asList(posToCheck1, posToCheck2));
     return true;
   }
+
 }

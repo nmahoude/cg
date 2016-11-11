@@ -111,7 +111,7 @@ public class BitBoard {
     return new String(output);
   }
 
-  P pushBall(int color, int column) {
+  public P pushBall(int color, int column) {
     int y;
     y = layers[COMPLETE_LAYER_MASK].pushFromTopOfColumn(column);
     layers[color].setCell(column, y);
@@ -174,6 +174,27 @@ public class BitBoard {
     }
   }
 
+  public int getColHeight(int column) {
+    int col = layers[COMPLETE_LAYER_MASK].getCol(column);
+    return Integer.bitCount(col);
+  }
+  
+  public int getTotalColumnHeight() {
+    return Long.bitCount(layers[COMPLETE_LAYER_MASK].col1)
+        +Long.bitCount(layers[COMPLETE_LAYER_MASK].col2);
+  }
+  
+  public int getMinimalColumnHeight() {
+    int mergeCols =  
+        layers[COMPLETE_LAYER_MASK].getCol(0)
+        & layers[COMPLETE_LAYER_MASK].getCol(1)
+        & layers[COMPLETE_LAYER_MASK].getCol(2)
+        & layers[COMPLETE_LAYER_MASK].getCol(3)
+        & layers[COMPLETE_LAYER_MASK].getCol(4)
+        & layers[COMPLETE_LAYER_MASK].getCol(5);
+    return Integer.bitCount(mergeCols);
+  }
+  
   public int getColorFromLayers(long[] mask) {
     long mask0 = mask[0];
     long mask1 = mask[1];

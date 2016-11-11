@@ -10,6 +10,9 @@ import utils.Cache;
 public class MCNode {
   static final ThreadLocalRandom random = ThreadLocalRandom.current();
   private static final MCNode IMPOSSIBLE_NODE = new MCNode();
+  static {
+    IMPOSSIBLE_NODE.simulation.points = -1_000_000;
+  }
   static Cache<MCNode> cache = new Cache<>();
   static {
     for(int i=0;i<10_000;i++) {
@@ -17,20 +20,20 @@ public class MCNode {
     }
   }
   
-  Simulation simulation = new Simulation();
-  BitBoard board = new BitBoard();
+  public Simulation simulation = new Simulation();
+  public BitBoard board = new BitBoard();
   
   Map<Integer, MCNode> childs = new HashMap<>();
-  private int color1;
-  private int color2;
-  int count;
+  int color1;
+  int color2;
+  int simCount;
   
   private MCNode() {
     simulation.board = board;
   }
   
   
-  public final void simulate(Game game, int depth, int maxDepth) {
+  public final void simulate(Game game, int depth, int maxDepth, int[] bestPointsAtDepth) {
     if (depth >= maxDepth) {
       return;
     }
@@ -44,8 +47,8 @@ public class MCNode {
       if (child == IMPOSSIBLE_NODE) {
         return;
       }
-      child.count++;
-      child.simulate(game, depth+1, maxDepth);
+      child.simCount++;
+      child.simulate(game, depth+1, maxDepth, bestPointsAtDepth);
     } else {
       if (!board.canPutBalls(rotation, column)) {
         childs.put(key, IMPOSSIBLE_NODE);
@@ -53,22 +56,42 @@ public class MCNode {
       }
       // build a child
       child = get();
-      child.count = 1;
-      child.color1 = game.nextBalls[depth];
-      child.color2 = game.nextBalls2[depth];
+      child.simCount = 1;
+      child.color1 = game.nextBalls[depth+1];
+      child.color2 = game.nextBalls2[depth+1];
       child.board.copyFrom(this.board);
       child.simulation.putBallsNoCheck(color1, color2, rotation, column);
+      if (bestPointsAtDepth[depth] < child.simulation.points) {
+        bestPointsAtDepth[depth] = child.simulation.points;
+      }
       childs.put(key, child);
     }
   }
   
   public double getScore() {
     return simulation.points 
-        - simulation.groupsCount[2]
-        +2*simulation.groupsCount[3]
-        -2*simulation.groupsCount[1];
+        + getColorGroupScore()
+        + getColumnScore();
   }
   
+  private double getColorGroupScore() {
+    return - 0*simulation.groupsCount[2]
+           + 1*simulation.groupsCount[3]
+           - 1*simulation.groupsCount[1];  
+  }
+
+
+  private double getColumnScore() {
+    return 
+        -2*simulation.board.getColHeight(0)
+        -1*simulation.board.getColHeight(1)
+        +2*simulation.board.getColHeight(2)
+        +2*simulation.board.getColHeight(3)
+        -1*simulation.board.getColHeight(4)
+        -2*simulation.board.getColHeight(5);
+  }
+
+
   double getBestScore() {
     if (childs.isEmpty()) {
       return getScore();
@@ -104,6 +127,7 @@ public class MCNode {
       child.release();
     }
     childs.clear();
+    simulation.clear();
     cache.retrocede(this);
   }
 }

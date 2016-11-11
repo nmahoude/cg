@@ -35,7 +35,7 @@ public class MCTSTest {
         ".5545.",
         ".3111.",
         "332421");
-    sim.init();
+    sim.clear();
     sim.putBalls(1, 1, 0, 0);
     
     int points = sim.points
@@ -45,9 +45,34 @@ public class MCTSTest {
     
     assertThat(points, is(CoreMatchers.not(26)));
   }
+  
+  @Test
+  public void getSkullsCountAfterMove() throws Exception {
+    Simulation sim = new Simulation();
+    sim.board = game.myBoard;
+    
+    BitBoardTest.prepareBoard(game.myBoard,
+        "......",
+        "......",
+        "......",
+        "...0..",
+        "..10..",
+        "..02..",
+        "..02..",
+        "..315.",
+        "..525.",
+        ".5545.",
+        ".3111.",
+        "332421");
+    sim.clear();
+    sim.putBalls(1, 1, 0, 0);
+
+    assertThat(game.myBoard.layers[BitBoard.SKULL_LAYER].bitCount(), is(4));
+  }
+  
 
   @Test
-  @Ignore
+//  @Ignore
   public void debug() throws Exception {
     Game game = new Game();
     game.nextBalls[0] = 2;
@@ -68,10 +93,10 @@ public class MCTSTest {
         "452213");
 
     MCTS mcts = new MCTS();
-    mcts.game = game;
-    mcts.MAX_PLY = 1_000_000;
+    mcts.attachGame(game);
+    mcts.MAX_PLY = 1;
     long time1 = System.currentTimeMillis();
-    mcts.simulate();
+    mcts.simulate(false);
     long time2 = System.currentTimeMillis();
     System.out.println("time : " + (time2 - time1));
 
