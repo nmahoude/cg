@@ -69,15 +69,20 @@ public class MCNode {
   }
   
   public double getScore() {
-    return simulation.points 
-        + getColorGroupScore()
-        + getColumnScore();
+    if (simulation.points > 420 ) {
+      return simulation.points 
+          + getColorGroupScore()
+          + getColumnScore();
+    } else {
+      return getColorGroupScore()
+          + getColumnScore();
+    }
   }
   
   private double getColorGroupScore() {
     return - 0*simulation.groupsCount[2]
-           + 1*simulation.groupsCount[3]
-           - 1*simulation.groupsCount[1];  
+           + 100*simulation.groupsCount[3]
+           - 20*simulation.groupsCount[1];  
   }
 
 
