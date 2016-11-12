@@ -3,18 +3,17 @@ package stc2;
 import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 
-import stc.DFSNode;
-
 public class MCTS {
   private static final int ONE_LINE_OF_SKULLS = 420;
   private static final double WORST_SCORE = -1_000_000;
-  static int MAX_PLY = 30_000;
+  static int MAX_PLY = 10_000;
   public Game game;
   public BitBoard myBoard;
   public BitBoard otherBoard;
   
   
   ThreadLocalRandom random = ThreadLocalRandom.current();
+  public int previousTotalSim = 0;
   public MCNode bestNode;
   public double bestScore;
   public Integer bestKey;
@@ -43,15 +42,15 @@ public class MCTS {
     oppTotalCol = otherBoard.getTotalColumnHeight();
 
     MCNode newRoot = null;
-    if (keepLastMoveSimualtion & bestNode != null) {
+    if (keepLastMoveSimualtion && bestNode != null) {
       newRoot = bestNode;
       root.childs.remove(bestKey);
-      message = "cache "+bestNode.simCount;
-      System.err.println("Rebuilding on previous bestNode with board :");
-      System.err.println(bestNode.board.getDebugString());
+      message = "sims : "+previousTotalSim+" / cache "+bestNode.simCount;
+      //System.err.println("Rebuilding on previous bestNode with board :");
+      //System.err.println(bestNode.board.getDebugString());
     } else {
-      System.err.println("Resetting moves cache");
-      message = "Reset cache";
+      //System.err.println("Resetting moves cache");
+      message = "sims : "+previousTotalSim+" / Reset cache";
     }
 
     simulateOpponent();
@@ -62,7 +61,7 @@ public class MCTS {
     root.release();
     if (newRoot != null) {
       root = newRoot;
-      System.err.println("Root has already "+root.simCount+" sims");
+      //System.err.println("Root has already "+root.simCount+" sims");
       //showSubNodeSims();
     } else {
       root = MCNode.get();
@@ -72,27 +71,27 @@ public class MCTS {
     root.color2 = game.nextBalls2[0];
     
     int maxDepth  = getOptimizedDepth();
-    System.err.println("MaxDepth is "+maxDepth);
+    //System.err.println("MaxDepth is "+maxDepth);
     
     clearBestPointsAtDepth();
     for (int ply=MAX_PLY;--ply>=0;) {
       root.simulate(game, 0, maxDepth, bestPointsAtDepth);
     }
-    
+
     bestScore = WORST_SCORE;
     bestNode = null;
     bestKey = null;
     
-    int simCount = 0;
+    previousTotalSim = 0;
     for (Entry<Integer, MCNode> childEntry : root.childs.entrySet()) {
       MCNode child = childEntry.getValue();
-      simCount += child.simCount;
+      previousTotalSim+= child.simCount;
       double score = child.getScore();
       double bScore = child.getBestScore();
       int key = childEntry.getKey();
       int rot = keyToRotation(key);
       int column = key >>> 2;
-      System.err.println(""+key+" ("+column+","+rot+") (sim="+child.simCount+") -> " + score + " --> "+bScore);
+//      System.err.println(""+key+" ("+column+","+rot+") (sim="+child.simCount+") -> " + score + " --> "+bScore);
       if (score > Math.min(12-oppMinCol, 4)*ONE_LINE_OF_SKULLS) {
         message = "Killer move";
         bestScore = score;
@@ -106,10 +105,8 @@ public class MCTS {
         bestKey = childEntry.getKey();
       }
     }
-    System.err.println("Sim count = "+simCount);
-
-    showMyBestPointsPerDepth(); 
-
+//    System.err.println("Sim count = "+simCount);
+//    showMyBestPointsPerDepth(); 
   }
 
   private void showSubNodeSims() {
@@ -143,20 +140,14 @@ public class MCTS {
   }
 
   private int getOptimizedDepth() {
-    if (oppBestScore1 > ONE_LINE_OF_SKULLS*3) {
+    if (oppBestScore1 > ONE_LINE_OF_SKULLS*6) {
       return 1;
-    } else if (oppBestScore2 > ONE_LINE_OF_SKULLS*3) {
+    } else if (oppBestScore1 > ONE_LINE_OF_SKULLS * 4) {
+      return 2;
+    } else if (oppBestScore2 > ONE_LINE_OF_SKULLS*6) {
       return 2;
     }
-    if (myTotalCol < 6*6) {
-      return 8;
-    } else if (myTotalCol < 6*8) {
-      return  5;
-    } else if (myTotalCol < 6*10) {
-      return 2;
-    } else {
-      return  1;
-    }
+    return 7;
   }
 
   private void simulateOpponent() {
@@ -202,9 +193,9 @@ public class MCTS {
     }
     
     //System.err.println("Opponents opportunity: "+oppBestScore1+" / "+oppBestScore2);
-    System.err.println("Best points for him/her:");
-    System.err.println("1 ply : "+bestPointsAtDepth[0]+""); 
-    System.err.println("2 plys : "+bestPointsAtDepth[1]+""); 
+//    System.err.println("Best points for him/her:");
+//    System.err.println("1 ply : "+bestPointsAtDepth[0]+""); 
+//    System.err.println("2 plys : "+bestPointsAtDepth[1]+""); 
   }
 
   

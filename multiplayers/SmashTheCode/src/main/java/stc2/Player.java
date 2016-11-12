@@ -33,12 +33,11 @@ public class Player {
 //        System.err.println(game.debugPairs());
 //        System.err.println(game.myBoard.getJunitString());
         
-        long time1 = System.currentTimeMillis();
-        System.err.println("Skulls b4/af: "+game.lastSkullsCount+" / "+skullsCount);
+        //long time1 = System.currentTimeMillis();
         mcts.simulate(skullsCount == game.lastSkullsCount);
-        long time2 = System.currentTimeMillis();
-        long aiTime = time2-time1;
-        System.err.println("AI Time : "+aiTime);
+        //long time2 = System.currentTimeMillis();
+        //long aiTime = time2-time1;
+//        System.err.println("AI Time : "+aiTime);
         
         game.lastSkullsCount = mcts.getSkullCountAfterMove();
         System.out.println(mcts.output());

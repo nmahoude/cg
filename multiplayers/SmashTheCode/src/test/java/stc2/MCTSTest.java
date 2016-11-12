@@ -79,11 +79,11 @@ public class MCTSTest {
     game.nextBalls2[0] = 4;
 
     BitBoardTest.prepareBoard(game.myBoard,
-        "☠☠....",
-        "☠2....",
-        "☠3....",
-        "54....",
-        "55....",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
         "23....",
         "5☠☠..☠",
         "43☠☠☠☠",
@@ -94,7 +94,7 @@ public class MCTSTest {
 
     MCTS mcts = new MCTS();
     mcts.attachGame(game);
-    mcts.MAX_PLY = 1;
+    MCTS.MAX_PLY = 100_000;
     long time1 = System.currentTimeMillis();
     mcts.simulate(false);
     long time2 = System.currentTimeMillis();

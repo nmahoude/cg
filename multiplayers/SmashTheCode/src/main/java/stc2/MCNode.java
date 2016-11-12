@@ -10,12 +10,9 @@ import utils.Cache;
 public class MCNode {
   static final ThreadLocalRandom random = ThreadLocalRandom.current();
   private static final MCNode IMPOSSIBLE_NODE = new MCNode();
-  static {
-    IMPOSSIBLE_NODE.simulation.points = -1_000_000;
-  }
   static Cache<MCNode> cache = new Cache<>();
   static {
-    for(int i=0;i<10_000;i++) {
+    for(int i=0;i<150_000;i++) {
       cache.push(new MCNode());
     }
   }
@@ -27,6 +24,8 @@ public class MCNode {
   int color1;
   int color2;
   int simCount;
+  private int rotation;
+  private int column;
   
   private MCNode() {
     simulation.board = board;
@@ -38,9 +37,7 @@ public class MCNode {
       return;
     }
 
-    int rotation = random.nextInt(color1 == color2 ? 2 : 4);
-    int column = random.nextInt(6);
-    Integer key = new Integer(rotation + column*4);
+    int key = getRandomKey();
     
     MCNode child = childs.get(key);
     if (child != null) {
@@ -55,21 +52,38 @@ public class MCNode {
         return;
       }
       // build a child
-      child = get();
-      child.simCount = 1;
-      child.color1 = game.nextBalls[depth+1];
-      child.color2 = game.nextBalls2[depth+1];
-      child.board.copyFrom(this.board);
-      child.simulation.putBallsNoCheck(color1, color2, rotation, column);
+      child = buildNewChild(rotation, column, depth, game);
       if (bestPointsAtDepth[depth] < child.simulation.points) {
         bestPointsAtDepth[depth] = child.simulation.points;
       }
       childs.put(key, child);
+      child.simulate(game, depth+1, maxDepth, bestPointsAtDepth);
     }
+  }
+
+
+  final private int getRandomKey() {
+    rotation = random.nextInt(color1 == color2 ? 2 : 4);
+    column = random.nextInt(6);
+    Integer key = (rotation + column*4);
+    return key;
+  }
+  
+  public MCNode buildNewChild(int rotation, int column, int depth, Game game) {
+    MCNode child = get();
+    child.simCount = 1;
+    child.color1 = game.nextBalls[depth+1];
+    child.color2 = game.nextBalls2[depth+1];
+    child.board.copyFrom(this.board);
+    child.simulation.putBallsNoCheck(color1, color2, rotation, column);
+    return child;
   }
   
   public double getScore() {
-    if (simulation.points > 420 ) {
+    if (this == IMPOSSIBLE_NODE) {
+      return -1_000_000;
+    }
+    if (simulation.points > 0 ) {
       return simulation.points 
           + getColorGroupScore()
           + getColumnScore();
@@ -82,7 +96,7 @@ public class MCNode {
   private double getColorGroupScore() {
     return - 0*simulation.groupsCount[2]
            + 100*simulation.groupsCount[3]
-           - 20*simulation.groupsCount[1];  
+           - 100*simulation.groupsCount[1];  
   }
 
 
