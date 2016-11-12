@@ -9,6 +9,8 @@ public class Game {
   
   
   public int lastSkullsCount;
+  public int lastScore;
+  
   public int myScore;
   public int otherScore;
   

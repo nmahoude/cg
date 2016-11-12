@@ -1,12 +1,11 @@
 package stc2;
 
-import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MCTS {
   private static final int ONE_LINE_OF_SKULLS = 420;
   private static final double WORST_SCORE = -1_000_000;
-  static int MAX_PLY = 10_000;
+  static int MAX_PLY = 50_000;
   public Game game;
   public BitBoard myBoard;
   public BitBoard otherBoard;
@@ -16,7 +15,7 @@ public class MCTS {
   public int previousTotalSim = 0;
   public MCNode bestNode;
   public double bestScore;
-  public Integer bestKey;
+  public int bestKey;
   public MCNode root;
   
   private int myMinCol;
@@ -44,13 +43,13 @@ public class MCTS {
     MCNode newRoot = null;
     if (keepLastMoveSimualtion && bestNode != null) {
       newRoot = bestNode;
-      root.childs.remove(bestKey);
-      message = "sims : "+previousTotalSim+" / cache "+bestNode.simCount;
+      root.childs[bestKey] = null;
+      message = "s:"+previousTotalSim+"/c:"+bestNode.simCount;
       //System.err.println("Rebuilding on previous bestNode with board :");
       //System.err.println(bestNode.board.getDebugString());
     } else {
       //System.err.println("Resetting moves cache");
-      message = "sims : "+previousTotalSim+" / Reset cache";
+      message = "s:"+previousTotalSim+"/RazC";
     }
 
     simulateOpponent();
@@ -80,40 +79,36 @@ public class MCTS {
 
     bestScore = WORST_SCORE;
     bestNode = null;
-    bestKey = null;
+    bestKey = -1;
     
     previousTotalSim = 0;
-    for (Entry<Integer, MCNode> childEntry : root.childs.entrySet()) {
-      MCNode child = childEntry.getValue();
+    for (int key=0;key<24;key++) {
+      int rot = keyToRotation(key);
+      int column = keyToColumn(key);
+      MCNode child = root.childs[key];
+      if (child == null) {
+        //System.err.println(""+key+" ("+column+","+rot+") -> null" );
+        continue;
+      }
       previousTotalSim+= child.simCount;
       double score = child.getScore();
       double bScore = child.getBestScore();
-      int key = childEntry.getKey();
-      int rot = keyToRotation(key);
-      int column = key >>> 2;
-//      System.err.println(""+key+" ("+column+","+rot+") (sim="+child.simCount+") -> " + score + " --> "+bScore);
-      if (score > Math.min(12-oppMinCol, 4)*ONE_LINE_OF_SKULLS) {
+      //System.err.println(""+key+" ("+column+","+rot+") (sim="+child.simCount+") -> " + score + " --> "+bScore);
+      if (score > Math.min(11-oppMinCol, 4)*ONE_LINE_OF_SKULLS) {
         message = "Killer move";
         bestScore = score;
         bestNode = child;
-        bestKey = childEntry.getKey();
+        bestKey = key;
         break;
       }
       if (bScore > bestScore) {
         bestScore = bScore;
         bestNode = child;
-        bestKey = childEntry.getKey();
+        bestKey = key;
       }
     }
 //    System.err.println("Sim count = "+simCount);
 //    showMyBestPointsPerDepth(); 
-  }
-
-  private void showSubNodeSims() {
-    for (Entry<Integer, MCNode> childEntry : root.childs.entrySet()) {
-      MCNode child = childEntry.getValue();
-      System.err.println(""+childEntry.getKey()+" -> "+child.simCount);
-    }
   }
 
   private void showMyBestPointsPerDepth() {
@@ -171,11 +166,12 @@ public class MCTS {
     MCNode oppBestNode2 = null;
     Integer oppBestKey2 = null;
     
-    for (Entry<Integer, MCNode> childEntry : root.childs.entrySet()) {
-      MCNode child = childEntry.getValue();
+    for (int key=0;key<24;key++) {
+      MCNode child = root.childs[key];
+      if (child == null) continue;
+
       double score1 = child.getScore();
       double score2 = child.getBestScore();
-      int key = childEntry.getKey();
       int rot = keyToRotation(key);
       int column = keyToColumn(key);
       
@@ -183,12 +179,12 @@ public class MCTS {
       if (score1 > oppBestScore1) {
         oppBestScore1 = score1;
         oppBestNode1 = child;
-        oppBestKey1 = childEntry.getKey();
+        oppBestKey1 = key;
       }
       if (score2 > oppBestScore2) {
         oppBestScore2 = score2;
         oppBestNode2 = child;
-        oppBestKey2 = childEntry.getKey();
+        oppBestKey2 = key;
       }
     }
     

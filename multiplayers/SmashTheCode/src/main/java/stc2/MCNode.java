@@ -20,7 +20,9 @@ public class MCNode {
   public Simulation simulation = new Simulation();
   public BitBoard board = new BitBoard();
   
-  Map<Integer, MCNode> childs = new HashMap<>();
+  MCNode childs[] = new MCNode[24];
+  int childsCount = 0;
+  
   int color1;
   int color2;
   int simCount;
@@ -39,7 +41,7 @@ public class MCNode {
 
     int key = getRandomKey();
     
-    MCNode child = childs.get(key);
+    MCNode child = childs[key];
     if (child != null) {
       if (child == IMPOSSIBLE_NODE) {
         return;
@@ -48,7 +50,7 @@ public class MCNode {
       child.simulate(game, depth+1, maxDepth, bestPointsAtDepth);
     } else {
       if (!board.canPutBalls(rotation, column)) {
-        childs.put(key, IMPOSSIBLE_NODE);
+        childs[key] = IMPOSSIBLE_NODE;
         return;
       }
       // build a child
@@ -56,17 +58,17 @@ public class MCNode {
       if (bestPointsAtDepth[depth] < child.simulation.points) {
         bestPointsAtDepth[depth] = child.simulation.points;
       }
-      childs.put(key, child);
-      child.simulate(game, depth+1, maxDepth, bestPointsAtDepth);
+      childs[key] = child;
+      childsCount++;
+      //child.simulate(game, depth+1, maxDepth, bestPointsAtDepth);
     }
   }
 
 
   final private int getRandomKey() {
-    rotation = random.nextInt(color1 == color2 ? 2 : 4);
-    column = random.nextInt(6);
-    Integer key = (rotation + column*4);
-    return key;
+    rotation = random.nextInt(color1 == color2 ? 2 : 4); 
+    column = random.nextInt(6); 
+    return (rotation + column*4); 
   }
   
   public MCNode buildNewChild(int rotation, int column, int depth, Game game) {
@@ -83,47 +85,60 @@ public class MCNode {
     if (this == IMPOSSIBLE_NODE) {
       return -1_000_000;
     }
-    if (simulation.points > 0 ) {
+    if (simulation.points > 420 ) {
       return simulation.points 
           + getColorGroupScore()
-          + getColumnScore();
+          + getColumnScore()
+          + getSkullsScore();
     } else {
       return getColorGroupScore()
-          + getColumnScore();
+          + getColumnScore()
+          + getSkullsScore();
     }
   }
   
+  private int getSkullsScore() {
+    return 0;
+    //return 10*simulation.board.layers[BitBoard.SKULL_LAYER].bitCount();
+  }
+
+
   private double getColorGroupScore() {
-    return - 0*simulation.groupsCount[2]
-           + 100*simulation.groupsCount[3]
-           - 100*simulation.groupsCount[1];  
+        return 
+            - 40*simulation.groupsCount[1] 
+            + 10*simulation.groupsCount[2]
+            + 40*simulation.groupsCount[3];
   }
 
 
   private double getColumnScore() {
     return 
-        -2*simulation.board.getColHeight(0)
-        -1*simulation.board.getColHeight(1)
-        +2*simulation.board.getColHeight(2)
-        +2*simulation.board.getColHeight(3)
-        -1*simulation.board.getColHeight(4)
-        -2*simulation.board.getColHeight(5);
+        -1*simulation.board.getColHeight(0)
+        -0*simulation.board.getColHeight(1)
+        +1*simulation.board.getColHeight(2)
+        +1*simulation.board.getColHeight(3)
+        -0*simulation.board.getColHeight(4)
+        -1*simulation.board.getColHeight(5);
   }
 
 
   double getBestScore() {
-    if (childs.isEmpty()) {
+    if (childsCount == 0) {
       return getScore();
     } else {
       double maxScore = Integer.MIN_VALUE;
-      for ( Entry<Integer, MCNode> childEntry : childs.entrySet()) {
-        MCNode child = childEntry.getValue();
+      for ( int i=0;i<24;i++) {
+        MCNode child = childs[i];
+        if (child == null) {
+          continue;
+        }
         double score = child.getBestScore();
         if (score > maxScore) {
           maxScore = score;
         }
       }
-      return Math.max(0.8*maxScore, getScore());
+//      return Math.max(0.8*maxScore, getScore());
+      return 0.8*maxScore + getScore();
     }
   }
   
@@ -142,10 +157,14 @@ public class MCNode {
       return; // don't give back IMP_NODE
     }
     
-    for (MCNode child : childs.values()) {
-      child.release();
+    childsCount = 0;
+    for (int i=0;i<24;i++) {
+      MCNode child = childs[i];
+      if (child != null && child != IMPOSSIBLE_NODE) {
+        child.release();
+      }
+      childs[i] = null;
     }
-    childs.clear();
     simulation.clear();
     cache.retrocede(this);
   }

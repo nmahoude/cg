@@ -40,6 +40,7 @@ public class Player {
 //        System.err.println("AI Time : "+aiTime);
         
         game.lastSkullsCount = mcts.getSkullCountAfterMove();
+        game.lastScore = game.myScore;
         System.out.println(mcts.output());
     }
 }
