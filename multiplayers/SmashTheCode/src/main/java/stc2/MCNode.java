@@ -98,8 +98,7 @@ public class MCNode {
   }
   
   private int getSkullsScore() {
-    return 0;
-    //return 10*simulation.board.layers[BitBoard.SKULL_LAYER].bitCount();
+    return 0; //-2*simulation.board.layers[BitBoard.SKULL_LAYER].bitCount();
   }
 
 
