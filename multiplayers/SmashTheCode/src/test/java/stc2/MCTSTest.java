@@ -75,8 +75,8 @@ public class MCTSTest {
 //  @Ignore
   public void debug() throws Exception {
     Game game = new Game();
-    game.nextBalls[0] = 2;
-    game.nextBalls2[0] = 4;
+    game.nextBalls = new int[] { 2, 2, 2, 2, 2, 2, 2, 2};
+    game.nextBalls2 = new int[] { 4, 4, 4, 4, 4, 4, 2, 2};
 
     BitBoardTest.prepareBoard(game.myBoard,
         "......",
