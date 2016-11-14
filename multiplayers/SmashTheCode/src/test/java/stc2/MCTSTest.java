@@ -72,7 +72,7 @@ public class MCTSTest {
   
 
   @Test
-//  @Ignore
+  @Ignore
   public void debug() throws Exception {
     Game game = new Game();
     game.nextBalls = new int[] { 2, 2, 2, 2, 2, 2, 2, 2};

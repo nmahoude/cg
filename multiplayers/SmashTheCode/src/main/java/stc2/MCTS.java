@@ -5,7 +5,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MCTS {
   private static final int ONE_LINE_OF_SKULLS = 420;
   private static final double WORST_SCORE = -1_000_000;
-  static int MAX_PLY = 50_000;
+  static int MAX_PLY = 10_000;
   public Game game;
   public BitBoard myBoard;
   public BitBoard otherBoard;
@@ -66,7 +66,8 @@ public class MCTS {
     }
     
     MCNode.MAX_DEPTH = getOptimizedDepth();
-    
+    root.depth = 0;
+    root.initSums();
     for (int ply=MAX_PLY;--ply>=0;) {
       root.simulate(0);
     }
@@ -87,7 +88,7 @@ public class MCTS {
       previousTotalSim+= child.simCount;
       double score = child.getScore();
       double bScore = child.getBestScore();
-      //System.err.println(""+key+" ("+column+","+rot+") (sim="+child.simCount+") -> " + score + " --> "+bScore);
+      //System.err.println(""+key+" ("+column+","+rot+") (sim="+child.simCount+") (tP="+child.bestTotalPoints+") -> " + score + " --> "+bScore);
       if (score > Math.min(11-oppMinCol, 4)*ONE_LINE_OF_SKULLS) {
         message = "Killer move";
         bestScore = score;
@@ -123,6 +124,9 @@ public class MCTS {
     root.board.copyFrom(otherBoard);
     
     MCNode.MAX_DEPTH = 2;
+    root.depth = 0;
+    root.initSums();
+
     for (int i=0;i<400;i++) {
       root.simulate(0);
     }

@@ -1,5 +1,6 @@
 package stc2;
 
+import java.beans.beancontext.BeanContextChildSupport;
 import java.util.concurrent.ThreadLocalRandom;
 
 import utils.Cache;
@@ -10,6 +11,7 @@ public class MCNode {
   
   static final ThreadLocalRandom random = ThreadLocalRandom.current();
   private static final MCNode IMPOSSIBLE_NODE = new MCNode();
+  private static final int WORST_SCORE = -10_000_000;
   static Cache<MCNode> cache = new Cache<>();
   static {
     for(int i=0;i<150_000;i++) {
@@ -23,6 +25,9 @@ public class MCNode {
   MCNode childs[] = new MCNode[24];
   int childsCount = 0;
   
+  int bestTotalPoints;
+  int bestChildTotalPoints[] = new int[24];
+  int bestChildTotalPointsSum = 0;
   int depth;
   int simCount;
   private int key;
@@ -31,23 +36,39 @@ public class MCNode {
     simulation.board = board;
   }
   
+  void initSums() {
+    int maxKeys = game.nextBalls[depth] == game.nextBalls[depth] ? 12 : 24;
+    bestChildTotalPointsSum = 0;
+    
+    for (int i=0;i<24;i++) {
+      bestChildTotalPoints[i] = 0;
+    }
+    for (int i=0;i<maxKeys;i++) {
+      bestChildTotalPoints[i] = 210;
+      bestChildTotalPointsSum += bestChildTotalPoints[i];
+    }
+  }
+
   public final void simulate(int depth) {
     if (depth >= MAX_DEPTH) {
       return;
     }
     
-    getRandomKey();
+//    getRandomKey();
+    getWeightedKey();
     int rotation = getRotation(key);
     int column = getColumn(key);
     
     MCNode child = childs[key];
     if (child != null) {
+      // exploit
       if (child == IMPOSSIBLE_NODE) {
         return;
       }
       child.simCount++;
       child.simulate(depth+1);
     } else {
+      // explore
       if (!board.canPutBalls(rotation, column)) {
         childs[key] = IMPOSSIBLE_NODE;
         return;
@@ -56,8 +77,27 @@ public class MCNode {
       childs[key] = child;
       childsCount++;
     }
+    updateBestTotalPoints(key, child);
   }
 
+
+  private void updateBestTotalPoints(int key, MCNode child) {
+    if (bestChildTotalPoints[key] < child.bestTotalPoints) {
+      bestChildTotalPointsSum = bestChildTotalPointsSum - bestChildTotalPoints[key] + child.bestTotalPoints;
+      bestChildTotalPoints[key] = child.bestTotalPoints;
+      bestTotalPoints = child.bestTotalPoints + simulation.points ;
+    }
+  }
+
+  final private void getWeightedKey() {
+    
+    int rand = random.nextInt(bestChildTotalPointsSum-1)+1;
+    int bestKey = -1;
+    while (rand > 0) {
+      rand -= bestChildTotalPoints[++bestKey];
+    }
+    this.key = bestKey;
+  }
 
   final private void getRandomKey() {
     if (game.nextBalls[depth] == game.nextBalls[depth]) {
@@ -72,12 +112,14 @@ public class MCNode {
     child.simCount = 1;
     child.depth = depth+1;
     child.board.copyFrom(this.board);
+    child.initSums();
     child.play(rotation, column);
     return child;
   }
   
   private void play(int rotation, int column) {
     simulation.putBallsNoCheck(game.nextBalls[depth-1], game.nextBalls2[depth-1], rotation, column);
+    bestTotalPoints = simulation.points;
   }
   
   public double getScore() {
@@ -153,9 +195,12 @@ public class MCNode {
     }
     
     childsCount = 0;
+    bestTotalPoints = 0;
     depth = 0;
+    bestChildTotalPointsSum = 0;
     for (int i=0;i<24;i++) {
       MCNode child = childs[i];
+      bestChildTotalPoints[i] = 0;
       if (child != null && child != IMPOSSIBLE_NODE) {
         child.release();
       }
