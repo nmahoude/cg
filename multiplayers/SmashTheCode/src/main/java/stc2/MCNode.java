@@ -6,6 +6,7 @@ import utils.Cache;
 
 public class MCNode {
   public static Game game;
+  public static int MAX_DEPTH = 8;
   
   static final ThreadLocalRandom random = ThreadLocalRandom.current();
   private static final MCNode IMPOSSIBLE_NODE = new MCNode();
@@ -24,19 +25,20 @@ public class MCNode {
   
   int depth;
   int simCount;
-  private int rotation;
-  private int column;
+  private int key;
   
   private MCNode() {
     simulation.board = board;
   }
   
-  public final void simulate(int depth, int maxDepth) {
-    if (depth >= maxDepth) {
+  public final void simulate(int depth) {
+    if (depth >= MAX_DEPTH) {
       return;
     }
     
-    int key = getRandomKey();
+    getRandomKey();
+    int rotation = getRotation(key);
+    int column = getColumn(key);
     
     MCNode child = childs[key];
     if (child != null) {
@@ -44,13 +46,12 @@ public class MCNode {
         return;
       }
       child.simCount++;
-      child.simulate(depth+1, maxDepth);
+      child.simulate(depth+1);
     } else {
       if (!board.canPutBalls(rotation, column)) {
         childs[key] = IMPOSSIBLE_NODE;
         return;
       }
-      // build a child
       child = buildNewChild(rotation, column, depth, game);
       childs[key] = child;
       childsCount++;
@@ -58,10 +59,12 @@ public class MCNode {
   }
 
 
-  final private int getRandomKey() {
-    rotation = random.nextInt(game.nextBalls[depth] == game.nextBalls[depth] ? 2 : 4); 
-    column = random.nextInt(6); 
-    return (column+ rotation*8); 
+  final private void getRandomKey() {
+    if (game.nextBalls[depth] == game.nextBalls[depth]) {
+      key = random.nextInt(12);
+    } else {
+      key = random.nextInt(24);
+    }
   }
   
   public MCNode buildNewChild(int rotation, int column, int depth, Game game) {
@@ -97,14 +100,12 @@ public class MCNode {
     return 0; //-2*simulation.board.layers[BitBoard.SKULL_LAYER].bitCount();
   }
 
-
   private double getColorGroupScore() {
         return 
             - 40*simulation.groupsCount[1] 
             + 10*simulation.groupsCount[2]
             + 40*simulation.groupsCount[3];
   }
-
 
   private double getColumnScore() {
     return 
@@ -132,7 +133,6 @@ public class MCNode {
           maxScore = score;
         }
       }
-//      return Math.max(0.8*maxScore, getScore());
       return 0.8*maxScore + getScore();
     }
   }
@@ -163,5 +163,13 @@ public class MCNode {
     }
     simulation.clear();
     cache.retrocede(this);
+  }
+  
+  public static int getColumn(int key) {
+    return key % 6;
+  }
+
+  public static int getRotation(int key) {
+    return key / 6;
   }
 }

@@ -65,11 +65,10 @@ public class MCTS {
       root.board.copyFrom(myBoard);
     }
     
-    int maxDepth  = getOptimizedDepth();
-    //System.err.println("MaxDepth is "+maxDepth);
+    MCNode.MAX_DEPTH = getOptimizedDepth();
     
     for (int ply=MAX_PLY;--ply>=0;) {
-      root.simulate(0, maxDepth);
+      root.simulate(0);
     }
 
     bestScore = WORST_SCORE;
@@ -78,8 +77,8 @@ public class MCTS {
     
     previousTotalSim = 0;
     for (int key=0;key<24;key++) {
-      int rot = keyToRotation(key);
-      int column = keyToColumn(key);
+      int rot = MCNode.getRotation(key);
+      int column = MCNode.getColumn(key);
       MCNode child = root.childs[key];
       if (child == null) {
         //System.err.println(""+key+" ("+column+","+rot+") -> null" );
@@ -123,8 +122,9 @@ public class MCTS {
     root = MCNode.get();
     root.board.copyFrom(otherBoard);
     
+    MCNode.MAX_DEPTH = 2;
     for (int i=0;i<400;i++) {
-      root.simulate(0, 2);
+      root.simulate(0);
     }
     
     oppBestScore1 = WORST_SCORE;
@@ -140,8 +140,8 @@ public class MCTS {
 
       double score1 = child.getScore();
       double score2 = child.getBestScore();
-      int rot = keyToRotation(key);
-      int column = keyToColumn(key);
+      int rot = MCNode.getRotation(key);
+      int column = MCNode.getColumn(key);
       
       //System.err.println(""+key+" ("+column+","+rot+") (sim="+child.count+") -> " + score1 + " --> "+score2);
       if (score1 > oppBestScore1) {
@@ -155,27 +155,14 @@ public class MCTS {
         oppBestKey2 = key;
       }
     }
-    
-    //System.err.println("Opponents opportunity: "+oppBestScore1+" / "+oppBestScore2);
-//    System.err.println("Best points for him/her:");
-//    System.err.println("1 ply : "+bestPointsAtDepth[0]+""); 
-//    System.err.println("2 plys : "+bestPointsAtDepth[1]+""); 
   }
 
   
   public String output() {
     int key = bestKey;
-    int rot = keyToRotation(key);
-    int column = keyToColumn(key);
+    int rot = MCNode.getRotation(key);
+    int column = MCNode.getColumn(key);
     return ""+column+" "+rot+ " "+message;
-  }
-
-  private int keyToColumn(int key) {
-    return key & 0b111;
-  }
-
-  private int keyToRotation(int key) {
-    return key >>> 3;
   }
 
   public void attachGame(Game game) {
