@@ -1,13 +1,12 @@
 package stc2;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 
 import utils.Cache;
 
 public class MCNode {
+  public static Game game;
+  
   static final ThreadLocalRandom random = ThreadLocalRandom.current();
   private static final MCNode IMPOSSIBLE_NODE = new MCNode();
   static Cache<MCNode> cache = new Cache<>();
@@ -23,8 +22,7 @@ public class MCNode {
   MCNode childs[] = new MCNode[24];
   int childsCount = 0;
   
-  int color1;
-  int color2;
+  int depth;
   int simCount;
   private int rotation;
   private int column;
@@ -33,12 +31,11 @@ public class MCNode {
     simulation.board = board;
   }
   
-  
-  public final void simulate(Game game, int depth, int maxDepth, int[] bestPointsAtDepth) {
+  public final void simulate(int depth, int maxDepth) {
     if (depth >= maxDepth) {
       return;
     }
-
+    
     int key = getRandomKey();
     
     MCNode child = childs[key];
@@ -47,7 +44,7 @@ public class MCNode {
         return;
       }
       child.simCount++;
-      child.simulate(game, depth+1, maxDepth, bestPointsAtDepth);
+      child.simulate(depth+1, maxDepth);
     } else {
       if (!board.canPutBalls(rotation, column)) {
         childs[key] = IMPOSSIBLE_NODE;
@@ -55,30 +52,29 @@ public class MCNode {
       }
       // build a child
       child = buildNewChild(rotation, column, depth, game);
-      if (bestPointsAtDepth[depth] < child.simulation.points) {
-        bestPointsAtDepth[depth] = child.simulation.points;
-      }
       childs[key] = child;
       childsCount++;
-      //child.simulate(game, depth+1, maxDepth, bestPointsAtDepth);
     }
   }
 
 
   final private int getRandomKey() {
-    rotation = random.nextInt(color1 == color2 ? 2 : 4); 
+    rotation = random.nextInt(game.nextBalls[depth] == game.nextBalls[depth] ? 2 : 4); 
     column = random.nextInt(6); 
-    return (rotation + column*4); 
+    return (column+ rotation*8); 
   }
   
   public MCNode buildNewChild(int rotation, int column, int depth, Game game) {
     MCNode child = get();
     child.simCount = 1;
-    child.color1 = game.nextBalls[depth+1];
-    child.color2 = game.nextBalls2[depth+1];
+    child.depth = depth+1;
     child.board.copyFrom(this.board);
-    child.simulation.putBallsNoCheck(color1, color2, rotation, column);
+    child.play(rotation, column);
     return child;
+  }
+  
+  private void play(int rotation, int column) {
+    simulation.putBallsNoCheck(game.nextBalls[depth-1], game.nextBalls2[depth-1], rotation, column);
   }
   
   public double getScore() {
@@ -157,6 +153,7 @@ public class MCNode {
     }
     
     childsCount = 0;
+    depth = 0;
     for (int i=0;i<24;i++) {
       MCNode child = childs[i];
       if (child != null && child != IMPOSSIBLE_NODE) {
