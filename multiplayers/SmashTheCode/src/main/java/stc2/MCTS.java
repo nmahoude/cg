@@ -137,9 +137,9 @@ public class MCTS {
   private int getOptimizedDepth() {
     if (oppBestScore1 >= ONE_LINE_OF_SKULLS*6) {
       return 1;
-    } else if (oppBestScore1 >= ONE_LINE_OF_SKULLS * 4) {
-      return 2;
-    } else if (oppBestScore2 >= ONE_LINE_OF_SKULLS*6) {
+    } else if (oppBestScore1 >= ONE_LINE_OF_SKULLS * 2) {
+      return 1;
+    } else if (oppBestScore2 >= ONE_LINE_OF_SKULLS*2) {
       return 2;
     }
     return 7;

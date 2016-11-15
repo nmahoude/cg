@@ -1,11 +1,11 @@
 package stc2;
 
 public class BitLayer {
-  private static final int FULL = 0b111111111111;
+  public static final int FULL = 0b111111111111;
   
-  private static final long FULL1 = 0b1111111111111111L;
-  private static final long FULL2 = 0b11111111111111110000000000000000L;
-  private static final long FULL3= 0b1111111111111111111100000000000000000000000000000000L;
+  public static final long FULL1 = 0b1111111111111111L;
+  public static final long FULL2 = 0b11111111111111110000000000000000L;
+  public static final long FULL3= 0b1111111111111111111100000000000000000000000000000000L;
 
   static final int yMask[] = new int[] {
       1<<0, 1<<1, 1<<2,1<<3,1<<4,1<<5,
@@ -162,7 +162,7 @@ public class BitLayer {
     return;
   }
   
-  private void countNeighborsRecursive(int x, int previousMask, NeighborInfo info) {
+  public void countNeighborsRecursive(int x, int previousMask, NeighborInfo info) {
     int value = getCol(x);
     int intersection = value & previousMask;
     if (intersection == 0) {

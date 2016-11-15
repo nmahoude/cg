@@ -3,8 +3,8 @@ package stc2;
 import stc.P;
 
 public class BitBoard {
-  private static final int TOP_ROW_MASK = 0b100000000000;
-  private static final int TOP_2_ROWS_MASK = 0b110000000000;
+  public static final int TOP_ROW_MASK = 0b100000000000;
+  public static final int TOP_2_ROWS_MASK = 0b110000000000;
 
   public static final int SKULL_LAYER = 0;
   public static final int BLUE_LAYER = 1;
@@ -13,7 +13,7 @@ public class BitBoard {
   public static final int RED_LAYER = 4;
   public static final int YELLOW_LAYER = 5;
   public static final int COMPLETE_LAYER_MASK = 6;
-  private static final char[] cellTable = { '☠', '1', '2', '3', '4', '5' };
+  public static final char[] cellTable = { '☠', '1', '2', '3', '4', '5' };
 
   BitLayer layers[] = new BitLayer[7]; 
   {
@@ -56,15 +56,15 @@ public class BitBoard {
     layers[COMPLETE_LAYER_MASK].merge(layers[YELLOW_LAYER]);
   }
   
-  private boolean isEmpty(char value) {
+  public boolean isEmpty(char value) {
     return value == '.';
   }
 
-  private boolean isSkull(char value) {
+  public boolean isSkull(char value) {
     return value == '0' || value == '@' || value == '☠';
   }
 
-  private boolean isColor(char value) {
+  public boolean isColor(char value) {
     return value >= '1' && value <= '5';
   }
 

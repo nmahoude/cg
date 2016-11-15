@@ -1,11 +1,16 @@
 package stc2;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+
+@RunWith(JUnitParamsRunner.class)
 public class SimulationTest {
   Simulation simulation;
   BitBoard board;
@@ -295,7 +300,6 @@ public class SimulationTest {
   @Test
   public void groupsCount_2_of_1() throws Exception {
     BitBoardTest.prepareBoard(board,
-        "1.....",
         "......",
         "......",
         "......",
@@ -306,7 +310,8 @@ public class SimulationTest {
         "......",
         "......",
         "......",
-        "1.....");
+        "......",
+        "1....1");
     
     simulation.destroyBlocks(null);
     
@@ -319,7 +324,6 @@ public class SimulationTest {
   @Test
   public void groupsCount_2_of_2() throws Exception {
     BitBoardTest.prepareBoard(board,
-        "....11",
         "......",
         "......",
         "......",
@@ -330,7 +334,8 @@ public class SimulationTest {
         "......",
         "......",
         "......",
-        "11....");
+        ".....1",
+        "11...1");
     
     simulation.destroyBlocks(null);
     
@@ -343,8 +348,8 @@ public class SimulationTest {
   @Test
   public void groupsCount_2_of_3() throws Exception {
     BitBoardTest.prepareBoard(board,
-        "....11",
-        ".....1",
+        "......",
+        "......",
         "......",
         "......",
         "......",
@@ -354,7 +359,7 @@ public class SimulationTest {
         "......",
         "......",
         "1.....",
-        "11....");
+        "11.111");
     
     simulation.destroyBlocks(null);
     

@@ -1,15 +1,12 @@
 package stc2;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 
 import utils.Cache;
 
 public class MCNode {
   static final ThreadLocalRandom random = ThreadLocalRandom.current();
-  private static final MCNode IMPOSSIBLE_NODE = new MCNode();
+  public static final MCNode IMPOSSIBLE_NODE = new MCNode();
   static Cache<MCNode> cache = new Cache<>();
   static {
     for(int i=0;i<150_000;i++) {
@@ -26,10 +23,10 @@ public class MCNode {
   int color1;
   int color2;
   int simCount;
-  private int rotation;
-  private int column;
+  public int rotation;
+  public int column;
   
-  private MCNode() {
+  public MCNode() {
     simulation.board = board;
   }
   
@@ -65,7 +62,7 @@ public class MCNode {
   }
 
 
-  final private int getRandomKey() {
+  final public int getRandomKey() {
     rotation = random.nextInt(color1 == color2 ? 2 : 4); 
     column = random.nextInt(6); 
     return (rotation + column*4); 
@@ -97,12 +94,12 @@ public class MCNode {
     }
   }
   
-  private int getSkullsScore() {
+  public int getSkullsScore() {
     return 0; //-2*simulation.board.layers[BitBoard.SKULL_LAYER].bitCount();
   }
 
 
-  private double getColorGroupScore() {
+  public double getColorGroupScore() {
         return 
             - 40*simulation.groupsCount[1] 
             + 10*simulation.groupsCount[2]
@@ -110,7 +107,7 @@ public class MCNode {
   }
 
 
-  private double getColumnScore() {
+  public double getColumnScore() {
     return 
         -1*simulation.board.getColHeight(0)
         -0*simulation.board.getColHeight(1)

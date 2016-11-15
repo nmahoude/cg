@@ -60,7 +60,7 @@ public class Simulation {
     } while(destruction);
   }
 
-  private boolean doFullDestruct() {
+  public boolean doFullDestruct() {
     boolean destruction = false;
     for (int y=0;y<12 && !toCheckLayer.isEmpty();y++) {
       for (int x=0;x<6 && !toCheckLayer.isEmpty();x++) {
@@ -70,7 +70,7 @@ public class Simulation {
     return destruction;
   }
 
-  private void updateScores() {
+  public void updateScores() {
     colorBonus = getColorBonus();
     points += getPoints();
     clearedBlocks = 0;
@@ -87,7 +87,7 @@ public class Simulation {
     return (10 * clearedBlocks) * Math.min(999, Math.max(1, chainPower + colorBonus + groupBonus));
   }
 
-  private int getColorBonus() {
+  public int getColorBonus() {
     int CB = 1;
     for (int i=0;i<6;i++) {
       CB*= colorDestroyed[i] ? 2 : 1;
@@ -134,7 +134,7 @@ public class Simulation {
     }
   }
   
-  private void getMaskFor(long masks[], int x, int y) {
+  public void getMaskFor(long masks[], int x, int y) {
     long mask = BitLayer.yMask[y];
     switch(x) {
       case 0:
@@ -166,7 +166,7 @@ public class Simulation {
 
 
 
-  private void updateGroupBonus(int count) {
+  public void updateGroupBonus(int count) {
     groupBonus += count >= 11 ? 8 : count - 4;
     groupBonus = Math.min(8, groupBonus);
   }
