@@ -23,7 +23,7 @@ public class MCTS {
   }
   private static final int ONE_LINE_OF_SKULLS = 420;
   private static final double WORST_SCORE = -1_000_000;
-  static int MAX_PLY = 50_000;
+  static int MAX_PLY = 10_000;
   public Game game;
   public BitBoard myBoard;
   public BitBoard otherBoard;
@@ -44,8 +44,6 @@ public class MCTS {
   private double oppBestScore1;
   private double oppBestScore2;
 
-  private int bestPointsAtDepth[] = new int[8];
-  
   public MCTS() {
     root = MCNode.get();
   }
@@ -84,15 +82,12 @@ public class MCTS {
       root = MCNode.get();
       root.board.copyFrom(myBoard);
     }
-    root.color1 = game.nextBalls[0];
-    root.color2 = game.nextBalls2[0];
     
-    int maxDepth  = getOptimizedDepth();
-    //System.err.println("MaxDepth is "+maxDepth);
-    
-    clearBestPointsAtDepth();
+    MCNode.MAX_DEPTH = getOptimizedDepth();
+    root.depth = 0;
+    root.initSums();
     for (int ply=MAX_PLY;--ply>=0;) {
-      root.simulate(game, 0, maxDepth, bestPointsAtDepth);
+      root.simulate(0);
     }
 
     bestScore = WORST_SCORE;
@@ -101,8 +96,8 @@ public class MCTS {
     
     previousTotalSim = 0;
     for (int key=0;key<24;key++) {
-      int rot = keyToRotation(key);
-      int column = keyToColumn(key);
+      int rot = MCNode.getRotation(key);
+      int column = MCNode.getColumn(key);
       MCNode child = root.childs[key];
       if (child == null) {
         //System.err.println(""+key+" ("+column+","+rot+") -> null" );
@@ -129,29 +124,6 @@ public class MCTS {
 //    showMyBestPointsPerDepth(); 
   }
 
-  private void showMyBestPointsPerDepth() {
-    System.err.println("BestPoints for me :");
-    System.err.println("1 ply  : "+bestPointsAtDepth[0]+""); 
-    System.err.println("2 plys : "+bestPointsAtDepth[1]+""); 
-    System.err.println("3 plys : "+bestPointsAtDepth[2]+""); 
-    System.err.println("4 plys : "+bestPointsAtDepth[3]+""); 
-    System.err.println("5 plys : "+bestPointsAtDepth[4]+""); 
-    System.err.println("6 plys : "+bestPointsAtDepth[5]+""); 
-    System.err.println("7 plys : "+bestPointsAtDepth[6]+""); 
-    System.err.println("8 plys : "+bestPointsAtDepth[7]+"");
-  }
-
-  private void clearBestPointsAtDepth() {
-    bestPointsAtDepth[0] = 0;
-    bestPointsAtDepth[1] = 0;
-    bestPointsAtDepth[2] = 0;
-    bestPointsAtDepth[3] = 0;
-    bestPointsAtDepth[4] = 0;
-    bestPointsAtDepth[5] = 0;
-    bestPointsAtDepth[6] = 0;
-    bestPointsAtDepth[7] = 0;
-  }
-
   private int getOptimizedDepth() {
     if (oppBestScore1 >= ONE_LINE_OF_SKULLS*6) {
       return 1;
@@ -169,12 +141,12 @@ public class MCTS {
     root = MCNode.get();
     root.board.copyFrom(otherBoard);
     
-    root.color1 = game.nextBalls[0];
-    root.color2 = game.nextBalls2[0];
-    
-    clearBestPointsAtDepth();
+    MCNode.MAX_DEPTH = 2;
+    root.depth = 0;
+    root.initSums();
+
     for (int i=0;i<400;i++) {
-      root.simulate(game, 0, 2, bestPointsAtDepth);
+      root.simulate(0);
     }
     
     oppBestScore1 = WORST_SCORE;
@@ -190,8 +162,8 @@ public class MCTS {
 
       double score1 = child.getScore();
       double score2 = child.getBestScore();
-      int rot = keyToRotation(key);
-      int column = keyToColumn(key);
+      int rot = MCNode.getRotation(key);
+      int column = MCNode.getColumn(key);
       
       //System.err.println(""+key+" ("+column+","+rot+") (sim="+child.count+") -> " + score1 + " --> "+score2);
       if (score1 > oppBestScore1) {
@@ -205,31 +177,20 @@ public class MCTS {
         oppBestKey2 = key;
       }
     }
-    
-    //System.err.println("Opponents opportunity: "+oppBestScore1+" / "+oppBestScore2);
-//    System.err.println("Best points for him/her:");
-//    System.err.println("1 ply : "+bestPointsAtDepth[0]+""); 
-//    System.err.println("2 plys : "+bestPointsAtDepth[1]+""); 
   }
 
   
   public String output() {
     int key = bestKey;
-    int rot = keyToRotation(key);
-    int column = keyToColumn(key);
+    int rot = MCNode.getRotation(key);
+    int column = MCNode.getColumn(key);
     return ""+column+" "+rot+ " "+message;
-  }
-
-  private int keyToColumn(int key) {
-    return key >>> 2;
-  }
-
-  private int keyToRotation(int key) {
-    return key & 0b11;
   }
 
   public void attachGame(Game game) {
     this.game = game;
+    MCNode.game = game;
+    
     myBoard  =game.myBoard;
     otherBoard = game.otherBoard;
   }
