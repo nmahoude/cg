@@ -67,7 +67,7 @@ public class MonteCarlo {
         bestMove = entry.getKey();
       }
     }
-    System.err.println("Choosen move : "+bestMove);
+    //System.err.println("Choosen move : "+bestMove);
     return bestMove;
   }
 
