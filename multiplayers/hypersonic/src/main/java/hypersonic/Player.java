@@ -111,7 +111,7 @@ public class Player {
     for (final Bomberman b : board.players) {
       b.bombCount = b.bombsLeft + bombsOnBoard[b.owner];
     }
-    System.err.println("ME == pos: "+board.me.position+" bLeft: "+board.me.bombsLeft+ "/"+board.me.bombCount+" - range:"+board.me.currentRange);
+    //System.err.println("ME == pos: "+board.me.position+" bLeft: "+board.me.bombsLeft+ "/"+board.me.bombCount+" - range:"+board.me.currentRange);
   }
 
   private void initBoard() {

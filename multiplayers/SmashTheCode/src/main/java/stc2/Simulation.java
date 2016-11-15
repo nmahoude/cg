@@ -44,6 +44,7 @@ public class Simulation {
     boolean destruction;
     do {
       toCheckLayer.set(board.layers[BitBoard.COMPLETE_LAYER_MASK]);
+      toCheckLayer.unset(board.layers[BitBoard.SKULL_LAYER]);
       destruction = false;
       if (ps != null) {
         for (P p : ps) {
