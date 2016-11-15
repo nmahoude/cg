@@ -3,6 +3,24 @@ package stc2;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MCTS {
+  static {
+    // WARMUP
+    BitBoard boardModel = new BitBoard();
+    BitBoard board = new BitBoard();
+    Simulation sim = new Simulation();
+    sim.board = board;
+    
+    long time1 = System.currentTimeMillis();
+    for (int i=0;i<1_500_000;i++) {
+      board.copyFrom(boardModel);
+      sim.putBalls(
+          ThreadLocalRandom.current().nextInt(5)+1,
+          ThreadLocalRandom.current().nextInt(5)+1,
+          ThreadLocalRandom.current().nextInt(4),
+          ThreadLocalRandom.current().nextInt(6)
+          );
+    }
+  }
   private static final int ONE_LINE_OF_SKULLS = 420;
   private static final double WORST_SCORE = -1_000_000;
   static int MAX_PLY = 50_000;
@@ -94,7 +112,7 @@ public class MCTS {
       double score = child.getScore();
       double bScore = child.getBestScore();
       //System.err.println(""+key+" ("+column+","+rot+") (sim="+child.simCount+") -> " + score + " --> "+bScore);
-      if (score > Math.min(11-oppMinCol, 4)*ONE_LINE_OF_SKULLS) {
+      if (score > Math.min(11-oppMinCol, 6)*ONE_LINE_OF_SKULLS) {
         message = "Killer move";
         bestScore = score;
         bestNode = child;
