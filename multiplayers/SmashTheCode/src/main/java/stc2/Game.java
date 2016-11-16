@@ -13,6 +13,8 @@ public class Game {
   
   public int myScore;
   public int otherScore;
+  public long nanoStart;
+  public long nanoEnd;
   
   public void prepare() {
     myBoard.clear();

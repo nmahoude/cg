@@ -164,4 +164,24 @@ public class MCNode {
     simulation.clear();
     cache.retrocede(this);
   }
+
+
+  public int getBestPoints(int depth) {
+    if (childsCount == 0 || depth == 1) {
+      return simulation.points;
+    } else {
+      int maxScore = Integer.MIN_VALUE;
+      for ( int i=0;i<24;i++) {
+        MCNode child = childs[i];
+        if (child == null) {
+          continue;
+        }
+        int score = simulation.points + child.getBestPoints(depth-1);
+        if (score > maxScore) {
+          maxScore = score;
+        }
+      }
+      return maxScore;
+    }
+  }
 }

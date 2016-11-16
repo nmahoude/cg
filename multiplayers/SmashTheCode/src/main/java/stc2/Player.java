@@ -11,6 +11,7 @@ public class Player {
     Scanner in = new Scanner(System.in);
     // game loop
     while (true) {
+        game.nanoStart = System.nanoTime();
         for (int i = 0; i < 8; i++) {
           game.nextBalls[i] = in.nextInt();
           game.nextBalls2[i] = in.nextInt();

@@ -73,15 +73,25 @@ public class MCTS {
     //System.err.println("MaxDepth is "+maxDepth);
     
     clearBestPointsAtDepth();
-    for (int ply=MAX_PLY;--ply>=0;) {
-      root.simulate(game, 0, maxDepth, bestPointsAtDepth);
-    }
+    int plies = 0;
+    long nanoTime = 0;
+    game.nanoStart = System.nanoTime();
+    do {
+      for (int ply=1_000;--ply>=0;) {
+        plies++;
+        root.simulate(game, 0, maxDepth, bestPointsAtDepth);
+      }
+      nanoTime = System.nanoTime();
+    } while (nanoTime - game.nanoStart < 45_000_000);
 
+    message += " / "+plies+" in "+((nanoTime - game.nanoStart) / 1_000_000);
     bestScore = WORST_SCORE;
     bestNode = null;
     bestKey = -1;
     
     previousTotalSim = 0;
+    int maxP1 = Integer.MIN_VALUE;
+    int maxP2 = Integer.MIN_VALUE;
     for (int key=0;key<24;key++) {
       int rot = keyToRotation(key);
       int column = keyToColumn(key);
@@ -93,9 +103,23 @@ public class MCTS {
       previousTotalSim+= child.simCount;
       double score = child.getScore();
       double bScore = child.getBestScore();
+      int sp1 = child.getBestPoints(1);
+      int sp2 = child.getBestPoints(2);
+      
+      if (sp1 > maxP1) { maxP1 = sp1; }
+      if (sp2 > maxP2) { maxP2 = sp2; }
       //System.err.println(""+key+" ("+column+","+rot+") (sim="+child.simCount+") -> " + score + " --> "+bScore);
-      if (score > Math.min(11-oppMinCol, 4)*ONE_LINE_OF_SKULLS) {
-        message = "Killer move";
+      if (sp1 >= 40 && myTotalCol > 60) {
+        message += "kills skulls";
+        bestScore = score;
+        bestNode = child;
+        bestKey = key;
+        break;
+      }
+      
+      if (child.simulation.points > Math.min(11-oppMinCol, 4)*ONE_LINE_OF_SKULLS) {
+        int rows = child.simulation.points  / ONE_LINE_OF_SKULLS;
+        message += "KM att(" + rows+")";
         bestScore = score;
         bestNode = child;
         bestKey = key;
@@ -107,6 +131,7 @@ public class MCTS {
         bestKey = key;
       }
     }
+    message+="me("+maxP1+"->"+maxP2+")";
 //    System.err.println("Sim count = "+simCount);
 //    showMyBestPointsPerDepth(); 
   }
@@ -187,7 +212,7 @@ public class MCTS {
         oppBestKey2 = key;
       }
     }
-    
+    message =" opp("+oppBestScore1+"->"+oppBestScore2+")";
     //System.err.println("Opponents opportunity: "+oppBestScore1+" / "+oppBestScore2);
 //    System.err.println("Best points for him/her:");
 //    System.err.println("1 ply : "+bestPointsAtDepth[0]+""); 
@@ -196,6 +221,9 @@ public class MCTS {
 
   
   public String output() {
+    if (bestNode == null) {
+      return "0 0 DEAD";
+    }
     int key = bestKey;
     int rot = keyToRotation(key);
     int column = keyToColumn(key);
@@ -217,6 +245,9 @@ public class MCTS {
   }
 
   public int getSkullCountAfterMove() {
+    if (bestNode == null) {
+      return 72;
+    } 
     return bestNode.board.layers[BitBoard.SKULL_LAYER].bitCount();
   }
 }
