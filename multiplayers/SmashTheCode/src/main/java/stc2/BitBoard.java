@@ -114,9 +114,12 @@ public class BitBoard {
   public P pushBall(int color, int column) {
     int y;
     y = layers[COMPLETE_LAYER_MASK].pushFromTopOfColumn(column);
-    layers[color].setCell(column, y);
-    
-    return P.get(column, y);
+    if (y < 12) {
+      layers[color].setCell(column, y);
+      return P.get(column, y);
+    } else {
+      return null;
+    }
   }
 
   public boolean canPutBalls(int rotation, int baseColumn) {

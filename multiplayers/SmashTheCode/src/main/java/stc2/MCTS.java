@@ -3,6 +3,15 @@ package stc2;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MCTS {
+
+  public static class AjustementVariables {
+    public int THRESOLD_DEPTH_1_COLUMN = 6;
+    public int THRESOLD_DEPTH_2_COLUMN = 2;
+    public int MIN_SKULLS_COLUMNS_TO_DROP = 4;
+    public int SCORE_TO_DESTROY_SKULLS_RAPIDLY = 40;
+  }
+  public AjustementVariables ajust;
+  
   private static final int ONE_LINE_OF_SKULLS = 420;
   private static final double WORST_SCORE = -1_000_000;
   static int MAX_PLY = 50_000;
@@ -109,7 +118,7 @@ public class MCTS {
       if (sp1 > maxP1) { maxP1 = sp1; }
       if (sp2 > maxP2) { maxP2 = sp2; }
       //System.err.println(""+key+" ("+column+","+rot+") (sim="+child.simCount+") -> " + score + " --> "+bScore);
-      if (sp1 >= 40 && myTotalCol > 60) {
+      if (sp1 >= ajust.SCORE_TO_DESTROY_SKULLS_RAPIDLY && myTotalCol > 60) {
         message += "kills skulls";
         bestScore = score;
         bestNode = child;
@@ -117,7 +126,7 @@ public class MCTS {
         break;
       }
       
-      if (child.simulation.points > Math.min(11-oppMinCol, 4)*ONE_LINE_OF_SKULLS) {
+      if (child.simulation.points > Math.min(11-oppMinCol, ajust.MIN_SKULLS_COLUMNS_TO_DROP)*ONE_LINE_OF_SKULLS) {
         int rows = child.simulation.points  / ONE_LINE_OF_SKULLS;
         message += "KM att(" + rows+")";
         bestScore = score;
@@ -160,11 +169,9 @@ public class MCTS {
   }
 
   private int getOptimizedDepth() {
-    if (oppBestScore1 >= ONE_LINE_OF_SKULLS*6) {
+    if (oppBestScore1 >= ONE_LINE_OF_SKULLS*ajust.THRESOLD_DEPTH_1_COLUMN) {
       return 1;
-    } else if (oppBestScore1 >= ONE_LINE_OF_SKULLS * 2) {
-      return 1;
-    } else if (oppBestScore2 >= ONE_LINE_OF_SKULLS*2) {
+    } else if (oppBestScore2 >= ONE_LINE_OF_SKULLS*ajust.THRESOLD_DEPTH_2_COLUMN) {
       return 2;
     }
     return 7;
@@ -238,10 +245,10 @@ public class MCTS {
     return key & 0b11;
   }
 
-  public void attachGame(Game game) {
+  public void attachGame(Game game, BitBoard board, BitBoard otherBoard) {
     this.game = game;
-    myBoard  =game.myBoard;
-    otherBoard = game.otherBoard;
+    this.myBoard  = board;
+    this.otherBoard = otherBoard;
   }
 
   public int getSkullCountAfterMove() {

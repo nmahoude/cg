@@ -7,15 +7,15 @@ public class Player {
   static MCTS mcts = new MCTS();
   
   public static void main(String args[]) {
-    mcts.attachGame(game);
+    mcts.attachGame(game, game.myBoard, game.otherBoard);
     Scanner in = new Scanner(System.in);
     // game loop
     while (true) {
-        game.nanoStart = System.nanoTime();
         for (int i = 0; i < 8; i++) {
           game.nextBalls[i] = in.nextInt();
           game.nextBalls2[i] = in.nextInt();
         }
+        game.nanoStart = System.nanoTime();
         game.myScore = in.nextInt();
         game.prepare();
         

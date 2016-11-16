@@ -93,7 +93,7 @@ public class MCTSTest {
         "452213");
 
     MCTS mcts = new MCTS();
-    mcts.attachGame(game);
+    mcts.attachGame(game, game.myBoard, game.otherBoard);
     MCTS.MAX_PLY = 100_000;
     long time1 = System.currentTimeMillis();
     mcts.simulate(false);
