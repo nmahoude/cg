@@ -10,16 +10,19 @@ import stc2.Game;
 
 public class MCTS {
   ThreadLocalRandom random = ThreadLocalRandom.current();
-  Game game;
+  public Game game;
+  public Node bestChild;
   
-  MCTS() {
+  public MCTS() {
   }
   
   public void run(final BitBoard startingBoard, final int runs, final int maxDepth) {
     Node root = new Node(startingBoard);
-    for (int i=runs;i>=0;i++) {
+    root.board.copyFrom(startingBoard);
+    for (int i=runs;i>=0;i--) {
       Map.Entry<BitBoard, Node> expandedNode = select(root.board, root);
     }
+    bestChild = root.bestChild;
   }
 
   private Map.Entry<BitBoard, Node> select(BitBoard board, Node root) {
@@ -27,6 +30,9 @@ public class MCTS {
   }
 
   private Entry<BitBoard, Node> treePolicy(BitBoard board, Node node) {
+    if (node.depth == 8) {
+      return new AbstractMap.SimpleEntry<>(node.board, node); 
+    }
     if (node.unvisitedChildren == null) {
       node.expand(board);
     }
@@ -37,11 +43,18 @@ public class MCTS {
       return new AbstractMap.SimpleEntry<>(temp.board, temp);
     } else {
       Node temp = findBestNode(node);
-      return treePolicy(temp.board, temp);
+      if (temp != null) {
+        return treePolicy(temp.board, temp);
+      } else {
+        return new AbstractMap.SimpleEntry<>(node.board, node); 
+      }
     }
   }
 
   private Node findBestNode(Node node) {
+    if (node.children.size() == 0) {
+      return null;
+    }
     return node.children.get(random.nextInt(node.children.size()));
   }
   

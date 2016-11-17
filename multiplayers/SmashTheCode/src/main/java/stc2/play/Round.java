@@ -1,5 +1,6 @@
 package stc2.play;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import stc2.BitBoard;
@@ -11,8 +12,8 @@ import stc2.Simulation;
 public class Round {
   Game game = new Game();
   Simulation simulation = new Simulation();
-  AI player1 = new AI();
-  AI player2 = new AI();
+  NewAi player1 = new NewAi();
+  NewAi player2 = new NewAi();
   private boolean player1Dead;
   private boolean player2Dead;
   private Random random = new Random();
@@ -35,7 +36,7 @@ public class Round {
         updatePlayer2();
       }
 
-      debugBoards();
+      //debugBoards();
     }
   }
 
@@ -65,8 +66,16 @@ public class Round {
     String p1[] = game.myBoard.getDebugString().split("\n");
     String p2[] = game.otherBoard.getDebugString().split("\n");
     
+    for (int i=0;i<8;i++) {
+      System.out.print("["+game.nextBalls[i]+","+game.nextBalls2[i]+"] ");
+    }
+    System.out.println("");
+    
+    System.out.println("Points "+game.player1Score+" / "+game.player2Score);
+    System.out.println("Skulls "+game.player1Skulls+" / "+game.player2Skulls);
     for (int i=0;i<12;i++) {
-      System.out.println(p1[i]+"  "+p2[i]);
+      System.out.print(p1[i]+"  "+p2[i]);
+      System.out.println("");
     }
     System.out.println("");
   }
@@ -125,31 +134,54 @@ public class Round {
     System.arraycopy(game.nextBalls2, 1, game.nextBalls2, 0, 7);
   }
 
+  static  class Candidate implements Comparable<Candidate> {
+    int victoryCount = 0;
+    AdjustementFactors adjustementFactor = AdjustementFactors.random();
+    
+    @Override
+    public int compareTo(Candidate o) {
+      return Integer.compare(o.victoryCount, victoryCount);
+    }
+  }
+  
+  static Candidate[] candidates = new Candidate[10];
+  static {
+    for (int i=0;i<candidates.length;i++) {
+      candidates[i] = new Candidate();
+    }
+  }
+  
+  
+  
   public static void main(String[] args) {
+
+    AdjustementFactors af1 = AdjustementFactors.random();
+    AdjustementFactors af2 = AdjustementFactors.random();
+
+    for (int i=0;i<10;i++) {
+      for (int j=i+1;j<10;j++) {
+        oneMatch(candidates[i], candidates[j]);
+      }
+    }
+    
+    Arrays.sort(candidates);
+    for (int i=0;i<candidates.length;i++) {
+      System.out.println("Candidates victory : "+candidates[i].victoryCount);
+      candidates[i].adjustementFactor.print();
+      System.out.println("-----------------------------");
+    }
+  }
+
+  private static void oneMatch(Candidate candidate1, Candidate candidate2) {
     int p1Victory = 0;
     int p2Victory = 0;
-
-    MCTSOld.AjustementVariables av1 = new MCTSOld.AjustementVariables();
-
-    // change player 2 default values
-    MCTSOld.AjustementVariables av2 = new MCTSOld.AjustementVariables();
-//    av2.THRESOLD_DEPTH_1_COLUMN = 6;
-//    av2.THRESOLD_DEPTH_2_COLUMN = 2;
-//    av2.MIN_SKULLS_COLUMNS_TO_DROP = 4;
-//    av2.SCORE_TO_DESTROY_SKULLS_RAPIDLY = 40;
-
-    
-    
-    
-    for (int i=0;i<1;i++) {
+    for (int i=0;i<500;i++) {
       Round round = new Round();
-      round.player1.ajust= av1;
-      round.player2.ajust = av2;
-      
+      round.player1.ajust = candidate1.adjustementFactor;
+      round.player2.ajust = candidate2.adjustementFactor;
       round.play();
-      if (round.player1Dead) { p2Victory++; }
-      if (round.player2Dead) { p1Victory++; }
+      if (round.player1Dead) { candidate2.victoryCount++; }
+      if (round.player2Dead) { candidate1.victoryCount++; }
     }
-    System.out.println("p1:"+p1Victory+" / p2:" +p2Victory);
   }
 }

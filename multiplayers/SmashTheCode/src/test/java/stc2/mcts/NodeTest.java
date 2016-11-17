@@ -42,13 +42,16 @@ public class NodeTest {
     Node child = new Node(board);
     child.parent = root;
     child.makeMove(1, 1);
-    child.makeMove(1, 1);
+
+    Node cchild = new Node(board);
+    cchild.parent = child;
+    cchild.makeMove(1, 1);
     
-    assertThat(child.board.layers[1].isEmpty(), is(true));
-    assertThat(child.board.layers[2].isEmpty(), is(true));
-    assertThat(child.board.layers[3].isEmpty(), is(true));
-    assertThat(child.points, is(40));
-    assertThat(child.score, is(0.0));
+    assertThat(cchild.board.layers[1].isEmpty(), is(true));
+    assertThat(cchild.board.layers[2].isEmpty(), is(true));
+    assertThat(cchild.board.layers[3].isEmpty(), is(true));
+    assertThat(cchild.points, is(40));
+    assertThat(cchild.score, is(0.0));
   }
 
   @Test
@@ -58,13 +61,16 @@ public class NodeTest {
     Node child = new Node(board);
     child.parent = root;
     child.makeMove(1, 1);
-    child.makeMove(1, 2);
+
+    Node cchild = new Node(board);
+    cchild.parent = child;
+    cchild.makeMove(1, 2);
     
-    assertThat(child.board.layers[1].isEmpty(), is(false));
-    assertThat(child.board.layers[2].isEmpty(), is(false));
-    assertThat(child.board.layers[3].isEmpty(), is(true));
-    assertThat(child.points, is(0));
-    assertThat(child.score, is(20.0 /*40.0-20.0*/));
+    assertThat(cchild.board.layers[1].isEmpty(), is(false));
+    assertThat(cchild.board.layers[2].isEmpty(), is(false));
+    assertThat(cchild.board.layers[3].isEmpty(), is(true));
+    assertThat(cchild.points, is(0));
+    assertThat(cchild.score, is(20.0 /*40.0-20.0*/));
   }
   
   @Test

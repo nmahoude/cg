@@ -30,5 +30,8 @@ public class AI implements IAI {
     this.game = game;
     this.player = player;
   }
-  
+  @Override
+  public void setAjust(AjustementVariables ajust) {
+    this.ajust = ajust;
+  }
 }

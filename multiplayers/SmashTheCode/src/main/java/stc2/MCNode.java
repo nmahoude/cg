@@ -154,6 +154,8 @@ public class MCNode {
     }
     
     childsCount = 0;
+    rotation = 0;
+    column = 0;
     for (int i=0;i<24;i++) {
       MCNode child = childs[i];
       if (child != null && child != IMPOSSIBLE_NODE) {
