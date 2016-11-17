@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Player {
   static Game game = new Game();
-  static MCTS mcts = new MCTS();
+  static MCTSOld mcts = new MCTSOld();
   
   public static void main(String args[]) {
     mcts.attachGame(game, game.myBoard, game.otherBoard);

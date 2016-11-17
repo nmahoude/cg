@@ -13,9 +13,9 @@ public class BitBoard {
   public static final int RED_LAYER = 4;
   public static final int YELLOW_LAYER = 5;
   public static final int COMPLETE_LAYER_MASK = 6;
-  public static final char[] cellTable = { '☠', '1', '2', '3', '4', '5' };
+  public static final char[] cellTable = {'☠' /*'0'*/, '1', '2', '3', '4', '5' }; 
 
-  BitLayer layers[] = new BitLayer[7]; 
+  public BitLayer layers[] = new BitLayer[7]; 
   {
     for (int i=0;i<=6;i++) {
       layers[i] = new BitLayer();

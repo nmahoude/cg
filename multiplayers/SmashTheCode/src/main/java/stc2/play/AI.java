@@ -1,19 +1,17 @@
 package stc2.play;
 
-import stc2.BitBoard;
 import stc2.Game;
 import stc2.MCNode;
-import stc2.MCTS;
-import stc2.MCTS.AjustementVariables;
+import stc2.MCTSOld;
+import stc2.MCTSOld.AjustementVariables;
 
-public class AI {
+public class AI implements IAI {
   Game game;
   int player;
-  MCTS mcts;
+  MCTSOld mcts= new MCTSOld();
   AjustementVariables ajust;
   
-  public MCNode getMove() {
-    mcts = new MCTS();
+  public IAI.Move getMove() {
     mcts.ajust = this.ajust;
     if (player == 2) {
       mcts.attachGame(game, game.otherBoard, game.myBoard);
@@ -22,7 +20,10 @@ public class AI {
     }
     
     mcts.simulate(false);
-    return mcts.bestNode;
+    if (mcts.bestNode == null) {
+      return null;
+    }
+    return new IAI.Move(mcts.bestNode.rotation, mcts.bestNode.column);
   }
 
   public void prepare(Game game, int player) {

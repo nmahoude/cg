@@ -2,7 +2,7 @@ package stc2;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class MCTS {
+public class MCTSOld {
 
   public static class AjustementVariables {
     public int THRESOLD_DEPTH_1_COLUMN = 6;
@@ -10,7 +10,7 @@ public class MCTS {
     public int MIN_SKULLS_COLUMNS_TO_DROP = 4;
     public int SCORE_TO_DESTROY_SKULLS_RAPIDLY = 40;
   }
-  public AjustementVariables ajust;
+  public AjustementVariables ajust = new AjustementVariables();
   
   private static final int ONE_LINE_OF_SKULLS = 420;
   private static final double WORST_SCORE = -1_000_000;
@@ -37,7 +37,7 @@ public class MCTS {
 
   private int bestPointsAtDepth[] = new int[8];
   
-  public MCTS() {
+  public MCTSOld() {
     root = MCNode.get();
   }
   
@@ -84,14 +84,13 @@ public class MCTS {
     clearBestPointsAtDepth();
     int plies = 0;
     long nanoTime = 0;
-    game.nanoStart = System.nanoTime();
     do {
       for (int ply=1_000;--ply>=0;) {
         plies++;
         root.simulate(game, 0, maxDepth, bestPointsAtDepth);
       }
       nanoTime = System.nanoTime();
-    } while (nanoTime - game.nanoStart < 45_000_000);
+    } while (nanoTime - game.nanoStart < 70_000_000);
 
     message += " / "+plies+" in "+((nanoTime - game.nanoStart) / 1_000_000);
     bestScore = WORST_SCORE;

@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class MCTSTest {
+public class MCTSOldTest {
 
   private Game game;
 
@@ -92,9 +92,9 @@ public class MCTSTest {
         "344☠☠3",
         "452213");
 
-    MCTS mcts = new MCTS();
+    MCTSOld mcts = new MCTSOld();
     mcts.attachGame(game, game.myBoard, game.otherBoard);
-    MCTS.MAX_PLY = 100_000;
+    MCTSOld.MAX_PLY = 100_000;
     long time1 = System.currentTimeMillis();
     mcts.simulate(false);
     long time2 = System.currentTimeMillis();
