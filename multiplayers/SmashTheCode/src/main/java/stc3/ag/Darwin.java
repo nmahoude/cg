@@ -37,9 +37,13 @@ public class Darwin {
       } else {
         gameState.playerInfos[0].applyNuisance();
         gameState.playerInfos[1].applyNuisance();
-        gameState.generateANewPair();
       }
+      System.out.println("Pair : "+gameState.pairs[0].toString());
+      System.out.println("P1 : "+move1.toString());
+      System.out.println("P2 : "+move2.toString());
       debugBoards();
+
+      gameState.generateANewPair();
     }
     debugWinner();
   }

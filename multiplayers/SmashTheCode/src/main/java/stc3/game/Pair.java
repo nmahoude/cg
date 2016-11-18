@@ -7,4 +7,9 @@ public class Pair {
   }
   public int color1;
   public int color2;
+  
+  @Override
+  public String toString() {
+    return "["+color1+","+color2+"]";
+  }
 }
