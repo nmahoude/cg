@@ -87,10 +87,10 @@ public class MCTSOld {
     do {
       for (int ply=1_000;--ply>=0;) {
         plies++;
-        root.simulate(game, 0, maxDepth, bestPointsAtDepth);
+        root.simulate(game, 0, maxDepth);
       }
       nanoTime = System.nanoTime();
-    } while (nanoTime - game.nanoStart < 65_000_000);
+    } while (nanoTime - game.nanoStart < 20_000_000);
 
     message += " / "+plies+" in "+((nanoTime - game.nanoStart) / 1_000_000);
     bestScore = WORST_SCORE;
@@ -133,7 +133,7 @@ public class MCTSOld {
         bestKey = key;
         break;
       }
-      if (bScore > bestScore) {
+      if (bScore > bestScore && child.simulation.points == 0) {
         bestScore = bScore;
         bestNode = child;
         bestKey = key;
@@ -187,7 +187,7 @@ public class MCTSOld {
     
     clearBestPointsAtDepth();
     for (int i=0;i<400;i++) {
-      root.simulate(game, 0, 2, bestPointsAtDepth);
+      root.simulate(game, 0, 2);
     }
     
     oppBestScore1 = WORST_SCORE;
@@ -206,7 +206,7 @@ public class MCTSOld {
       int rot = keyToRotation(key);
       int column = keyToColumn(key);
       
-      //System.err.println(""+key+" ("+column+","+rot+") (sim="+child.count+") -> " + score1 + " --> "+score2);
+      System.err.println(""+key+" ("+column+","+rot+") (sim="+child.simCount+") -> " + score1 + " --> "+score2);
       if (score1 > oppBestScore1) {
         oppBestScore1 = score1;
         oppBestNode1 = child;

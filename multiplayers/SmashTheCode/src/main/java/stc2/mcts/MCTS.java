@@ -23,6 +23,11 @@ public class MCTS {
       Map.Entry<BitBoard, Node> expandedNode = select(root.board, root);
     }
     bestChild = root.bestChild;
+    root.children.remove(bestChild);
+    root.release();
+    if (bestChild != null) {
+      bestChild.release();
+    }
   }
 
   private Map.Entry<BitBoard, Node> select(BitBoard board, Node root) {

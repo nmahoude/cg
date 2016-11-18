@@ -2,7 +2,6 @@ package stc2.play;
 
 import stc2.BitBoard;
 import stc2.Game;
-import stc2.MCTSOld.AjustementVariables;
 import stc2.mcts.MCTS;
 
 public class NewAi implements IAI {
@@ -23,11 +22,11 @@ public class NewAi implements IAI {
     } else {
       board = game.myBoard;
     }
-    mcts.run(board, 1000, 8);
+    mcts.run(board, 50_000, 8);
     if (mcts.bestChild == null) {
       return null;
     }
-    return new IAI.Move(mcts.bestChild.rotation, mcts.bestChild.column);
+    return new Move(mcts.bestChild.rotation, mcts.bestChild.column);
   }
 
   @Override
@@ -37,7 +36,4 @@ public class NewAi implements IAI {
     this.player = player;
   }
 
-  @Override
-  public void setAjust(AjustementVariables ajust) {
-  }
 }

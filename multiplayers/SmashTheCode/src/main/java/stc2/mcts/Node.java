@@ -5,8 +5,15 @@ import java.util.List;
 
 import stc2.BitBoard;
 import stc2.Simulation;
+import utils.Cache;
 
 public class Node {
+  static Cache<Node> cache = new Cache<>();
+  static {
+    for (int i=0;i<150_000;i++) {
+      cache.push(new Node());
+    }
+  }
   public static double COL_HEIGHT_1 = -1;
   public static double COL_HEIGHT_2 =  0;
   public static double COL_HEIGHT_3 = +1;
@@ -40,10 +47,47 @@ public class Node {
   double bestChildScore = Double.NEGATIVE_INFINITY;
   Node bestChild;
   
+  public void release() {
+    if (unvisitedChildren != null) {
+      for (Node node : unvisitedChildren) {
+        node.release();
+        node.clear();
+        cache.retrocede(node);
+      }
+      unvisitedChildren.clear();
+    }
+    if (children != null) {
+      for (Node node : children) {
+        node.release();
+        node.clear();
+        cache.retrocede(node);
+      }
+      children.clear();
+    }
+  }
+  
+  private void clear() {
+    bestChildScore = Double.NEGATIVE_INFINITY;
+    column = 0;
+    rotation = 0;
+    depth = 0;
+    
+    points = 0;
+    score = 0;
+    parent = null;
+  }
   public Node(BitBoard boardModel) {
   }
 
-  public Node() {
+  private Node() {
+  }
+  
+  public Node get() {
+    if (cache.isEmpty()) {
+      return new Node();
+    } else {
+      return cache.pop();
+    }
   }
   
   public void expand(BitBoard board) {
@@ -53,7 +97,7 @@ public class Node {
       for (int column=0;column<6;column++) {
         if ((column == 0 && rot == 2) || (column == 5 && rot == 0)) { continue; }
         if (board.canPutBalls(rot, column)) {
-          Node node = new Node();
+          Node node = get();
           node.parent = this;
           node.column = column;
           node.rotation = rot;
@@ -66,9 +110,7 @@ public class Node {
 
   public void makeMove(int color1, int color2) {
     this.board.copyFrom(parent.board);
-    simulation.board = this.board;
-    simulation.clear();
-    simulation.putBallsNoCheck(color1, color2, rotation, column);
+    simulation.putBallsNoCheck(this.board, color1, color2, rotation, column);
     
     this.points = simulation.points;
     this.score = getScore();
@@ -95,7 +137,7 @@ public class Node {
   }
   
   public int getSkullsScore() {
-    return simulation.board.layers[BitBoard.SKULL_LAYER].bitCount();
+    return board.layers[BitBoard.SKULL_LAYER].bitCount();
   }
 
 
@@ -109,12 +151,12 @@ public class Node {
 
   public double getColumnScore() {
     return 
-        COL_HEIGHT_1*simulation.board.getColHeight(0)
-        +COL_HEIGHT_2*simulation.board.getColHeight(1)
-        +COL_HEIGHT_3*simulation.board.getColHeight(2)
-        +COL_HEIGHT_4*simulation.board.getColHeight(3)
-        +COL_HEIGHT_5*simulation.board.getColHeight(4)
-        +COL_HEIGHT_6*simulation.board.getColHeight(5);
+         COL_HEIGHT_1*board.getColHeight(0)
+        +COL_HEIGHT_2*board.getColHeight(1)
+        +COL_HEIGHT_3*board.getColHeight(2)
+        +COL_HEIGHT_4*board.getColHeight(3)
+        +COL_HEIGHT_5*board.getColHeight(4)
+        +COL_HEIGHT_6*board.getColHeight(5);
   }
 
 }

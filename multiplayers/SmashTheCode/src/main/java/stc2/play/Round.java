@@ -18,9 +18,9 @@ public class Round {
   private boolean player2Dead;
   private Random random = new Random();
   
-  private IAI.Move move1;
+  private Move move1;
   private int lastP1Points;
-  private IAI.Move move2;
+  private Move move2;
   private int lastP2Points;
   
   public void play() {
@@ -99,9 +99,7 @@ public class Round {
       player2Dead = true;
       return;
     }
-    simulation.clear();
-    simulation.board = game.otherBoard;
-    simulation.putBallsNoCheck(game.nextBalls[0], game.nextBalls2[0], move2.rotation, move2.column);
+    simulation.putBallsNoCheck(game.otherBoard, game.nextBalls[0], game.nextBalls2[0], move2.rotation, move2.column);
     lastP2Points = simulation.points;
   }
 
@@ -112,9 +110,7 @@ public class Round {
       return;
     }
     
-    simulation.clear();
-    simulation.board = game.myBoard;
-    simulation.putBallsNoCheck(game.nextBalls[0], game.nextBalls2[0], move1.rotation, move1.column);
+    simulation.putBallsNoCheck(game.myBoard, game.nextBalls[0], game.nextBalls2[0], move1.rotation, move1.column);
     lastP1Points = simulation.points;
   }
 
@@ -155,16 +151,25 @@ public class Round {
   
   public static void main(String[] args) {
 
-    AdjustementFactors af1 = AdjustementFactors.random();
-    AdjustementFactors af2 = AdjustementFactors.random();
-
-    for (int i=0;i<10;i++) {
-      for (int j=i+1;j<10;j++) {
-        oneMatch(candidates[i], candidates[j]);
+    while (true) {
+      System.out.println("New generation");
+      System.out.println("--------------");
+      
+      for (int i=0;i<10;i++) {
+        for (int j=i+1;j<10;j++) {
+          System.out.println("Match "+i+" vs "+j);
+          oneMatch(candidates[i], candidates[j]);
+        }
       }
+      
+      Arrays.sort(candidates);
+      outputGenerationResults();
+      
+      Darwin.mutate(candidates);
     }
-    
-    Arrays.sort(candidates);
+  }
+
+  private static void outputGenerationResults() {
     for (int i=0;i<candidates.length;i++) {
       System.out.println("Candidates victory : "+candidates[i].victoryCount);
       candidates[i].adjustementFactor.print();

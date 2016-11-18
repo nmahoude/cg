@@ -20,7 +20,6 @@ public class MCTSOldTest {
   @Test
   public void debugPoints() throws Exception {
     Simulation sim = new Simulation();
-    sim.board = game.myBoard;
     
     BitBoardTest.prepareBoard(game.myBoard,
         "......",
@@ -35,8 +34,7 @@ public class MCTSOldTest {
         ".5545.",
         ".3111.",
         "332421");
-    sim.clear();
-    sim.putBalls(1, 1, 0, 0);
+    sim.putBalls(game.myBoard, 1, 1, 0, 0);
     
     int points = sim.points
         +sim.groupsCount[2]
@@ -49,7 +47,6 @@ public class MCTSOldTest {
   @Test
   public void getSkullsCountAfterMove() throws Exception {
     Simulation sim = new Simulation();
-    sim.board = game.myBoard;
     
     BitBoardTest.prepareBoard(game.myBoard,
         "......",
@@ -64,8 +61,7 @@ public class MCTSOldTest {
         ".5545.",
         ".3111.",
         "332421");
-    sim.clear();
-    sim.putBalls(1, 1, 0, 0);
+    sim.putBalls(game.myBoard, 1, 1, 0, 0);
 
     assertThat(game.myBoard.layers[BitBoard.SKULL_LAYER].bitCount(), is(4));
   }

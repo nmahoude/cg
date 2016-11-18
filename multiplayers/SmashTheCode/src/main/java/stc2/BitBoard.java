@@ -225,4 +225,8 @@ public class BitBoard {
     layers[6].clear();
   }
 
+  @Override
+  public String toString() {
+    return getDebugString();
+  }
 }

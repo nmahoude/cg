@@ -11,7 +11,7 @@ public class AI implements IAI {
   MCTSOld mcts= new MCTSOld();
   AjustementVariables ajust;
   
-  public IAI.Move getMove() {
+  public Move getMove() {
     mcts.ajust = this.ajust;
     if (player == 2) {
       mcts.attachGame(game, game.otherBoard, game.myBoard);
@@ -23,15 +23,11 @@ public class AI implements IAI {
     if (mcts.bestNode == null) {
       return null;
     }
-    return new IAI.Move(mcts.bestNode.rotation, mcts.bestNode.column);
+    return new Move(mcts.bestNode.rotation, mcts.bestNode.column);
   }
 
   public void prepare(Game game, int player) {
     this.game = game;
     this.player = player;
-  }
-  @Override
-  public void setAjust(AjustementVariables ajust) {
-    this.ajust = ajust;
   }
 }

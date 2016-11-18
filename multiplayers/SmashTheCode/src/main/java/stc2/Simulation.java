@@ -6,7 +6,7 @@ import java.util.List;
 import stc.P;
 
 public class Simulation {
-  public BitBoard board;
+  BitBoard board;
   public BitLayer workDestroyLayer = new BitLayer();
   public BitLayer workTestLayer = new BitLayer();
   public NeighborInfo neighborsInfo = new NeighborInfo();
@@ -20,7 +20,7 @@ public class Simulation {
   public int groupBonus;
   public boolean colorDestroyed[] = new boolean[6];
   
-  public void clear() {
+  private void clear() {
     points = 0;
     chainPower = 0;
     clearedBlocks = 0;
@@ -172,14 +172,17 @@ public class Simulation {
     groupBonus = Math.min(8, groupBonus);
   }
   
-  public boolean putBalls(int color1, int color2, int rotation, int baseColumn) {
+  public boolean putBalls(BitBoard board, int color1, int color2, int rotation, int baseColumn) {
     if (!board.canPutBalls(rotation, baseColumn)) {
       return false;
     }
-    return putBallsNoCheck(color1, color2, rotation, baseColumn);
+    return putBallsNoCheck(board, color1, color2, rotation, baseColumn);
   }
 
-  public boolean putBallsNoCheck(int color1, int color2, int rotation, int baseColumn) {
+  public boolean putBallsNoCheck(BitBoard board, int color1, int color2, int rotation, int baseColumn) {
+    this.board = board;
+    clear();
+
     P posToCheck1 = null;
     P posToCheck2 = null;
     switch (rotation) {

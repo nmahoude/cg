@@ -12,7 +12,7 @@ public class NodeTest {
   @Test
   public void expandNodes() throws Exception {
     BitBoard board = new BitBoard();
-    Node root = new Node();
+    Node root = new Node(board);
     
     root.expand(board);
     

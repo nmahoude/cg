@@ -15,5 +15,6 @@
     <module>BackToTheCode</module>
     <module>TheGreatEscape</module>
     <module>CodeVersusZombies</module>
+    <module>hypersonic2</module>
   </modules>
 </project>
