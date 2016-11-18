@@ -32,7 +32,7 @@ public class NodeTest {
     assertThat(child.board.layers[2].isEmpty(), is(false));
     assertThat(child.board.layers[3].isEmpty(), is(true));
     assertThat(child.points, is(0));
-    assertThat(child.score, is(-40.0));
+    assertThat(child.score, is(-81.0));
   }
   
   @Test
@@ -51,7 +51,7 @@ public class NodeTest {
     assertThat(cchild.board.layers[2].isEmpty(), is(true));
     assertThat(cchild.board.layers[3].isEmpty(), is(true));
     assertThat(cchild.points, is(40));
-    assertThat(cchild.score, is(0.0));
+    assertThat(cchild.score, is(40.0));
   }
 
   @Test
@@ -70,7 +70,7 @@ public class NodeTest {
     assertThat(cchild.board.layers[2].isEmpty(), is(false));
     assertThat(cchild.board.layers[3].isEmpty(), is(true));
     assertThat(cchild.points, is(0));
-    assertThat(cchild.score, is(20.0 /*40.0-20.0*/));
+    assertThat(cchild.score, is(-2.0));
   }
   
   @Test

@@ -90,7 +90,7 @@ public class MCTSOld {
         root.simulate(game, 0, maxDepth, bestPointsAtDepth);
       }
       nanoTime = System.nanoTime();
-    } while (nanoTime - game.nanoStart < 70_000_000);
+    } while (nanoTime - game.nanoStart < 65_000_000);
 
     message += " / "+plies+" in "+((nanoTime - game.nanoStart) / 1_000_000);
     bestScore = WORST_SCORE;

@@ -109,12 +109,12 @@ public class MCNode {
 
   public double getColumnScore() {
     return 
-        -1*simulation.board.getColHeight(0)
-        -0*simulation.board.getColHeight(1)
-        +1*simulation.board.getColHeight(2)
-        +1*simulation.board.getColHeight(3)
-        -0*simulation.board.getColHeight(4)
-        -1*simulation.board.getColHeight(5);
+        -2.3*simulation.board.getColHeight(0)
+        +3.84*simulation.board.getColHeight(1)
+        -2.87*simulation.board.getColHeight(2)
+        +1.17*simulation.board.getColHeight(3)
+        -3.6*simulation.board.getColHeight(4)
+        +0.6*simulation.board.getColHeight(5);
   }
 
 

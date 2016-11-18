@@ -56,7 +56,7 @@ public class AdjustementFactors {
     GROUP_COUNT_2 = between(-5, 5);
     GROUP_COUNT_3 = between(-5, 5);
 
-    POINTS_BONUS = between(-5, 5);
+    POINTS_BONUS = between(-1, 5);
     COLOR_GROUP_BONUS  = between(-5, 5);
     COLUMN_BONUS  = between(-5, 5);
     SKULLS_BONUS  = between(-5, 5);
