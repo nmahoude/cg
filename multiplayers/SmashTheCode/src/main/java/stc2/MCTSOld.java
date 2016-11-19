@@ -117,13 +117,7 @@ public class MCTSOld {
       if (sp1 > maxP1) { maxP1 = sp1; }
       if (sp2 > maxP2) { maxP2 = sp2; }
       //System.err.println(""+key+" ("+column+","+rot+") (sim="+child.simCount+") -> " + score + " --> "+bScore);
-      if (sp1 >= ajust.SCORE_TO_DESTROY_SKULLS_RAPIDLY && myTotalCol > 60) {
-        message += "kills skulls";
-        bestScore = score;
-        bestNode = child;
-        bestKey = key;
-        break;
-      }
+
       
       if (child.simulation.points > Math.min(11-oppMinCol, ajust.MIN_SKULLS_COLUMNS_TO_DROP)*ONE_LINE_OF_SKULLS) {
         int rows = child.simulation.points  / ONE_LINE_OF_SKULLS;
@@ -133,7 +127,7 @@ public class MCTSOld {
         bestKey = key;
         break;
       }
-      if (bScore > bestScore && child.simulation.points == 0) {
+      if (bScore > bestScore) {
         bestScore = bScore;
         bestNode = child;
         bestKey = key;

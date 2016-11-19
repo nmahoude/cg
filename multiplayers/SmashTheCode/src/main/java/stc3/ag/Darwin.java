@@ -28,6 +28,9 @@ public class Darwin {
       
       move1 = ai1.outputMove();
       move2 = ai2.outputMove();
+      System.out.println("Pair : "+gameState.pairs[0].toString());
+      System.out.println("P1 : "+move1);
+      System.out.println("P2 : "+move2);
       
       if (!gameState.playerInfos[0].applyMove(move1)) { move1 = null; }
       if (!gameState.playerInfos[1].applyMove(move2)) { move2 = null; }
@@ -37,13 +40,9 @@ public class Darwin {
       } else {
         gameState.playerInfos[0].applyNuisance();
         gameState.playerInfos[1].applyNuisance();
+        gameState.generateANewPair();
       }
-      System.out.println("Pair : "+gameState.pairs[0].toString());
-      System.out.println("P1 : "+move1.toString());
-      System.out.println("P2 : "+move2.toString());
       debugBoards();
-
-      gameState.generateANewPair();
     }
     debugWinner();
   }

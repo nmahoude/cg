@@ -32,10 +32,7 @@ public class Simulation {
     colorDestroyed[3] = false;
     colorDestroyed[4] = false;
     colorDestroyed[5] = false;
-    groupsCount[0] = 0;
-    groupsCount[1] = 0;
-    groupsCount[2] = 0;
-    groupsCount[3] = 0;
+    initGroupCounts();
   }
   
   BitLayer toCheckLayer = new BitLayer();
@@ -45,15 +42,7 @@ public class Simulation {
     do {
       toCheckLayer.set(board.layers[BitBoard.COMPLETE_LAYER_MASK]);
       toCheckLayer.unset(board.layers[BitBoard.SKULL_LAYER]);
-      destruction = false;
-      if (ps != null) {
-        for (P p : ps) {
-          destruction |= destroyFrom(p.x, p.y);
-        }
-        ps = null;
-      } else {
-        destruction = doFullDestruct();
-      }
+      destruction = doFullDestruct();
       if (destruction) {
         updateScores();
         updateBoard();
@@ -62,6 +51,7 @@ public class Simulation {
   }
 
   public boolean doFullDestruct() {
+    initGroupCounts();
     boolean destruction = false;
     for (int y=0;y<12 && !toCheckLayer.isEmpty();y++) {
       for (int x=0;x<6 && !toCheckLayer.isEmpty();x++) {
@@ -69,6 +59,13 @@ public class Simulation {
       }
     }
     return destruction;
+  }
+
+  private void initGroupCounts() {
+    groupsCount[0] = 0;
+    groupsCount[1] = 0;
+    groupsCount[2] = 0;
+    groupsCount[3] = 0;
   }
 
   public void updateScores() {

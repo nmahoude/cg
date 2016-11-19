@@ -3,12 +3,15 @@ package stc2;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import stc.P;
 
 @RunWith(JUnitParamsRunner.class)
 public class SimulationTest {
@@ -325,6 +328,32 @@ public class SimulationTest {
     assertThat(simulation.groupsCount[3], is(0));
   }
 
+  @Test
+  public void groupsCount_after_destruction() throws Exception {
+    BitBoardTest.prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "1....1");
+    
+    simulation.board = board;
+    simulation.destroyBlocks(Arrays.asList(P.get(3, 0)));
+    
+    assertThat(simulation.groupsCount[0], is(0));
+    assertThat(simulation.groupsCount[1], is(2));
+    assertThat(simulation.groupsCount[2], is(0));
+    assertThat(simulation.groupsCount[3], is(0));
+  }
+
+  
   @Test
   public void groupsCount_2_of_2() throws Exception {
     BitBoardTest.prepareBoard(board,
