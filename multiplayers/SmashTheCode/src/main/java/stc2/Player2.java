@@ -2,7 +2,7 @@ package stc2;
 
 import java.util.Scanner;
 
-public class Player {
+public class Player2 {
   static Game game = new Game();
   static MCTSOld mcts = new MCTSOld();
   

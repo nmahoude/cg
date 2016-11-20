@@ -22,8 +22,7 @@ public class AI {
       move = new Move(key  % 6, key / 6, "pure Random");
     } else {
       MCTS mcts = new MCTS();
-      mcts.maxDepth = 1;
-      System.err.println(gameState.playerInfos[playerIndex].board);
+      mcts.maxDepth = 8;
       Node root = mcts.run(gameState.playerInfos[playerIndex], 5000);
       Node bestChild = root.findBestChild();
       doSomeDebug(root, bestChild);
@@ -32,18 +31,15 @@ public class AI {
   }
 
   private void doSomeDebug(Node root, Node bestNode) {
-    System.err.println("Childs of root :");
     System.err.println("Pairs to come");
     for (int i=0;i<8;i++) {
       System.err.print(gameState.playerInfos[playerIndex].pairs[i]);
     }
     System.err.println("");
+    System.err.println("Childs of root :");
     for (Node node :root.visited) {
-      System.err.println("["+node.column+","+node.rotation+"] score("+node.score+") sim("+node.simCount+")");
+      System.err.println("["+node.column+","+node.rotation+"] score("+node.constructionScore+") sim("+node.simCount+")");
     }
-    System.err.println("Unvisited : "+root.unvisited.size());
-    System.err.println("Next board should be ");
-    System.err.println(bestNode.board);
   }
 
   public Move outputMove() {

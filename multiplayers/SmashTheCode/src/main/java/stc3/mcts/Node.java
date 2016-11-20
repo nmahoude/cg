@@ -13,7 +13,7 @@ public class Node {
   
   Node parent;
   public BitBoard board;
-  public double score = 1.0;
+  public double constructionScore = 1.0;
   
   public double totalChildScore = 1.0;
   public int simCount;
@@ -54,8 +54,8 @@ public class Node {
     Node bestNode = null;
     double score = Double.NEGATIVE_INFINITY;
     for (Node node : visited) {
-      if (node.score > score) {
-        score = node.score;
+      if (node.constructionScore > score) {
+        score = node.constructionScore;
         bestNode = node;
       }
     }
@@ -66,7 +66,9 @@ public class Node {
   public void simulate(ScoreHeuristics scoreHeuristic) {
     this.board.copyFrom(parent.board);
     simulator.putBallsNoCheck(board, color1, color2, rotation, column);
-    score = scoreHeuristic.get(simulator, this);
+    constructionScore = 
+         scoreHeuristic.getConstructionScore(simulator, this)
+        +scoreHeuristic.getPoints(simulator, this);
   }
 
 
@@ -75,7 +77,7 @@ public class Node {
       return;
     }
     parent.simCount++;
-    parent.totalChildScore +=this.score;
+    parent.totalChildScore +=this.constructionScore;
     parent.backpropagate();
   }
 

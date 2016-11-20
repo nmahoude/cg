@@ -40,7 +40,7 @@ public class MCTSTest {
     mcts.maxDepth = 1;
     Node root = mcts.run(pi, 22);
     
-    assertThat(root.findBestChild().score, is(-4.0));
+//    assertThat(root.findBestChild().constructionScore, is(-4.0));
   }
 
   
@@ -71,6 +71,6 @@ public class MCTSTest {
     mcts.maxDepth = 1;
     Node root = mcts.run(pi, 22);
     
-    assertThat(root.findBestChild().score, is(-1.0));
+//    assertThat(root.findBestChild().constructionScore, is(2.0));
   }
 }

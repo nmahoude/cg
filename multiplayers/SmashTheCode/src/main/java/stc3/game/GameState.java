@@ -47,6 +47,7 @@ public class GameState {
     for (int i = 0; i < 12; i++) {
       playerInfo.board.updateRow(i, in.next());
     }
+    playerInfo.board.buildCompleteLayerMask();
   }
 
   public void generateANewPair() {

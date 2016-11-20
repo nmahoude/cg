@@ -52,6 +52,8 @@ public class Board {
 
   public int cells[];
 
+  long totalBoxX = 0;
+  long totalBoxY = 0;
   List<Bomb> bombs = new ArrayList<>();
   List<Item> items = new ArrayList<>();
   public List<Bomberman> players = new ArrayList<>();
@@ -70,6 +72,8 @@ public class Board {
     me = null;
     destructedBox = 0;
     boxCount = 0;
+    totalBoxX = 0;
+    totalBoxY = 0;
     // cells will be copied later
   }
 
@@ -84,7 +88,8 @@ public class Board {
     board.clean();
     
     board.boxCount = boxCount;
-
+    board.totalBoxX = totalBoxX;
+    board.totalBoxY = totalBoxY;
     for (final Bomb b : this.bombs) {
       board.bombs.add(b.duplicate(board));
     }
@@ -110,6 +115,8 @@ public class Board {
 
     destructedBox = 0;
     boxCount = 0;
+    totalBoxX=0;
+    totalBoxY=0;
   }
 
   public void init(final int y, final String row) {
@@ -118,6 +125,8 @@ public class Board {
       cells[x+13*y] = value;
       if (value == BOX || value == BOX_1 || value == BOX_2) {
         boxCount++;
+        totalBoxX +=x;
+        totalBoxY +=y;
       }
     }
   }
@@ -190,16 +199,16 @@ public class Board {
 
       switch (value) {
         case BOX:
-          updatePoints(orginalBomberman, 1);
+          updatePoints(orginalBomberman, 1, x, y);
           cells[x+13*y] = EMPTY;
           return true;
         case BOX_1:
-          updatePoints(orginalBomberman, 1.3);
+          updatePoints(orginalBomberman, 1.3,x, y);
           cells[x+13*y] = ITEM_1;
           items.add(Item.create(this, 0, P.get(x,y), 1, 0));
           return true;
         case BOX_2:
-          updatePoints(orginalBomberman, 1.8);
+          updatePoints(orginalBomberman, 1.8,x, y);
           cells[x+13*y] = ITEM_2;
           items.add(Item.create(this, 0, P.get(x,y), 2, 0));
           return true;
@@ -219,9 +228,11 @@ public class Board {
     }
     return false;
   }
-  private void updatePoints(final Bomberman orginalBomberman, final double points) {
+  private void updatePoints(final Bomberman orginalBomberman, final double points, int x, int y) {
     destructedBox++;
     boxCount--;
+    totalBoxX-=x;
+    totalBoxY-=y;
     if (orginalBomberman != null) {
       orginalBomberman.points+=points;
     }

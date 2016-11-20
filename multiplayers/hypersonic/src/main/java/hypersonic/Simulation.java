@@ -17,10 +17,20 @@ public class Simulation {
       return DEAD_MALUS;
     }
     if (board.boxCount > 0) {
-      return 8*board.me.points+board.me.bombsLeft + Math.max(board.me.bombCount, 10)+Math.max(10, board.me.currentRange);
+      return 8*board.me.points
+          - 0.1*distanceToBoxGravityCenter()
+          +board.me.bombsLeft 
+          + Math.max(board.me.bombCount, 10)
+          +Math.max(10, board.me.currentRange);
     } else {
       return 13-board.me.position.manhattanDistance(P.get(7, 5));
     }
+  }
+  private double distanceToBoxGravityCenter() {
+    int x = (int)(board.totalBoxX / board.boxCount);
+    int y = (int)(board.totalBoxY / board.boxCount);
+    int dist = board.me.position.manhattanDistance(P.get(x, y));
+    return dist;
   }
   public final boolean isFinished() {
     return false;

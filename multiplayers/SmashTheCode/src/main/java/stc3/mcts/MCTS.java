@@ -39,7 +39,11 @@ public class MCTS {
       Node child = parent.visitRandomChild();
       return child;
     } else {
-      return select(parent.findBestChild(), depth+1);
+      Node bestChild = parent.findBestChild();
+      if (bestChild == null) {
+        return null;
+      }
+      return select(bestChild, depth+1);
     }
   }
 }
