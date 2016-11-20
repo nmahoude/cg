@@ -36,34 +36,51 @@ public class Simulation {
     return moves;
   }
   
+  private boolean horizontallyPossible(int x, int y) {
+    return (!(y % 2 == 1 && x % 2 == 0));
+  }
+  
+  private boolean verticallyPossible(int x, int y) {
+    return (!(y % 2 == 0 && x % 2 == 1));
+  }
   
   public final boolean isMovePossible(final Move move) {
     final Bomberman me = board.me;
+    int x = me.position.x;
+    int y = me.position.y;
     switch(move) {
       case DOWN:
-        return board.canMoveTo(me.position.x, me.position.y+1);
+        return verticallyPossible(x, y) && 
+            board.canMoveTo(x, y+1);
       case DOWN_BOMB:
         return me.bombsLeft > 0 && 
-            board.canMoveTo(me.position.x, me.position.y+1);
+            verticallyPossible(x, y) && 
+            board.canMoveTo(x, y+1);
       case LEFT:
-        return board.canMoveTo(me.position.x-1, me.position.y);
+        return horizontallyPossible(x, y) && 
+            board.canMoveTo(x-1, y);
       case LEFT_BOMB:
         return me.bombsLeft > 0 && 
-            board.canMoveTo(me.position.x-1, me.position.y);
+            horizontallyPossible(x, y) &&
+            board.canMoveTo(x-1, y);
       case RIGHT:
-        return board.canMoveTo(me.position.x+1, me.position.y);
+        return horizontallyPossible(x, y) && 
+            board.canMoveTo(x+1, y);
       case RIGHT_BOMB:
-        return me.bombsLeft > 0 && 
-            board.canMoveTo(me.position.x+1, me.position.y);
+        return me.bombsLeft > 0 &&
+            horizontallyPossible(x, y) &&
+            board.canMoveTo(x+1, y);
       case STAY:
         return true;
       case STAY_BOMB:
         return me.bombsLeft > 0 && true;
       case UP:
-        return board.canMoveTo(me.position.x, me.position.y-1);
+        return verticallyPossible(x, y) && 
+            board.canMoveTo(x, y-1);
       case UP_BOMB:
         return me.bombsLeft > 0 && 
-            board.canMoveTo(me.position.x, me.position.y-1);
+            verticallyPossible(x, y) && 
+            board.canMoveTo(x, y-1);
       default:
         return false;
     }
