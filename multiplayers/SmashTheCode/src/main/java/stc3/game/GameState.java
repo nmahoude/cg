@@ -45,7 +45,7 @@ public class GameState {
     playerInfo.clearForRound();
     playerInfo.points = in.nextInt();
     for (int i = 0; i < 12; i++) {
-      playerInfo.board.updateRow(11-i, in.next());
+      playerInfo.board.updateRow(i, in.next());
     }
   }
 
