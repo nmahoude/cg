@@ -25,11 +25,10 @@ public class NodeTest {
         "...45.",
         "...43.",
         "...33."       );
-    Node root = new Node(-1,-1,-1,-1);
+    Node root = new Node(0, -1,-1,-1,-1);
     root.board = board;
-    root.expand(1, 1);
+    root.expand(1, 1, new ScoreHeuristics());
     
-    assertThat(root.unvisited.size(), CoreMatchers.is(20));
-    assertThat(root.visited.size(), CoreMatchers.is(0));
+    assertThat(root.visited.size(), CoreMatchers.is(20));
   }
 }

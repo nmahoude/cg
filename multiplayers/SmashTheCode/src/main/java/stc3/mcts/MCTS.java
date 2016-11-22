@@ -13,37 +13,35 @@ public class MCTS {
   
   public Node run(PlayerInfo playerInfo, int run) {
     this.playerInfo = playerInfo;
-    Node root = new Node(-1, -1, -1, -1);
+    Node root = new Node(0, -1, -1, -1, -1);
     root.board.copyFrom(playerInfo.board);
     
     for (int i=0;i<run;i++) {
-      Node node = select(root, 0);
-      if (node == null) {
-        break;
-      }
-      node.simulate(scoreHeuristic);
-      node.backpropagate();
+      selectAndExpand(root, 0);
     }
     return root;
   }
 
-  private Node select(Node parent, int depth) {
-    if (depth == maxDepth) {
-      return null;
+  private void selectAndExpand(Node parent, int depth) {
+    if (depth == maxDepth || parent == null) {
+      return;
     }
-    if (parent.unvisited == null) {
+    if (parent.visited == null) {
       Pair pair = playerInfo.pairs[depth];
-      parent.expand(pair.color1, pair.color2);
-    }
-    if (!parent.unvisited.isEmpty()) {
-      Node child = parent.visitRandomChild();
-      return child;
+      parent.expand(pair.color1, pair.color2, scoreHeuristic);
     } else {
-      Node bestChild = parent.findBestChild();
-      if (bestChild == null) {
-        return null;
-      }
-      return select(bestChild, depth+1);
+      Node child = parent.findBestChildForConstruction();
+      selectAndExpand(child, depth+1);
     }
+//    if (!parent.unvisited.isEmpty()) {
+//      Node child = parent.visitRandomChild();
+//      return child;
+//    } else {
+//      Node bestChild = parent.findBestChild();
+//      if (bestChild == null) {
+//        return null;
+//      }
+//      return select(bestChild, depth+1);
+//    }
   }
 }

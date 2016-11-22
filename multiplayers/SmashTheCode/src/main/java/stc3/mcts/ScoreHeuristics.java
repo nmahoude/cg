@@ -6,6 +6,7 @@ public class ScoreHeuristics {
 
   public double getConstructionScore(Simulation simulator, Node node) {
     return 
+        simulator.points+
         columnsScore(simulator, node)+
         groupsCountScore(simulator);
   }

@@ -23,10 +23,14 @@ public class AI {
     } else {
       MCTS mcts = new MCTS();
       mcts.maxDepth = 8;
-      Node root = mcts.run(gameState.playerInfos[playerIndex], 5000);
-      Node bestChild = root.findBestChild();
-      doSomeDebug(root, bestChild);
-      move = new Move(bestChild.column, bestChild.rotation, "MCTS ("+root.simCount+")");
+      Node root = mcts.run(gameState.playerInfos[playerIndex], 10);
+      Node bestChild = root.findBestChildForAbsoluteScore();
+      if (bestChild == null) {
+        move = new Move(0,0, "DEAD");
+      } else {
+        doSomeDebug(root, bestChild);
+        move = new Move(bestChild.column, bestChild.rotation, "MCTS ("+root.simCount+")");
+      }
     }
   }
 
@@ -38,7 +42,7 @@ public class AI {
     System.err.println("");
     System.err.println("Childs of root :");
     for (Node node :root.visited) {
-      System.err.println("["+node.column+","+node.rotation+"] score("+node.constructionScore+") sim("+node.simCount+")");
+      System.err.println("["+node.column+","+node.rotation+"] score("+node.score +","+ node.constructionScore+") sim("+node.simCount+")");
     }
   }
 
