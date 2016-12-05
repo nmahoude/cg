@@ -2,6 +2,8 @@ package trigonometry;
 
 public class Vector {
 
+  public static final Vector ZERO = new Vector(0,0);
+  
   public final double vx, vy;
   public Vector(double vx, double vy) {
     this.vx = vx;
@@ -26,6 +28,10 @@ public class Vector {
   }
   public double dot(Vector v) {
     return vx*v.vx + vy*v.vy;
+  }
+
+  public double squareLength() {
+    return vx*vx + vy*vy;
   }
   public double length() {
     return Math.sqrt(vx*vx + vy*vy);
@@ -63,4 +69,31 @@ public class Vector {
     return new Vector(vx-v.vx, vy-v.vy);
   }
 
+  static Point[] getInertialPointsIntersection(Vector currentSpeed, Vector desiredDirection, double maxForce) {
+    double sx = currentSpeed.vx;
+    double sy = currentSpeed.vy;
+    double dx = desiredDirection.vx;
+    double dy = desiredDirection.vy;
+    
+    double constant = (sx*dy-sy*dx) / dx; 
+    
+    double a = (dy/dx)*(dy/dx);
+    double b = 2*constant*dy/dx+1;
+    double c = constant*constant - maxForce*maxForce;
+    
+    double results[] = MathUtil.resolve2ndDegree(a, b, c);
+    if (results == null) {
+      return null;
+    } else if (results.length == 1) {
+      double vx = results[0];
+      double vy = Math.sqrt(maxForce*maxForce - vx*vx);
+      return new Point[]{  new Point(vx, vy) };
+    } else {
+      double vx1 = results[0];
+      double vy1 = Math.sqrt(maxForce*maxForce - vx1*vx1);
+      double vx2 = results[1];
+      double vy2 = Math.sqrt(maxForce*maxForce - vx2*vx2);
+      return new Point[]{  new Point(vx1, vy1), new Point(vx2, vy2) };
+    }
+  }
 }

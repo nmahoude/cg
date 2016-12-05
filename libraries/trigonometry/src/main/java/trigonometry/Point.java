@@ -2,6 +2,7 @@ package trigonometry;
 
 public class Point {
 
+  public static final Point ZERO = new Point(0,0);
   public final double x,y;
 
   public Point(double x, double y) {
@@ -9,6 +10,10 @@ public class Point {
     this.x = x;
     this.y = y;
   }
+  public Point(Point position) {
+    this(position.x, position.y);
+  }
+
   @Override
   public String toString() {
     return "P("+x+","+y+")";
@@ -20,6 +25,11 @@ public class Point {
   public Point add(Vector vec) {
     return new Point(x+vec.vx, y+vec.vy);
   }
+  
+  public Point sub(Vector vec) {
+    return new Point(x-vec.vx, y-vec.vy);
+  }
+
   public double distTo(Point p) {
     return Math.sqrt( (p.x-x)*(p.x-x) + (p.y-y)*(p.y-y) );
   }
@@ -75,5 +85,31 @@ public class Point {
     Vector v = p1.sub(p0);
     Vector result = n.sub(v.dot(v.dot(n))); 
     return result.vy > 0;
+  }
+  
+  Point closest(Point origin, Vector v) {
+    Point p2 = origin.add(v);
+    return closest(origin, p2);
+  }
+  
+  Point closest(Point a, Point b) {
+    double da = b.y - a.y;
+    double db = a.x - b.x;
+    double c1 = da*a.x + db*a.y;
+    double c2 = -db*this.x + da*this.y;
+    double det = da*da + db*db;
+    double cx = 0;
+    double cy = 0;
+
+    if (det != 0) {
+        cx = (da*c1 - db*c2) / det;
+        cy = (da*c2 + db*c1) / det;
+    } else {
+        // The point is already on the line
+        cx = this.x;
+        cy = this.y;
+    }
+
+    return new Point(cx, cy);
   }
 }
