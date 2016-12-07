@@ -20,7 +20,13 @@ public class Simulation {
 
   public int groupsCount[] = new int[4];
   
-  public void clear() {
+  public int chainPower;
+  public int clearedBlocks;
+  public int colorBonus;
+  public int groupBonus;
+  public boolean colorDestroyed[] = new boolean[6];
+  
+  private void clear() {
     points = 0;
     chainPower = 0;
     clearedBlocks = 0;
@@ -32,10 +38,7 @@ public class Simulation {
     colorDestroyed[3] = false;
     colorDestroyed[4] = false;
     colorDestroyed[5] = false;
-    groupsCount[0] = 0;
-    groupsCount[1] = 0;
-    groupsCount[2] = 0;
-    groupsCount[3] = 0;
+    initGroupCounts();
   }
   
   BitLayer toCheckLayer = new BitLayer();
@@ -45,15 +48,7 @@ public class Simulation {
     do {
       toCheckLayer.set(board.layers[BitBoard.COMPLETE_LAYER_MASK]);
       toCheckLayer.unset(board.layers[BitBoard.SKULL_LAYER]);
-      destruction = false;
-      if (ps != null) {
-        for (P p : ps) {
-          destruction |= destroyFrom(p.x, p.y);
-        }
-        ps = null;
-      } else {
-        destruction = doFullDestruct();
-      }
+      destruction = doFullDestruct();
       if (destruction) {
         updateScores();
         updateBoard();
@@ -62,6 +57,7 @@ public class Simulation {
   }
 
   public boolean doFullDestruct() {
+    initGroupCounts();
     boolean destruction = false;
     for (int y=0;y<12 && !toCheckLayer.isEmpty();y++) {
       for (int x=0;x<6 && !toCheckLayer.isEmpty();x++) {
@@ -69,6 +65,13 @@ public class Simulation {
       }
     }
     return destruction;
+  }
+
+  private void initGroupCounts() {
+    groupsCount[0] = 0;
+    groupsCount[1] = 0;
+    groupsCount[2] = 0;
+    groupsCount[3] = 0;
   }
 
   public void updateScores() {
@@ -172,14 +175,17 @@ public class Simulation {
     groupBonus = Math.min(8, groupBonus);
   }
   
-  public boolean putBalls(int color1, int color2, int rotation, int baseColumn) {
+  public boolean putBalls(BitBoard board, int color1, int color2, int rotation, int baseColumn) {
     if (!board.canPutBalls(rotation, baseColumn)) {
       return false;
     }
-    return putBallsNoCheck(color1, color2, rotation, baseColumn);
+    return putBallsNoCheck(board, color1, color2, rotation, baseColumn);
   }
 
-  public boolean putBallsNoCheck(int color1, int color2, int rotation, int baseColumn) {
+  public boolean putBallsNoCheck(BitBoard board, int color1, int color2, int rotation, int baseColumn) {
+    this.board = board;
+    clear();
+
     P posToCheck1 = null;
     P posToCheck2 = null;
     switch (rotation) {

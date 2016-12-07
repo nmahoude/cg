@@ -15,6 +15,10 @@ public class Game {
   public int otherScore;
   public long nanoStart;
   public long nanoEnd;
+  public int player1Skulls = 0;
+  public int player2Skulls = 0;
+  public int player2Score;
+  public int player1Score;
   
   public void prepare() {
     myBoard.clear();

@@ -273,7 +273,9 @@ public class BitLayer {
   public int pushFromTopOfColumn(int column) {
     int value = getCol(column);
     int y = 32-Integer.numberOfLeadingZeros(value);
-    setCol(column, value | yMask[y]);
+    if (y<12) {
+      setCol(column, value | yMask[y]);
+    }
     return y;
   }
 

@@ -10,8 +10,8 @@ import hypersonic.Simulation;
 
 public class MonteCarlo {
 
-  private static final int SIMULATION_COUNT = 1_500;
-  public static final int MAX_DEPTH = 15 ;
+  private static final int SIMULATION_COUNT = 2_200;
+  public static final int MAX_DEPTH = 10 ;
   public Node root = new Node();
   
   public void init() {

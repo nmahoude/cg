@@ -1,2 +1,2 @@
 # codingame
-Code repository for codinggame experimentations
+Code repository for codingame experimentations

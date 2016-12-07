@@ -13,7 +13,7 @@ public class BitBoard {
   public static final int RED_LAYER = 4;
   public static final int YELLOW_LAYER = 5;
   public static final int COMPLETE_LAYER_MASK = 6;
-  public static final char[] cellTable = { '☠', '1', '2', '3', '4', '5' };
+  public static final char[] cellTable = {'☠' /*'0'*/, '1', '2', '3', '4', '5' }; 
 
   public BitLayer layers[] = new BitLayer[7]; 
   {
@@ -114,9 +114,12 @@ public class BitBoard {
   public P pushBall(int color, int column) {
     int y;
     y = layers[COMPLETE_LAYER_MASK].pushFromTopOfColumn(column);
-    layers[color].setCell(column, y);
-    
-    return P.get(column, y);
+    if (y < 12) {
+      layers[color].setCell(column, y);
+      return P.get(column, y);
+    } else {
+      return null;
+    }
   }
 
   public boolean canPutBalls(int rotation, int baseColumn) {
@@ -222,4 +225,8 @@ public class BitBoard {
     layers[6].clear();
   }
 
+  @Override
+  public String toString() {
+    return getDebugString();
+  }
 }

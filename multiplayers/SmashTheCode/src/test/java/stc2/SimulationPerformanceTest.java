@@ -27,12 +27,11 @@ public class SimulationPerformanceTest {
 
     BitBoard board = new BitBoard();
     Simulation sim = new Simulation();
-    sim.board = board;
     
     long time1 = System.currentTimeMillis();
     for (int i=0;i<1_500_000;i++) {
       board.copyFrom(boardModel);
-      sim.putBalls(
+      sim.putBalls(board,
           ThreadLocalRandom.current().nextInt(5)+1,
           ThreadLocalRandom.current().nextInt(5)+1,
           ThreadLocalRandom.current().nextInt(4),

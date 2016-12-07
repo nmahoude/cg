@@ -24,7 +24,6 @@ public class MCTS2 {
   public MCTS2() {
     sim = new Simulation();
     board = new BitBoard();
-    sim.board = board;
   }
   
   public void simulate() {
@@ -47,8 +46,7 @@ public class MCTS2 {
         combo[2*i] = baseColumn;
         combo[2*i+1] = rotation;
         
-        sim.clear();
-        if (!sim.putBalls(color1,color2,rotation,baseColumn)) {
+        if (!sim.putBalls(board, color1,color2,rotation,baseColumn)) {
           points = -1000;
           break;
         }

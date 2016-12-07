@@ -2,14 +2,14 @@ package utils;
 import java.util.concurrent.ThreadLocalRandom;
 
 import stc2.Game;
-import stc2.MCTS;
+import stc2.MCTSOld;
 
 public class AG {
   ThreadLocalRandom random = ThreadLocalRandom.current();
   Game game = new Game();
   
-  MCTS player1MCTS = new MCTS();
-  MCTS player2MCTS = new MCTS();
+  MCTSOld player1MCTS = new MCTSOld();
+  MCTSOld player2MCTS = new MCTSOld();
   
   public void prepare() {
     game.myBoard.clear();
@@ -37,7 +37,7 @@ public class AG {
     
   }
 
-  public void updatePlayer(MCTS player, MCTS otherPlayer) {
+  public void updatePlayer(MCTSOld player, MCTSOld otherPlayer) {
     int points = player.bestNode.simulation.points;
     if (points > 420) {
       int skulls = points / 420;
