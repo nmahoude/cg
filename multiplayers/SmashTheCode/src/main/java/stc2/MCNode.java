@@ -25,30 +25,35 @@ public class MCNode {
   int simCount;
   public int rotation;
   public int column;
+  private int key;
   
   public MCNode() {
     simulation.board = board;
   }
   
+  public int getKey() {
+    return key;
+  }
   
-  public final void simulate(Game game, int depth, int maxDepth, int[] bestPointsAtDepth) {
+  public final MCNode simulate(Game game, int depth, int maxDepth, int[] bestPointsAtDepth) {
     if (depth >= maxDepth) {
-      return;
+      return this;
     }
 
-    int key = getRandomKey();
+    key = getRandomKey();
     
     MCNode child = childs[key];
     if (child != null) {
       if (child == IMPOSSIBLE_NODE) {
-        return;
+        return this;
       }
       child.simCount++;
       child.simulate(game, depth+1, maxDepth, bestPointsAtDepth);
+      return child;
     } else {
       if (!board.canPutBalls(rotation, column)) {
         childs[key] = IMPOSSIBLE_NODE;
-        return;
+        return this;
       }
       // build a child
       child = buildNewChild(rotation, column, depth, game);
@@ -57,7 +62,7 @@ public class MCNode {
       }
       childs[key] = child;
       childsCount++;
-      //child.simulate(game, depth+1, maxDepth, bestPointsAtDepth);
+      return child;
     }
   }
 

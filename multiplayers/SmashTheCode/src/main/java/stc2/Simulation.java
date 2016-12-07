@@ -6,7 +6,7 @@ import java.util.List;
 import stc.P;
 
 public class Simulation {
-  BitBoard board;
+  public BitBoard board;
   BitLayer workDestroyLayer = new BitLayer();
   BitLayer workTestLayer = new BitLayer();
   NeighborInfo neighborsInfo = new NeighborInfo();
@@ -18,7 +18,7 @@ public class Simulation {
   int groupBonus;
   boolean colorDestroyed[] = new boolean[6];
 
-  int groupsCount[] = new int[4];
+  public int groupsCount[] = new int[4];
   
   public void clear() {
     points = 0;

@@ -1,21 +1,23 @@
-package stc2;
+package ag;
 
 import java.util.Scanner;
 
+import stc2.BitBoard;
+import stc2.Game;
+
 public class Player {
   static Game game = new Game();
-  static MCTS mcts = new MCTS();
+  private static AGSolution bestSolution;
   
   public static void main(String args[]) {
-    mcts.attachGame(game);
     Scanner in = new Scanner(System.in);
     // game loop
     while (true) {
-        game.nanoStart = System.nanoTime();
         for (int i = 0; i < 8; i++) {
           game.nextBalls[i] = in.nextInt();
           game.nextBalls2[i] = in.nextInt();
         }
+        game.nanoStart = System.nanoTime();
         game.myScore = in.nextInt();
         game.prepare();
         
@@ -30,19 +32,13 @@ public class Player {
           game.otherBoard.updateRow(i, in.next());
         }
         game.otherBoard.buildCompleteLayerMask();
+
+        AG ag = new AG();
+        ag.simulate(game, bestSolution);
         
-//        System.err.println(game.debugPairs());
-//        System.err.println(game.myBoard.getJunitString());
-        
-        //long time1 = System.currentTimeMillis();
-        mcts.simulate(skullsCount == game.lastSkullsCount);
-        //long time2 = System.currentTimeMillis();
-        //long aiTime = time2-time1;
-//        System.err.println("AI Time : "+aiTime);
-        
-        game.lastSkullsCount = mcts.getSkullCountAfterMove();
         game.lastScore = game.myScore;
-        System.out.println(mcts.output());
+        System.out.println(ag.output());
+        bestSolution = ag.bestSolution;
     }
 }
 

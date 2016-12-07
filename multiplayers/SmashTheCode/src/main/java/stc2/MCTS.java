@@ -4,7 +4,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class MCTS {
   private static final int ONE_LINE_OF_SKULLS = 420;
-  private static final double WORST_SCORE = -1_000_000;
+  private static final double WORST_SCORE = -999_000;
   static int MAX_PLY = 50_000;
   public Game game;
   public BitBoard myBoard;
@@ -75,65 +75,35 @@ public class MCTS {
     clearBestPointsAtDepth();
     int plies = 0;
     long nanoTime = 0;
-    game.nanoStart = System.nanoTime();
+
+    bestScore = WORST_SCORE;
+    bestNode = null;
+    bestKey = -1;
+    
     do {
       for (int ply=1_000;--ply>=0;) {
         plies++;
-        root.simulate(game, 0, maxDepth, bestPointsAtDepth);
+        MCNode newChild = root.simulate(game, 0, maxDepth, bestPointsAtDepth);
+        if (enoughToTrigger(newChild)) {
+          bestNode = newChild;
+          break;
+        } else if (newChild != root) {
+          double score = newChild.getScore();
+          if (bestScore < score) {
+            bestScore = score;
+            bestNode = newChild;
+            bestKey = newChild.getKey();
+          }
+        }
       }
       nanoTime = System.nanoTime();
     } while (nanoTime - game.nanoStart < 45_000_000);
 
     message += " / "+plies+" in "+((nanoTime - game.nanoStart) / 1_000_000);
-    bestScore = WORST_SCORE;
-    bestNode = null;
-    bestKey = -1;
-    
-    previousTotalSim = 0;
-    int maxP1 = Integer.MIN_VALUE;
-    int maxP2 = Integer.MIN_VALUE;
-    for (int key=0;key<24;key++) {
-      int rot = keyToRotation(key);
-      int column = keyToColumn(key);
-      MCNode child = root.childs[key];
-      if (child == null) {
-        //System.err.println(""+key+" ("+column+","+rot+") -> null" );
-        continue;
-      }
-      previousTotalSim+= child.simCount;
-      double score = child.getScore();
-      double bScore = child.getBestScore();
-      int sp1 = child.getBestPoints(1);
-      int sp2 = child.getBestPoints(2);
-      
-      if (sp1 > maxP1) { maxP1 = sp1; }
-      if (sp2 > maxP2) { maxP2 = sp2; }
-      //System.err.println(""+key+" ("+column+","+rot+") (sim="+child.simCount+") -> " + score + " --> "+bScore);
-      if (sp1 >= 40 && myTotalCol > 60) {
-        message += "kills skulls";
-        bestScore = score;
-        bestNode = child;
-        bestKey = key;
-        break;
-      }
-      
-      if (child.simulation.points > Math.min(11-oppMinCol, 4)*ONE_LINE_OF_SKULLS) {
-        int rows = child.simulation.points  / ONE_LINE_OF_SKULLS;
-        message += "KM att(" + rows+")";
-        bestScore = score;
-        bestNode = child;
-        bestKey = key;
-        break;
-      }
-      if (bScore > bestScore) {
-        bestScore = bScore;
-        bestNode = child;
-        bestKey = key;
-      }
-    }
-    message+="me("+maxP1+"->"+maxP2+")";
-//    System.err.println("Sim count = "+simCount);
-//    showMyBestPointsPerDepth(); 
+  }
+
+  private boolean enoughToTrigger(MCNode child) {
+    return (child.simulation.points > Math.min(11-oppMinCol, 4)*ONE_LINE_OF_SKULLS);
   }
 
   private void showMyBestPointsPerDepth() {
