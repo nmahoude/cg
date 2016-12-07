@@ -7,6 +7,8 @@ import utils.Cache;
 public class MCNode {
   static final ThreadLocalRandom random = ThreadLocalRandom.current();
   public static final MCNode IMPOSSIBLE_NODE = new MCNode();
+  private double score;
+  
   static {
     IMPOSSIBLE_NODE.score = Double.NEGATIVE_INFINITY;
   }
@@ -89,7 +91,8 @@ public class MCNode {
     child.simCount = 1;
     child.color1 = game.nextBalls[depth+1];
     child.color2 = game.nextBalls2[depth+1];
-    child.simulation.putBallsNoCheck(this.board, color1, color2, rotation, column);
+    child.simulation.board = this.board;
+    child.simulation.putBallsNoCheck(color1, color2, rotation, column);
     child.score = calculateScore();
     return child;
   }

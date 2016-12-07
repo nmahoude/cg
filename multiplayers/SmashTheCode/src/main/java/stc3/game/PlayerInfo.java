@@ -23,7 +23,8 @@ public class PlayerInfo {
     if (move == null) {
       return false;
     }
-    boolean result = simulator.putBalls(board, pairs[0].color1, pairs[0].color2, move.rotation, move.column);
+    simulator.board = board;
+    boolean result = simulator.putBalls(pairs[0].color1, pairs[0].color2, move.rotation, move.column);
     if (result) {
       this.points += simulator.points;
       nuisance +=simulator.points/70;

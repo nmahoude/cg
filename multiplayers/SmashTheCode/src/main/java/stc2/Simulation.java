@@ -12,12 +12,6 @@ public class Simulation {
   NeighborInfo neighborsInfo = new NeighborInfo();
 
   public int points;
-  int chainPower;
-  int clearedBlocks;
-  int colorBonus;
-  int groupBonus;
-  boolean colorDestroyed[] = new boolean[6];
-
   public int groupsCount[] = new int[4];
   
   public int chainPower;
@@ -26,7 +20,7 @@ public class Simulation {
   public int groupBonus;
   public boolean colorDestroyed[] = new boolean[6];
   
-  private void clear() {
+  public void clear() {
     points = 0;
     chainPower = 0;
     clearedBlocks = 0;
@@ -175,14 +169,14 @@ public class Simulation {
     groupBonus = Math.min(8, groupBonus);
   }
   
-  public boolean putBalls(BitBoard board, int color1, int color2, int rotation, int baseColumn) {
+  public boolean putBalls(int color1, int color2, int rotation, int baseColumn) {
     if (!board.canPutBalls(rotation, baseColumn)) {
       return false;
     }
-    return putBallsNoCheck(board, color1, color2, rotation, baseColumn);
+    return putBallsNoCheck(color1, color2, rotation, baseColumn);
   }
 
-  public boolean putBallsNoCheck(BitBoard board, int color1, int color2, int rotation, int baseColumn) {
+  public boolean putBallsNoCheck(int color1, int color2, int rotation, int baseColumn) {
     this.board = board;
     clear();
 

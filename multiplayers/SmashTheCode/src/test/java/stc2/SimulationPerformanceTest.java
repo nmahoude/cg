@@ -31,7 +31,8 @@ public class SimulationPerformanceTest {
     long time1 = System.currentTimeMillis();
     for (int i=0;i<1_500_000;i++) {
       board.copyFrom(boardModel);
-      sim.putBalls(board,
+      sim.board = board;
+      sim.putBalls(
           ThreadLocalRandom.current().nextInt(5)+1,
           ThreadLocalRandom.current().nextInt(5)+1,
           ThreadLocalRandom.current().nextInt(4),

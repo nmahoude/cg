@@ -34,7 +34,8 @@ public class MCTSOldTest {
         ".5545.",
         ".3111.",
         "332421");
-    sim.putBalls(game.myBoard, 1, 1, 0, 0);
+    sim.board = game.myBoard;
+    sim.putBalls(1, 1, 0, 0);
     
     int points = sim.points
         +sim.groupsCount[2]
@@ -61,7 +62,8 @@ public class MCTSOldTest {
         ".5545.",
         ".3111.",
         "332421");
-    sim.putBalls(game.myBoard, 1, 1, 0, 0);
+    sim.board = game.myBoard;
+    sim.putBalls(1, 1, 0, 0);
 
     assertThat(game.myBoard.layers[BitBoard.SKULL_LAYER].bitCount(), is(4));
   }

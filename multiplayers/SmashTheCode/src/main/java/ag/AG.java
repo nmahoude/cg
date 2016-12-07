@@ -24,41 +24,30 @@ public class AG {
   String info = "";
   private int generations;
   private int simulatedPopulation;
+  private double bestScore;
+  private int maxDepth = 8;
+  private BitBoard boardModel;
   
-  public void simulate(Game game, AGSolution lastBestSolution) {
+  public void simulate(Game game, BitBoard board, int maxDepth, long duration, AGSolution lastBestSolution) {
+    this.maxDepth = maxDepth;
+    this.boardModel = board;
     randomPopulate(populations);
     if (lastBestSolution != null) {
       populations[0].copyFromLastBestSolution(lastBestSolution);
     }
 
-    double bestScore = Double.NEGATIVE_INFINITY;
+    bestScore = Double.NEGATIVE_INFINITY;
     generations = 0;
     simulatedPopulation = 0;
     do {
-      generatePopulation(game);
-
-      Arrays.sort(populations, new Comparator<AGSolution>() {
-        @Override
-        public int compare(AGSolution o1, AGSolution o2) {
-          return Double.compare(o2.energy,o1.energy);
-        }
-      });
+      scorePopulation(game);
+      sortPopulationOnEnergy();
       
-//      if (populations[0].points > 420*4) {
-//        System.err.println("Find population with enough points "+populations[0].points);
-//        bestKey = populations[0].keys[0];
-//        bestScore = populations[0].score;
-//        return;
-//      }
-      if (populations[0].energy > bestScore) {
-        bestKey = populations[0].keys[0];
-        bestScore = populations[0].energy;
-        bestSolution.copyFrom(populations[0]);
-      }
+      newChampionFightAgainstElder();
       
-      mutateAndCrossOver();
+      mutateAndCrossOverPopulation(bestSolution);
       
-    } while (System.nanoTime() - game.nanoStart < 95_000_000);
+    } while (System.nanoTime() - game.nanoStart < duration);
 
     System.err.println("AG in "+(System.nanoTime() - game.nanoStart)/1_000_000);
     System.err.println("gen("+generations+") Better pop with score "+bestSolution.energy+" / pts="+bestSolution.points);
@@ -66,13 +55,30 @@ public class AG {
     //retraceBestSolution(game, bestSolution);
   }
 
+  private void newChampionFightAgainstElder() {
+    if (populations[0].energy > bestScore) {
+      bestKey = populations[0].keys[0];
+      bestScore = populations[0].energy;
+      bestSolution.copyFrom(populations[0]);
+    }
+  }
+
+  private void sortPopulationOnEnergy() {
+    Arrays.sort(populations, new Comparator<AGSolution>() {
+      @Override
+      public int compare(AGSolution o1, AGSolution o2) {
+        return Double.compare(o2.energy,o1.energy);
+      }
+    });
+  }
+
   private void retraceBestSolution(Game game, AGSolution bestSolution2) {
     Simulation simulation = new Simulation();
     BitBoard board = new BitBoard();
-    board.copyFrom(game.myBoard);
+    board.copyFrom(boardModel);
     simulation.board = board;
     
-    for (int i=0;i<8;i++) {
+    for (int i=0;i<maxDepth;i++) {
       simulation.clear();
       simulation.putBalls(
           game.nextBalls[i], 
@@ -83,8 +89,6 @@ public class AG {
       System.err.println(board.getDebugString());
       System.err.println("Points : "+simulation.points);
     }
-    
-    
   }
 
   private void swapPopulations() {
@@ -93,18 +97,36 @@ public class AG {
     populations = temp;
   }
 
-  private void mutateAndCrossOver() {
+  final static int eliteCount = 10;
+  private void mutateAndCrossOverPopulation(AGSolution champion) {
+    replaceLastOfElitePopulationByLastChampion(champion, POPULATION_COUNT);
+    
     for (int i=0;i<50;i++) {
-      AGSolution.mutate(populations2[i], populations[i % 10]);
-    }
-    for (int i=51;i<POPULATION_COUNT;i++) {
-      AGSolution.crossover(populations2[i], populations[rand.fastRandInt(10)], populations[rand.fastRandInt(10)]);
+      int individu1 = rand.fastRandInt(POPULATION_COUNT);
+      for (int p=0;p<3;p++) {
+        int pop = rand.fastRandInt(POPULATION_COUNT);
+        if (populations[pop].energy > populations[individu1].energy) {
+          individu1 = pop;
+        }
+      }
+      int individu2 = rand.fastRandInt(POPULATION_COUNT);
+      for (int p=0;p<3;p++) {
+        int pop = rand.fastRandInt(POPULATION_COUNT);
+        if (populations[pop].energy > populations[individu2].energy) {
+          individu2 = pop;
+        }
+      }
+      AGSolution.crossover(populations2[i], populations[individu1], populations[individu2], 10);
     }
     swapPopulations();
   }
 
+  private void replaceLastOfElitePopulationByLastChampion(AGSolution champion, int eliteCount) {
+    populations[eliteCount-1].copyFrom(champion); 
+    populations[eliteCount-1].resetSolution();
+  }
 
-  private void generatePopulation(Game game) {
+  private void scorePopulation(Game game) {
     generations++;
     
     Simulation simulation = new Simulation();
@@ -114,17 +136,21 @@ public class AG {
     for (AGSolution population : populations) {
       simulatedPopulation++;
       simulation.clear();
-      board.copyFrom(game.myBoard);
+      board.copyFrom(boardModel);
       boolean didOne = false;
       double patiencePoints = 0;
-      for (int t=0;t<8;t++) {
+      for (int t=0;t<maxDepth;t++) {
         simulation.clear();
         int rotation = AGSolution.keyToRotation(population.keys[t]);
         int column = AGSolution.keyToColumn(population.keys[t]);
         if (!simulation.putBalls(game.nextBalls[t], game.nextBalls2[t], rotation, column)) {
           break;
         }
-        patiencePoints = 1.25*patiencePoints  + simulation.points;
+        if (simulation.points > 5040) {
+          patiencePoints = 1.25*patiencePoints  + 5040*0.9; // malus si on dépasse 5048 points
+        } else {
+          patiencePoints = 1.25*patiencePoints  + simulation.points;
+        }
         didOne = true;
       }
       if (didOne) {

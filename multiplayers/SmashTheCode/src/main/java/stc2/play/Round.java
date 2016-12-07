@@ -99,7 +99,8 @@ public class Round {
       player2Dead = true;
       return;
     }
-    simulation.putBallsNoCheck(game.otherBoard, game.nextBalls[0], game.nextBalls2[0], move2.rotation, move2.column);
+    simulation.board = game.otherBoard;
+    simulation.putBallsNoCheck( game.nextBalls[0], game.nextBalls2[0], move2.rotation, move2.column);
     lastP2Points = simulation.points;
   }
 
@@ -110,7 +111,8 @@ public class Round {
       return;
     }
     
-    simulation.putBallsNoCheck(game.myBoard, game.nextBalls[0], game.nextBalls2[0], move1.rotation, move1.column);
+    simulation.board = game.otherBoard;
+    simulation.putBallsNoCheck(game.nextBalls[0], game.nextBalls2[0], move1.rotation, move1.column);
     lastP1Points = simulation.points;
   }
 

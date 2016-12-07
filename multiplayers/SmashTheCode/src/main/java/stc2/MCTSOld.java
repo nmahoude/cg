@@ -87,7 +87,7 @@ public class MCTSOld {
     do {
       for (int ply=1_000;--ply>=0;) {
         plies++;
-        root.simulate(game, 0, maxDepth);
+        root.simulate(game, 0, maxDepth, bestPointsAtDepth);
       }
       nanoTime = System.nanoTime();
     } while (nanoTime - game.nanoStart < 20_000_000);
@@ -181,7 +181,7 @@ public class MCTSOld {
     
     clearBestPointsAtDepth();
     for (int i=0;i<400;i++) {
-      root.simulate(game, 0, 2);
+      root.simulate(game, 0, 2, bestPointsAtDepth);
     }
     
     oppBestScore1 = WORST_SCORE;

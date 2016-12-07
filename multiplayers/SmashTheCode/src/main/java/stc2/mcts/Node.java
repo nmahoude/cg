@@ -110,7 +110,8 @@ public class Node {
 
   public void makeMove(int color1, int color2) {
     this.board.copyFrom(parent.board);
-    simulation.putBallsNoCheck(this.board, color1, color2, rotation, column);
+    simulation.board = board;
+    simulation.putBallsNoCheck(color1, color2, rotation, column);
     
     this.points = simulation.points;
     this.score = getScore();

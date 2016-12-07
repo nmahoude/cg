@@ -79,7 +79,9 @@ public class Node {
   }
   public void simulate(ScoreHeuristics scoreHeuristic) {
     this.board.copyFrom(parent.board);
-    simulator.putBallsNoCheck(board, color1, color2, rotation, column);
+    simulator.board = board;
+    simulator.putBallsNoCheck(
+        color1, color2, rotation, column);
     constructionScore = 
          scoreHeuristic.getConstructionScore(simulator, this)
         +scoreHeuristic.getPoints(simulator, this);

@@ -5,7 +5,7 @@ import java.util.Scanner;
 import stc3.ai.AI;
 import stc3.game.GameState;
 
-public class Player {
+public class Player3 {
 
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);

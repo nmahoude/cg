@@ -46,7 +46,8 @@ public class MCTS2 {
         combo[2*i] = baseColumn;
         combo[2*i+1] = rotation;
         
-        if (!sim.putBalls(board, color1,color2,rotation,baseColumn)) {
+        sim.board = board;
+        if (!sim.putBalls(color1,color2,rotation,baseColumn)) {
           points = -1000;
           break;
         }

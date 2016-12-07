@@ -1,7 +1,7 @@
 package stc2;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
@@ -22,27 +22,28 @@ public class SimulationTest {
   public void setup() {
     simulation = new Simulation();
     board = new BitBoard();
+    simulation.board = board;
   }
   
   @Test
   public void canPutBalls_invalid_1() {
     BitBoardTest.prepareEmptyBoard(board);
 
-    assertThat(simulation.putBalls(board, 1,1, 2,0), is(false));
+    assertThat(simulation.putBalls(1,1, 2,0), is(false));
   }
 
   @Test
   public void canPutBalls_invalid_2() {
     BitBoardTest.prepareEmptyBoard(board);
 
-    assertThat(simulation.putBalls(board, 1,1, 4,5), is(false));
+    assertThat(simulation.putBalls(1,1, 4,5), is(false));
   }
   
   @Test
   public void canPutBalls_emptyBoard() throws Exception {
     BitBoardTest.prepareEmptyBoard(board);
 
-    assertThat(simulation.putBalls(board, 1,1, 0,0), is(true));
+    assertThat(simulation.putBalls(1,1, 0,0), is(true));
   }
 
   @Test
@@ -51,7 +52,7 @@ public class SimulationTest {
         "..1111",
         "111111", "111111", "111111", "111111", "111111", "111111","111111", "111111", "111111", "111111", "111111");
 
-    assertThat(simulation.putBalls(board, 2,2, 0,0), is(true));
+    assertThat(simulation.putBalls(2,2, 0,0), is(true));
   }
 
   @Test
@@ -60,7 +61,7 @@ public class SimulationTest {
         ".11111",
         ".11111", "111111", "111111", "111111", "111111", "111111","111111", "111111", "111111", "111111", "111111");
 
-    assertThat(simulation.putBalls(board, 2,2, 1,0), is(true));
+    assertThat(simulation.putBalls(2,2, 1,0), is(true));
   }
 
   @Test
@@ -69,7 +70,7 @@ public class SimulationTest {
         "..1111",
         "111111", "111111", "111111", "111111", "111111", "111111","111111", "111111", "111111", "111111", "111111");
 
-    assertThat(simulation.putBalls(board, 2,2, 2,1), is(true));
+    assertThat(simulation.putBalls(2,2, 2,1), is(true));
   }
 
   @Test
@@ -78,7 +79,7 @@ public class SimulationTest {
         ".11111",
         ".11111", "111111", "111111", "111111", "111111", "111111","111111", "111111", "111111", "111111", "111111");
 
-    assertThat(simulation.putBalls(board, 2,2, 3,0), is(true));
+    assertThat(simulation.putBalls(2,2, 3,0), is(true));
   }
 
   @Test
@@ -97,7 +98,7 @@ public class SimulationTest {
         "111111", 
         "111111");
 
-    assertThat(simulation.putBalls(board, 1,1, 3,0), is(true));
+    assertThat(simulation.putBalls(1,1, 3,0), is(true));
     assertThat(simulation.points, is((10*72)*Math.max(8+0+0,1)));
   }
   
@@ -117,7 +118,7 @@ public class SimulationTest {
         ".1....",
         ".1....");
 
-    assertThat(simulation.putBalls(board, 1,1, 3,0), is(true));
+    assertThat(simulation.putBalls(1,1, 3,0), is(true));
     assertThat(simulation.points, is((10*4)*Math.max(0+0+0, 1)));
   }
 
@@ -137,7 +138,7 @@ public class SimulationTest {
         "......",
         ".1....");
 
-    assertThat(simulation.putBalls(board, 1,1, 3,0), is(true));
+    assertThat(simulation.putBalls(1,1, 3,0), is(true));
     assertThat(simulation.points, is(0));
   }
 
@@ -157,7 +158,7 @@ public class SimulationTest {
         ".1....",
         ".122..");
 
-    assertThat(simulation.putBalls(board, 1,1, 3,0), is(true));
+    assertThat(simulation.putBalls(1,1, 3,0), is(true));
     assertThat(simulation.points, is((10*4)*Math.max(0+0+0,1)
         +(10*4)*Math.max(8+0+0, 1)));
   }
@@ -166,9 +167,9 @@ public class SimulationTest {
   public void putBalls_twoIteration() throws Exception {
     BitBoardTest.prepareEmptyBoard(board);
 
-    assertThat(simulation.putBalls(board, 1,1, 3,0), is(true));
+    assertThat(simulation.putBalls(1,1, 3,0), is(true));
     assertThat(simulation.points, is(0));
-    assertThat(simulation.putBalls(board, 1,1, 3,1), is(true));
+    assertThat(simulation.putBalls(1,1, 3,1), is(true));
     assertThat(simulation.points, is(40));
   }
   
@@ -187,7 +188,7 @@ public class SimulationTest {
     ".251..",
     "4513..",
     "33113.");
-    assertThat(simulation.putBalls(board, 4, 2, 1, 0), is(true));
+    assertThat(simulation.putBalls(4, 2, 1, 0), is(true));
     assertThat(board.layers[BitBoard.COMPLETE_LAYER_MASK].bitCount(), is (2));
   }
   
@@ -208,7 +209,7 @@ public class SimulationTest {
         "52....",
         "22....");
 
-    simulation.putBalls(board, 2,4, 0, 2);
+    simulation.putBalls(2,4, 0, 2);
     assertThat(simulation.points, is(40));
   }
   
@@ -403,4 +404,5 @@ public class SimulationTest {
     assertThat(simulation.groupsCount[2], is(0));
     assertThat(simulation.groupsCount[3], is(2));
   }
+  
 }
