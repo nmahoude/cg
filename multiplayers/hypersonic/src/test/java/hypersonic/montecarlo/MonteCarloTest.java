@@ -115,7 +115,7 @@ public class MonteCarloTest {
       final MonteCarlo mc = new MonteCarlo();
 
       final long t1 = System.currentTimeMillis();
-      mc.simulate(0, sim);
+      mc.simulate(100_000_000 ,System.nanoTime(), sim);
       final long t2 = System.currentTimeMillis();
     }
   }
@@ -146,7 +146,7 @@ public class MonteCarloTest {
 
       final long t1 = System.currentTimeMillis();
       final MonteCarlo mc = new MonteCarlo();
-      mc.simulate(0, sim);
+      mc.simulate(100_000_000 ,System.nanoTime(), sim);
       mc.findNextBestMove();
       final long t2 = System.currentTimeMillis();
     }
@@ -179,7 +179,7 @@ public class MonteCarloTest {
 
       final long t1 = System.currentTimeMillis();
       final MonteCarlo mc = new MonteCarlo();
-      mc.simulate(0 ,sim);
+      mc.simulate(100_000_000 ,System.nanoTime(), sim);
       //mc.findNextBestMove();
       mc.debugAllMoves(mc.root.childs.get(Move.RIGHT));
       final long t2 = System.currentTimeMillis();

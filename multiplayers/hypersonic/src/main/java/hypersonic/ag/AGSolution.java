@@ -11,7 +11,7 @@ import random.FastRand;
 public class AGSolution {
   private static FastRand random = new FastRand(43);
 
-  public static int MOVE_COUNT = 20;
+  public static int MOVE_COUNT = 12;
   private static double[] pow;
   static {
     pow = new double[MOVE_COUNT];
@@ -34,17 +34,6 @@ public class AGSolution {
 //    printMoves();
     energy = 0;
     
-    // potential bombs by enemies
-//    for (Bomberman b : simulation.board.players) {
-//      if (b == simulation.board.me) continue;
-//      if (!b.isDead 
-//          && b.position.manhattanDistance(simulation.board.me.position) < 3
-//          && b.bombsLeft > 0
-//          ) {
-//        simulation.board.addBomb(Bomb.create(simulation.board, b.owner, b.position, 8, b.currentRange));
-//      }
-//    }
-    
     for (int i=0;i<MOVE_COUNT;i++) {
       if (i >= mutateNextGenAt) {
         List<Move> possibleMoves = simulation.getPossibleMoves();
@@ -59,7 +48,20 @@ public class AGSolution {
       } else {
         energy += pow [i]*simulation.getScoreHeuristic();
       }
+      putPotentialAdverserialBombs(simulation);
     }
+  }
+
+  private void putPotentialAdverserialBombs(Simulation simulation) {
+    for (Bomberman b : simulation.board.players) {
+      if (b == simulation.board.me) continue;
+      if (!b.isDead 
+          && b.position.manhattanDistance(simulation.board.me.position) < 3
+          && b.bombsLeft > 0
+          ) {
+        simulation.board.addBomb(Bomb.create(simulation.board, b.owner, b.position, 8, b.currentRange));
+      }
+    }    
   }
 
   private void printMoves() {
