@@ -10,6 +10,7 @@ import stc2.Simulation;
 public class AG {
   private static final int POPULATION_COUNT = 100;
   AGSolution bestSolution = new AGSolution();
+  int bestsolutionAtGeneration = 0;
   
   AGSolution populations[] = new AGSolution[POPULATION_COUNT];
   AGSolution populations2[] = new AGSolution[POPULATION_COUNT];
@@ -22,7 +23,7 @@ public class AG {
   FastRand rand = new FastRand(213135453);
   private int bestKey;
   String info = "";
-  private int generations;
+  private int currentGeneration;
   private int simulatedPopulation;
   private double bestScore;
   private int maxDepth = 8;
@@ -37,7 +38,7 @@ public class AG {
     }
 
     bestScore = Double.NEGATIVE_INFINITY;
-    generations = 0;
+    currentGeneration = 0;
     simulatedPopulation = 0;
     do {
       scorePopulation(game);
@@ -50,7 +51,8 @@ public class AG {
     } while (System.nanoTime() - game.nanoStart < duration);
 
     System.err.println("AG in "+(System.nanoTime() - game.nanoStart)/1_000_000);
-    System.err.println("gen("+generations+") Better pop with score "+bestSolution.energy+" / pts="+bestSolution.points);
+    System.err.println("Generations  :"+currentGeneration);
+    System.err.println("gen("+bestsolutionAtGeneration+") Better solution with score "+bestSolution.energy+" / pts="+bestSolution.points);
     System.err.println("pop : "+bestSolution);
     //retraceBestSolution(game, bestSolution);
   }
@@ -60,6 +62,7 @@ public class AG {
       bestKey = populations[0].keys[0];
       bestScore = populations[0].energy;
       bestSolution.copyFrom(populations[0]);
+      bestsolutionAtGeneration = currentGeneration;
     }
   }
 
@@ -101,7 +104,7 @@ public class AG {
   private void mutateAndCrossOverPopulation(AGSolution champion) {
     replaceLastOfElitePopulationByLastChampion(champion, POPULATION_COUNT);
     
-    for (int i=0;i<50;i++) {
+    for (int i=0;i<POPULATION_COUNT;i++) {
       int individu1 = rand.fastRandInt(POPULATION_COUNT);
       for (int p=0;p<3;p++) {
         int pop = rand.fastRandInt(POPULATION_COUNT);
@@ -116,7 +119,9 @@ public class AG {
           individu2 = pop;
         }
       }
-      AGSolution.crossover(populations2[i], populations[individu1], populations[individu2], 10);
+      AGSolution.crossover(populations2[i], 
+          populations[individu1], 
+          populations[individu2], 10);
     }
     swapPopulations();
   }
@@ -127,7 +132,7 @@ public class AG {
   }
 
   private void scorePopulation(Game game) {
-    generations++;
+    currentGeneration++;
     
     Simulation simulation = new Simulation();
     BitBoard board = new BitBoard();
@@ -198,7 +203,7 @@ public class AG {
   }
 
   public String output() {
-    String info = "gen("+generations+") popSim("+simulatedPopulation+")";
+    String info = "gen("+currentGeneration+") popSim("+simulatedPopulation+")";
     return ""+AGSolution.keyToColumn(bestKey)+" "+AGSolution.keyToRotation(bestKey)+" "+info;
   }
 
