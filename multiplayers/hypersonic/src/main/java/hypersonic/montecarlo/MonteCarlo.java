@@ -18,14 +18,14 @@ public class MonteCarlo {
     root = new Node();
   }
   
-  public void simulate(final Simulation simulation) {
+  public void simulate(long duration, long startTime, final Simulation simulation) {
     root.clear();
     root.simulation = new Simulation();
     root.simulation.copyFrom(simulation);
     
-    for (int i=SIMULATION_COUNT;i>=0;i--) {
+    do {
       root.simulate(0);
-    }
+    } while (System.nanoTime() - startTime < duration);
   }
 
   public Move simulateBeam(final Simulation simulation) {
@@ -59,9 +59,11 @@ public class MonteCarlo {
     Move bestMove = null;
     for (final Entry<Move, Node> entry : root.childs.entrySet()) {
       final double score = entry.getValue().getBestScore();
-      //System.err.println("-----");
-      //System.err.println("["+entry.getKey()+"] ("+entry.getValue().count+" sim) with score of "+entry.getValue().getScore()+", total: "+score);
-      //debugBestMove(entry.getValue());
+      
+      System.err.println("-----");
+      System.err.println("["+entry.getKey()+"] ("+entry.getValue().count+" sim) with score of "+entry.getValue().getScore()+", total: "+score);
+      debugBestMove(entry.getValue());
+      
       if (score > bestScore) {
         bestScore = score;
         bestMove = entry.getKey();

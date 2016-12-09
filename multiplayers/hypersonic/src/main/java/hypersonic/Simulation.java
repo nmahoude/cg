@@ -8,7 +8,7 @@ import hypersonic.entities.Bomberman;
 import hypersonic.utils.P;
 
 public class Simulation {
-  private static final int DEAD_MALUS = -999;
+  public static final double DEAD_MALUS = -999_999;
   private static final int BOX_BONUS = 8;
   public Board board;
   
@@ -19,9 +19,9 @@ public class Simulation {
     if (board.boxCount > 0) {
       return 8*board.me.points
           - 0.1*distanceToBoxGravityCenter()
-          +board.me.bombsLeft 
-          + Math.max(board.me.bombCount, 10)
-          +Math.max(10, board.me.currentRange);
+          + 0.1*board.me.bombsLeft 
+          + 0.1*Math.max(board.me.bombCount, 10)
+          + 0.1*Math.max(10, board.me.currentRange);
     } else {
       return 13-board.me.position.manhattanDistance(P.get(7, 5));
     }
@@ -140,7 +140,7 @@ public class Simulation {
       board.addBomb(Bomb.create(board, board.me.owner, board.me.position, 8, board.me.currentRange));
       board.me.bombsLeft-=1;
     }
-    if (newX != board.me.position.x || newY != board.me.position.y) {
+    if (board.canWalkOn(P.get(newX, newY)) && (newX != board.me.position.x || newY != board.me.position.y)) {
       board.walkOn(board.me, P.get(newX, newY));
     }
   }

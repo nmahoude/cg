@@ -115,7 +115,7 @@ public class MonteCarloTest {
       final MonteCarlo mc = new MonteCarlo();
 
       final long t1 = System.currentTimeMillis();
-      mc.simulate(sim);
+      mc.simulate(0, sim);
       final long t2 = System.currentTimeMillis();
     }
   }
@@ -146,7 +146,7 @@ public class MonteCarloTest {
 
       final long t1 = System.currentTimeMillis();
       final MonteCarlo mc = new MonteCarlo();
-      mc.simulate(sim);
+      mc.simulate(0, sim);
       mc.findNextBestMove();
       final long t2 = System.currentTimeMillis();
     }
@@ -179,7 +179,7 @@ public class MonteCarloTest {
 
       final long t1 = System.currentTimeMillis();
       final MonteCarlo mc = new MonteCarlo();
-      mc.simulate(sim);
+      mc.simulate(0 ,sim);
       //mc.findNextBestMove();
       mc.debugAllMoves(mc.root.childs.get(Move.RIGHT));
       final long t2 = System.currentTimeMillis();
@@ -190,26 +190,21 @@ public class MonteCarloTest {
     public void understandStepByStep() throws Exception {
       final Board board = new Board();
       BoardTest.initBoard(board,
-          ".............",
-          ".X.X.X.X.X.X.",
-          ".............",
-          ".X.X.X.X.X.Xb",
-          "............B",
-          ".X.X.X.X.X.Xb",
-          "............b",
-          ".X.X.X.X.X.X.",
-          ".............",
-          ".X.X.X.X.X.X.",
-          ".............");
+          "..0.02020.0..",
+          ".X1X0X.X0X1X.",
+          "112..101..211",
+          ".X.X2X.X2X.X.",
+          ".221.2.2.122.",
+          "1X1X.X.X.X1X1",
+          ".221.2.2.122.",
+          ".X.X2X.X2X.X.",
+          "112..101..211",
+          ".X1X0X.X0X1X.",
+          "..0.02020.0..");
   
-      final Bomberman bomberman = new Bomberman(board, 1, new P(12, 4), 0, 18);
+      final Bomberman bomberman = new Bomberman(board, 1, new P(12, 10), 1, 3);
       board.players.add(bomberman);
       board.me = bomberman;
-
-      BoardTest.createBomb(board).at(12, 3).withRange(18).withTimer(4).build();
-      BoardTest.createBomb(board).at(12, 4).withRange(18).withTimer(8).build();
-      BoardTest.createBomb(board).at(12, 5).withRange(18).withTimer(7).build();
-      BoardTest.createBomb(board).at(12, 6).withRange(18).withTimer(6).build();
 
       final Simulation sim = new Simulation();
       sim.board = board;
@@ -217,12 +212,17 @@ public class MonteCarloTest {
       final Node root= new Node();
       root.simulation = sim;
       
-      final Node child1 = newStepFrom(root, Move.STAY);
+      final Node child1 = newStepFrom(root, Move.LEFT_BOMB);
       final Node child2 = newStepFrom(child1, Move.LEFT);
-      final Node child3 = newStepFrom(child2, Move.RIGHT);
-      final Node child4 = newStepFrom(child3, Move.LEFT);
+      final Node child3 = newStepFrom(child2, Move.LEFT);
+      final Node child4 = newStepFrom(child3, Move.STAY);
+      final Node child5 = newStepFrom(child4, Move.STAY);
+      final Node child6 = newStepFrom(child5, Move.STAY);
+      final Node child7 = newStepFrom(child6, Move.STAY);
+      final Node child8 = newStepFrom(child7, Move.STAY);
+      final Node child9 = newStepFrom(child8, Move.STAY);
 
-      assertThat(child4.getScore(), is(-999));
+      assertThat(child9.getScore(), is(Simulation.DEAD_MALUS));
     }
 
     private Node newStepFrom(final Node parent, final Move move) {

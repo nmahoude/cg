@@ -2,31 +2,51 @@ package hypersonic;
 
 import java.util.Scanner;
 
-import hypersonic.ag.AG;
 import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.entities.Item;
 import hypersonic.montecarlo.MonteCarlo;
 import hypersonic.utils.P;
 
-public class Player {
+public class PlayerMCTS {
   
   Board board = new Board();
   private long startTime;
   private static Scanner in;
   private static int myId;
-
+  private int turn = 0;
+  
   void play() {
     final Simulation sim = new Simulation();
     sim.board = board;
     final MonteCarlo mc = new MonteCarlo();
  
     while (true) {
+      turn ++;
       getSimulationState();
       
-      AG ag = new AG();
-      ag.simulate(startTime, board, null);
-      final Move move = ag.findNextBestMove();
+      mc.root.retrocedRoot();
+int maxTime;
+      //      System.err.println("board cache is "+Board.cache.size());
+//      System.err.println("node cache is "+Node.cache.size());
+//      System.err.println("bomberman cache is "+Bomberman.cache.size());
+//      System.err.println("bombs cache is "+Bomb.cache.size());
+//      System.err.println("items cache is "+Item.cache.size());
+      if (turn <= 2) {
+        maxTime = 100_000_000;
+      } else {
+        maxTime = 30_000_000;
+      }
+      mc.simulate(maxTime, startTime, sim);
+      final Move move = mc.findNextBestMove();
+      //final Move move = mc.simulateBeam(sim);
+//      System.err.println("After sim :");
+//      System.err.println("board cache is "+Board.cache.size());
+//      System.err.println("node cache is "+Node.cache.size());
+//      System.err.println("bomberman cache is "+Bomberman.cache.size());
+//      System.err.println("bombs cache is "+Bomb.cache.size());
+//      System.err.println("items cache is "+Item.cache.size());
+
       outputMove(board.me, move);
     }
   }
@@ -102,6 +122,7 @@ public class Player {
       b.bombCount = b.bombsLeft + bombsOnBoard[b.owner];
     }
     //System.err.println("ME == pos: "+board.me.position+" bLeft: "+board.me.bombsLeft+ "/"+board.me.bombCount+" - range:"+board.me.currentRange);
+    System.err.println(board.getDebugString());
   }
 
   private void initBoard() {
@@ -117,7 +138,7 @@ public class Player {
     final int height = in.nextInt();
     myId = in.nextInt();
     
-    final Player p = new Player();
+    final PlayerMCTS p = new PlayerMCTS();
     p.play();
   }
 }

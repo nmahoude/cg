@@ -308,4 +308,16 @@ public class Board {
         && value != Board.BOMB
         ;
   }
+  
+  public String getDebugString() {
+    String output="";
+    for (int y=0;y<11;y++) {
+      for (int x=0;x<13;x++) {
+        output +=(char)(cells[y*13+x]);
+      }
+      output+="\n";
+    }
+    return output;
+  }
+  
 }
