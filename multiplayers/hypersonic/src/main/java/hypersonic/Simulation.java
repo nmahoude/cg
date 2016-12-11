@@ -19,9 +19,9 @@ public class Simulation {
     if (board.boxCount > 0) {
       return 8*board.me.points
           - 0.1*distanceToBoxGravityCenter()
-          + 0.1*board.me.bombsLeft 
-          + 0.1*Math.max(board.me.bombCount, 10)
-          + 0.1*Math.max(10, board.me.currentRange);
+          + 0.01*board.me.bombsLeft 
+          + 0.01*Math.max(board.me.bombCount, 10)
+          + 0.01*Math.max(10, board.me.currentRange);
     } else {
       return 13-board.me.position.manhattanDistance(P.get(7, 5));
     }

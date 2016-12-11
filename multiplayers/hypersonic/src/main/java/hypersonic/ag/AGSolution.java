@@ -48,7 +48,9 @@ public class AGSolution {
       } else {
         energy += pow [i]*simulation.getScoreHeuristic();
       }
-      putPotentialAdverserialBombs(simulation);
+      if (i==0 && keys[i].ordinal() > 3) {
+        putPotentialAdverserialBombs(simulation);
+      }
     }
   }
 
