@@ -1,5 +1,7 @@
 package stc;
 
+import stc.Game;
+
 public class GameTest {
 
   public static void setNextBlocks(Game game, String... blocks) {

@@ -8,7 +8,7 @@ import stc2.Game;
 import stc2.Simulation;
 
 public class AG {
-  private static final int POPULATION_COUNT = 100;
+  public static final int POPULATION_COUNT = 100;
   AGSolution bestSolution = new AGSolution();
   int bestsolutionAtGeneration = 0;
   
@@ -41,13 +41,7 @@ public class AG {
     currentGeneration = 0;
     simulatedPopulation = 0;
     do {
-      scorePopulation(game);
-      sortPopulationOnEnergy();
-      
-      newChampionFightAgainstElder();
-      
-      mutateAndCrossOverPopulation(bestSolution);
-      
+      doOneGeneration(game);
     } while (System.nanoTime() - game.nanoStart < duration);
 
     System.err.println("AG in "+(System.nanoTime() - game.nanoStart)/1_000_000);
@@ -55,6 +49,16 @@ public class AG {
     System.err.println("gen("+bestsolutionAtGeneration+") Better solution with score "+bestSolution.energy+" / pts="+bestSolution.points);
     System.err.println("pop : "+bestSolution);
     //retraceBestSolution(game, bestSolution);
+  }
+
+  void doOneGeneration(Game game) {
+    scorePopulation(game);
+    sortPopulationOnEnergy();
+    
+    newChampionFightAgainstElder();
+    
+    mutateAndCrossOverPopulation(bestSolution);
+    swapPopulations();
   }
 
   private void newChampionFightAgainstElder() {
@@ -104,16 +108,18 @@ public class AG {
   private void mutateAndCrossOverPopulation(AGSolution champion) {
     replaceLastOfElitePopulationByLastChampion(champion, POPULATION_COUNT);
     
+    final int rouletteCount = 3 ;
+    
     for (int i=0;i<POPULATION_COUNT;i++) {
       int individu1 = rand.fastRandInt(POPULATION_COUNT);
-      for (int p=0;p<3;p++) {
+      for (int p=0;p<rouletteCount;p++) {
         int pop = rand.fastRandInt(POPULATION_COUNT);
         if (populations[pop].energy > populations[individu1].energy) {
           individu1 = pop;
         }
       }
       int individu2 = rand.fastRandInt(POPULATION_COUNT);
-      for (int p=0;p<3;p++) {
+      for (int p=0;p<rouletteCount;p++) {
         int pop = rand.fastRandInt(POPULATION_COUNT);
         if (populations[pop].energy > populations[individu2].energy) {
           individu2 = pop;
@@ -123,7 +129,6 @@ public class AG {
           populations[individu1], 
           populations[individu2], 10);
     }
-    swapPopulations();
   }
 
   private void replaceLastOfElitePopulationByLastChampion(AGSolution champion, int eliteCount) {
