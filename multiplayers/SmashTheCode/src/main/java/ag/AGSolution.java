@@ -1,7 +1,7 @@
 package ag;
 
 public class AGSolution {
-  static FastRand rand = new FastRand(42);
+  public static FastRand rand = new FastRand(42);
   
   public int keys[] = new int[8];
   public double energy;
@@ -43,20 +43,30 @@ public class AGSolution {
     return key & 0b11;
   }
 
-  public static void crossover(AGSolution child, AGSolution parent1, AGSolution parent2, int invChanceToMutate) {
-    child.resetSolution();
-    for (int i=0;i<8;i++) {
-      if (rand.fastRandInt(invChanceToMutate) == 0) {
-        child.keys[i] = getRandomKey();
-      } else {
-        if (rand.fastRandInt(2) == 0) {
-          child.keys[i] = parent1.keys[i];
-        } else {
-          child.keys[i] = parent2.keys[i];
-        }
-      }
-    }
+  public static void crossover(AGSolution child1, AGSolution child2, AGSolution parent1, AGSolution parent2, int invChanceToMutate) {
+    child1.resetSolution();
+    child2.resetSolution();
     
+    int crossover = rand.fastRandInt(8);
+    for (int i=0;i<crossover;i++) {
+      child1.keys[i] = parent1.keys[i];
+      child2.keys[i] = parent1.keys[i];
+    }
+    for (int i=crossover;i<8;i++) {
+      child1.keys[i] = parent2.keys[i];
+      child2.keys[i] = parent1.keys[i];
+    }
+
+    
+    mutateChild(child1, invChanceToMutate);
+    mutateChild(child2, invChanceToMutate);
+  }
+
+  public static void mutateChild(AGSolution child, int invChanceToMutate) {
+    if (rand.fastRandInt(invChanceToMutate) == 0) {
+      int mutateGene = rand.fastRandInt(8);
+      child.keys[mutateGene] = getRandomKey();
+    }
   }
 
   public static void mutate(AGSolution child, AGSolution parent) {

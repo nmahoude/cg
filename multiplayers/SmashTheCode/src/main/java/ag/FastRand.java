@@ -3,7 +3,7 @@ package ag;
 public class FastRand {
   int g_seed;
   
-  FastRand(int seed) {
+  public FastRand(int seed) {
     g_seed = seed;
   }
   void fast_srand(int seed) {

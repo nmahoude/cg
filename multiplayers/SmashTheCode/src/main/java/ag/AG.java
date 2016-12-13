@@ -9,11 +9,11 @@ import stc2.Simulation;
 
 public class AG {
   public static final int POPULATION_COUNT = 100;
-  AGSolution bestSolution = new AGSolution();
+  public AGSolution bestSolution = new AGSolution();
   int bestsolutionAtGeneration = 0;
   
-  AGSolution populations[] = new AGSolution[POPULATION_COUNT];
-  AGSolution populations2[] = new AGSolution[POPULATION_COUNT];
+  public AGSolution populations[] = new AGSolution[POPULATION_COUNT];
+  public AGSolution populations2[] = new AGSolution[POPULATION_COUNT];
   {
     for (int i=0;i<POPULATION_COUNT;i++) {
       populations[i] = new AGSolution();
@@ -45,13 +45,18 @@ public class AG {
     } while (System.nanoTime() - game.nanoStart < duration);
 
     System.err.println("AG in "+(System.nanoTime() - game.nanoStart)/1_000_000);
-    System.err.println("Generations  :"+currentGeneration);
-    System.err.println("gen("+bestsolutionAtGeneration+") Better solution with score "+bestSolution.energy+" / pts="+bestSolution.points);
-    System.err.println("pop : "+bestSolution);
+
+    reportBestSolution();
     //retraceBestSolution(game, bestSolution);
   }
 
-  void doOneGeneration(Game game) {
+  public void reportBestSolution() {
+    System.err.println("Generations  :"+currentGeneration);
+    System.err.println("gen("+bestsolutionAtGeneration+") Better solution with score "+bestSolution.energy+" / pts="+bestSolution.points);
+    System.err.println("pop : "+bestSolution);
+  }
+
+  public void doOneGeneration(Game game) {
     scorePopulation(game);
     sortPopulationOnEnergy();
     
@@ -110,7 +115,14 @@ public class AG {
     
     final int rouletteCount = 3 ;
     
-    for (int i=0;i<POPULATION_COUNT;i++) {
+    
+    for (int i=0;i<POPULATION_COUNT / 2;i++) {
+      if (i == 0) {
+        populations2[2*i+0].copyFrom(champion);
+        populations2[2*i+1].copyFrom(champion);
+        AGSolution.mutateChild(populations2[2*i+1], 1 );
+        continue;
+      }
       int individu1 = rand.fastRandInt(POPULATION_COUNT);
       for (int p=0;p<rouletteCount;p++) {
         int pop = rand.fastRandInt(POPULATION_COUNT);
@@ -125,9 +137,9 @@ public class AG {
           individu2 = pop;
         }
       }
-      AGSolution.crossover(populations2[i], 
+      AGSolution.crossover(populations2[2*i+0], populations2[2*i+1],
           populations[individu1], 
-          populations[individu2], 10);
+          populations[individu2], 1);
     }
   }
 
@@ -156,6 +168,8 @@ public class AG {
         if (!simulation.putBalls(game.nextBalls[t], game.nextBalls2[t], rotation, column)) {
           break;
         }
+        population.points += simulation.points;
+        
         if (simulation.points > 5040) {
           patiencePoints = 1.25*patiencePoints  + 5040*0.9; // malus si on dépasse 5048 points
         } else {
@@ -165,7 +179,6 @@ public class AG {
       }
       if (didOne) {
         population.energy = fitness(simulation, patiencePoints);
-        population.points = simulation.points;
       }
     }
   }
@@ -178,8 +191,8 @@ public class AG {
         ;
   }
 
-  public int getSkullsScore(Simulation simulation) {
-    return 0; //-2*simulation.board.layers[BitBoard.SKULL_LAYER].bitCount();
+  public double getSkullsScore(Simulation simulation) {
+    return 0.0; //-2.0*simulation.board.layers[BitBoard.SKULL_LAYER].bitCount();
   }
 
   public double getColorGroupScore(Simulation simulation) {
@@ -188,7 +201,6 @@ public class AG {
             +10*simulation.groupsCount[2]
             +40*simulation.groupsCount[3];
   }
-
 
   public double getColumnScore(Simulation simulation) {
     return 
