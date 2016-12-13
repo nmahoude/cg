@@ -78,8 +78,8 @@ public class AGSolution {
 
   public static int getRandomKey() {
     int key = rand.fastRandInt(22);
-    if (key == 2) { key+=1; }
-    if (key == 22) { key+=1; }
+    if (key >= 2) { key+=1; }
+    if (key >= 22) { key+=1; }
     return key;
   }
 
