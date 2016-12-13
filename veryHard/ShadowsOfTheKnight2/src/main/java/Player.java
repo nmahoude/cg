@@ -11,81 +11,105 @@ class Player {
   private static final String WARMER = "WARMER";
   private static final String SAME = "SAME";
 
-  
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
     int W = in.nextInt(); // width of the building.
     int H = in.nextInt(); // height of the building.
     int N = in.nextInt(); // maximum number of turns before game over.
 
-    int L = 0;
-    int R = W-1;
-    int oldL = L;
-    int oldR = R;
+    int xL = 0;
+    int xR = W-1;
     
+    int yL = 0;
+    int yR = H-1;
+
     int Bx = in.nextInt();
-    int oldBx = Bx;
-    int nextBx = 0;
     int By = in.nextInt();
 
+    int cutX = 0;
+    int cutY = 0;
+    
+    
     int lastMoveType = 0; // 0 in between
                       // 1 > R
                       // 2 < L
+    int oldBx =0, oldBy = 0;
     
+    boolean bypass = false;
     while (true) {
-      boolean bypass = false;
-      System.err.println("L="+L+" , R="+R+" , batX="+Bx);
-      String bombTemp = in.next();
+      boolean wasOdd = false;
       
-      if (UNKNOWN.equals(bombTemp)) {
-        // first turn, nothing to do
-      } else if (WARMER.equals(bombTemp)) {
-        if (lastMoveType == 0) {
-          L = L + (R-L) / 2 +1;
-        } else if (lastMoveType == 1) {
-          R = oldBx- (oldBx-L)/2;
-        } else { // 2
-          L = oldBx + (R-oldBx)/2;
-        }
-      } else if (COLDER.equals(bombTemp)) {
-        if (lastMoveType == 0) {
-          R = L + (R-L) / 2;
-        } else if (lastMoveType == 1) {
-          L = oldBx- (oldBx-L)/2;
-        } else { // 2
-          R = oldBx + (R-oldBx)/2;
-        }
-      } else if (SAME.equals(bombTemp)) {
-        R = (R+L)/2;
-        L = R;
-        nextBx = L;
-        bypass = true;
-      }
-      
-      if (L == R) {
-        System.err.println(" trouve");
-        continue;
-      }
-      
+      String bombTemp ;
       if (!bypass) {
-        if (L <= Bx && Bx <= R) {
-          nextBx = R - (Bx-L);
-          if (nextBx == Bx) nextBx = Bx+1;
-          lastMoveType = 0;
-        } else {
-          if (Bx > R) {
-            nextBx = L;
-            lastMoveType = 1;
-          } else {
-            nextBx = R;
-            lastMoveType = 2;
-          }
-        }
+        bombTemp = in.next();
+      } else {
+        //switch to y
+        bypass = false;
+        bombTemp = UNKNOWN;
       }
       
-      System.out.println("" + nextBx + " " + By);
-      oldBx = Bx;
-      Bx = nextBx;
+      if (xL != xR) {
+        System.err.println("Look for x, xl!=xR "+xL +" / "+xR);
+        if( UNKNOWN.equals(bombTemp)) {
+          // do nothing
+        } else if (WARMER.equals(bombTemp)) {
+          xL = Math.max(oldBx+1, cutX + (wasOdd ? 1 : 0));
+        } else if (COLDER.equals(bombTemp)) {
+          xR = Math.min(oldBx-1, cutX - (wasOdd ? 1 : 0));
+        } else if (SAME.equals(bombTemp)) { 
+          xL = xR = cutX;
+        }
+        if (xL == xR) {
+          bypass = true;
+          continue;
+        }
+        
+        oldBx = Bx;
+        
+        if (xR-xL % 2 == 1) {
+          wasOdd = true;
+          cutX = (xR-xL)/2+xL;
+        } else {
+          wasOdd = false;
+          cutX = (xR-xL)/2+xL;
+        }
+        if (cutX == oldBx) {
+          if (Bx > oldBx) cutX+=1; else cutX-=1;
+        }
+        Bx = xR-(Bx-xL);
+        if (Bx == oldBx) { Bx +=1; }
+      } else {
+        // do the same for y !
+        if( UNKNOWN.equals(bombTemp)) {
+          // do nothing
+        } else if (WARMER.equals(bombTemp)) {
+          yL = Math.max(oldBy+1, cutY + (wasOdd ? 1 : 0));
+        } else if (COLDER.equals(bombTemp)) {
+          yR = Math.min(oldBy-1, cutY - (wasOdd ? 1 : 0));
+        } else if (SAME.equals(bombTemp)) { 
+          yL = yR = cutY;
+        }
+      
+        oldBy = By;
+        
+        if (yR-yL % 2 == 1) {
+          wasOdd = true;
+          cutY = (yR-yL)/2+yL;
+        } else {
+          wasOdd = false;
+          cutY = (yR-yL)/2+yL;
+        }
+        if (cutY == oldBy) {
+          if (By > oldBy) cutY+=1; else cutY-=1;
+        }
+        By = yR-(By-yL);
+        if (By == oldBy) { By +=1; }
+        
+      }
+      
+      System.err.println("L="+xL+" , R="+xR+" , batman was in x ="+oldBx+" and go to x="+Bx);
+      System.err.println("cut : "+cutX);
+      System.out.println("" + Bx + " " + By);
     }
   }
 }
