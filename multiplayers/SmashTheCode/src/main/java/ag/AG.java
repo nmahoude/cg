@@ -120,7 +120,7 @@ public class AG {
       if (i == 0) {
         populations2[2*i+0].copyFrom(champion);
         populations2[2*i+1].copyFrom(champion);
-        AGSolution.mutateChild(populations2[2*i+1], 1 );
+        AGSolution.mutateChild(populations2[2*i+1], 10 );
         continue;
       }
       int individu1 = rand.fastRandInt(POPULATION_COUNT);
@@ -170,10 +170,10 @@ public class AG {
         }
         population.points += simulation.points;
         
-        if (simulation.points > 5040) {
-          patiencePoints = 1.25*patiencePoints  + 5040*0.9; // malus si on dépasse 5048 points
+        if (simulation.points > 15040) {
+          patiencePoints = 1.1*patiencePoints  + 5040*0.9; // malus si on dépasse 5048 points
         } else {
-          patiencePoints = 1.25*patiencePoints  + simulation.points;
+          patiencePoints = 1.1*patiencePoints  + simulation.points;
         }
         didOne = true;
       }
