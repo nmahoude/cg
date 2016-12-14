@@ -1,7 +1,7 @@
 package stc2;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static stc2.BitBoard.BLUE_LAYER;
 import static stc2.BitBoard.COMPLETE_LAYER_MASK;
 import static stc2.BitBoard.RED_LAYER;
@@ -367,6 +367,36 @@ public class BitBoardTest {
         ));
   }
 
+  @Test
+  public void getFreeColorNeighbors_nothing() throws Exception {
+    BitBoard board = new BitBoard();
+    prepareEmptyBoard(board);
+    
+    assertThat(board.getFreeColorsNeighbors(), is(0));
+    
+  }
+
+  @Test
+  public void freeNeighboard_OneLine() throws Exception {
+    BitBoard board =new BitBoard();
+    prepareBoard(board,
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "......",
+        "111111");
+
+    assertThat(board.getFreeColorsNeighbors(), is(6));
+  }
+  
+  
   // -------------- utils ------------------------
   static public void prepareEmptyBoard(BitBoard board) {
     prepareBoard(board,
@@ -403,5 +433,4 @@ public class BitBoardTest {
     }
     return result;
   }
-
 }

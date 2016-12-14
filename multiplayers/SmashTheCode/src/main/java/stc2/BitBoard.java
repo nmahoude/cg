@@ -215,6 +215,12 @@ public class BitBoard {
     return 0;
   }
 
+  public int getFreeColorsNeighbors() {
+    //BitLayer invComplete = layers[COMPLETE_LAYER_MASK].inverse();
+    return 0;
+  }
+  
+  
   public void clear() {
     layers[0].clear();
     layers[1].clear();

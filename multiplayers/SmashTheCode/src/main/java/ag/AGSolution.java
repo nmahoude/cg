@@ -57,7 +57,6 @@ public class AGSolution {
       child2.keys[i] = parent1.keys[i];
     }
 
-    
     mutateChild(child1, invChanceToMutate);
     mutateChild(child2, invChanceToMutate);
   }
@@ -66,6 +65,35 @@ public class AGSolution {
     if (rand.fastRandInt(invChanceToMutate) == 0) {
       int mutateGene = rand.fastRandInt(8);
       child.keys[mutateGene] = getRandomKey();
+    }  
+  }
+  
+  public static void mutateChildSmallChange(AGSolution child, int invChanceToMutate) {
+    if (rand.fastRandInt(invChanceToMutate) == 0) {
+      int mutateGene = rand.fastRandInt(8);
+      int rotOrCol = rand.fastRandInt(4);
+      switch (rotOrCol) {
+        case 0:
+          if (child.keys[mutateGene] < 3) {
+            child.keys[mutateGene] += 1;
+          }
+          break;
+        case 1:
+          if (child.keys[mutateGene] > 0) {
+            child.keys[mutateGene] -= 1;
+          }
+          break;
+        case 2:
+          if (child.keys[mutateGene] < 23-4) {
+            child.keys[mutateGene] += 4;
+          }
+          break;
+        case 3:
+          if (child.keys[mutateGene] > 0+4) {
+            child.keys[mutateGene] -= 4;
+          }
+          break;
+      }
     }
   }
 
@@ -106,6 +134,4 @@ public class AGSolution {
     keys[6] = getRandomKey();
     keys[7] = getRandomKey();
   }
-
-
 }
