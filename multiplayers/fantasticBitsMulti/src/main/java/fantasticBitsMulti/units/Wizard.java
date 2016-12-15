@@ -2,7 +2,7 @@ package fantasticBitsMulti.units;
 
 import fantasticBitsMulti.Collision;
 import fantasticBitsMulti.Player;
-import fantasticBitsMulti.ag.Solution;
+import fantasticBitsMulti.ag.AGSolution;
 import fantasticBitsMulti.spells.Accio;
 import fantasticBitsMulti.spells.Flipendo;
 import fantasticBitsMulti.spells.Obliviate;
@@ -144,7 +144,7 @@ public class Wizard extends Unit {
     }
   }
 
-  void play() { 
+  public void play() { 
     // Relacher le snaffle qu'on porte dans tous les cas
     if (snaffle != null) {
       snaffle.carrier = null;
@@ -219,7 +219,7 @@ public class Wizard extends Unit {
     }
   }
 
-  public void apply(Solution solution, int turn, int index) {
+  public void apply(AGSolution solution, int turn, int index) {
     if (index == 1) {
       if (solution.spellTurn1 == turn) {
         if (!Player.myWizard1.cast(solution.spell1, solution.spellTarget1)) {

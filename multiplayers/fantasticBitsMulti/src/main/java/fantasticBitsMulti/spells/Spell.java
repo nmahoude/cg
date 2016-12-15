@@ -76,7 +76,7 @@ public abstract class Spell {
   }
 
   public void reloadTarget() {
-    if (duration != 0 || target.dead) {
+    if (duration != 0 || (target == null || target.dead)) {
       // Cancel the spell
       target = null;
       duration = 0;

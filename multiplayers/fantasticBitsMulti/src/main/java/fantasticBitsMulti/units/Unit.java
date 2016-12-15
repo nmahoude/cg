@@ -12,15 +12,15 @@ public abstract class Unit {
   public static final int VERTICAL = 1;
   public static final int HORIZONTAL = 2;
 
-  Wizard carrier;
+  public Wizard carrier;
   int grab;
-  Snaffle snaffle;
+  public Snaffle snaffle;
   
   public int id;
-  EntityType type;
+  public EntityType type;
   int state;
   public boolean dead = false;
-  public Point position;
+  public Point position = new Point(0,0);
   private Point sposition;
 
   public double vx;
@@ -40,7 +40,7 @@ public abstract class Unit {
     this.friction = friction;
   }
 
-  void update(int id, int x, int y, int vx, int vy, int state) {
+  public void update(int id, int x, int y, int vx, int vy, int state) {
     this.id = id;
     this.position = new Point(x, y);
     this.vx = vx;

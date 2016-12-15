@@ -3,7 +3,8 @@ package fantasticBitsMulti.units;
 import fantasticBitsMulti.Player;
 
 public class Bludger extends Unit {
-  Wizard last, slast;
+  public Wizard last;
+  public Wizard slast;
   public int ignore[] = new int[2];
   
   public Bludger() {
@@ -46,7 +47,7 @@ public class Bludger extends Unit {
     super.bounce(u);
   }
 
-  void play() {
+  public void play() {
     // Find our target
     Wizard target = null;
     double d = Double.MAX_VALUE;
