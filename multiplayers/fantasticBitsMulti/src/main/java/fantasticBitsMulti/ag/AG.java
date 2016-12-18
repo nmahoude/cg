@@ -14,7 +14,7 @@ public class AG {
   private static AGSolution best = new AGSolution();
   private static FastRand rand = new FastRand(42);
 
-  static double patiences[] = new double[DEPTH];
+  public static double patiences[] = new double[DEPTH];
   static {
     for (int i=0;i<DEPTH;++i) {
       patiences[i] = Math.pow(COEF_PATIENCE, i);

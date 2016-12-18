@@ -98,17 +98,15 @@ public class Simulation {
     //energy += wizardDistanceToSnaffles();
     energy += distanceBetweenMyWizards();
     
-    // score! 
-    energy += 1_000_000*(Player.myScore-Player.hisScore);
     energy += Player.myMana * 200;
     
-//    energy += 500*(
-//        + (Player.myWizard1.snaffle != null ? 1 : 0)
-//        + (Player.myWizard2.snaffle != null ? 1 : 0)
-//        - (Player.hisWizard1.snaffle != null ? 1 : 0)
-//        - (Player.myWizard2.snaffle != null ? 1 : 0)
-//        );
-//        
+    energy += 500*(
+        + (Player.myWizard1.snaffle != null ? 1 : 0)
+        + (Player.myWizard2.snaffle != null ? 1 : 0)
+        - (Player.hisWizard1.snaffle != null ? 1 : 0)
+        - (Player.myWizard2.snaffle != null ? 1 : 0)
+        );
+        
     // last one !
     if (Player.myScore >= Player.victory) {
       energy = Double.POSITIVE_INFINITY;
@@ -121,6 +119,7 @@ public class Simulation {
     double dist = 0;
     for (int i=0;i<Player.snafflesFE;i++) {
       Snaffle snaffle = Player.snaffles[i];
+      if (snaffle.dead) continue;
       dist +=snaffle.position.distTo(Player.myGoal);
     }
     return dist;
@@ -132,6 +131,8 @@ public class Simulation {
     
     for (int i=0;i<Player.snafflesFE;i++) {
       Snaffle snaffle = Player.snaffles[i];
+      if (snaffle.dead) continue;
+      
       double dist1 = Player.myWizard1.position.distTo(snaffle.position);
       double dist2 = Player.myWizard2.position.distTo(snaffle.position);
       if (dist1 < bestDist1) { bestDist1 = dist1; closest1 = snaffle; }
@@ -142,14 +143,16 @@ public class Simulation {
 
   private static double distanceBetweenMyWizards() {
     double distBetweenWizards = Player.myWizard1.position.distTo(Player.myWizard2.position);
-    return 0.01*distBetweenWizards ;
+    return 0.1*distBetweenWizards ;
   }
 
   private static double wizardDistanceToSnaffles(double energy) {
     double wizardAvgDist = 0;
     for (int i=0;i<Player.snafflesFE;i++) {
-      wizardAvgDist += Player.myWizard1.position.distTo(Player.snaffles[i].position);
-      wizardAvgDist += Player.myWizard2.position.distTo(Player.snaffles[i].position);
+      Snaffle snaffle = Player.snaffles[i];
+      if (snaffle.dead) continue;
+      wizardAvgDist += Player.myWizard1.position.distTo(snaffle.position);
+      wizardAvgDist += Player.myWizard2.position.distTo(snaffle.position);
     }
     energy -= wizardAvgDist / (2 * 16_000 *Player.snafflesFE) ;
     return energy;
@@ -183,21 +186,33 @@ public class Simulation {
     Player.energy = 0;
     depth = 0;
 
+    int myInitScore = Player.myScore;
+    int hisInitScore = Player.hisScore;
+    
     Player.myWizard1.apply(solution, 0, 1);
     Player.myWizard2.apply(solution, 0, 2);
     dummies();
 
     play();
+
+    solution.energy = AG.patiences[0] * 100_000 * (
+        (Player.myScore-myInitScore)
+        - (Player.hisScore - hisInitScore)
+        ); ;
+    //solution.energy = eval() * 0.1;
+
     depth = 1;
-
-    solution.energy = eval() * 0.1;
-
     for (int i = 1; i < AG.DEPTH; ++i) {
       Player.myWizard1.apply(solution, i, 1);
       Player.myWizard2.apply(solution, i, 2);
       dummies();
 
       play();
+      solution.energy += AG.patiences[depth] * 100_000 * (
+          (Player.myScore-myInitScore)
+          - (Player.hisScore - hisInitScore)
+          ); 
+
       depth += 1;
     }
 

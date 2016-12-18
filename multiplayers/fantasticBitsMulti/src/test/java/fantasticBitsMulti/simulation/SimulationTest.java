@@ -14,16 +14,17 @@ public class SimulationTest {
   @Test
   public void test1() throws Exception {
     Player.myMana = 100;
-    Player.init(0);
+    Player.init(1);
     
-    createUnit(0, "WIZARD", 15170, 6558, -11, 375, 0);
-    createUnit(1, "WIZARD", 15532, 3342, 12, -35, 0);
-    createUnit(2, "OPPONENT_WIZARD", 14719, 1829, 25, 61, 0);
-    createUnit(3, "OPPONENT_WIZARD", 9280, 2021, -198, 35, 0);
-    createUnit(6, "SNAFFLE", 7429, 2372, -130, 23, 0);
-    createUnit(7, "SNAFFLE", 15983, 3379, 0, 0, 0);
-    createUnit(11, "BLUDGER", 15092, 4952, 50, 177, 0);
-    createUnit(12, "BLUDGER", 13582, 2231, -36, -157, 3);    
+    createUnit(2, "WIZARD", 1141, 1991, -51, -2, 1);
+    createUnit(3, "WIZARD", 1555, 1059, 24, 301, 0);
+    createUnit(0, "OPPONENT_WIZARD", 1147, 5093, 517, -576, 0);
+    createUnit(1, "OPPONENT_WIZARD", 8852, 3459, -409, 134, 0);
+    createUnit(6, "SNAFFLE", 1141, 1991, -51, -2, 1);
+    createUnit(7, "SNAFFLE", 5180, 5640, 109, -13, 0);
+    createUnit(8, "SNAFFLE", 2469, 7002, 0, 0, 0);
+    createUnit(9, "BLUDGER", 1294, 6299, -406, -283, 0);
+    createUnit(10, "BLUDGER", 1879, 5955, -425, -15, 0);
 
     if (Player.turn == 0) {
       Player.victory = (Player.snafflesFE / 2 ) + 1;
@@ -47,7 +48,9 @@ public class SimulationTest {
     }
 
     Player.start = System.nanoTime();
-    AG.evolution();
+    AGSolution evolution = AG.evolution();
+    
+    System.err.println("After evolution : " + evolution.moves2[0]);
   }
 
   private void createUnit(int id, String entityTypeStr, int x, int y, int vx, int vy, int state) {
