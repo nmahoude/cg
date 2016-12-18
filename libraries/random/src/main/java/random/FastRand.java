@@ -1,11 +1,14 @@
 package random;
 
+import java.util.Random;
 
 public class FastRand {
+  Random random;
   int g_seed;
   
   public FastRand(int seed) {
     g_seed = seed;
+    random = new Random(g_seed);
   }
   public void fast_srand(int seed) {
     //Seed the generator
@@ -17,7 +20,8 @@ public class FastRand {
     return (g_seed>>16)&0x7FFF;
   }
   public int fastRandInt(int maxSize) {
-    return fastrand() % maxSize;
+    //return fastrand() % maxSize;
+    return random.nextInt(maxSize);
   }
   public int fastRandInt(int a, int b) {
     return(a + fastRandInt(b - a));
