@@ -1,7 +1,8 @@
 package fantasticBitsMulti.units;
 
-import fantasticBitsMulti.Collision;
 import fantasticBitsMulti.Player;
+import fantasticBitsMulti.simulation.Collision;
+import fantasticBitsMulti.simulation.Simulation;
 import trigonometry.Point;
 import trigonometry.Vector;
 
@@ -105,7 +106,7 @@ public abstract class Unit {
       return null;
     }
 
-    return Player.collisionsCache[Player.collisionsCacheFE++].update(t, this, dir);
+    return Simulation.collisionsCache[Simulation.collisionsCacheFE++].update(t, this, dir);
   }
 
   public Collision collision(Unit u, double from) {
@@ -139,7 +140,7 @@ public abstract class Unit {
       return null;
     }
 
-    return Player.collisionsCache[Player.collisionsCacheFE++].update(t, this, u);
+    return Simulation.collisionsCache[Simulation.collisionsCacheFE++].update(t, this, u);
   }
 
   

@@ -1,8 +1,8 @@
 package fantasticBitsMulti.units;
 
-import fantasticBitsMulti.Collision;
 import fantasticBitsMulti.Player;
 import fantasticBitsMulti.ag.AGSolution;
+import fantasticBitsMulti.simulation.Collision;
 import fantasticBitsMulti.spells.Accio;
 import fantasticBitsMulti.spells.Flipendo;
 import fantasticBitsMulti.spells.Obliviate;
@@ -12,7 +12,7 @@ import trigonometry.Point;
 
 public class Wizard extends Unit {
 
-  public static Spell[] spells = new Spell[4];
+  public Spell[] spells = new Spell[4];
   public int team;
   
   int sgrab;
@@ -42,7 +42,7 @@ public class Wizard extends Unit {
     this.snaffle = snaffle;
 
     // Stop the accio spell if we have one
-    Spell accio = Wizard.spells[Spell.ACCIO];
+    Spell accio = spells[Spell.ACCIO];
     if (accio.duration != 0 && accio.target.id == snaffle.id) {
       accio.duration = 0;
       accio.target = null;
@@ -92,11 +92,11 @@ public class Wizard extends Unit {
   public boolean cast(int spell, Unit target) {
     int cost = Spell.SPELL_COST[spell];
 
-    if (Player.mana < cost || target.dead) {
+    if (Player.myMana < cost || target.dead) {
       return false;
     }
 
-    Player.mana -= cost;
+    Player.myMana -= cost;
 
     this.spell = spell;
     spellTarget = target;
@@ -132,7 +132,7 @@ public class Wizard extends Unit {
   public void bounce(Unit u) { 
     if (u.type == EntityType.SNAFFLE) {
       Snaffle target = (Snaffle) u;
-      if (snaffle == null && grab != 0 && !target.dead && target.carrier == null) {
+      if (snaffle == null && grab == 0 && !target.dead && target.carrier == null) {
         grabSnaffle(target);
       }
     } else {
@@ -222,7 +222,7 @@ public class Wizard extends Unit {
   public void apply(AGSolution solution, int turn, int index) {
     if (index == 1) {
       if (solution.spellTurn1 == turn) {
-        if (!Player.myWizard1.cast(solution.spell1, solution.spellTarget1)) {
+        if (Player.myWizard1.cast(solution.spell1, solution.spellTarget1)) {
           Player.myWizard1.apply(solution.moves1[turn]);
         }
       } else {
@@ -230,7 +230,7 @@ public class Wizard extends Unit {
       }
     } else {
       if (solution.spellTurn2 == turn) {
-        if (!Player.myWizard2.cast(solution.spell2, solution.spellTarget2)) {
+        if (Player.myWizard2.cast(solution.spell2, solution.spellTarget2)) {
           Player.myWizard2.apply(solution.moves2[turn]);
         }
       } else {

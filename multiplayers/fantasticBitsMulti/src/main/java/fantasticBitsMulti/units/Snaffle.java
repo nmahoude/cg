@@ -1,7 +1,8 @@
 package fantasticBitsMulti.units;
 
-import fantasticBitsMulti.Collision;
 import fantasticBitsMulti.Player;
+import fantasticBitsMulti.simulation.Collision;
+import fantasticBitsMulti.simulation.Simulation;
 
 public class Snaffle extends Unit {
   Wizard scarrier;
@@ -12,6 +13,13 @@ public class Snaffle extends Unit {
     carrier = null;
   }
   
+  
+  @Override
+  public void update(int id, int x, int y, int vx, int vy, int state) {
+    super.update(id, x, y, vx, vy, state);
+    dead = false;
+  }
+
   @Override
   public Collision collision(double from) {
     if (carrier == null || dead) {
@@ -48,7 +56,7 @@ public class Snaffle extends Unit {
       return null;
     }
 
-    return Player.collisionsCache[Player.collisionsCacheFE++].update(t, this, dir);
+    return Simulation.collisionsCache[Simulation.collisionsCacheFE++].update(t, this, dir);
   }
 
   @Override

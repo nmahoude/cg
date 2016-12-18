@@ -1,4 +1,4 @@
-package fantasticBitsMulti;
+package fantasticBitsMulti.simulation;
 
 import fantasticBitsMulti.units.Unit;
 

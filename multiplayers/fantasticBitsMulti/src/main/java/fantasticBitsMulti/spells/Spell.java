@@ -75,11 +75,14 @@ public abstract class Spell {
     starget = target;
   }
 
-  public void reloadTarget() {
-    if (duration != 0 || (target == null || target.dead)) {
-      // Cancel the spell
-      target = null;
-      duration = 0;
+  public void checkTarget() {
+    if (duration != 0 || target == null || target.dead) {
+      cancelSpell();
     }
+  }
+
+  private void cancelSpell() {
+    target = null;
+    duration = 0;
   }
 }

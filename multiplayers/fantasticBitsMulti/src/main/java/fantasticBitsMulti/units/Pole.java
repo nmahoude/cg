@@ -1,6 +1,6 @@
 package fantasticBitsMulti.units;
 
-import fantasticBitsMulti.Collision;
+import fantasticBitsMulti.simulation.Collision;
 import trigonometry.Point;
 
 public class Pole extends Unit {
