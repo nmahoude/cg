@@ -12,7 +12,7 @@ public class AGSolution {
   private static FastRand random = new FastRand(43);
 
   public static int MOVE_COUNT = 12;
-  private static double[] pow;
+  static double[] pow;
   static {
     pow = new double[MOVE_COUNT];
     for (int i=0;i<MOVE_COUNT;i++) {

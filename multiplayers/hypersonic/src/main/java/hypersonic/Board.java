@@ -203,12 +203,12 @@ public class Board {
           cells[x+13*y] = EMPTY;
           return true;
         case BOX_1:
-          updatePoints(orginalBomberman, 1.3,x, y);
+          updatePoints(orginalBomberman, 1,x, y);
           cells[x+13*y] = ITEM_1;
           items.add(Item.create(this, 0, P.get(x,y), 1, 0));
           return true;
         case BOX_2:
-          updatePoints(orginalBomberman, 1.8,x, y);
+          updatePoints(orginalBomberman, 1,x, y);
           cells[x+13*y] = ITEM_2;
           items.add(Item.create(this, 0, P.get(x,y), 2, 0));
           return true;

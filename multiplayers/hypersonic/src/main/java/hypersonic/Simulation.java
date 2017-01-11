@@ -11,17 +11,18 @@ public class Simulation {
   public static final double DEAD_MALUS = -999_999;
   private static final int BOX_BONUS = 8;
   public Board board;
+  private double myPreviousPoints;
   
   public final double getScoreHeuristic() {
     if (board.me.isDead) {
       return DEAD_MALUS;
     }
     if (board.boxCount > 0) {
-      return 8*board.me.points
-          - 0.1*distanceToBoxGravityCenter()
+      return 8*(board.me.points-myPreviousPoints)
+          //- 0.1*distanceToBoxGravityCenter()
           + 0.01*board.me.bombsLeft 
           + 0.01*Math.max(board.me.bombCount, 10)
-          + 0.01*Math.max(10, board.me.currentRange);
+          + 0.01*Math.max(board.me.currentRange, 10);
     } else {
       return 13-board.me.position.manhattanDistance(P.get(7, 5));
     }
@@ -99,6 +100,7 @@ public class Simulation {
     board = simulation.board.duplicate();
   }
   public final void simulate(final Move move) {
+    myPreviousPoints = board.me.points;
     board.destructedBox = 0;
     final List<Bomb> bombs = new ArrayList<>(board.bombs);
     for (final Bomb bomb : bombs) {
