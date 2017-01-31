@@ -75,13 +75,16 @@ public class Player {
     System.err.println("Score for move is "+bestScore);
     String finalMove = null;
     
-    if (bestScore < 0 && wallsLeft[myId] > 0) {
+    if (turn > 4 && bestScore < 0 && wallsLeft[myId] > 0) {
 //      System.err.println("I'm loosing if just moving, need to put a  wall");
     
       board.backupCells();
-      for (int x=1;x<w-1;x++) {
-        for (int y=1;y<h-1;y++) {
+      for (int x=0;x<w-1;x++) {
+        for (int y=0;y<h-1;y++) {
           for (WallOrientation wo : WallOrientation.values()) {
+            if (x == 0 && wo == WallOrientation.V) continue;
+            if (y == 0 && wo == WallOrientation.H) continue;
+            
             board.restore();
             if (!board.addWall(wallCount+1,x, y, wo)) {
               continue;
