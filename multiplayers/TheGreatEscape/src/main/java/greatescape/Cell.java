@@ -9,8 +9,8 @@ public class Cell {
   Cell up;
   Cell down;
   
-  boolean canGoUp, canGoDown, canGoRight, canGoLeft;
-  boolean b_canGoUp, b_canGoDown, b_canGoRight, b_canGoLeft;
+  int wallUp, wallDown, wallRight, wallLeft;
+  int b_wallUp, b_wallDown, b_wallRight, b_wallLeft;
   
   Cell(int x, int y) {
     this.x = x;
@@ -19,25 +19,25 @@ public class Cell {
   }
 
   public void resetWalls() {
-    canGoUp = true;
-    canGoDown = true;
-    canGoRight = true;
-    canGoLeft = true;
+    wallUp = 0;
+    wallDown = 0;
+    wallRight = 0;
+    wallLeft = 0;
     backup();
   }
 
   public void backup() {
-    b_canGoUp = canGoUp;
-    b_canGoDown = canGoDown ;
-    b_canGoRight = canGoRight;
-    b_canGoLeft = canGoLeft;
+    b_wallUp = wallUp;
+    b_wallDown = wallDown ;
+    b_wallRight = wallRight;
+    b_wallLeft = wallLeft;
   }
 
   public void restore() {
-    canGoUp = b_canGoUp;
-    canGoDown = b_canGoDown ;
-    canGoRight = b_canGoRight;
-    canGoLeft = b_canGoLeft;
+    wallUp = b_wallUp;
+    wallDown = b_wallDown ;
+    wallRight = b_wallRight;
+    wallLeft = b_wallLeft;
   }
   
   @Override

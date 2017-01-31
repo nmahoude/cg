@@ -29,39 +29,55 @@ public class Board {
     }
   }
 
-  public boolean addWall(int x, int y, WallOrientation wallOrientation) {
+  public boolean addWall(int wallId, int x, int y, WallOrientation wallOrientation) {
     if (wallOrientation == WallOrientation.V) {
+      // check if a horizontal wall does not exists
+      if (x-1>=0 && y+1<9) {
+        if (cells[x-1][y].wallDown != 0 && cells[x-1][y].wallDown == cells[x][y].wallDown) {
+          return false;
+        }
+      }
+      
       if (x-1 >= 0) {
-        if (!cells[x-1][y].canGoRight) { return false; }
-        cells[x-1][y].canGoRight = false;
+        if (cells[x-1][y].wallRight != 0) { return false; }
+        cells[x-1][y].wallRight = wallId;
       }
       if (x-1 >= 0 && y+1 < 9) {
-        if (!cells[x-1][y+1].canGoRight) return false;
-        cells[x-1][y+1].canGoRight = false;
+        if (cells[x-1][y+1].wallRight != 0) return false;
+        cells[x-1][y+1].wallRight = wallId;
       }
       if (x < 9) {
-        if (!cells[x][y].canGoLeft) return false;
-        cells[x][y].canGoLeft = false;
+        if (cells[x][y].wallLeft != 0) return false;
+        cells[x][y].wallLeft = wallId;
         if (y+1 < 9) {
-          if (!cells[x][y+1].canGoLeft) return false;
-          cells[x][y+1].canGoLeft = false;
+          if (cells[x][y+1].wallLeft != 0) return false;
+          cells[x][y+1].wallLeft = wallId;
         }
       }
     } else {
+      // Horizontal
+      // check if a vertical wall does not exists
+      if (y-1 >=0 ) {
+        if (cells[x][y-1].wallRight != 0 && cells[x][y-1].wallRight == cells[x][y].wallRight) {
+          return false;
+        }
+      }
+      
+      
       if (y-1>=0) {
-        if (!cells[x][y-1].canGoDown ) return false;
-        cells[x][y-1].canGoDown = false;
+        if (cells[x][y-1].wallDown != 0) return false;
+        cells[x][y-1].wallDown = wallId;
         if (x+1 < 9) {
-          if (!cells[x+1][y-1].canGoDown ) return false;
-          cells[x+1][y-1].canGoDown = false;
+          if (cells[x+1][y-1].wallDown != 0) return false;
+          cells[x+1][y-1].wallDown = wallId;
         }
       }
       if (y < 9) {
-        if (!cells[x][y].canGoUp ) return false;
-        cells[x][y].canGoUp = false;
+        if (cells[x][y].wallUp != 0) return false;
+        cells[x][y].wallUp = wallId;
         if (x+1 < 9) {
-          if (!cells[x+1][y].canGoUp) return false;
-          cells[x+1][y].canGoUp= false;
+          if (cells[x+1][y].wallUp != 0) return false;
+          cells[x+1][y].wallUp= wallId;
         }
       }
     }

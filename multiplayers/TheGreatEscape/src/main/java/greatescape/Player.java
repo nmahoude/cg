@@ -11,12 +11,15 @@ public class Player {
   static Board board = new Board();
   static Point myPos;
   private static int playerCount;
+  private static int alivePlayer;
+  
   private static int w;
   private static int h;
   private static int myId;
   private static Point coords[];
   private static int turn;
   private static int[] wallsLeft;
+  private static int wallCount;
 
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
@@ -37,21 +40,27 @@ public class Player {
     // game loop
     while (true) {
       turn++;
+      alivePlayer = 0;
       for (int i = 0; i < playerCount; i++) {
         int x = in.nextInt(); // x-coordinate of the player
         int y = in.nextInt(); // y-coordinate of the player
-        int wl = in.nextInt(); // number of walls available for the
-                                      // player
+        int wl = in.nextInt(); // number of walls available for the // player
+        alivePlayer += x != -1 ? 1 : 0;
+        
         coords[i].x = x;
         coords[i].y = y;
         wallsLeft[i] = wl;
+        System.err.println("Player"+i+" ("+x+","+y+","+wl+")");
       }
-      int wallCount = in.nextInt(); // number of walls on the board
+      wallCount = in.nextInt();
+      System.err.println("Board board = new Board();");
+      board.resetWalls();
       for (int i = 0; i < wallCount; i++) {
         int wallX = in.nextInt(); // x-coordinate of the wall
         int wallY = in.nextInt(); // y-coordinate of the wall
         String wallOrientation = in.next(); // wall orientation ('H' or 'V')
-        board.addWall(wallX, wallY, WallOrientation.valueOf(wallOrientation));
+        board.addWall(i+1, wallX, wallY, WallOrientation.valueOf(wallOrientation));
+        System.err.println("board.addWall("+(i+1)+","+wallX+", "+wallY+", WallOrientation."+wallOrientation+");");
       }
 
       String finalMove = calculateMove();
@@ -61,10 +70,12 @@ public class Player {
   }
 
   private static String calculateMove() {
+    System.err.println("My id  : "+myId);
     int bestScore = evaluateMove()-myId;// substract myId to counter turn disadvantage
+    System.err.println("Score for move is "+bestScore);
     String finalMove = null;
     
-    if (/*bestScore < 0 &&*/ wallsLeft[myId] > 0) {
+    if (bestScore < 0 && wallsLeft[myId] > 0) {
 //      System.err.println("I'm loosing if just moving, need to put a  wall");
     
       board.backupCells();
@@ -72,10 +83,10 @@ public class Player {
         for (int y=1;y<h-1;y++) {
           for (WallOrientation wo : WallOrientation.values()) {
             board.restore();
-            if (!board.addWall(x, y, wo)) {
+            if (!board.addWall(wallCount+1,x, y, wo)) {
               continue;
             }
-            int score = evaluateMove(); 
+            int score = evaluateMove()-myId; 
             if (score < -1000) {
               System.err.println("Doing "+x+" "+y+" "+wo+" would block a player");
             }
@@ -83,14 +94,17 @@ public class Player {
               bestScore = score;
               finalMove = ""+x+" "+y+" "+wo.toString();
               System.err.println("New best score: "+bestScore+" for move "+finalMove);
-              List<PathItem> trajectory = new AStar(board, board.cells[coords[0].x][coords[0].y], getTargetFromId(0)).find();
               System.err.println("My trajectory");
+              List<PathItem> trajectory = new AStar(board, board.cells[coords[myId].x][coords[myId].y], getTargetFromId(myId)).find();
               debugTrajectory(trajectory);
-              List<PathItem> trajectory2 = new AStar(board, board.cells[coords[1].x][coords[1].y], getTargetFromId(1)).find();
-              System.err.println("other trajectory");
-              debugTrajectory(trajectory2);
-
-            
+              System.err.println("others trajectorys");
+              for (int i=0;i<playerCount;i++) {
+                if (i == myId) continue;
+                if (coords[i].x == -1) continue;
+                System.err.println("player "+i);
+                List<PathItem> trajectory2 = new AStar(board, board.cells[coords[i].x][coords[i].y], getTargetFromId(i)).find();
+                debugTrajectory(trajectory2);
+              }
             }
           }
         }
@@ -101,7 +115,11 @@ public class Player {
       Cell currentCell = board.cells[myPos.x][myPos.y];
       List<PathItem> trajectory = new AStar(board, currentCell, getTargetFromId(myId)).find();
       debugTrajectory(trajectory);
-      finalMove = getMoveFromCells(currentCell, trajectory.get(1).pos);
+      if (trajectory.size() > 1) {
+        finalMove = getMoveFromCells(currentCell, trajectory.get(1).pos);
+      } else {
+        finalMove = "RIGHT ERROR";
+      }
     }
     return finalMove;
   }
@@ -134,12 +152,15 @@ public class Player {
     int score = 0;
     for (int i=0;i<playerCount;i++) {
       if (lengths[i] <= 1) {
-        return Integer.MIN_VALUE;
+        if ( coords[i].x == -1) {
+          continue; // dead player
+        }
+        return -5000;
       }
       if (i!= myId) {
         score +=lengths[i];
       } else {
-        score -=lengths[i];
+        score -=(alivePlayer-1)*lengths[i];
       }
     }
     return score;

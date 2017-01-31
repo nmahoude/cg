@@ -70,16 +70,16 @@ public class AStar {
         continue;
       }
       closedList.put(pos, visiting);
-      if (pos.y > 0 && pos.canGoUp) {
+      if (pos.y > 0 && pos.wallUp == 0) {
         addToOpenList(visiting, pos , pos.up);
       }
-      if (pos.y < 9 - 1 && pos.canGoDown) {
+      if (pos.y < 9 - 1 && pos.wallDown == 0) {
         addToOpenList(visiting, pos , pos.down);
       }
-      if (pos.x > 0 && pos.canGoLeft) {
+      if (pos.x > 0 && pos.wallLeft == 0) {
         addToOpenList(visiting, pos , pos.left);
       }
-      if (pos.x < 9 - 1 && pos.canGoRight) {
+      if (pos.x < 9 - 1 && pos.wallRight == 0) {
         addToOpenList(visiting, pos , pos.right);
       }
       // sort with distances
