@@ -69,15 +69,21 @@ public class Player {
     }
   }
 
+  static int getNextOpponent() {
+    int nextOpponnentId = (myId + 1) % playerCount;
+    while (coords[nextOpponnentId].x == -1) {
+      nextOpponnentId = (nextOpponnentId + 1) % playerCount;
+    }
+    return nextOpponnentId;
+  }
+  
   private static String calculateMove() {
     System.err.println("My id  : "+myId);
-    int bestScore = evaluateMove()-myId;// substract myId to counter turn disadvantage
+    int bestScore = evaluateMove(0, 0, 0 , WallOrientation.H)-myId;// substract myId to counter turn disadvantage
     System.err.println("Score for move is "+bestScore);
     String finalMove = null;
     
     if (turn > 4 && bestScore < 0 && wallsLeft[myId] > 0) {
-//      System.err.println("I'm loosing if just moving, need to put a  wall");
-    
       board.backupCells();
       for (int x=0;x<w-1;x++) {
         for (int y=0;y<h-1;y++) {
@@ -89,7 +95,7 @@ public class Player {
             if (!board.addWall(wallCount+1,x, y, wo)) {
               continue;
             }
-            int score = evaluateMove()-myId; 
+            int score = evaluateMove(wallCount+1,x, y, wo)-myId; 
             if (score < -1000) {
               System.err.println("Doing "+x+" "+y+" "+wo+" would block a player");
             }
@@ -127,7 +133,7 @@ public class Player {
     return finalMove;
   }
 
-  private static int evaluateMove() {
+  private static int evaluateMove(int wallId, int x, int y, WallOrientation wo) {
     int lengths[] = new int[3];
     int bestLength = Integer.MAX_VALUE;
     int bestId = 0;
@@ -161,9 +167,12 @@ public class Player {
         return -5000;
       }
       if (i!= myId) {
-        score +=lengths[i];
+        score +=100*lengths[i];
+        if (wallId != 0) {
+          score -=( Math.abs(coords[i].x - x) + Math.abs(coords[i].y - y));
+        }
       } else {
-        score -=(alivePlayer-1)*lengths[i];
+        score -=100*(alivePlayer-1)*lengths[i];
       }
     }
     return score;
