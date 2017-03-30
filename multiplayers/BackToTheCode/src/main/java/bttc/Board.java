@@ -44,11 +44,11 @@ public class Board {
     }
   }
   
-  public P findClosestFreeCell(List<P> pointsToCheck, List<P> pointsChecked) {
+  public P findClosestFreeCell(P startingPoint, List<P> pointsToCheck, List<P> pointsChecked) {
     while (!pointsToCheck.isEmpty()) {
       P currentP = pointsToCheck.remove(0);
       pointsChecked.add(currentP);
-      if (getCell(currentP) == EMPTY) {
+      if (getCell(currentP) == EMPTY && !startingPoint.equals(currentP)) {
         return currentP;
       } else {
         for (int i=0;i<4;i++) {

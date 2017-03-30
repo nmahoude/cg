@@ -1,45 +1,10 @@
-import java.util.ArrayList;
+/*
+Proudly built by org.ndx.codingame.simpleclass.Assembler on 2017-03-17T13:29:54.261+01:00[Europe/Paris]
+@see https://github.com/Riduidel/codingame/tree/master/tooling/codingame-simpleclass-maven-plugin
+*/
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Scanner;
-
-class Player {
-
-    static Board board = new Board();
-
-    public static void main(String args[]) {
-        Scanner in = new Scanner(System.in);
-        // Opponent count
-        int opponentCount = in.nextInt();
-        // game loop
-        while (true) {
-            int gameRound = in.nextInt();
-            // Your x position
-            int x = in.nextInt();
-            // Your y position
-            int y = in.nextInt();
-            // Remaining back in time
-            int backInTimeLeft = in.nextInt();
-            for (int i = 0; i < opponentCount; i++) {
-                // X position of the opponent
-                int opponentX = in.nextInt();
-                // Y position of the opponent
-                int opponentY = in.nextInt();
-                // Remaining back in time of the opponent
-                int opponentBackInTimeLeft = in.nextInt();
-            }
-            board.reinit();
-            for (int i = 0; i < 20; i++) {
-                board.addRow(i, in.next());
-            }
-            P position = new P(x, y);
-            List<P> pointsToCheck = new ArrayList<>();
-            pointsToCheck.add(position);
-            P p = board.findClosestFreeCell(pointsToCheck, new ArrayList<>());
-            // action: "x y" to move or "BACK rounds" to go back in time
-            System.out.println("" + p.x + " " + p.y);
-        }
-    }
-}
 
 class P {
 
@@ -126,11 +91,11 @@ class Board {
         }
     }
 
-    public P findClosestFreeCell(List<P> pointsToCheck, List<P> pointsChecked) {
+    public P findClosestFreeCell(P startingPoint, List<P> pointsToCheck, List<P> pointsChecked) {
         while (!pointsToCheck.isEmpty()) {
             P currentP = pointsToCheck.remove(0);
             pointsChecked.add(currentP);
-            if (getCell(currentP) == EMPTY) {
+            if (getCell(currentP) == EMPTY && !startingPoint.equals(currentP)) {
                 return currentP;
             } else {
                 for (int i = 0; i < 4; i++) {
@@ -153,5 +118,44 @@ class Board {
             return WALL;
         }
         return cells[i][j];
+    }
+}
+
+class Player {
+
+    static Board board = new Board();
+
+    public static void main(String args[]) {
+        Scanner in = new Scanner(System.in);
+        // Opponent count
+        int opponentCount = in.nextInt();
+        // game loop
+        while (true) {
+            int gameRound = in.nextInt();
+            // Your x position
+            int x = in.nextInt();
+            // Your y position
+            int y = in.nextInt();
+            // Remaining back in time
+            int backInTimeLeft = in.nextInt();
+            for (int i = 0; i < opponentCount; i++) {
+                // X position of the opponent
+                int opponentX = in.nextInt();
+                // Y position of the opponent
+                int opponentY = in.nextInt();
+                // Remaining back in time of the opponent
+                int opponentBackInTimeLeft = in.nextInt();
+            }
+            board.reinit();
+            for (int i = 0; i < 20; i++) {
+                board.addRow(i, in.next());
+            }
+            P position = new P(x, y);
+            List<P> pointsToCheck = new ArrayList<>();
+            pointsToCheck.add(position);
+            P p = board.findClosestFreeCell(position, pointsToCheck, new ArrayList<>());
+            // action: "x y" to move or "BACK rounds" to go back in time
+            System.out.println("" + p.x + " " + p.y);
+        }
     }
 }
