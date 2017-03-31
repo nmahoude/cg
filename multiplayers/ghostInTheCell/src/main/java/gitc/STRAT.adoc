@@ -1,0 +1,37 @@
+= STRATEGIE
+
+== 3 temps dans la partie
+=== EARLY game
+   * ralentissement de l'adversaire
+   * prise des factory neutres uniquement
+
+=== MID game
+	* Attaque directe
+
+=== END game
+	* superiorité d'un camp
+
+
+= FACTORY
+Ce sont les unités les + importantes
+
+== ROLES
+=== ATTACK
+	la factory sert de vecteur d'attaque vers une ou plusieurs factory
+	Envoie ses troupes vers la cible (TBD : combien ?)
+	peut demander du support pour envoyer plus de troupe
+	doit faire attention a ne pas se retrouver attaquer
+
+=== SUPPORT 
+	la factory n'est pas attaquée significativement
+	elle peut fournir des unités aux factory voisines (pour contrer une attaque ou pour réquilibrer les forces)
+	elle peut s'upgrader si elle a assez de troupe
+
+=== DEFENSE
+	la factory est sous le feu de l'ennemi
+	elle DOIT demander du support
+
+=== RETREAT
+	si il n'y a aucun espoir de se sauver , la factory doit abandonner et envoyer ses troupes autre part
+
+	

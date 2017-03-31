@@ -1,0 +1,36 @@
+= Basic Strategy
+
+== Haut niveau
+* Goal 1 (victoire) : Avoir plus d'units que l'adversaire
+* Sub goal : Avoir plus de production 
+
+
+== Grosses mailles
+* Prendre les usines qui produisent le + 
+	** Augmentation de la prod
+
+* Prendre les usines de l'adversaire 
+	** delta prod meilleur que les neutres
+
+* Défendre ses usines
+	** Defendre sa production
+	
+* Garder les usines proches les unes des autres 
+	** possibilité de support rapide
+	
+* Envoyer des bombes sur les usines qui produisent le +
+	** Baton dans les roues
+	** si possible viser celles qui ont bcp d'unité
+	
+* Upgrade des factory 
+	** 10 soldats perdus + (prod * tour) < (prod+1)*tours ==> 10 < tours ==> tours = 1
+		*** Si on peut être 10 tours tranquille, upgrade est meilleur
+		*** Q? Et si on perd la factory ???
+
+	
+== Strategie fine
+* En début de partie, si l'usine de l'opp produit, on peut envoyer une bombe pour le ralentir dans sa prod
+* si un adversaire attaque une usine neutre qui a unit>0, il faut attaquer cette usine directe (mais arriver apres !)
+
+* Les usines qui ne sont pas attaquées (ou qui peuvent) doivent servir de support aux autres usines
+
