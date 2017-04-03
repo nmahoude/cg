@@ -1,8 +1,9 @@
 /*
-Proudly built by org.ndx.codingame.simpleclass.Assembler on 2017-03-17T13:29:54.261+01:00[Europe/Paris]
+Proudly built by org.ndx.codingame.simpleclass.Assembler on 2017-04-03T21:25:18.088+02:00[Europe/Paris]
 @see https://github.com/Riduidel/codingame/tree/master/tooling/codingame-simpleclass-maven-plugin
 */
 import java.util.List;
+import java.util.Random;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -50,9 +51,9 @@ class P {
 
 class Board {
 
-    private static final int EMPTY = 0;
+    public static final int EMPTY = 0;
 
-    private static final int WALL = -1;
+    public static final int WALL = -1;
 
     public static final int PLAYER1 = 1;
 
@@ -64,11 +65,11 @@ class Board {
 
     int rot[][] = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
 
-    int cells[][] = new int[35][20];
+    public int cells[][] = new int[35][20];
 
-    int free = 0;
+    public int free = 0;
 
-    int scores[] = new int[4 + 1];
+    public int scores[] = new int[4];
 
     public void reinit() {
         free = 0;
@@ -84,9 +85,9 @@ class Board {
                 free++;
                 cells[x][rowIndex] = EMPTY;
             } else {
-                int player = 1 + value - '0';
+                int player = value - '0';
                 scores[player] += 1;
-                cells[x][rowIndex] = player;
+                cells[x][rowIndex] = player + 1;
             }
         }
     }
@@ -98,8 +99,10 @@ class Board {
             if (getCell(currentP) == EMPTY && !startingPoint.equals(currentP)) {
                 return currentP;
             } else {
+                int decal = new Random().nextInt(4);
                 for (int i = 0; i < 4; i++) {
-                    P p = new P(currentP.x + rot[i][0], currentP.y + rot[i][1]);
+                    int index = (i + decal) % 4;
+                    P p = new P(currentP.x + rot[index][0], currentP.y + rot[index][1]);
                     if (!pointsChecked.contains(p) && !pointsToCheck.contains(p)) {
                         pointsToCheck.add(p);
                     }
@@ -119,43 +122,186 @@ class Board {
         }
         return cells[i][j];
     }
+
+    public void debugInfos() {
+        for (int i = 0; i < 4; i++) {
+            System.err.println("P" + i + " -> " + scores[i]);
+        }
+        System.err.println("Free: " + free);
+    }
 }
 
 class Player {
 
     static Board board = new Board();
 
+    private static int gameRound;
+
+    private static int backInTimeLeft;
+
+    static int lastDir[] = { 0, 0 };
+
+    static int totalDist = 0;
+
+    static int initDirs[][] = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
+
+    static int dir[][] = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
+
+    static int lengths[] = { 0, 0, 0, 0 };
+
+    static int dirIndex = 0;
+
+    private static int totalBackInTime;
+
+    private static int totalBackInTime_backup;
+
+    static int targetX = new Random().nextInt(35), targetY = new Random().nextInt(20);
+
+    static boolean isX = true;
+
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
-        // Opponent count
         int opponentCount = in.nextInt();
-        // game loop
+        totalBackInTime_backup = 0;
         while (true) {
-            int gameRound = in.nextInt();
-            // Your x position
+            gameRound = in.nextInt();
             int x = in.nextInt();
-            // Your y position
             int y = in.nextInt();
-            // Remaining back in time
-            int backInTimeLeft = in.nextInt();
+            backInTimeLeft = in.nextInt();
+            totalBackInTime = backInTimeLeft;
             for (int i = 0; i < opponentCount; i++) {
-                // X position of the opponent
                 int opponentX = in.nextInt();
-                // Y position of the opponent
                 int opponentY = in.nextInt();
-                // Remaining back in time of the opponent
                 int opponentBackInTimeLeft = in.nextInt();
+                totalBackInTime += opponentBackInTimeLeft;
             }
             board.reinit();
             for (int i = 0; i < 20; i++) {
                 board.addRow(i, in.next());
             }
-            P position = new P(x, y);
-            List<P> pointsToCheck = new ArrayList<>();
-            pointsToCheck.add(position);
-            P p = board.findClosestFreeCell(position, pointsToCheck, new ArrayList<>());
-            // action: "x y" to move or "BACK rounds" to go back in time
-            System.out.println("" + p.x + " " + p.y);
+            board.debugInfos();
+            // wait until last turn to trigger back in time !
+            if (board.free == 0 && backInTimeLeft != 0) {
+                boolean doReverse = false;
+                for (int i = 1; i < 4; i++) {
+                    if (board.scores[0] < board.scores[i]) {
+                        doReverse = true;
+                    }
+                }
+                if (doReverse) {
+                    System.out.println("BACK 25");
+                    continue;
+                }
+            }
+            P currentPosition = new P(x, y);
+            //      if (targetX == -1 || (currentPosition.x == targetX && currentPosition.y == targetY)) {
+            //        boolean good = false;
+            //        int tries = 0;
+            //        while (!good && tries < 10) {
+            //          tries++;
+            //          boolean goX = !isX;
+            //          isX = !isX;
+            //          if (goX) {
+            //            targetX = new Random().nextInt(35);
+            //            if (targetX != x) {
+            //              int dir = Math.abs(targetX-x) / (targetX-x);
+            //              if (board.cells[x+dir][y] == 0 || board.cells[x+dir][y] == Board.PLAYER1) {
+            //                good =true;
+            //              }
+            //            }
+            //          } else {
+            //            targetY = new Random().nextInt(20);
+            //            if (targetY != y) {
+            //              int dir = Math.abs(targetY-y) / (targetY-y);
+            //              if (board.cells[x][y+dir] == 0 || board.cells[x][y+dir] == Board.PLAYER1) {
+            //                good =true;
+            //              }
+            //            }
+            //          }
+            //          
+            //        }
+            //        
+            //      }
+            //      P nextPosition = new P(targetX, targetY);
+            P nextPosition = findNextPosition(currentPosition);
+            System.out.println("" + nextPosition.x + " " + nextPosition.y);
         }
+    }
+
+    private static P findNextPositionRandomRect(P currentPosition) {
+        P nextPosition;
+        if (totalBackInTime != totalBackInTime_backup) {
+            System.err.println("Detecting back in time, redistributing...");
+            System.err.println("Position is " + currentPosition.x + "," + currentPosition.y);
+            totalBackInTime_backup = totalBackInTime;
+            for (int i = 0; i < 4; i++) {
+                lengths[i] = 0;
+            }
+            System.out.println("" + 0 + " " + 0);
+            return null;
+        }
+        if (lengths[dirIndex] == 0) {
+            dirIndex = (dirIndex + 1) % 4;
+            if (lengths[dirIndex] == 0) {
+                findRectangle(currentPosition.x, currentPosition.y);
+            }
+        }
+        System.err.println("Next rectangle " + lengths[0] + "/" + lengths[1] + "/" + lengths[2] + "/" + lengths[3] + " dir=" + dirIndex);
+        nextPosition = new P(currentPosition.x + dir[dirIndex][0], currentPosition.y + dir[dirIndex][1]);
+        lengths[dirIndex]--;
+        return nextPosition;
+    }
+
+    private static void findRectangle(int x, int y) {
+        dirIndex = new Random().nextInt(4);
+        // lengths
+        int maxLength = 10;
+        lengths[0] = Math.min(35 - x - 1, 2 + new Random().nextInt(maxLength));
+        lengths[1] = Math.min(20 - y - 1, 2 + new Random().nextInt(maxLength));
+        lengths[2] = Math.min(x, 2 + new Random().nextInt(maxLength));
+        lengths[3] = Math.min(y, 2 + new Random().nextInt(maxLength));
+    }
+
+    private static P findNextPosition(P position) {
+        if (board.free == 0) {
+            return new P(17, 10);
+        }
+        System.err.println("Dist : " + totalDist);
+        if (totalDist < 10 && (lastDir[0] != 0 || lastDir[1] != 0)) {
+            totalDist++;
+            int checkX = position.x + lastDir[0];
+            int checkY = position.y + lastDir[1];
+            if (checkX >= 0 && checkX < 35 && checkY >= 0 && checkY < 20) {
+                if (board.cells[checkX][checkY] == 0) {
+                    return new P(checkX, checkY);
+                }
+            }
+        }
+        totalDist = 0;
+        List<P> pointsToCheck = new ArrayList<>();
+        pointsToCheck.add(position);
+        int iter = 0;
+        P p = new P(0, 0);
+        while (iter < 3) {
+            iter++;
+            p = board.findClosestFreeCell(position, pointsToCheck, new ArrayList<>());
+            int[] newDir = new int[2];
+            newDir[0] = mapTo101(p.x - position.x);
+            newDir[1] = mapTo101(p.y - position.y);
+            if (newDir[0] != -lastDir[0] || newDir[1] != -lastDir[1]) {
+                lastDir[0] = newDir[0];
+                lastDir[1] = newDir[1];
+                iter = 10_000;
+            }
+        }
+        return p;
+    }
+
+    private static int mapTo101(int i) {
+        if (i < 0)
+            return -1;
+        if (i > 0)
+            return 1;
+        return 0;
     }
 }

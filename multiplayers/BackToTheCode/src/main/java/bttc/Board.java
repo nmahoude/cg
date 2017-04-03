@@ -1,11 +1,12 @@
 package bttc;
 
 import java.util.List;
+import java.util.Random;
 
 public class Board {
   
-  private static final int EMPTY = 0;
-  private static final int WALL = -1;
+  public static final int EMPTY = 0;
+  public static final int WALL = -1;
   
   public static final int PLAYER1 = 1;
   public static final int PLAYER2 = 2;
@@ -19,10 +20,10 @@ public class Board {
       {0,-1}
   };
   
-  int cells[][] = new int[35][20];
+  public int cells[][] = new int[35][20];
   
-  int free = 0;
-  int scores[] = new int[4+1];
+  public int free = 0;
+  public int scores[] = new int[4];
   
   public void reinit() {
     free = 0;
@@ -37,9 +38,9 @@ public class Board {
         free++;
         cells[x][rowIndex] = EMPTY;
       } else {
-        int player = 1+value-'0';
+        int player = value-'0';
         scores[player] += 1;
-        cells[x][rowIndex] = player;
+        cells[x][rowIndex] = player+1;
       }
     }
   }
@@ -51,8 +52,10 @@ public class Board {
       if (getCell(currentP) == EMPTY && !startingPoint.equals(currentP)) {
         return currentP;
       } else {
+        int decal = new Random().nextInt(4);
         for (int i=0;i<4;i++) {
-          P p = new P(currentP.x+rot[i][0], currentP.y+rot[i][1]);
+          int index = (i+decal) % 4;
+          P p = new P(currentP.x+rot[index][0], currentP.y+rot[index][1]);
           if (!pointsChecked.contains(p) && !pointsToCheck.contains(p)) {
             pointsToCheck.add(p);
           }
@@ -71,5 +74,11 @@ public class Board {
       return WALL;
     }
     return cells[i][j];
+  }
+  public void debugInfos() {
+    for (int i=0;i<4;i++) {
+      System.err.println("P"+i+" -> "+scores[i]);
+    }
+    System.err.println("Free: "+free);
   }
 }

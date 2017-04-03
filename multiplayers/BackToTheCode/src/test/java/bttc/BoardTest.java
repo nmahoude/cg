@@ -1,7 +1,7 @@
 package bttc;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,10 +40,10 @@ public class BoardTest {
         );
     
     assertThat(board.free, is(700-4));
-    assertThat(board.scores[Board.PLAYER1], is(1));
-    assertThat(board.scores[Board.PLAYER2], is(1));
-    assertThat(board.scores[Board.PLAYER3], is(1));
-    assertThat(board.scores[Board.PLAYER4], is(1));
+    assertThat(board.scores[Board.PLAYER1-1], is(1));
+    assertThat(board.scores[Board.PLAYER2-1], is(1));
+    assertThat(board.scores[Board.PLAYER3-1], is(1));
+    assertThat(board.scores[Board.PLAYER4-1], is(1));
   }
   
   public void  prepareBoard(String... rows) {
