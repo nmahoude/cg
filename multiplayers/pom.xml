@@ -18,5 +18,7 @@
     <module>hypersonic2</module>
     <module>fantasticBitsMulti</module>
     <module>tronbattle</module>
+	<module>ghostInTheCell</module>
+	<module>codeBusters</module>
   </modules>
 </project>
