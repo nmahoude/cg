@@ -85,7 +85,7 @@ public class Snaffle extends Unit {
   }
 
   public void bounce(int dir) {
-    if (dir == HORIZONTAL && position.y >= 1899.0 && position.y <= 5599.0) {
+    if (dir == HORIZONTAL && position.y >= 2050.0 && position.y <= 5450.0) {
       dead = true;
 
       if (Player.myTeam == 0) {

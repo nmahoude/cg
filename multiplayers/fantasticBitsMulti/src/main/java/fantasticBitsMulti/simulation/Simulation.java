@@ -195,25 +195,18 @@ public class Simulation {
 
     play();
 
-    solution.energy = AG.patiences[0] * 100_000 * (
-        (Player.myScore-myInitScore)
-        - (Player.hisScore - hisInitScore)
-        ); ;
+    final int coef = 100_000;
+    solution.energy = AG.patiences[0] * coef * ((Player.myScore - myInitScore) - (Player.hisScore - hisInitScore));
+    ;
     //solution.energy = eval() * 0.1;
-
     depth = 1;
     for (int i = 1; i < AG.DEPTH; ++i) {
-      Player.myWizard1.apply(solution, i, 1);
-      Player.myWizard2.apply(solution, i, 2);
-      dummies();
-
-      play();
-      solution.energy += AG.patiences[depth] * 100_000 * (
-          (Player.myScore-myInitScore)
-          - (Player.hisScore - hisInitScore)
-          ); 
-
-      depth += 1;
+        Player.myWizard1.apply(solution, i, 1);
+        Player.myWizard2.apply(solution, i, 2);
+        dummies();
+        play();
+        solution.energy += AG.patiences[depth] * coef * ((Player.myScore - myInitScore) - (Player.hisScore - hisInitScore));
+        depth += 1;
     }
 
     solution.energy += eval();
