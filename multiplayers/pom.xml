@@ -20,5 +20,6 @@
     <module>tronbattle</module>
 	<module>ghostInTheCell</module>
 	<module>codeBusters</module>
+	<module>codersStrikeBackReboot</module>
   </modules>
 </project>
