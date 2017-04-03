@@ -128,7 +128,7 @@ public class Player {
     while (System.currentTimeMillis() - start < MILLISECONDS_THINK_TIME) {
       simulations++;
       AGSolution solution;
-      if (random.nextInt(6) == 0) { /* TODO try to find a good value 100 -> 75 GOLD le jeudi soir*/
+      if (random.nextInt(1) == 0) { /* TODO try to find a good value 100 -> 75 GOLD le jeudi soir*/
         solution = AGPool.createRandom();
       } else {
         solution = AGPool.cross();
@@ -144,7 +144,7 @@ public class Player {
       System.err.println("No best AG ??");
       System.out.println("WAIT");
     } else {
-      System.out.println(bestAG.output()+";MSG "+simulations);
+      System.out.println(bestAG.output()+";MSG "+simulations+"("+AGPool.bestSolutionIndex+")");
     }
     //System.err.println("Simulation took : " + (int)((endSim - start)/1_000_000) + " ms for " + simulations + " simulations");
     cleanUp();

@@ -20,6 +20,9 @@ public class AGPool {
   public static Random random = new Random();
   private static final int AG_POOL = 10;
   AGSolution[] solutions = new AGSolution[AG_POOL];
+  private AGSolution bestSolution;
+  private int solutionIndex = 0;
+  public int bestSolutionIndex = 0;
   
   public AGPool() {
     reset();
@@ -94,9 +97,14 @@ public class AGPool {
   }
   
   public void propose(AGSolution newSolution) {
+    solutionIndex++;
     int minIndex = -1;
     double minEnergy = newSolution.energy;
     
+    if (bestSolution == null || newSolution.energy > bestSolution.energy) {
+      bestSolution = newSolution;
+      bestSolutionIndex = solutionIndex;
+    }
     for (int i=0;i<AG_POOL;i++) {
       if (solutions[i].energy < minEnergy) {
         minEnergy = solutions[i].energy;
@@ -198,7 +206,6 @@ public class AGPool {
             }
             
             rerouteToOtherFronts(factory, actions, otherFactory);
-            
           }
         }
       }
@@ -418,5 +425,7 @@ public class AGPool {
     for (int i=0;i<AG_POOL;i++) {
       solutions[i] = new AGSolution();
     }
+    bestSolution = null;
+    bestSolutionIndex = solutionIndex = 0;
   }
 }
