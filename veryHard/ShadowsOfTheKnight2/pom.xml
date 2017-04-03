@@ -6,4 +6,21 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>ShadowsOfTheKnight2</artifactId>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.ndx.codingame</groupId>
+        <artifactId>codingame-simpleclass-maven-plugin</artifactId>
+        <version>${project.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>assemble</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
