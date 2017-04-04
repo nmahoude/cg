@@ -1,5 +1,5 @@
 /*
-Proudly built by org.ndx.codingame.simpleclass.Assembler on 2017-04-03T21:25:18.088+02:00[Europe/Paris]
+Proudly built by org.ndx.codingame.simpleclass.Assembler on 2017-04-03T22:35:18.116+02:00[Europe/Paris]
 @see https://github.com/Riduidel/codingame/tree/master/tooling/codingame-simpleclass-maven-plugin
 */
 import java.util.List;
@@ -282,7 +282,7 @@ class Player {
         pointsToCheck.add(position);
         int iter = 0;
         P p = new P(0, 0);
-        while (iter < 3) {
+        while (iter < 2) {
             iter++;
             p = board.findClosestFreeCell(position, pointsToCheck, new ArrayList<>());
             int[] newDir = new int[2];

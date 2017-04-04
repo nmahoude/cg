@@ -156,7 +156,7 @@ public class Player {
     
     int iter = 0;
     P p = new P(0,0);
-    while (iter < 3 ) {
+    while (iter < 2 ) {
       iter++;
       p = board.findClosestFreeCell(position, pointsToCheck, new ArrayList<>());
       int[] newDir = new int[2];
