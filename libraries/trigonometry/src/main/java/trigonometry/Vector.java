@@ -16,6 +16,10 @@ public class Vector {
   public Vector normalize() {
     return new Vector(vx / length(), vy / length());
   }
+  /**
+   * @param angle in radians
+   * @return
+   */
   public Vector rotate(double angle) {
     return new Vector(vx*Math.cos(angle) - vy*Math.sin(angle),
         vx*Math.sin(angle) + vy*Math.cos(angle));
