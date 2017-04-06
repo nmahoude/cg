@@ -100,4 +100,7 @@ public class Vector {
       return new Point[]{  new Point(vx1, vy1), new Point(vx2, vy2) };
     }
   }
+  public Vector ortho() {
+    return new Vector(-vy, vx);
+  }
 }

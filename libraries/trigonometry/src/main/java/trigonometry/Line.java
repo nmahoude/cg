@@ -19,4 +19,14 @@ public class Line {
   public List<Point> intersection(Circle circle) {
     return circle.getIntersectingPoints(p1, p2);
   }
+
+  public double distanceTo(Point p) {
+    Point a = p1;
+    Vector n = p2.sub(p1).normalize();
+    
+    Vector pa = a.sub(p);
+    Vector proj = n.dot(pa.dot(n));
+    Vector h = pa.sub(proj);
+    return h.length();
+  }
 }
