@@ -6,7 +6,7 @@ import csb.entities.CheckPoint;
 import csb.entities.Pod;
 
 public class Map {
-  public CheckPoint[] checkpoints;
+  public CheckPoint[] checkPoints;
 
   public Pod[] pods = new Pod[4];
   public Pod[] myPods = new Pod[2];
@@ -21,11 +21,11 @@ public class Map {
 
   public void readCheckpoints(Scanner in) {
     int checkpointCount = in.nextInt();
-    checkpoints = new CheckPoint[checkpointCount];
+    checkPoints = new CheckPoint[checkpointCount];
     for (int i = 0; i < checkpointCount; i++) {
       int checkpointX = in.nextInt();
       int checkpointY = in.nextInt();
-      checkpoints[i] = new CheckPoint(checkpointX, checkpointY);
+      checkPoints[i] = new CheckPoint(checkpointX, checkpointY);
     }
   }
 }

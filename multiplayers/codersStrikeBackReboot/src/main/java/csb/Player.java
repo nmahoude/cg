@@ -2,6 +2,9 @@ package csb;
 
 import java.util.Scanner;
 
+import csb.entities.CheckPoint;
+import csb.entities.Pod;
+
 public class Player {
   static Map map = new Map();
   
@@ -9,9 +12,10 @@ public class Player {
     Scanner in = new Scanner(System.in);
     int laps = in.nextInt();
     map.readCheckpoints(in);
-
+    int round = 0;
     // game loop
     while (true) {
+      round++;
       for (int i = 0; i < 4; i++) {
         int x = in.nextInt(); // x position of your pod
         int y = in.nextInt(); // y position of your pod
@@ -22,8 +26,17 @@ public class Player {
         map.pods[i].readInput(x, y, vx, vy, angle, nextCheckPointId);
       }
 
-      System.out.println("8000 4500 100");
-      System.out.println("8000 4500 100");
+      System.out.println("8000 4500 0");
+
+      Pod pod = map.pods[1];
+      CheckPoint cp =map.checkPoints[pod.nextCheckPointId];
+      String target = ""+(int)(cp.position.x)+" "+(int)(cp.position.y);
+      if (round > 20) {
+        System.out.println(""+target+" 100");
+      } else {
+        System.out.println(""+target+" 0");
+      }
+
     }
   }
 }

@@ -3,6 +3,7 @@ package csb.simulation;
 import java.util.List;
 
 import csb.Map;
+import trigonometry.Vector;
 
 public class Simulate {
   
@@ -31,7 +32,9 @@ public class Simulate {
 
   private void applyMoves(Action[] actions) {
     for (int i=0;i<actions.length;i++) {
-      map.pods[i].apply(actions[i].angle,actions[i].thrust);
+      double angle = actions[i].angle;
+      Vector dir = new Vector(Math.cos(angle), Math.sin(angle));
+      map.pods[i].apply(dir,actions[i].thrust);
     }
   }
 

@@ -3,8 +3,8 @@ package csb.entities;
 import trigonometry.Point;
 
 public class CheckPoint extends Entity {
-  public CheckPoint(int checkpointX, int checkpointY) {
+  public CheckPoint(double d, double e) {
     super(600);
-    this.position = new Point(checkpointX, checkpointY);
+    this.position = new Point(d, e);
   }
 }
