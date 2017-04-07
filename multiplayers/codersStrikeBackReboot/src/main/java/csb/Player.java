@@ -4,8 +4,11 @@ import java.util.Scanner;
 
 import csb.entities.CheckPoint;
 import csb.entities.Pod;
+import csb.simulation.AGSolution;
+import trigonometry.Vector;
 
 public class Player {
+  private static final Vector DIR_X = new Vector(1,0);
   static Map map = new Map();
   
   public static void main(String args[]) {
@@ -16,6 +19,7 @@ public class Player {
     // game loop
     while (true) {
       round++;
+
       for (int i = 0; i < 4; i++) {
         int x = in.nextInt(); // x position of your pod
         int y = in.nextInt(); // y position of your pod
@@ -23,20 +27,41 @@ public class Player {
         int vy = in.nextInt(); // y speed of your pod
         int angle = in.nextInt(); // angle of your pod
         int nextCheckPointId = in.nextInt(); // next check point id of your pod
+        if (round == 1) {
+          // get the angle as it pleases us, it's first turn
+          Vector dir = new Vector(map.checkPoints[0].position.x - x, map.checkPoints[0].position.y - y).normalize();
+          angle = (int) (180 * Math.signum(dir.ortho().dot(DIR_X)) * Math.acos(dir.dot(DIR_X)) / Math.PI);
+        }
         map.pods[i].readInput(x, y, vx, vy, angle, nextCheckPointId);
       }
 
-      System.out.println("8000 4500 0");
+      /**1st solution :  target the next checkpoint*/
+      // dummy1();
+      
+      /**2nd solution : random move */
+      AGSolution best = null;
+      double bestScore = Double.NEGATIVE_INFINITY;
+      for (int i=0;i<10_000;i++) {
+        AGSolution solution = new AGSolution(map.pods, map.checkPoints);
+        solution.zero();
+        double score = solution.score();
+        if( score > bestScore) {
+          bestScore = score;
+          best = solution;
+        }
+      }
+      //System.err.println("Best scores : "+best.score1+ " / "+best.score2);
+      System.out.println(best.actionOutput(0));
+      System.out.println(best.actionOutput(1));
+    }
+  }
 
-      Pod pod = map.pods[1];
+  private static void dummy1() {
+    for (int i=0;i<2;i++) {
+      Pod pod = map.pods[i];
       CheckPoint cp =map.checkPoints[pod.nextCheckPointId];
       String target = ""+(int)(cp.position.x)+" "+(int)(cp.position.y);
-      if (round > 20) {
-        System.out.println(""+target+" 100");
-      } else {
-        System.out.println(""+target+" 0");
-      }
-
+      System.out.println(""+target+" 10");
     }
   }
 }

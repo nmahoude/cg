@@ -13,10 +13,10 @@ public class Map {
   public Pod[] hisPods = new Pod[2];
   
   public Map() {
-    myPods[0] = pods[0] = new Pod();
-    myPods[1] = pods[1] = new Pod();
-    hisPods[0] = pods[2] = new Pod();
-    hisPods[1] = pods[3] = new Pod();
+    myPods[0] = pods[0] = new Pod(0);
+    myPods[1] = pods[1] = new Pod(1);
+    hisPods[0] = pods[2] = new Pod(2);
+    hisPods[1] = pods[3] = new Pod(3);
   }
 
   public void readCheckpoints(Scanner in) {
@@ -25,7 +25,7 @@ public class Map {
     for (int i = 0; i < checkpointCount; i++) {
       int checkpointX = in.nextInt();
       int checkpointY = in.nextInt();
-      checkPoints[i] = new CheckPoint(checkpointX, checkpointY);
+      checkPoints[i] = new CheckPoint(4+i, checkpointX, checkpointY);
     }
   }
 }
