@@ -24,6 +24,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -40,8 +41,11 @@ public class Gui extends Application {
   Slider slider = new Slider();
   int currentFrame = 0;
   
+  List<Line> trajectory = new ArrayList<>();
+  
   Circle[] cps = new Circle[100];
-  Rectangle[] rectangles = new Rectangle[10_000];
+  Rectangle[] rectangles = new Rectangle[100];
+  Line[][] lines = new Line[100][AGSolution.ACTION_SIZE];
   double scores[]  =new double[rectangles.length];
   
   PodRepresentation podRepresentations[] = new PodRepresentation[4];
@@ -51,13 +55,14 @@ public class Gui extends Application {
     }
   }
   List<Frame> frames = new ArrayList<>();
+  private Pane playfield;
 
   @Override 
   public void start(Stage stage) {
     VBox root = new VBox();
     Rectangle rectangle = new Rectangle(16000/ratio, 9000/ratio);
     Group playfieldRoot = new Group(rectangle);
-    Pane playfield = new Pane(rectangle);
+    playfield = new Pane(rectangle);
     playfield.setManaged(false);
     playfield.maxWidth(16000/ratio);
     playfield.maxHeight(9000/ratio);
@@ -103,6 +108,11 @@ public class Gui extends Application {
       rectangles[i].setWidth(1);
       rectangles[i].setHeight(1);
       playfield.getChildren().add(rectangles[i]);
+      for (int j=0;j<AGSolution.ACTION_SIZE;j++) {
+        lines[i][j] = new Line();
+        lines[i][j].setStrokeWidth(1);
+        playfield.getChildren().add(lines[i][j]);
+      }
     }
 
     
@@ -139,6 +149,8 @@ public class Gui extends Application {
     
     scene.setFill(Color.GREY);
     stage.setScene(scene);
+    stage.setWidth(1600);
+    stage.setHeight(1080);
     stage.show();
   }
 
@@ -148,6 +160,21 @@ public class Gui extends Application {
       frame.pods[i] = referee.pods[i].clone();
       frame.targetPoints[i] = referee.target[i];
     }
+
+    // add trajectory of pod 0
+    if (frames.size() > 1) {
+      Line line = new Line();
+      line.setStroke(Color.CYAN);
+      Frame lastFrame = frames.get(frames.size()-1);
+      line.setStartX(lastFrame.pods[0].position.x/ratio);
+      line.setStartY(lastFrame.pods[0].position.y/ratio);
+      line.setEndX(frame.pods[0].position.x/ratio);
+      line.setEndY(frame.pods[0].position.y/ratio);
+      trajectory.add(line);
+      playfield.getChildren().add(line);
+    }
+
+    
     frames.add(frame);
     currentFrame = frames.size()-1;
     
@@ -172,7 +199,7 @@ public class Gui extends Application {
         double minScore =  Double.POSITIVE_INFINITY;
         for (int i=0;i<rectangles.length;i++) {
           AGSolution solution = new AGSolution(referee.pods, referee.checkPoints);
-          solution.zero();
+          solution.test();
           solution.moveAndEvaluate();
           double score = solution.score1;
           rectangles[i].setX(solution.pods[0].position.x / ratio);
@@ -185,12 +212,25 @@ public class Gui extends Application {
             bestScore = score;
             best = solution;
           }
+          for (int j=0;j<AGSolution.ACTION_SIZE-1;j++) {
+            lines[i][j].setStartX(solution.points[j].x / ratio);
+            lines[i][j].setStartY(solution.points[j].y / ratio);
+            lines[i][j].setEndX(solution.points[j+1].x / ratio);
+            lines[i][j].setEndY(solution.points[j+1].y / ratio);
+          }
         }
-        for (int i=0;i<rectangles.length;i++){
+        for (int i=0;i<rectangles.length;i++) {
           double colorScore = Math.max(0, Math.min(1, (float) (scores[i]-minScore) / (bestScore-minScore)));
           int index = (int)(colorScore * 10);
           AGSteps[index]++;    
-          rectangles[i].setFill(new Color(colorScore, 1.0-colorScore,  0, 1));
+          Color color = new Color(colorScore, 1.0-colorScore,  0, 1);
+          rectangles[i].setFill(color);
+          for (int j=0;j<AGSolution.ACTION_SIZE-1;j++) {
+            lines[i][j].setStroke(color);
+            if (scores[i] == bestScore) {
+              lines[i][j].setStroke(Color.WHITE);
+            }
+          }
         }
         System.out.println("steps: ");
         for (int i=0;i<11;i++) {
@@ -208,6 +248,7 @@ public class Gui extends Application {
       
       try {
         referee.updateGame(0);
+        
         if (referee.collisionOccur) {
           //pause = true;
         }
@@ -225,7 +266,7 @@ public class Gui extends Application {
   }
 
   public static void main(String[] args) throws Exception {
-    referee.initReferee(2 /**seed*/, 4 /*pods*/);
+    referee.initReferee(6 /**seed*/, 1 /*pods*/);
     
     launch(args);
   }

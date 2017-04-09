@@ -18,7 +18,7 @@ import trigonometry.Vector;
 
 public class Referee {
   private static final Pattern PLAYER_INPUT_MOVE_PATTERN = Pattern
-      .compile("(?<x>[0-9]{1,8})\\s+(?<y>[0-9]{1,8})\\s+(?<thrust>([0-9]{1,8}))", Pattern.CASE_INSENSITIVE);
+      .compile("(?<x>-?[0-9]{1,8})\\s+(?<y>-?[0-9]{1,8})\\s+(?<thrust>([0-9]{1,8}))", Pattern.CASE_INSENSITIVE);
 
   private static final int CHECKPOINT_GENERATION_MAX_GAP = 30;
 

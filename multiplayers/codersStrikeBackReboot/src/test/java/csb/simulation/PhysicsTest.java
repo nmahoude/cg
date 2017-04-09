@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import csb.entities.CheckPoint;
 import csb.entities.Pod;
+import csb.game.PhysicsEngine;
 import trigonometry.Point;
 import trigonometry.Vector;
 
@@ -22,7 +23,11 @@ public class PhysicsTest {
     Pod pod2 = new Pod(1);
     Pod pod3 = new Pod(2);
     Pod pod4 = new Pod(3);
-    AGSolution solution = new AGSolution(new Pod[] { pod1, pod2, pod3, pod4 }, new CheckPoint[] { fakeCP, fakeCP });
+    
+    
+    PhysicsEngine physics = new PhysicsEngine();
+    physics.pods = new Pod[] { pod1, pod2, pod3, pod4 };
+    physics.checkPoints = new CheckPoint[] { fakeCP, fakeCP };
 
     pod1.readInput(2616, 6503, 0, 0, -82, 1);
     pod2.readInput(2754, 7493, 0, 0, 97, 1);
@@ -33,7 +38,7 @@ public class PhysicsTest {
     applyPodFirstTurn(pod2, 3104, 10472, 85);
     applyPodFirstTurn(pod3, 10021, 5974, 100);
     applyPodFirstTurn(pod4, 10021, 5974, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 2652, 6416, 30, -73, 293, 1);
     checkPod(pod2, 2764, 7577, 8, 71, 83, 1);
     checkPod(pod3, 2578, 5518, 84, 5, 4, 1);
@@ -43,7 +48,7 @@ public class PhysicsTest {
     applyPod(pod2, 3911, 10349, 86);
     applyPod(pod3, 9685, 5954, BOOST);
     applyPod(pod4, 9701, 6086, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 2732, 6284, 68, -111, 311, 1);
     checkPod(pod2, 2778, 7664, -27, -22, 68, 1);
     checkPod(pod3, 3311, 5563, 622, 38, 4, 1);
@@ -53,7 +58,7 @@ public class PhysicsTest {
     applyPod(pod2, 4648, 10009, 83);
     applyPod(pod3, 7533, 5822, 100);
     applyPod(pod4, 9181, 5582, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 2863, 6108, 111, -149, 314, 1);
     checkPod(pod2, 2803, 7707, 21, 36, 51, 1);
     checkPod(pod3, 4033, 5607, 613, 37, 4, 1);
@@ -63,7 +68,7 @@ public class PhysicsTest {
     applyPod(pod2, 4241, 10339, 80);
     applyPod(pod3, 7569, 5826, 100);
     applyPod(pod4, 9001, 5790, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 3052, 5907, 160, -170, 326, 1);
     checkPod(pod2, 2862, 7813, 50, 90, 61, 1);
     checkPod(pod3, 4746, 5650, 605, 36, 4, 1);
@@ -73,7 +78,7 @@ public class PhysicsTest {
     applyPod(pod2, 4981, 9935, 86);
     applyPod(pod3, 7601, 5830, 100);
     applyPod(pod4, 8853, 5970, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 3300, 5693, 210, -181, 334, 1);
     checkPod(pod2, 2973, 7964, 94, 128, 45, 1);
     checkPod(pod3, 5451, 5692, 599, 35, 4, 1);
@@ -83,7 +88,7 @@ public class PhysicsTest {
     applyPod(pod2, 4880, 10279, 93);
     applyPod(pod3, 7625, 5834, 100);
     applyPod(pod4, 8725, 6122, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 3595, 5498, 250, -165, 351, 1);
     checkPod(pod2, 3126, 8164, 130, 169, 51, 1);
     checkPod(pod3, 6150, 5734, 593, 35, 4, 1);
@@ -93,7 +98,7 @@ public class PhysicsTest {
     applyPod(pod2, 5267, 10264, 88);
     applyPod(pod3, 7649, 5834, 100);
     applyPod(pod4, 8621, 6254, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 3944, 5317, 296, -154, 351, 1);
     checkPod(pod2, 3319, 8395, 163, 196, 44, 1);
     checkPod(pod3, 6843, 5776, 588, 35, 4, 1);
@@ -103,7 +108,7 @@ public class PhysicsTest {
     applyPod(pod2, 5852, 10001, 82);
     applyPod(pod3, 11590, 1785, 100);
     applyPod(pod4, 8533, 6370, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 4327, 5174, 325, -121, 7, 1);
     checkPod(pod2, 3551, 8635, 197, 203, 32, 1);
     checkPod(pod3, 7528, 5786, 582, 8, 346, 1);
@@ -113,7 +118,7 @@ public class PhysicsTest {
     applyPod(pod2, 6422, 9502, 91);
     applyPod(pod3, 11614, 1893, 100);
     applyPod(pod4, 8461, 6470, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 4732, 5064, 344, -93, 7, 1);
     checkPod(pod2, 3835, 8864, 241, 194, 17, 1);
     checkPod(pod3, 8195, 5741, 566, -38, 328, 1);
@@ -123,7 +128,7 @@ public class PhysicsTest {
     applyPod(pod2, 6826, 9088, 96);
     applyPod(pod3, 11678, 2077, 100);
     applyPod(pod4, 8401, 6562, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 5163, 5006, 366, -49, 22, 1);
     checkPod(pod2, 4172, 9065, 286, 170, 4, 1);
     checkPod(pod3, 8830, 5631, 539, -93, 314, 1);
@@ -133,7 +138,7 @@ public class PhysicsTest {
     applyPod(pod2, 7154, 9386, 91);
     applyPod(pod3, 11786, 2297, 0);
     applyPod(pod4, 8353, 6642, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 5595, 4998, 367, -6, 32, 1);
     checkPod(pod2, 4548, 9245, 320, 152, 6, 1);
     checkPod(pod3, 9369, 5538, 458, -79, 312, 1);
@@ -143,7 +148,7 @@ public class PhysicsTest {
     applyPod(pod2, 7294, 10452, 98);
     applyPod(pod3, 12110, 2241, 0);
     applyPod(pod4, 8313, 6714, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 6043, 5034, 380, 30, 27, 1);
     checkPod(pod2, 4958, 9436, 348, 162, 24, 1);
     checkPod(pod3, 9827, 5459, 389, -67, 310, 2);
@@ -153,7 +158,7 @@ public class PhysicsTest {
     applyPod(pod2, 7930, 9844, 89);
     applyPod(pod3, 12386, 2193, 100);
     applyPod(pod4, 8281, 6782, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 6496, 5093, 385, 50, 22, 1);
     checkPod(pod2, 5394, 9610, 370, 147, 8, 1);
     checkPod(pod3, 10278, 5313, 383, -123, 308, 2);
@@ -163,7 +168,7 @@ public class PhysicsTest {
     applyPod(pod2, 8391, 9742, 94);
     applyPod(pod3, 12410, 2417, 100);
     applyPod(pod4, 12182, 2797, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 6944, 5196, 380, 87, 40, 1);
     checkPod(pod2, 5858, 9761, 394, 128, 3, 1);
     checkPod(pod3, 10720, 5109, 375, -173, 306, 2);
@@ -173,7 +178,7 @@ public class PhysicsTest {
     applyPod(pod2, 8794, 9149, 76);
     applyPod(pod3, 12442, 2617, 100);
     applyPod(pod4, 12210, 2909, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 7400, 5322, 387, 107, 27, 1);
     checkPod(pod2, 6326, 9873, 398, 95, 348, 1);
     checkPod(pod3, 11152, 4854, 367, -216, 305, 2);
@@ -183,7 +188,7 @@ public class PhysicsTest {
     applyPod(pod2, 9075, 8673, 81);
     applyPod(pod3, 12474, 2789, 100);
     applyPod(pod4, 12238, 3005, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 7879, 5461, 407, 118, 19, 1);
     checkPod(pod2, 6798, 9936, 401, 53, 336, 1);
     checkPod(pod3, 11573, 4554, 357, -255, 303, 2);
@@ -193,7 +198,7 @@ public class PhysicsTest {
     applyPod(pod2, 9773, 9553, 98);
     applyPod(pod3, 12514, 2945, 100);
     applyPod(pod4, 12262, 3089, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 8376, 5588, 422, 107, 5, 1);
     checkPod(pod2, 7296, 9976, 423, 34, 353, 1);
     checkPod(pod3, 11980, 4213, 346, -290, 300, 2);
@@ -203,7 +208,7 @@ public class PhysicsTest {
     applyPod(pod2, 10149, 9048, 78);
     applyPod(pod3, 12558, 3085, 100);
     applyPod(pod4, 12286, 3165, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 8891, 5685, 438, 82, 354, 1);
     checkPod(pod2, 7793, 9986, 422, 8, 342, 1);
     checkPod(pod3, 12372, 3834, 332, -322, 297, 2);
@@ -213,7 +218,7 @@ public class PhysicsTest {
     applyPod(pod2, 10512, 8720, 88);
     applyPod(pod3, 6722, 4573, 0);
     applyPod(pod4, 12310, 3233, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 9404, 5734, 436, 41, 336, 1);
     checkPod(pod2, 8295, 9957, 426, -24, 335, 1);
     checkPod(pod3, 12704, 3512, 282, -273, 279, 2);
@@ -223,7 +228,7 @@ public class PhysicsTest {
     applyPod(pod2, 11140, 9006, 92);
     applyPod(pod3, 6922, 4377, 100);
     applyPod(pod4, 12334, 3293, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 9917, 5721, 436, -10, 325, 2);
     checkPod(pod2, 8808, 9904, 436, -45, 342, 1);
     checkPod(pod3, 12971, 3140, 226, -316, 261, 2);
@@ -233,7 +238,7 @@ public class PhysicsTest {
     applyPod(pod2, 11419, 8428, 89);
     applyPod(pod3, 7146, 4549, 100);
     applyPod(pod4, 12362, 3349, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 10413, 5635, 421, -73, 308, 2);
     checkPod(pod2, 9321, 9815, 436, -75, 331, 1);
     checkPod(pod3, 13152, 2735, 153, -344, 243, 2);
@@ -243,7 +248,7 @@ public class PhysicsTest {
     applyPod(pod2, 11769, 8081, 84);
     applyPod(pod3, 7438, 4661, 52);
     applyPod(pod4, 6498, 4761, 0);
-    solution.play();
+    physics.play();
     checkPod(pod1, 10895, 5484, 409, -128, 308, 2);
     checkPod(pod2, 9826, 9691, 428, -105, 325, 1);
     checkPod(pod3, 13268, 2354, 98, -323, 225, 2);
@@ -253,7 +258,7 @@ public class PhysicsTest {
     applyPod(pod2, 11664, 7320, 88);
     applyPod(pod3, 7658, 4577, 0);
     applyPod(pod4, 6734, 4537, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 11361, 5281, 395, -172, 307, 2);
     checkPod(pod2, 10308, 9516, 409, -148, 308, 1);
     checkPod(pod3, 13366, 2031, 83, -274, 207, 3);
@@ -263,7 +268,7 @@ public class PhysicsTest {
     applyPod(pod2, 11526, 6774, 79);
     applyPod(pod3, 7718, 4381, 100);
     applyPod(pod4, 6918, 4685, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 11816, 5030, 386, -213, 307, 2);
     checkPod(pod2, 10749, 9296, 374, -187, 294, 1);
     checkPod(pod3, 13350, 1741, -13, -246, 189, 3);
@@ -273,7 +278,7 @@ public class PhysicsTest {
     applyPod(pod2, 11316, 6350, 98);
     applyPod(pod3, 8102, 4269, 100);
     applyPod(pod4, 7182, 4801, 25);
-    solution.play();
+    physics.play();
     checkPod(pod1, 12239, 4725, 359, -258, 292, 2);
     checkPod(pod2, 11142, 9013, 333, -240, 281, 1);
     checkPod(pod3, 13238, 1510, -95, -195, 171, 3);
@@ -283,7 +288,7 @@ public class PhysicsTest {
     applyPod(pod2, 10811, 6031, 86);
     applyPod(pod3, 8430, 4065, 100);
     applyPod(pod4, 7362, 4641, 0);
-    solution.play();
+    physics.play();
     checkPod(pod1, 12637, 4386, 338, -288, 296, 2);
     checkPod(pod2, 11466, 8688, 274, -276, 264, 1);
     checkPod(pod3, 13048, 1325, -181, -283, 153, 3);
@@ -293,7 +298,7 @@ public class PhysicsTest {
     applyPod(pod2, 10374, 5893, 83);
     applyPod(pod3, 8774, 4417, 100);
     applyPod(pod4, 7370, 3813, 85);
-    solution.play();
+    physics.play();
     checkPod(pod1, 12989, 4010, 299, -319, 279, 2);
     checkPod(pod2, 11710, 8335, 207, -300, 249, 1);
     checkPod(pod3, 12786, 1101, -222, -190, 144, 3);
@@ -303,7 +308,7 @@ public class PhysicsTest {
     applyPod(pod2, 9926, 5922, 89);
     applyPod(pod3, 8938, 4045, 100);
     applyPod(pod4, 7746, 3833, 0);
-    solution.play();
+    physics.play();
     checkPod(pod1, 13274, 3594, 242, -353, 262, 2);
     checkPod(pod2, 11864, 7963, 130, -315, 234, 1);
     checkPod(pod3, 12485, 972, -256, -109, 143, 3);
@@ -313,7 +318,7 @@ public class PhysicsTest {
     applyPod(pod2, 9625, 5965, 85);
     applyPod(pod3, 9074, 3721, 100);
     applyPod(pod4, 7794, 3749, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 13518, 3146, 207, -380, 271, 2);
     checkPod(pod2, 11931, 7591, 56, -315, 222, 1);
     checkPod(pod3, 12151, 926, -283, -39, 141, 3);
@@ -323,7 +328,7 @@ public class PhysicsTest {
     applyPod(pod2, 9191, 6368, 92);
     applyPod(pod3, 9182, 3441, 100);
     applyPod(pod4, 8158, 3585, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 13712, 2680, 164, -396, 261, 2);
     checkPod(pod2, 11903, 7239, -23, -299, 204, 1);
     checkPod(pod3, 11792, 952, -305, 21, 140, 3);
@@ -333,7 +338,7 @@ public class PhysicsTest {
     applyPod(pod2, 8979, 6566, 84);
     applyPod(pod3, 9270, 3201, 100);
     applyPod(pod4, 8462, 3425, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 13833, 2198, 102, -409, 243, 3);
     checkPod(pod2, 11798, 6921, -89, -270, 193, 1);
     checkPod(pod3, 11412, 1040, -322, 74, 138, 3);
@@ -343,7 +348,7 @@ public class PhysicsTest {
     applyPod(pod2, 8846, 6386, 91);
     applyPod(pod3, 9338, 2989, 100);
     applyPod(pod4, 8718, 3289, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 13869, 1719, 30, -406, 227, 3);
     checkPod(pod2, 11619, 6635, -151, -243, 190, 1);
     checkPod(pod3, 11017, 1182, -335, 121, 137, 3);
@@ -353,7 +358,7 @@ public class PhysicsTest {
     applyPod(pod2, 8624, 6453, 89);
     applyPod(pod3, 9390, 2801, 100);
     applyPod(pod4, 8934, 3173, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 13837, 1266, -27, -384, 217, 3);
     checkPod(pod2, 11379, 6387, -203, -211, 183, 1);
     checkPod(pod3, 10611, 1374, -345, 162, 135, 3);
@@ -363,7 +368,7 @@ public class PhysicsTest {
     applyPod(pod2, 8445, 5760, 84);
     applyPod(pod3, 9430, 2637, 100);
     applyPod(pod4, 9118, 3073, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 13726, 828, -94, -372, 213, 3);
     checkPod(pod2, 11094, 6158, -242, -194, 192, 1);
     checkPod(pod3, 10198, 1609, -351, 199, 133, 3);
@@ -373,7 +378,7 @@ public class PhysicsTest {
     applyPod(pod2, 8343, 4960, 78);
     applyPod(pod3, 9454, 2489, 100);
     applyPod(pod4, 9274, 2989, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 13546, 416, -153, -349, 205, 3);
     checkPod(pod2, 10780, 5933, -266, -191, 204, 1);
     checkPod(pod3, 9782, 1884, -353, 234, 130, 3);
@@ -383,7 +388,7 @@ public class PhysicsTest {
     applyPod(pod2, 8262, 4301, 91);
     applyPod(pod3, 4097, 6062, 100);
     applyPod(pod4, 9406, 2913, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 13308, 25, -202, -332, 206, 3);
     checkPod(pod2, 10438, 5693, -291, -204, 213, 2);
     checkPod(pod3, 9348, 2177, -368, 249, 144, 3);
@@ -393,7 +398,7 @@ public class PhysicsTest {
     applyPod(pod2, 7717, 4428, 79);
     applyPod(pod3, 4157, 6002, 100);
     applyPod(pod4, 9518, 2849, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 13034, -334, -232, -305, 201, 3);
     checkPod(pod2, 10075, 5456, -308, -201, 205, 2);
     checkPod(pod3, 8899, 2485, -381, 262, 144, 3);
@@ -403,7 +408,7 @@ public class PhysicsTest {
     applyPod(pod2, 7853, 3439, 86);
     applyPod(pod3, 4209, 5950, 100);
     applyPod(pod4, 9610, 2789, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 12726, -678, -261, -292, 207, 3);
     checkPod(pod2, 9703, 5197, -315, -219, 222, 2);
     checkPod(pod3, 8438, 2806, -392, 273, 144, 3);
@@ -413,7 +418,7 @@ public class PhysicsTest {
     applyPod(pod2, 7870, 2821, 88);
     applyPod(pod3, 4253, 5906, 100);
     applyPod(pod4, 4325, 6450, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 12382, -999, -292, -273, 200, 3);
     checkPod(pod2, 9334, 4908, -313, -245, 232, 2);
     checkPod(pod3, 7966, 3139, -401, 282, 143, 0);
@@ -423,7 +428,7 @@ public class PhysicsTest {
     applyPod(pod2, 8038, 2202, 87);
     applyPod(pod3, 4289, 5870, 100);
     applyPod(pod4, 4361, 6346, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 11999, -1288, -325, -245, 190, 3);
     checkPod(pod2, 8983, 4585, -297, -274, 244, 2);
     checkPod(pod3, 7485, 3481, -409, 290, 143, 0);
@@ -433,7 +438,7 @@ public class PhysicsTest {
     applyPod(pod2, 8518, 1621, 86);
     applyPod(pod3, 4321, 5838, 100);
     applyPod(pod4, 4389, 6254, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 11575, -1527, -360, -203, 176, 3);
     checkPod(pod2, 8673, 4226, -263, -305, 261, 2);
     checkPod(pod3, 6996, 3831, -415, 297, 143, 0);
@@ -443,7 +448,7 @@ public class PhysicsTest {
     applyPod(pod2, 8303, 1248, 89);
     applyPod(pod3, 4345, 5810, 100);
     applyPod(pod4, 4413, 6174, SHIELD);
-    solution.play();
+    physics.play();
     checkPod(pod1, 11126, -1696, -381, -143, 159, 3);
     checkPod(pod2, 8341, 4328, -343, 607, 263, 2);
     checkPod(pod3, 6501, 4188, -420, 303, 143, 0);
@@ -453,7 +458,7 @@ public class PhysicsTest {
     applyPod(pod2, 8267, 1328, 98);
     applyPod(pod3, 4365, 5786, 100);
     applyPod(pod4, 4109, 6678, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 10667, -1782, -389, -73, 144, 3);
     checkPod(pod2, 7996, 4837, -293, 432, 269, 2);
     checkPod(pod3, 6001, 4551, -425, 308, 143, 0);
@@ -463,7 +468,7 @@ public class PhysicsTest {
     applyPod(pod2, 8871, 1967, 90);
     applyPod(pod3, 4385, 5766, 100);
     applyPod(pod4, 3893, 6726, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 10219, -1781, -380, 1, 128, 3);
     checkPod(pod2, 7729, 5183, -227, 293, 287, 2);
     checkPod(pod3, 5496, 4919, -429, 312, 143, 0);
@@ -473,7 +478,7 @@ public class PhysicsTest {
     applyPod(pod2, 8356, 2249, 100);
     applyPod(pod3, 4401, 5750, 100);
     applyPod(pod4, 3709, 6770, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 9799, -1693, -357, 74, 115, 3);
     checkPod(pod2, 7523, 5378, -175, 165, 282, 2);
     checkPod(pod3, 4987, 5291, -432, 316, 143, 0);
@@ -483,7 +488,7 @@ public class PhysicsTest {
     applyPod(pod2, 8814, 2670, 87);
     applyPod(pod3, 11749, 4710, 0);
     applyPod(pod4, 3553, 6806, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 9400, -1538, -338, 131, 117, 3);
     checkPod(pod2, 7385, 5464, -116, 73, 295, 2);
     checkPod(pod3, 4555, 5607, -367, 268, 125, 0);
@@ -493,7 +498,7 @@ public class PhysicsTest {
     applyPod(pod2, 9424, 3264, 96);
     applyPod(pod3, 11489, 4902, 0);
     applyPod(pod4, 3681, 6618, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 9034, -1335, -311, 172, 111, 3);
     checkPod(pod2, 7334, 5467, -43, 2, 313, 2);
     checkPod(pod3, 4188, 5875, -311, 227, 107, 0);
@@ -503,7 +508,7 @@ public class PhysicsTest {
     applyPod(pod2, 9824, 3794, 85);
     applyPod(pod3, 11265, 5066, 100);
     applyPod(pod4, 3789, 6454, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 8714, -1088, -272, 210, 97, 3);
     checkPod(pod2, 7362, 5422, 23, -38, 326, 2);
     checkPod(pod3, 3879, 6202, -262, 277, 89, 0);
@@ -513,7 +518,7 @@ public class PhysicsTest {
     applyPod(pod2, 9424, 3243, 95);
     applyPod(pod3, 11069, 4866, 75);
     applyPod(pod4, 3877, 6314, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 8445, -798, -228, 246, 88, 3);
     checkPod(pod2, 7450, 5315, 75, -90, 313, 2);
     checkPod(pod3, 3642, 6550, -201, 295, 71, 0);
@@ -523,7 +528,7 @@ public class PhysicsTest {
     applyPod(pod2, 9951, 3659, 84);
     applyPod(pod3, 10825, 4794, 0);
     applyPod(pod4, 3949, 6194, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 8246, -460, -169, 286, 73, 3);
     checkPod(pod2, 7595, 5179, 123, -115, 326, 2);
     checkPod(pod3, 3441, 6845, -170, 250, 53, 0);
@@ -533,7 +538,7 @@ public class PhysicsTest {
     applyPod(pod2, 10451, 4261, 90);
     applyPod(pod3, 10701, 4974, 0);
     applyPod(pod4, 4009, 6086, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 8100, -90, -124, 314, 75, 3);
     checkPod(pod2, 7804, 5036, 177, -121, 342, 2);
     checkPod(pod3, 3271, 7095, -144, 212, 35, 1);
@@ -543,7 +548,7 @@ public class PhysicsTest {
     applyPod(pod2, 10362, 3468, 76);
     applyPod(pod3, 10597, 5126, 100);
     applyPod(pod4, 4057, 5994, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 7976, 319, -105, 347, 90, 3);
     checkPod(pod2, 8046, 4875, 205, -136, 328, 2);
     checkPod(pod3, 3223, 7336, -41, 204, 17, 1);
@@ -553,7 +558,7 @@ public class PhysicsTest {
     applyPod(pod2, 10789, 3661, 79);
     applyPod(pod3, 10185, 5158, 100);
     applyPod(pod4, 4097, 5914, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 7892, 741, -71, 358, 74, 3);
     checkPod(pod2, 8323, 4707, 235, -142, 336, 2);
     checkPod(pod3, 3282, 7538, 50, 171, 359, 1);
@@ -563,7 +568,7 @@ public class PhysicsTest {
     applyPod(pod2, 10686, 2858, 93);
     applyPod(pod3, 9821, 5290, 100);
     applyPod(pod4, 11461, 4814, 0);
-    solution.play();
+    physics.play();
     checkPod(pod1, 7829, 1177, -53, 370, 84, 3);
     checkPod(pod2, 8631, 4508, 262, -169, 322, 2);
     checkPod(pod3, 3427, 7676, 122, 117, 341, 1);
@@ -573,7 +578,7 @@ public class PhysicsTest {
     applyPod(pod2, 11118, 2831, 83);
     applyPod(pod3, 9533, 5506, 100);
     applyPod(pod4, 11245, 4990, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 7786, 1633, -36, 387, 83, 3);
     checkPod(pod2, 8962, 4293, 281, -183, 326, 2);
     checkPod(pod3, 3643, 7760, 183, 70, 340, 1);
@@ -583,7 +588,7 @@ public class PhysicsTest {
     applyPod(pod2, 11697, 3062, 88);
     applyPod(pod3, 9289, 5694, 100);
     applyPod(pod4, 11113, 4806, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 7745, 2115, -34, 409, 93, 3);
     checkPod(pod2, 9323, 4074, 307, -186, 336, 2);
     checkPod(pod3, 3920, 7796, 235, 30, 340, 1);
@@ -593,7 +598,7 @@ public class PhysicsTest {
     applyPod(pod2, 12047, 2819, 82);
     applyPod(pod3, 9081, 5854, 100);
     applyPod(pod4, 10897, 4646, 33);
-    solution.play();
+    physics.play();
     checkPod(pod1, 7690, 2619, -46, 428, 103, 3);
     checkPod(pod2, 9704, 3854, 324, -187, 335, 2);
     checkPod(pod3, 4249, 7791, 279, -4, 339, 1);
@@ -603,7 +608,7 @@ public class PhysicsTest {
     applyPod(pod2, 12677, 3458, 86);
     applyPod(pod3, 8905, 5990, 100);
     applyPod(pod4, 10713, 4746, 0);
-    solution.play();
+    physics.play();
     checkPod(pod1, 7612, 3138, -65, 440, 109, 0);
     checkPod(pod2, 10113, 3656, 347, -168, 352, 2);
     checkPod(pod3, 4621, 7751, 316, -34, 339, 1);
@@ -613,7 +618,7 @@ public class PhysicsTest {
     applyPod(pod2, 13095, 3332, 91);
     applyPod(pod3, 8757, 6110, 100);
     applyPod(pod4, 10609, 4934, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 7488, 3658, -105, 442, 126, 0);
     checkPod(pod2, 10550, 3478, 371, -151, 354, 2);
     checkPod(pod3, 5030, 7680, 347, -60, 338, 1);
@@ -623,7 +628,7 @@ public class PhysicsTest {
     applyPod(pod2, 13543, 3283, 86);
     applyPod(pod3, 8633, 6214, 100);
     applyPod(pod4, 10217, 4934, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 7315, 4149, -146, 417, 144, 0);
     checkPod(pod2, 11007, 3321, 388, -133, 356, 2);
     checkPod(pod3, 5470, 7582, 373, -83, 338, 1);
@@ -633,7 +638,7 @@ public class PhysicsTest {
     applyPod(pod2, 13892, 2501, 98);
     applyPod(pod3, 8529, 6306, 100);
     applyPod(pod4, 9853, 5038, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 7075, 4600, -203, 383, 160, 0);
     checkPod(pod2, 11489, 3161, 409, -135, 344, 2);
     checkPod(pod3, 5935, 7461, 395, -103, 337, 1);
@@ -643,7 +648,7 @@ public class PhysicsTest {
     applyPod(pod2, 14169, 1814, 76);
     applyPod(pod3, 8441, 6386, 100);
     applyPod(pod4, 9545, 5230, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 6796, 4991, -236, 332, 174, 0);
     checkPod(pod2, 11966, 2992, 405, -143, 333, 2);
     checkPod(pod3, 6422, 7319, 413, -121, 337, 1);
@@ -653,7 +658,7 @@ public class PhysicsTest {
     applyPod(pod2, 14277, 1079, 83);
     applyPod(pod3, 8369, 6458, 100);
     applyPod(pod4, 9305, 5478, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 6478, 5315, -269, 275, 185, 0);
     checkPod(pod2, 12435, 2796, 398, -166, 320, 2);
     checkPod(pod3, 6926, 7158, 428, -137, 336, 1);
@@ -663,7 +668,7 @@ public class PhysicsTest {
     applyPod(pod2, 14369, 502, 96);
     applyPod(pod3, 8309, 6522, 100);
     applyPod(pod4, 9105, 5694, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 6121, 5590, -303, 233, 180, 0);
     checkPod(pod2, 12895, 2557, 390, -203, 310, 2);
     checkPod(pod3, 7445, 6979, 441, -151, 335, 1);
@@ -673,7 +678,7 @@ public class PhysicsTest {
     applyPod(pod2, 14984, 404, 85);
     applyPod(pod3, 8257, 6578, 100);
     applyPod(pod4, 8937, 5882, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 5725, 5842, -336, 214, 168, 0);
     checkPod(pod2, 13344, 2293, 381, -224, 314, 2);
     checkPod(pod3, 7976, 6784, 451, -165, 334, 1);
@@ -683,7 +688,7 @@ public class PhysicsTest {
     applyPod(pod2, 15424, 131, 87);
     applyPod(pod3, 12138, 2585, 100);
     applyPod(pod4, 8793, 6038, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 5300, 6063, -361, 188, 175, 0);
     checkPod(pod2, 13785, 2006, 375, -243, 314, 3);
     checkPod(pod3, 8499, 6549, 444, -199, 316, 1);
@@ -693,7 +698,7 @@ public class PhysicsTest {
     applyPod(pod2, 15989, -28, 93);
     applyPod(pod3, 12166, 2721, 100);
     applyPod(pod4, 8673, 6174, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 4861, 6257, -372, 164, 176, 0);
     checkPod(pod2, 14228, 1700, 376, -260, 317, 3);
     checkPod(pod3, 9012, 6278, 436, -230, 314, 1);
@@ -703,7 +708,7 @@ public class PhysicsTest {
     applyPod(pod2, 15879, -804, 82);
     applyPod(pod3, 12198, 2845, 100);
     applyPod(pod4, 8573, 6294, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 4411, 6416, -382, 135, 184, 0);
     checkPod(pod2, 14649, 1372, 357, -279, 303, 3);
     checkPod(pod3, 9516, 5975, 428, -257, 313, 2);
@@ -713,7 +718,7 @@ public class PhysicsTest {
     applyPod(pod2, 15547, -1490, 88);
     applyPod(pod3, 12230, 2953, 100);
     applyPod(pod4, 8489, 6402, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 3949, 6545, -392, 109, 184, 0);
     checkPod(pod2, 15032, 1009, 325, -308, 287, 3);
     checkPod(pod3, 10011, 5644, 420, -281, 312, 2);
@@ -723,7 +728,7 @@ public class PhysicsTest {
     applyPod(pod2, 15494, -1955, 93);
     applyPod(pod3, 12262, 3049, 100);
     applyPod(pod4, 8421, 6498, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 3473, 6639, -404, 79, 190, 0);
     checkPod(pod2, 15371, 609, 288, -339, 279, 3);
     checkPod(pod3, 10497, 5287, 412, -303, 311, 2);
@@ -733,7 +738,7 @@ public class PhysicsTest {
     applyPod(pod2, 15011, -2369, 78);
     applyPod(pod3, 12294, 3137, 100);
     applyPod(pod4, 8365, 6582, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 2991, 6690, -409, 43, 200, 1);
     checkPod(pod2, 15650, 193, 236, -353, 263, 3);
     checkPod(pod3, 10973, 4907, 404, -322, 310, 2);
@@ -743,7 +748,7 @@ public class PhysicsTest {
     applyPod(pod2, 14683, -2646, 92);
     applyPod(pod3, 12326, 3213, 100);
     applyPod(pod4, 8321, 6658, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 2512, 6688, -407, -1, 213, 1);
     checkPod(pod2, 15856, -247, 175, -374, 251, 3);
     checkPod(pod3, 11439, 4507, 396, -340, 309, 2);
@@ -753,7 +758,7 @@ public class PhysicsTest {
     applyPod(pod2, 14231, -2768, 91);
     applyPod(pod3, 12358, 3285, 100);
     applyPod(pod4, 12210, 2681, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 2040, 6622, -401, -56, 225, 1);
     checkPod(pod2, 15982, -697, 106, -382, 237, 3);
     checkPod(pod3, 11895, 4087, 387, -356, 307, 2);
@@ -763,7 +768,7 @@ public class PhysicsTest {
     applyPod(pod2, 13730, -2679, 78);
     applyPod(pod3, 12394, 3349, 100);
     applyPod(pod4, 12230, 2805, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 1591, 6496, -381, -107, 236, 1);
     checkPod(pod2, 16029, -1131, 40, -368, 221, 3);
     checkPod(pod3, 12338, 3648, 376, -373, 304, 2);
@@ -773,7 +778,7 @@ public class PhysicsTest {
     applyPod(pod2, 13364, -2509, 94);
     applyPod(pod3, 6546, 4777, 0);
     applyPod(pod4, 12250, 2913, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 1178, 6310, -350, -157, 248, 1);
     checkPod(pod2, 15986, -1542, -36, -349, 207, 3);
     checkPod(pod3, 12714, 3275, 319, -317, 286, 2);
@@ -783,7 +788,7 @@ public class PhysicsTest {
     applyPod(pod2, 13169, -2575, 89);
     applyPod(pod3, 6774, 4553, 100);
     applyPod(pod4, 12270, 3009, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 811, 6068, -312, -205, 258, 1);
     checkPod(pod2, 15866, -1922, -101, -322, 200, 3);
     checkPod(pod3, 13030, 2858, 268, -354, 268, 2);
@@ -793,7 +798,7 @@ public class PhysicsTest {
     applyPod(pod2, 13153, -3203, 89);
     applyPod(pod3, 6978, 4701, 100);
     applyPod(pod4, 12290, 3093, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 503, 5770, -261, -253, 272, 1);
     checkPod(pod2, 15685, -2282, -154, -306, 205, 3);
     checkPod(pod3, 13264, 2410, 198, -380, 250, 2);
@@ -803,7 +808,7 @@ public class PhysicsTest {
     applyPod(pod2, 12886, -3363, 79);
     applyPod(pod3, 7258, 4805, 64);
     applyPod(pod4, 12310, 3165, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 267, 5429, -200, -290, 286, 1);
     checkPod(pod2, 15457, -2616, -193, -284, 201, 3);
     checkPod(pod3, 13423, 1980, 134, -365, 232, 3);
@@ -813,7 +818,7 @@ public class PhysicsTest {
     applyPod(pod2, 12494, -3088, 100);
     applyPod(pod3, 7514, 4745, 100);
     applyPod(pod4, 12330, 3229, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 110, 5067, -133, -307, 301, 1);
     checkPod(pod2, 15165, -2916, -247, -254, 189, 3);
     checkPod(pod3, 13474, 1559, 43, -357, 214, 3);
@@ -823,7 +828,7 @@ public class PhysicsTest {
     applyPod(pod2, 12257, -3655, 86);
     applyPod(pod3, 7878, 4713, 100);
     applyPod(pod4, 12350, 3289, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 38, 4701, -61, -311, 316, 1);
     checkPod(pod2, 14835, -3191, -280, -233, 194, 3);
     checkPod(pod3, 13421, 1174, -45, -326, 196, 3);
@@ -833,7 +838,7 @@ public class PhysicsTest {
     applyPod(pod2, 11842, -3408, 84);
     applyPod(pod3, 8230, 4589, 100);
     applyPod(pod4, 12374, 3345, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 48, 4351, 8, -297, 331, 1);
     checkPod(pod2, 14471, -3430, -309, -203, 184, 3);
     checkPod(pod3, 13276, 851, -123, -274, 178, 3);
@@ -843,7 +848,7 @@ public class PhysicsTest {
     applyPod(pod2, 11554, -2726, 91);
     applyPod(pod3, 8542, 4381, 100);
     applyPod(pod4, 6510, 4757, 0);
-    solution.play();
+    physics.play();
     checkPod(pod1, 132, 4035, 71, -268, 346, 1);
     checkPod(pod2, 14074, -3612, -337, -154, 166, 3);
     checkPod(pod3, 13059, 611, -184, -203, 160, 3);
@@ -853,7 +858,7 @@ public class PhysicsTest {
     applyPod(pod2, 11455, -2148, 99);
     applyPod(pod3, 8786, 4097, 100);
     applyPod(pod4, 6742, 4533, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 290, 3771, 134, -224, 3, 1);
     checkPod(pod2, 13651, -3718, -359, -89, 151, 3);
     checkPod(pod3, 12796, 469, -223, -120, 142, 3);
@@ -863,7 +868,7 @@ public class PhysicsTest {
     applyPod(pod2, 11465, -1662, 100);
     applyPod(pod3, 8942, 3765, 100);
     applyPod(pod4, 6930, 4685, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 521, 3549, 196, -188, 1, 1);
     checkPod(pod2, 13219, -3738, -367, -17, 137, 3);
     checkPod(pod3, 12497, 414, -254, -46, 139, 3);
@@ -873,7 +878,7 @@ public class PhysicsTest {
     applyPod(pod2, 11200, -1519, 96);
     applyPod(pod3, 9066, 3469, 100);
     applyPod(pod4, 7194, 4801, 44);
-    solution.play();
+    physics.play();
     checkPod(pod1, 803, 3390, 239, -135, 18, 1);
     checkPod(pod2, 12787, -3684, -366, 45, 132, 3);
     checkPod(pod3, 12168, 434, -279, 17, 138, 3);
@@ -883,7 +888,7 @@ public class PhysicsTest {
     applyPod(pod2, 11236, -1115, 100);
     applyPod(pod3, 9166, 3217, 100);
     applyPod(pod4, 7410, 4697, 0);
-    solution.play();
+    physics.play();
     checkPod(pod1, 1116, 3284, 266, -89, 21, 1);
     checkPod(pod2, 12369, -3553, -355, 111, 121, 3);
     checkPod(pod3, 11816, 519, -299, 72, 137, 3);
@@ -893,7 +898,7 @@ public class PhysicsTest {
     applyPod(pod2, 11524, -674, 92);
     applyPod(pod3, 9246, 2997, 100);
     applyPod(pod4, 7506, 4485, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 1449, 3245, 283, -32, 37, 1);
     checkPod(pod2, 11988, -3354, -323, 169, 106, 3);
     checkPod(pod3, 11445, 660, -315, 120, 136, 3);
@@ -903,7 +908,7 @@ public class PhysicsTest {
     applyPod(pod2, 11657, -372, 81);
     applyPod(pod3, 9310, 2805, 100);
     applyPod(pod4, 7910, 4417, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 1811, 3258, 307, 10, 29, 1);
     checkPod(pod2, 11656, -3104, -282, 212, 96, 3);
     checkPod(pod3, 11059, 851, -327, 162, 135, 3);
@@ -913,7 +918,7 @@ public class PhysicsTest {
     applyPod(pod2, 10550, -314, 91);
     applyPod(pod3, 9358, 2637, 100);
     applyPod(pod4, 8270, 4257, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 2210, 3303, 338, 38, 21, 1);
     checkPod(pod2, 11340, -2807, -268, 252, 112, 3);
     checkPod(pod3, 10663, 1085, -336, 199, 134, 3);
@@ -923,7 +928,7 @@ public class PhysicsTest {
     applyPod(pod2, 10365, 30, 96);
     applyPod(pod3, 9394, 2489, 100);
     applyPod(pod4, 8562, 4013, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 2644, 3347, 368, 37, 4, 1);
     checkPod(pod2, 11041, -2464, -254, 291, 109, 3);
     checkPod(pod3, 10260, 1358, -342, 232, 132, 3);
@@ -933,7 +938,7 @@ public class PhysicsTest {
     applyPod(pod2, 9993, 347, 79);
     applyPod(pod3, 9418, 2357, 100);
     applyPod(pod4, 8770, 3721, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 3111, 3386, 396, 33, 1, 1);
     checkPod(pod2, 10759, -2099, -239, 310, 110, 3);
     checkPod(pod3, 9854, 1666, -345, 262, 130, 3);
@@ -943,7 +948,7 @@ public class PhysicsTest {
     applyPod(pod2, 9247, 492, 89);
     applyPod(pod3, 4065, 5950, 100);
     applyPod(pod4, 8942, 3465, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 3599, 3405, 414, 15, 351, 1);
     checkPod(pod2, 10475, -1712, -241, 328, 120, 3);
     checkPod(pod3, 9429, 1987, -361, 273, 143, 3);
@@ -953,7 +958,7 @@ public class PhysicsTest {
     applyPod(pod2, 9067, 937, 98);
     applyPod(pod3, 4129, 5906, 100);
     applyPod(pod4, 9086, 3249, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 4105, 3432, 430, 23, 8, 1);
     checkPod(pod2, 10188, -1297, -243, 352, 118, 3);
     checkPod(pod3, 8988, 2319, -375, 282, 144, 3);
@@ -963,7 +968,7 @@ public class PhysicsTest {
     applyPod(pod2, 9543, 1632, 80);
     applyPod(pod3, 4185, 5870, 100);
     applyPod(pod4, 9206, 3061, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 4612, 3478, 430, 38, 16, 1);
     checkPod(pod2, 9928, -867, -221, 365, 102, 3);
     checkPod(pod3, 8533, 2660, -387, 290, 144, 3);
@@ -973,7 +978,7 @@ public class PhysicsTest {
     applyPod(pod2, 9045, 2000, 88);
     applyPod(pod3, 4233, 5838, 100);
     applyPod(pod4, 9306, 2897, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 5138, 3530, 447, 44, 8, 1);
     checkPod(pod2, 9681, -418, -209, 381, 107, 3);
     checkPod(pod3, 8066, 3009, -397, 297, 144, 0);
@@ -983,7 +988,7 @@ public class PhysicsTest {
     applyPod(pod2, 8695, 2415, 88);
     applyPod(pod3, 4273, 5810, 100);
     applyPod(pod4, 9386, 2753, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 5660, 3609, 444, 66, 25, 1);
     checkPod(pod2, 9443, 46, -202, 394, 109, 3);
     checkPod(pod3, 7589, 3365, -405, 302, 144, 0);
@@ -993,7 +998,7 @@ public class PhysicsTest {
     applyPod(pod2, 8346, 2838, 78);
     applyPod(pod3, 4305, 5790, 100);
     applyPod(pod4, 9450, 2625, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 6179, 3740, 440, 111, 41, 1);
     checkPod(pod2, 9212, 513, -195, 396, 111, 3);
     checkPod(pod3, 7104, 3726, -412, 307, 144, 0);
@@ -1003,7 +1008,7 @@ public class PhysicsTest {
     applyPod(pod2, 7396, 2901, 86);
     applyPod(pod3, 4333, 5770, SHIELD);
     applyPod(pod4, 9502, 2509, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 5243, 3880, -988, 117, 31, 1);
     checkPod(pod2, 8965, 977, -209, 394, 127, 3);
     checkPod(pod3, 6837, 4034, -208, 262, 144, 0);
@@ -1013,7 +1018,7 @@ public class PhysicsTest {
     applyPod(pod2, 6991, 3236, 96);
     applyPod(pod3, 3517, 5950, 100);
     applyPod(pod4, 4173, 6118, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 4328, 4019, -777, 117, 17, 1);
     checkPod(pod2, 8693, 1443, -231, 396, 131, 3);
     checkPod(pod3, 6629, 4296, -176, 222, 150, 0);
@@ -1023,7 +1028,7 @@ public class PhysicsTest {
     applyPod(pod2, 6937, 3875, 87);
     applyPod(pod3, 3389, 6110, 100);
     applyPod(pod4, 4225, 6054, 100);
-    solution.play();
+    physics.play();
     checkPod(pod1, 3644, 4164, -581, 123, 17, 1);
     checkPod(pod2, 8411, 1910, -239, 396, 126, 3);
     checkPod(pod3, 6453, 4518, -149, 188, 151, 0);
