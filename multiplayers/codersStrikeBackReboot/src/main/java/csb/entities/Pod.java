@@ -36,19 +36,38 @@ public class Pod extends Entity {
   public void apply(Vector newDirection, double thrust) {
     direction = newDirection;
     
+    if (thrust < -0.5) {
+      shield = 4;
+    }
     if (shield == 0) {
       speed = speed.add(direction.dot(thrust));
     }
   }
+
+  public void applyNoAngleCheck(Point target, double thrust) {
+    Vector desiredDirection = target.sub(position).normalize();
+    apply(desiredDirection, thrust);
+  }
   
+  public void apply(Point target, double thrust) {
+    Vector desiredDirection = target.sub(position).normalize();
+    if (Math.acos(desiredDirection.dot(direction)) > Math.PI / 10 ) {
+      Vector ortho = direction.ortho();
+      double signum = ortho.dot(desiredDirection) > 0 ? 1.0 : -1.0;
+      desiredDirection = direction.rotate(signum * Math.PI/10);
+    }
+    apply(desiredDirection, thrust);
+  }
+
   public void move(double t) {
     position = position.add(speed.dot(t));
   }
   
   public void end() {
-    position = new Point((int)position.x, (int)position.y);
+    position = new Point(Math.round(position.x), Math.round(position.y));
     speed = new Vector((int)(speed.vx*0.85), (int)(speed.vy*0.85));
     timeout-=1;
+    if (shield>0) shield--;
   }
   
   @Override

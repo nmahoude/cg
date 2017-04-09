@@ -83,7 +83,7 @@ public class AGSolution {
     }
   }
   
-  private void play() {
+  void play() {
     // get collision
     Collision nextCollision = null, collision;
     double t = 0.0;

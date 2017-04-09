@@ -71,7 +71,7 @@ public class Entity {
       return;
     }
     Pod pod1 = (Pod)this;
-    Pod pod2 = (Pod)this;
+    Pod pod2 = (Pod)other;
     
     float m1 = pod1.shield>0 ? 10 : 1;
     float m2 = pod2.shield>0 ? 10 : 1;

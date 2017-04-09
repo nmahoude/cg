@@ -260,25 +260,22 @@ public class Simulation {
     for (i = 0; i < Player.unitsFE; ++i) {
       a = Player.units[i];
 
+      // collision contre les murs
       col = a.collision(t);
-
       if (col != null) {
         collisions[collisionsFE++] = col;
-
         if (col.t < next.t) {
           next = col;
         }
       }
 
+      // collision contre les autres units
       for (j = i + 1; j < Player.unitsFE; ++j) {
         b = Player.units[j];
-
         if (a.can(b)) {
           col = a.collision(b, t);
-
           if (col != null) {
             collisions[collisionsFE++] = col;
-
             if (col.t < next.t) {
               next = col;
             }
@@ -286,6 +283,7 @@ public class Simulation {
         }
       }
     }
+    
     while (t < 1.0) {
       if (next == fake) { // no collision found
         for (i = 0; i < Player.unitsFE; ++i) {
