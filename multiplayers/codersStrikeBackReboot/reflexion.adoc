@@ -25,5 +25,7 @@ lance l'AI pour détermination du meilleur coup
 output le meilleur coup
 
 === AI
-Prend l'état du jeu à un instant t, attent que l'état soit pret à être rollbacké (restore) 
-Genere des *solutions* 
+Prend l'état du jeu à un instant t, attend que l'état soit pret à être rollbacké (restore) 
+Genere des *solutions* (genomes) qui permettent le <i>déplacement</i> des entités
+Evalue le score de la solution à la fin de la simulation
+Renvoie la meilleur *solution* (le meilleur coup)
