@@ -1,25 +1,35 @@
 package csbgui;
 
 import csb.entities.Pod;
-import javafx.scene.layout.Pane;
+import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import trigonometry.Point;
 
-public class PodRepresentation {
+public class PodRepresentation extends Group {
+  public Pod pod;
+  
   Circle podCircle;
   Line target;
   Line speed;
   Line direction;
-  public void build(Pane root, Pod pod) {
+
+  public PodRepresentation(Pod pod) {
+    this.pod = pod;
+    build();
+    update(pod.position);
+  }
+  public void build() {
     Circle circle = new Circle();
     circle.setRadius(pod.radius / Gui.ratio);
     circle.setFill(Color.TRANSPARENT);
     if (pod.id<2) {
       circle.setStroke(Color.ORANGE);
+      circle.setFill(Color.ORANGE);
     } else {
       circle.setStroke(Color.PINK);
+      circle.setFill(Color.PINK);
     }
     podCircle = circle;
 
@@ -36,13 +46,13 @@ public class PodRepresentation {
     directionLine.setStroke(Color.RED);
     direction = directionLine;
 
-    root.getChildren().add(circle);
-    root.getChildren().add(line);
-    root.getChildren().add(speedLine);
-    root.getChildren().add(directionLine);
+    this.getChildren().add(circle);
+    this.getChildren().add(line);
+    this.getChildren().add(speedLine);
+    this.getChildren().add(directionLine);
   }
   
-  public void update(Pod pod, Point targetPoint) {
+  public void update(Point targetPoint) {
     this.podCircle.setCenterX(pod.position.x / Gui.ratio);
     this.podCircle.setCenterY(pod.position.y / Gui.ratio);
 

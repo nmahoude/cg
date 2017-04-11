@@ -9,11 +9,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import csb.entities.CheckPoint;
-import csb.entities.Collision;
 import csb.entities.Pod;
-import csb.entities.Type;
 import trigonometry.Point;
-import trigonometry.Segment;
 import trigonometry.Vector;
 
 public class Referee {
@@ -25,6 +22,7 @@ public class Referee {
   static Random random = new Random();
 
   public static boolean collisionOn = true;
+  public PhysicsEngine physics;
   public Pod pods[];
   public Point target[];
   
@@ -53,14 +51,17 @@ public class Referee {
     target = new Point[playerCount];
     for (int i=0;i<playerCount;i++) {
       int index = (i+1) % (playerCount);
-      pods[index] = new Pod(i);
-      pods[index].nextCheckPointId = 1;
-      pods[index].position = new Point((int)(origin.x-ortho.vx*(i*(radius*2+space))), (int)(origin.y-ortho.vy*(i*(radius*2+space))));
-      pods[index].direction = checkPoints[1].position.sub(pods[index].position).normalize();
-      target[index] = checkPoints[1].position;
-      pods[index].backup();
-      System.out.println("init pos of "+index+" = "+pods[index].position);
+      pods[i] = new Pod(i);
+      pods[i].nextCheckPointId = 1;
+      pods[i].position = new Point((int)(origin.x-ortho.vx*(i*(radius*2+space))), (int)(origin.y-ortho.vy*(i*(radius*2+space))));
+      pods[i].direction = checkPoints[1].position.sub(pods[i].position).normalize();
+      target[i] = checkPoints[1].position;
+      pods[i].backup();
     }
+    
+    physics = new PhysicsEngine();
+    physics.pods = pods;
+    physics.checkPoints = checkPoints;
   }
   
   protected String[] getInputForPlayer(int round, int playerIdx) {
@@ -95,68 +96,13 @@ public class Referee {
   }
   
   public void updateGame(int round) throws Exception {
-    // get collision
-    collisionOccur = false;
-    Collision nextCollision = null, collision;
-    double t = 0.0;
-    
-    while(t <1.0) {
-      nextCollision = null;
-      for (int i=0;i<playerCount;i++) {
-        pods[i].radius = 1;
-        collision = pods[i].collision(checkPoints[pods[i].nextCheckPointId], t);
-        if (collision != null && (nextCollision == null || nextCollision.t > collision.t)) {
-          nextCollision = collision;
-        }
-        pods[i].radius = 400;
-        
-        if (collisionOn) {
-          for (int j=i+1;j<playerCount;j++) {
-            collision = pods[i].collision(pods[j], t);
-            if (collision != null && (nextCollision == null || nextCollision.t > collision.t)) {
-              nextCollision = collision;
-              collisionOccur = true;
-            }
-          }
-        }
-      }    
-      
-      if (nextCollision != null) {
-        double delta = nextCollision.t -t;
-        for (Pod pod : pods) {
-          pod.move(delta);
-        }
-        t = nextCollision.t;
-        if (nextCollision.b.type == Type.CHECKPOINT) {
-          Pod pod = (Pod)nextCollision.a;
-          pod.nextCheckPointId++;
-          if (pod.nextCheckPointId == checkPointCount) {
-            pod.nextCheckPointId = 0;
-          }
-        } else { /* POD */
-          nextCollision.a.bounce(nextCollision.b);
-        }
-      } else {
-        double delta = 1.0 - t;
-        for (Pod pod : pods) {
-          pod.move(delta);
-        }
-        break;
-      }
-    }
+
+    physics.simulate();
 
     for (Pod pod : pods) {
-      pod.end();
       pod.backup();
     }
   }
-
-  private boolean crossCheckPoint(int cpId, Point lastPosition, Point newPosition) {
-    CheckPoint cp = checkPoints[cpId];
-    Segment segment = new Segment(lastPosition, newPosition);
-    return segment.distanceTo(cp.position) < cp.radius;
-  }
-  
 
   static List<Point[]> maps = new ArrayList<>();
   static {
@@ -182,7 +128,6 @@ public class Referee {
     for (Point p : points) {
         checkPoints.add(new CheckPoint(id++, p.x + r.nextInt(CHECKPOINT_GENERATION_MAX_GAP * 2 + 1) - CHECKPOINT_GENERATION_MAX_GAP, p.y + r.nextInt(CHECKPOINT_GENERATION_MAX_GAP * 2 - 1) - CHECKPOINT_GENERATION_MAX_GAP));
     }
-
     this.checkPoints = checkPoints.toArray(new CheckPoint[checkPoints.size()]);
   }
 }

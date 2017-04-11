@@ -9,7 +9,10 @@ public class PhysicsEngine {
   public Pod pods[];
   public CheckPoint checkPoints[];
 
-  public void play() {
+  /**
+   * Imply the applyMove have take place
+   */
+  public void simulate() {
     // get collision
     Collision nextCollision = null, collision;
     double t = 0.0;

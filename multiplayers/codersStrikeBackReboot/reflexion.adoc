@@ -1,0 +1,29 @@
+= Reflexions : comment faire un code compact mais debuggable/analysable
+
+== notes:
+notion de build final / non final
+
+=== Creer des cas de tests 
+* Uniquement dans les builds non-final
+* permet de debugger la simulation
+* permet de debugger certaines situations
+
+=== Viewer
+* en javafx, permet de visualiser l'état du jeu (les entités)
+* ne doit pas faire partir du build final / classe construite pour envoi à CG
+
+=== Viewer debug
+* le viewer doit pouvoir afficher plus d'informations que le simple état du jeu
+* pour cela il faut des moyens intrusif de supervision (exemple état intermédaire)
+* ces moyens ne doivent pas impacter de maniere notable les perfs
+
+== Structure
+
+=== Player 
+Lit l'état du jeu 
+lance l'AI pour détermination du meilleur coup
+output le meilleur coup
+
+=== AI
+Prend l'état du jeu à un instant t, attent que l'état soit pret à être rollbacké (restore) 
+Genere des *solutions* 

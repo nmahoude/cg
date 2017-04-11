@@ -21,5 +21,6 @@
 	<module>ghostInTheCell</module>
 	<module>codeBusters</module>
 	<module>codersStrikeBackReboot</module>
+	<module>codersStrikeBackReboot2</module>
   </modules>
 </project>

@@ -2,9 +2,11 @@ package csb;
 
 import java.util.Scanner;
 
-import csb.entities.CheckPoint;
-import csb.entities.Pod;
-import csb.simulation.AGSolution;
+import csb.ai.AG;
+import csb.ai.AGParameters;
+import csb.ai.Simulation;
+import csb.game.PhysicsEngine;
+import csb.simulation.AGSolution1;
 import trigonometry.Vector;
 
 public class Player {
@@ -17,6 +19,15 @@ public class Player {
     map.readCheckpoints(in);
     int round = 0;
     // game loop
+    
+    PhysicsEngine engine = new PhysicsEngine();
+    engine.pods = map.pods;
+    engine.checkPoints = map.checkPoints;
+    
+    AGParameters parameters = new AGParameters();
+    Simulation simulation = new Simulation(engine);
+    AG ag = new AG(simulation, parameters);
+    
     while (true) {
       round++;
 
@@ -35,33 +46,16 @@ public class Player {
         map.pods[i].readInput(x, y, vx, vy, angle, nextCheckPointId);
       }
 
-      /**1st solution :  target the next checkpoint*/
-      // dummy1();
-      
-      /**2nd solution : random move */
-      AGSolution best = null;
-      double bestScore = Double.NEGATIVE_INFINITY;
-      for (int i=0;i<10_000;i++) {
-        AGSolution solution = new AGSolution(map.pods, map.checkPoints);
-        solution.zero();
-        double score = solution.score();
-        if( score > bestScore) {
-          bestScore = score;
-          best = solution;
-        }
-      }
-      //System.err.println("Best scores : "+best.score1+ " / "+best.score2);
+      AGSolution1 best = AGSolution1.getBest(map.pods, map.checkPoints);
       System.out.println(best.actionOutput(0));
       System.out.println(best.actionOutput(1));
-    }
-  }
-
-  private static void dummy1() {
-    for (int i=0;i<2;i++) {
-      Pod pod = map.pods[i];
-      CheckPoint cp =map.checkPoints[pod.nextCheckPointId];
-      String target = ""+(int)(cp.position.x)+" "+(int)(cp.position.y);
-      System.out.println(""+target+" 10");
+      
+      // update scorers (who is the runner / chaser pod ?)
+      // simulation.scorer1 = new RunnerScorer();
+      // simulation.scorer2 = new ZeroScorer();
+      //AGSolution best = ag.evolution(System.nanoTime() + 100_000_000);
+      //System.out.println(simulation.actionOutput(best, 0));
+      //System.out.println(simulation.actionOutput(best, 1));
     }
   }
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import csb.entities.CheckPoint;
 import csb.entities.Pod;
 import csb.game.Referee;
-import csb.simulation.AGSolution;
+import csb.simulation.AGSolution1;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -18,18 +18,18 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import trigonometry.Point;
+import trigonometry.Vector;
 
 public class Gui extends Application {
   public static final int ratio = 10;
@@ -41,33 +41,38 @@ public class Gui extends Application {
   Slider slider = new Slider();
   int currentFrame = 0;
   
-  List<Line> trajectory = new ArrayList<>();
+  Trajectory pod0Trajectory = new Trajectory();
   
-  Circle[] cps = new Circle[100];
-  Rectangle[] rectangles = new Rectangle[100];
-  Line[][] lines = new Line[100][AGSolution.ACTION_SIZE];
+  Rectangle[] rectangles = new Rectangle[1_000];
+  Line[][] lines = new Line[rectangles.length][AGSolution1.ACTION_SIZE];
   double scores[]  =new double[rectangles.length];
   
   PodRepresentation podRepresentations[] = new PodRepresentation[4];
   {
-    for (int i=0;i<4;i++) {
-      podRepresentations[i] = new PodRepresentation();
+    for (int i=0;i<referee.pods.length;i++) {
+      podRepresentations[i] = new PodRepresentation(referee.pods[i]);
     }
   }
   List<Frame> frames = new ArrayList<>();
   private Pane playfield;
+  private Group agSolutions = new Group();
+  private Rectangle nextTarget = new Rectangle();
 
   @Override 
   public void start(Stage stage) {
     VBox root = new VBox();
-    Rectangle rectangle = new Rectangle(16000/ratio, 9000/ratio);
-    Group playfieldRoot = new Group(rectangle);
-    playfield = new Pane(rectangle);
+    Group playfieldRoot = new Group();
+
+    playfield = new Pane();
     playfield.setManaged(false);
     playfield.maxWidth(16000/ratio);
     playfield.maxHeight(9000/ratio);
     playfield.minWidth(16000/ratio);
     playfield.minHeight(9000/ratio);
+
+    playfield.getChildren().add(pod0Trajectory);
+    playfield.getChildren().add(agSolutions);
+    
     playfieldRoot.setManaged(false);
     playfieldRoot.setAutoSizeChildren(false);
     playfieldRoot.getChildren().add(playfield);
@@ -77,17 +82,8 @@ public class Gui extends Application {
     root.getChildren().add(controls);
     Scene scene = new Scene(root);
     
-    // play/pause button
-    playPause.setLayoutX(10);
-    playPause.setLayoutY(10);
-    playPause.setText(">>");
-    playPause.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        pause = !pause;
-      }
-    });
-    controls.getChildren().add(playPause);
+    addPlayPauseButton(controls);
+    addShowTrajectory(controls);
     
     // frame slider
     slider.setLayoutX(100);
@@ -108,37 +104,32 @@ public class Gui extends Application {
       rectangles[i].setWidth(1);
       rectangles[i].setHeight(1);
       playfield.getChildren().add(rectangles[i]);
-      for (int j=0;j<AGSolution.ACTION_SIZE;j++) {
+      for (int j=0;j<AGSolution1.ACTION_SIZE;j++) {
         lines[i][j] = new Line();
         lines[i][j].setStrokeWidth(1);
-        playfield.getChildren().add(lines[i][j]);
+        agSolutions.getChildren().add(lines[i][j]);
       }
     }
 
+    nextTarget.setWidth(4);
+    nextTarget.setHeight(4);
+    nextTarget.setFill(Color.BLACK);
+    playfield.getChildren().add(nextTarget);
     
     int i=0;
     for (CheckPoint cp : referee.checkPoints) {
-      Text text = new Text(cp.position.x / ratio, cp.position.y / ratio, ""+i);
-      text.setFill(Color.BLUE);
-      playfield.getChildren().add(text);
-      
-      Circle circle = new Circle();
-      circle.setCenterX(cp.position.x / ratio);
-      circle.setCenterY(cp.position.y / ratio);
-      circle.setRadius(cp.radius / ratio);
-      circle.setFill(Color.TRANSPARENT);
-      circle.setStroke(Color.BLUE);
-      cps[i++] = circle;
-      playfield.getChildren().add(circle);
+      CheckPointRepresentation cpr = new CheckPointRepresentation(cp);
+      playfield.getChildren().add(cpr);
     }
     
     for (Pod pod : referee.pods) {
-      podRepresentations[pod.id].build(playfield, pod);
+      playfield.getChildren().add(podRepresentations[pod.id]);
     }
     
     updateFrames();
+
     Timeline timeline = new Timeline(new KeyFrame(
-        Duration.millis(120),
+        Duration.millis(60),
         ae -> updatePods()));
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.play();
@@ -154,6 +145,32 @@ public class Gui extends Application {
     stage.show();
   }
 
+  private void addShowTrajectory(HBox controls) {
+    CheckBox cb = new CheckBox();
+    cb.setText("show traj");
+    cb.setSelected(true);
+    cb.setOnAction(new EventHandler<ActionEvent>() {
+    @Override
+    public void handle(ActionEvent event) {
+      pod0Trajectory.setVisible(cb.isSelected());
+    }
+    });
+    controls.getChildren().add(cb);
+  }
+
+  private void addPlayPauseButton(HBox controls) {
+    playPause.setLayoutX(10);
+    playPause.setLayoutY(10);
+    playPause.setText(">>");
+    playPause.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        pause = !pause;
+      }
+    });
+    controls.getChildren().add(playPause);
+  }
+
   private void updateFrames() {
     Frame frame = new Frame();
     for (int i=0;i<referee.playerCount;i++) {
@@ -161,20 +178,8 @@ public class Gui extends Application {
       frame.targetPoints[i] = referee.target[i];
     }
 
-    // add trajectory of pod 0
-    if (frames.size() > 1) {
-      Line line = new Line();
-      line.setStroke(Color.CYAN);
-      Frame lastFrame = frames.get(frames.size()-1);
-      line.setStartX(lastFrame.pods[0].position.x/ratio);
-      line.setStartY(lastFrame.pods[0].position.y/ratio);
-      line.setEndX(frame.pods[0].position.x/ratio);
-      line.setEndY(frame.pods[0].position.y/ratio);
-      trajectory.add(line);
-      playfield.getChildren().add(line);
-    }
+    pod0Trajectory.addPoint(frame.pods[0].position);
 
-    
     frames.add(frame);
     currentFrame = frames.size()-1;
     
@@ -186,77 +191,12 @@ public class Gui extends Application {
   private void updatePodRepresentation(int index) {
     Pod pod = frames.get(currentFrame).pods[index];
     Point targetPoint = frames.get(currentFrame).targetPoints[index];
-    podRepresentations[index].update(pod, targetPoint);
+    podRepresentations[index].update(targetPoint);
   }
 
   private Object updatePods() {
     if (!pause) {
-      // case 1
-      {
-        int AGSteps[] = new int[11];
-        AGSolution best = null;
-        double bestScore = Double.NEGATIVE_INFINITY;
-        double minScore =  Double.POSITIVE_INFINITY;
-        for (int i=0;i<rectangles.length;i++) {
-          AGSolution solution = new AGSolution(referee.pods, referee.checkPoints);
-          solution.test();
-          solution.moveAndEvaluate();
-          double score = solution.score1;
-          rectangles[i].setX(solution.pods[0].position.x / ratio);
-          rectangles[i].setY(solution.pods[0].position.y / ratio);
-          solution.reset();
-
-          scores[i] = score;
-          minScore = Math.min(minScore, score);
-          if( score > bestScore) {
-            bestScore = score;
-            best = solution;
-          }
-          for (int j=0;j<AGSolution.ACTION_SIZE-1;j++) {
-            lines[i][j].setStartX(solution.points[j].x / ratio);
-            lines[i][j].setStartY(solution.points[j].y / ratio);
-            lines[i][j].setEndX(solution.points[j+1].x / ratio);
-            lines[i][j].setEndY(solution.points[j+1].y / ratio);
-          }
-        }
-        for (int i=0;i<rectangles.length;i++) {
-          double colorScore = Math.max(0, Math.min(1, (float) (scores[i]-minScore) / (bestScore-minScore)));
-          int index = (int)(colorScore * 10);
-          AGSteps[index]++;    
-          Color color = new Color(colorScore, 1.0-colorScore,  0, 1);
-          rectangles[i].setFill(color);
-          for (int j=0;j<AGSolution.ACTION_SIZE-1;j++) {
-            lines[i][j].setStroke(color);
-            if (scores[i] == bestScore) {
-              lines[i][j].setStroke(Color.WHITE);
-            }
-          }
-        }
-        System.out.println("steps: ");
-        for (int i=0;i<11;i++) {
-          System.out.print(AGSteps[i]+ " ");
-        }
-        System.out.println();
-        referee.handlePlayerOutput(0, 0, 0, new String[]{best.actionOutput(0)});
-      }
-      for (int i=1;i<referee.playerCount;i++) {
-        Pod pod = referee.pods[i];
-        CheckPoint cp =referee.checkPoints[pod.nextCheckPointId];
-        String target = ""+(int)(cp.position.x)+" "+(int)(cp.position.y);
-        referee.handlePlayerOutput(0, 0, i, new String[]{target + " 100"});
-      }
-      
-      try {
-        referee.updateGame(0);
-        
-        if (referee.collisionOccur) {
-          //pause = true;
-        }
-      } catch (Exception e) {
-      }
-  
-      updateFrames();
-      pause = true;
+      calculateNextFrame();
     }
     
     for (int i=0;i<referee.playerCount;i++) {
@@ -265,8 +205,86 @@ public class Gui extends Application {
     return null;
   }
 
+  private void calculateNextFrame() {
+    calculateWithAG(referee.pods[0]);
+    calculateDirect(referee.pods[1]);
+    calculateDirect(referee.pods[2]);
+    calculateDirect(referee.pods[3]);
+    
+    try {
+      referee.updateGame(0);
+    } catch (Exception e) {
+    }
+ 
+    updateFrames();
+    //pause = true;
+  }
+
+  private void calculateWithAG(Pod pod) {
+    AGSolution1 best = null;
+    double bestScore = Double.NEGATIVE_INFINITY;
+    double minScore =  Double.POSITIVE_INFINITY;
+    for (int i=0;i<rectangles.length;i++) {
+      AGSolution1 solution = new AGSolution1(referee.pods, referee.checkPoints);
+      solution.test();
+      
+      double score = solution.moveAndEvaluate();;
+      rectangles[i].setX(solution.pods[0].position.x / ratio);
+      rectangles[i].setY(solution.pods[0].position.y / ratio);
+      solution.reset();
+
+      scores[i] = score;
+      minScore = Math.min(minScore, score);
+      if( score > bestScore) {
+        bestScore = score;
+        best = solution;
+      }
+      for (int j=0;j<AGSolution1.ACTION_SIZE-1;j++) {
+        lines[i][j].setStartX(solution.points[j].x / ratio);
+        lines[i][j].setStartY(solution.points[j].y / ratio);
+        lines[i][j].setEndX(solution.points[j+1].x / ratio);
+        lines[i][j].setEndY(solution.points[j+1].y / ratio);
+      }
+    }
+    for (int i=0;i<rectangles.length;i++) {
+      double colorScore = Math.max(0, Math.min(1, (float) (scores[i]-minScore) / (bestScore-minScore)));
+      int index = (int)(colorScore * 10);
+      Color color = new Color(colorScore, 1.0-colorScore,  0, 1);
+      rectangles[i].setFill(color);
+      for (int j=0;j<AGSolution1.ACTION_SIZE-1;j++) {
+        lines[i][j].setStroke(color);
+        lines[i][j].setVisible(scores[i] > 0.9*bestScore);
+        if (scores[i] == bestScore) {
+          lines[i][j].setStroke(Color.WHITE);
+        }
+      }
+    }
+    
+    updateNextCheckPointTarget();
+    
+    referee.handlePlayerOutput(0, 0, 0, new String[]{best.actionOutput(0)});
+    referee.handlePlayerOutput(0, 0, 1, new String[]{best.actionOutput(1)});
+  }
+
+  private void updateNextCheckPointTarget() {
+    Pod pod = referee.pods[0];
+    int lastCheckPoint = pod.nextCheckPointId == 0 ? referee.checkPoints.length-1 : pod.nextCheckPointId-1;
+    int nextNextCheckPoint = pod.nextCheckPointId == referee.checkPoints.length-1 ? 0 : pod.nextCheckPointId+1;
+    Vector dir = referee.checkPoints[nextNextCheckPoint].position.sub(referee.checkPoints[lastCheckPoint].position).normalize().dot(CheckPoint.RADIUS);
+    Point nextTargetPoint = referee.checkPoints[pod.nextCheckPointId].position.sub(dir);
+    
+    nextTarget .setX(nextTargetPoint.x / ratio);
+    nextTarget.setY(nextTargetPoint.y / ratio);
+  }
+
+  private void calculateDirect(Pod pod) {
+    CheckPoint cp =referee.checkPoints[pod.nextCheckPointId];
+    String target = ""+(int)(cp.position.x)+" "+(int)(cp.position.y);
+    referee.handlePlayerOutput(0, 0, pod.id, new String[]{target + " 100"});    
+  }
+
   public static void main(String[] args) throws Exception {
-    referee.initReferee(6 /**seed*/, 1 /*pods*/);
+    referee.initReferee(5 /**seed*/, 4 /*pods*/);
     
     launch(args);
   }

@@ -1,7 +1,7 @@
 package csbtools;
 
 import csb.game.Referee;
-import csb.simulation.AGSolution;
+import csb.simulation.AGSolution1;
 
 /**
  * do 3 laps of a map and mesure how many turns it takes
@@ -14,7 +14,7 @@ public class LapOptimizer {
 
   public static void main(String[] args) throws Exception {
     Referee referee = new Referee();
-    referee.initReferee(6, 1);
+    referee.initReferee(104, 1);
 
     int turns = 0;
     
@@ -25,7 +25,7 @@ public class LapOptimizer {
       if (lastCheckPoint == 0 && currentCheckPoint == 1) { 
         lapToGo--;
       }
-      AGSolution best = doSimulation(referee);
+      AGSolution1 best = doSimulation(referee);
       referee.handlePlayerOutput(0, 0, 0, new String[] {best.actionOutput(0)});
       referee.updateGame(0);
       lastCheckPoint = currentCheckPoint;
@@ -35,15 +35,15 @@ public class LapOptimizer {
     System.out.println("Turn to do 3 laps : "+turns);
   }
 
-  private static AGSolution doSimulation(Referee referee) {
-    AGSolution best = null;
+  private static AGSolution1 doSimulation(Referee referee) {
+    AGSolution1 best = null;
     double bestScore = Double.NEGATIVE_INFINITY;
     for (int i=0;i<10_000;i++) {
-      AGSolution solution = new AGSolution(referee.pods, referee.checkPoints);
+      AGSolution1 solution = new AGSolution1(referee.pods, referee.checkPoints);
       solution.test();
-      solution.moveAndEvaluate();
-      if (solution.score1 > bestScore) {
-        bestScore = solution.score1;
+      double score = solution.moveAndEvaluate();
+      if (score > bestScore) {
+        bestScore = score;
         best = solution;
       }
       solution.reset();
