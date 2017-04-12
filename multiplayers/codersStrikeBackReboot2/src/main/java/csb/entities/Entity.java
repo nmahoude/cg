@@ -9,6 +9,7 @@ public class Entity {
   public final int id;
   public double radius;
   public Point position = new Point(0,0);
+  
   public Vector speed = NO_SPEED;
 
   private Point b_position;

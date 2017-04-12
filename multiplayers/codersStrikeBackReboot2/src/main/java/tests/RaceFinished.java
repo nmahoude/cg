@@ -1,6 +1,8 @@
 package tests;
 
 public class RaceFinished extends Exception {
+  private static final long serialVersionUID = 2467237233824636092L;
+
   public int podId;
   public enum TeamType {
     TEAM_1, TEAM_2

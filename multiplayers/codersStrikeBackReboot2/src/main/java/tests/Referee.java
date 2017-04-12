@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import csb.Team;
 import csb.entities.CheckPoint;
 import csb.entities.Pod;
 import csb.game.PhysicsEngine;
@@ -16,6 +17,10 @@ import trigonometry.Vector;
 
 public class Referee {
   public static final int LAP_COUNT = 3;
+  public static final int TIMEOUT = 100;
+  
+  public static boolean debugoutput = false;
+  
   private static final Pattern PLAYER_INPUT_MOVE_PATTERN = Pattern
       .compile("(?<x>-?[0-9]{1,8})\\s+(?<y>-?[0-9]{1,8})\\s+(?<thrust>([0-9]{1,8}))", Pattern.CASE_INSENSITIVE);
 
@@ -25,6 +30,7 @@ public class Referee {
 
   public static boolean collisionOn = true;
   public PhysicsEngine physics;
+  public Team teams[] = new Team[2];
   public Pod pods[];
   public Point target[];
   
@@ -51,11 +57,18 @@ public class Referee {
     origin = origin.add(ortho.dot(space*2 + radius*3));
     pods = new Pod[playerCount];
     target = new Point[playerCount];
+    
+    teams[0] = new Team();
+    teams[1] = new Team();
+    pods[0] = new Pod(0, teams[0]);
+    pods[1] = new Pod(1, teams[0]);
+    pods[2] = new Pod(2, teams[1]);
+    pods[3] = new Pod(3, teams[1]);
+    
     for (int i=0;i<playerCount;i++) {
       int index = (i+1) % (playerCount);
-      pods[i] = new Pod(i);
       pods[i].nextCheckPointId = 1;
-      pods[i].position = new Point((int)(origin.x-ortho.vx*(i*(radius*2+space))), (int)(origin.y-ortho.vy*(i*(radius*2+space))));
+      pods[i].position = new Point((int)(origin.x-ortho.vx*(index*(radius*2+space))), (int)(origin.y-ortho.vy*(index*(radius*2+space))));
       pods[i].direction = checkPoints[1].position.sub(pods[i].position).normalize();
       target[i] = checkPoints[1].position;
       pods[i].backup();
@@ -72,6 +85,16 @@ public class Referee {
   
   public void handlePlayerOutput(int frame, int round, int playerIdx, String action) {
     // output in the form : X Y thurst
+    if (debugoutput) {
+      if (playerIdx == 0) {
+        System.err.println("----");
+        System.err.println("Player1");
+      }
+      if (playerIdx == 2) {
+        System.err.println("Player2");
+      }
+      System.err.println(action);
+    }
     Matcher matchMove = PLAYER_INPUT_MOVE_PATTERN.matcher(action);
     if (matchMove.matches()) {
       int x = Integer.parseInt(matchMove.group("x"));
@@ -103,7 +126,7 @@ public class Referee {
       if (pod.lap == LAP_COUNT) {
         throw new RaceFinished(pod.id); // TODO handle draw ?
       }
-      if (pod.timeout == 0) {
+      if (pod.team.timeout >= TIMEOUT) {
         throw new RaceFinished((pod.id+2) % 4); // TODO better handle this ?
       }
       pod.backup();

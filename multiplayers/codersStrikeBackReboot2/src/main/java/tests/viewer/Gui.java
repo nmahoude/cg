@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import csb.ai.DummyAI;
+import csb.ai.ag.AGAI;
 import csb.entities.CheckPoint;
 import csb.entities.Pod;
 import javafx.animation.Animation;
@@ -29,10 +30,10 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import tests.Controller;
 import tests.RaceFinished;
-import trigonometry.Point;
 
 public class Gui extends Application {
   public static final int ratio = 10;
+  private static Controller controller;
   
   Button playPause = new Button();
   boolean pause = true;
@@ -44,7 +45,8 @@ public class Gui extends Application {
   List<Frame> frames = new ArrayList<>();
   private Pane playfield;
   private Rectangle nextTarget = new Rectangle();
-  private static Controller controller;
+  private static AGAI agai;
+  private static AGAIRepresentation agaiUI;
 
   @Override 
   public void start(Stage stage) {
@@ -58,6 +60,7 @@ public class Gui extends Application {
     playfield.minWidth(16000/ratio);
     playfield.minHeight(9000/ratio);
 
+    playfield.getChildren().add(agaiUI);
     playfieldRoot.setManaged(false);
     playfieldRoot.setAutoSizeChildren(false);
     playfieldRoot.getChildren().add(playfield);
@@ -126,7 +129,9 @@ public class Gui extends Application {
     cb.setOnAction(new EventHandler<ActionEvent>() {
     @Override
     public void handle(ActionEvent event) {
-      //pod0Trajectory.setVisible(cb.isSelected());
+      for (PodRepresentation pr :podRepresentations) {
+        pr.trajectory.setVisible(cb.isSelected());
+      }
     }
     });
     controls.getChildren().add(cb);
@@ -149,7 +154,7 @@ public class Gui extends Application {
     Frame frame = new Frame();
     for (int i=0;i<controller.getPods().length;i++) {
       frame.pods[i] = controller.getPods()[i].clone();
-      frame.targetPoints[i] = new Point(0,0);
+      frame.targetPoints[i] = controller.getPods()[i].position;
     }
 
     frames.add(frame);
@@ -161,15 +166,14 @@ public class Gui extends Application {
   }
 
   private void updatePodRepresentation(int index) {
-    Pod pod = frames.get(currentFrame).pods[index];
-    Point targetPoint = frames.get(currentFrame).targetPoints[index];
-    podRepresentations[index].update(targetPoint);
+    podRepresentations[index].update();
   }
 
   private Object update() {
     if (!pause) {
       try {
         controller.playOneTurn();
+        updateFrames();
       } catch (RaceFinished rf) {
         System.out.println("Race finished "+rf.team+" has won");
         Platform.exit();
@@ -182,16 +186,23 @@ public class Gui extends Application {
     for (int i=0;i<controller.getPods().length;i++) {
       updatePodRepresentation(i);
     }
+    agaiUI.update(agai);
+    //pause =true;
     return null;
   }
 
   public static void main(String[] args) throws Exception {
     controller = new Controller();
-    controller.init(2);
+    int seed = (int)System.currentTimeMillis();
+    System.out.println("Seed : "+seed);
+    controller.init(seed);
+    controller.referee.physics.collisionSimualtion = false;
+    
     controller.setAI1(new DummyAI());
-    controller.setAI2(new DummyAI());
+    agai = new AGAI();
+    controller.setAI2(agai);
     
-    
+    agaiUI = new AGAIRepresentation();
     launch(args);
   }
 }

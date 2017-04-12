@@ -4,7 +4,7 @@ import csb.GameState;
 
 public interface AI {
 
-  public AISolution getSolution();
+  public AISolution evolve();
 
   public void setState(GameState state1);
 

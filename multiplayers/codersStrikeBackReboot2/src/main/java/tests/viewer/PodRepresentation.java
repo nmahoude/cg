@@ -5,20 +5,19 @@ import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import trigonometry.Point;
 
 public class PodRepresentation extends Group {
   public Pod pod;
   
   Circle podCircle;
-  Line target;
   Line speed;
   Line direction;
+  Trajectory trajectory = new Trajectory();
 
   public PodRepresentation(Pod pod) {
     this.pod = pod;
     build();
-    update(pod.position);
+    update();
   }
   public void build() {
     Circle circle = new Circle();
@@ -27,17 +26,14 @@ public class PodRepresentation extends Group {
     if (pod.id<2) {
       circle.setStroke(Color.ORANGE);
       circle.setFill(Color.ORANGE);
+      trajectory.color = Color.ORANGE;
     } else {
       circle.setStroke(Color.PINK);
       circle.setFill(Color.PINK);
+      trajectory.color = Color.PINK;
     }
     podCircle = circle;
 
-    Line line = new Line();
-    line.setFill(Color.ORANGE);
-    line.setStroke(Color.ORANGE);
-    target = line;
-    
     Line speedLine = new Line();
     speedLine.setStroke(Color.DARKVIOLET);
     speed = speedLine;
@@ -47,19 +43,16 @@ public class PodRepresentation extends Group {
     direction = directionLine;
 
     this.getChildren().add(circle);
-    this.getChildren().add(line);
     this.getChildren().add(speedLine);
     this.getChildren().add(directionLine);
+    this.getChildren().add(trajectory);
   }
   
-  public void update(Point targetPoint) {
+  public void update() {
+    trajectory.addPoint(pod.position);
+    
     this.podCircle.setCenterX(pod.position.x / Gui.ratio);
     this.podCircle.setCenterY(pod.position.y / Gui.ratio);
-
-    this.target.setStartX(pod.position.x / Gui.ratio);
-    this.target.setStartY(pod.position.y / Gui.ratio);
-    this.target.setEndX(targetPoint.x / Gui.ratio);
-    this.target.setEndY(targetPoint.y / Gui.ratio);
 
     this.speed.setStartX(pod.position.x / Gui.ratio);
     this.speed.setStartY(pod.position.y / Gui.ratio);

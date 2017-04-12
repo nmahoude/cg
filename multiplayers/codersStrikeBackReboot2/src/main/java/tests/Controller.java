@@ -7,6 +7,7 @@ import java.util.Random;
 import csb.GameState;
 import csb.ai.AI;
 import csb.ai.DummyAI;
+import csb.ai.ag.AGAI;
 import csb.entities.CheckPoint;
 import csb.entities.Pod;
 import tests.RaceFinished.TeamType;
@@ -22,24 +23,33 @@ public class Controller {
   public static void main(String[] args) throws Exception {
     Random rand = new Random(System.currentTimeMillis());
 
-    AI ai1 = new DummyAI();
+    AI ai1 = new AGAI();
     AI ai2 = new DummyAI();
-    AI ai3 = new DummyAI();
-    List<AI> ais = Arrays.asList(ai1, ai2, ai3);
+    List<AI> ais = Arrays.asList(ai1, ai2);
+    
+    final int matchPerEvaluation = 2;
+    int totalMatches = matchPerEvaluation * factoriel(ais.size()-1);
+    int matches = 0;
     
     int scoreMatrix[][] = new int[ais.size()][ais.size()];
     for (int team1 = 0;team1<ais.size()-1;team1++) {
       for (int team2 = team1+1;team2<ais.size();team2++) {
         int score1 = 0, score2 = 0;
         
-        for (int i=0;i<500;i++) {
+        for (int i=0;i<matchPerEvaluation;i++) {
           try {
-            oneRace(rand.nextInt(), ai1, ai2);
+            if (i % 2 == 0) {
+              oneRace(rand.nextInt(), ais.get(team1), ais.get(team2));
+            } else {
+              oneRace(rand.nextInt(), ais.get(team2), ais.get(team1));
+            }
           } catch(RaceFinished rf) {
-            if (rf.team == TeamType.TEAM_1) score1++;
-            if (rf.team == TeamType.TEAM_2) score2++;
+            if (rf.team == TeamType.TEAM_1) {if (i % 2 == 0) score1++; else score2++;}
+            if (rf.team == TeamType.TEAM_2) {if (i % 2 == 0) score2++; else score1++;}
           } catch(Exception e) {
           }
+          matches++;
+          System.out.println("match "+matches);
         }
         scoreMatrix[team1][team2] = score1;
         scoreMatrix[team2][team1] = score2;
@@ -56,6 +66,14 @@ public class Controller {
         }
       }
       System.out.println();
+    }
+  }
+
+  private static int factoriel(int fac) {
+    if (fac <= 1) {
+      return 1;
+    } else {
+      return fac * factoriel(fac-1);
     }
   }
 
@@ -95,8 +113,8 @@ public class Controller {
   }
 
   public void playOneTurn() throws Exception {
-    String[] output1 = ai1.getSolution().output();
-    String[] output2 = ai2.getSolution().output();
+    String[] output1 = ai1.evolve().output();
+    String[] output2 = ai2.evolve().output();
     
     referee.handlePlayerOutput(0, round, 0, output1[0]);
     referee.handlePlayerOutput(0, round, 1, output1[1]);
@@ -104,6 +122,7 @@ public class Controller {
     referee.handlePlayerOutput(0, round, 3, output2[1]);
     
     referee.updateGame(round);
+    
     refereeToState1();
     refereeToState2();
     round++;

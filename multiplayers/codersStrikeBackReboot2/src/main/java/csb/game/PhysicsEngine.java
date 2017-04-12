@@ -9,6 +9,7 @@ public class PhysicsEngine {
   public Pod pods[];
   public CheckPoint checkPoints[];
 
+  public boolean collisionSimualtion = true;
   /**
    * perfect simulation of the CG game Engine (w/r to movement, collision)
    * 
@@ -32,10 +33,12 @@ public class PhysicsEngine {
           }
           pod.radius = 400; 
         
-        for (int j=i+1;j<pods.length;j++) {
-          collision = pod.collision(pods[j], t);
-          if (collision != null && (nextCollision == null || nextCollision.t > collision.t)) {
-            nextCollision = collision;
+        if (collisionSimualtion) {
+          for (int j=i+1;j<pods.length;j++) {
+            collision = pod.collision(pods[j], t);
+            if (collision != null && (nextCollision == null || nextCollision.t > collision.t)) {
+              nextCollision = collision;
+            }
           }
         }
       }    
@@ -49,7 +52,7 @@ public class PhysicsEngine {
         if (nextCollision.b.type == Type.CHECKPOINT) {
           Pod pod = (Pod) nextCollision.a;
 
-          pod.timeout = 100;
+          pod.team.timeout = 0;
           pod.nextCheckPointId++;
           if (pod.nextCheckPointId == checkPoints.length) {
             pod.nextCheckPointId = 0;
@@ -72,5 +75,8 @@ public class PhysicsEngine {
     for (Pod pod : pods) {
       pod.end();
     }
+    // add timeout of the team of team leaders
+    pods[0].team.timeout++;
+    pods[2].team.timeout++;
   }
 }

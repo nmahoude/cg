@@ -1,30 +1,33 @@
 package csb.entities;
 
+import csb.Team;
 import trigonometry.Point;
 import trigonometry.Vector;
 
 public class Pod extends Entity {
   public static final int TIMEOUT = 100;
+
+  public final Team team;
+  
   public static Vector xVector = new Vector(1, 0);
   public Vector direction = new Vector(1,0);
-  public int timeout = TIMEOUT;
   public int nextCheckPointId;
   public int shield;
   public int lap;
   
   public Vector b_direction;
   public int b_nextCheckPointId;
-  public int b_timeout;
   public int b_shield;
   public int b_lap;
   
-  public Pod(int id) {
+  public Pod(int id, Team team) {
     super(Type.POD, id, 400);
+    this.team = team;
     lap = 0;
   }
   
   public Pod clone() {
-    Pod pod = new Pod(id);
+    Pod pod = new Pod(id, team);
     copyTo(pod);
     return pod;
   }
@@ -35,6 +38,11 @@ public class Pod extends Entity {
     pod.nextCheckPointId = nextCheckPointId;
     pod.shield = shield;
     pod.lap = lap;
+  }
+
+  public void apply(double angle, double thrust) {
+    Vector newDirection = direction.rotate(angle);
+    apply(newDirection, thrust);
   }
 
   public void apply(Vector newDirection, double thrust) {
@@ -70,7 +78,6 @@ public class Pod extends Entity {
   public void end() {
     position = new Point(Math.round(position.x), Math.round(position.y));
     speed = new Vector((int)(speed.vx*0.85), (int)(speed.vy*0.85));
-    timeout-=1;
     if (shield>0) shield--;
   }
   
@@ -79,7 +86,6 @@ public class Pod extends Entity {
     super.backup();
     b_direction = direction;
     b_nextCheckPointId =nextCheckPointId;
-    b_timeout = timeout;
     b_shield = shield;
     b_lap = lap;
   }
@@ -89,7 +95,6 @@ public class Pod extends Entity {
     super.restore();
     direction = b_direction;
     nextCheckPointId = b_nextCheckPointId;
-    timeout = b_timeout;
     shield = b_shield;
     lap = b_lap;
   }
@@ -101,4 +106,5 @@ public class Pod extends Entity {
     this.direction = new Vector(Math.cos(angle * Math.PI / 180.0), Math.sin(angle * Math.PI / 180.0));
     this.nextCheckPointId = nextCheckPointId;
   }
+
 }
