@@ -95,7 +95,7 @@ public class Entity {
 
     vx = vx - fx * m1c;
     vy = vy - fy * m1c;
-    other.vx = other.b_vx + fx * m2c;
+    other.vx = other.vx + fx * m2c;
     other.vy = other.vy + fy * m2c;
 
       // Normalize vector at 120
