@@ -10,10 +10,10 @@ public class Entity {
   public double radius;
   public Point position = new Point(0,0);
   
-  public Vector speed = NO_SPEED;
+  public double vx, vy;
 
   private Point b_position;
-  private Vector b_speed;
+  private double b_vx, b_vy;
   
   public Entity(Type type, int id, int radius) {
     this.type = type;
@@ -22,23 +22,27 @@ public class Entity {
   }
   public void backup() {
     b_position = position;
-    b_speed = speed;
+
+    b_vx = vx;
+    b_vy = vy;
   }
   public void restore() {
     position = b_position;
-    speed = b_speed;  
+    vx = b_vx;
+    vy = b_vy;
   }
   public void copyTo(Entity entity) {
     entity.position = position;
-    entity.speed = speed;
+    entity.vx = vx;
+    entity.vy = vy;
   }
   
   public Collision collision(Entity u, double from) {
     double x2 = position.x - u.position.x;
     double y2 = position.y - u.position.y;
     double r2 = radius + u.radius;
-    double vx2 = speed.vx - u.speed.vx;
-    double vy2 = speed.vy - u.speed.vy;
+    double vx2 = vx - u.vx;
+    double vy2 = vy - u.vy;
     double a = vx2*vx2 + vy2*vy2;
 
     if (a < Collision.EPSILON) {
@@ -81,18 +85,18 @@ public class Entity {
     double nx = position.x - other.position.x;
     double ny = position.y - other.position.y; // TODO vector
     double nxnydeux = nx*nx + ny*ny;
-    double dvx = speed.vx - other.speed.vx;
-    double dvy = speed.vy - other.speed.vy;
+    double dvx = vx - other.vx;
+    double dvy = vy - other.vy;
     double product = (nx*dvx + ny*dvy) / (nxnydeux * mcoeff);
     double fx = nx * product;
     double fy = ny * product;
     double m1c = 1.0 / m1;
     double m2c = 1.0 / m2;
 
-    speed = new Vector(speed.vx - fx * m1c,
-                       speed.vy - fy * m1c);
-    other.speed = new Vector(other.speed.vx + fx * m2c,
-                             other.speed.vy + fy * m2c);
+    vx = vx - fx * m1c;
+    vy = vy - fy * m1c;
+    other.vx = other.b_vx + fx * m2c;
+    other.vy = other.vy + fy * m2c;
 
       // Normalize vector at 120
     double impulse = Math.sqrt(fx*fx + fy*fy);
@@ -102,11 +106,9 @@ public class Entity {
       fy = fy * min;
     }
 
-    speed = new Vector(
-                        speed.vx - fx * m1c, 
-                        speed.vy - fy * m1c);
-    other.speed = new Vector(
-                      other.speed.vx + fx * m2c,
-                      other.speed.vy + fy * m2c);
+    vx = vx - fx * m1c;
+    vy = vy - fy * m1c;
+    other.vx = other.vx + fx * m2c;
+    other.vy = other.vy + fy * m2c;
   }
 }

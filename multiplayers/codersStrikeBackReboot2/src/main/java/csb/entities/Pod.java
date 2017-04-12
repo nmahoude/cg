@@ -52,7 +52,9 @@ public class Pod extends Entity {
       shield = 4;
     }
     if (shield == 0) {
-      speed = speed.add(direction.dot(thrust));
+      Vector dot = direction.dot(thrust);
+      vx +=dot.vx;
+      vy +=dot.vy;
     }
   }
 
@@ -72,12 +74,13 @@ public class Pod extends Entity {
   }
 
   public void move(double t) {
-    position = position.add(speed.dot(t));
+    position = position.add(new Vector(vx*t, vy*t));
   }
   
   public void end() {
     position = new Point(Math.round(position.x), Math.round(position.y));
-    speed = new Vector((int)(speed.vx*0.85), (int)(speed.vy*0.85));
+    vx = (int)(vx*0.85);
+    vy = (int)(vy*0.85);
     if (shield>0) shield--;
   }
   
@@ -102,7 +105,8 @@ public class Pod extends Entity {
   public void readInput(int x, int y, int vx, int vy, int angle, int nextCheckPointId) {
     System.err.println("pod.readInput("+x+","+y+","+vx+","+vy+","+angle+","+nextCheckPointId+");");
     this.position = new Point(x, y);
-    this.speed = new Vector(vx, vy);
+    this.vx = vx;
+    this.vy = vy;
     this.direction = new Vector(Math.cos(angle * Math.PI / 180.0), Math.sin(angle * Math.PI / 180.0));
     this.nextCheckPointId = nextCheckPointId;
   }

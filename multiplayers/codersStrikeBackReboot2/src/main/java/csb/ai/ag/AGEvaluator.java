@@ -3,6 +3,7 @@ package csb.ai.ag;
 import csb.GameState;
 import csb.entities.CheckPoint;
 import csb.entities.Pod;
+import lib.trigo.Vector;
 
 public class AGEvaluator {
   GameState state;
@@ -24,7 +25,7 @@ public class AGEvaluator {
 
   private double speedFeature(Pod pod) {
     final int MAX_SPEED = 600;
-    double speed = pod.speed.length() / MAX_SPEED;
+    double speed = Vector.length(pod.vx, pod.vy) / MAX_SPEED;
     return speed;
   }
 

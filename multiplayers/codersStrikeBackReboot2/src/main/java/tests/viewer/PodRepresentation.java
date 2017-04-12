@@ -56,8 +56,8 @@ public class PodRepresentation extends Group {
 
     this.speed.setStartX(pod.position.x / Gui.ratio);
     this.speed.setStartY(pod.position.y / Gui.ratio);
-    this.speed.setEndX((pod.position.x + pod.speed.vx) / Gui.ratio);
-    this.speed.setEndY((pod.position.y + pod.speed.vy) / Gui.ratio);
+    this.speed.setEndX((pod.position.x + pod.vx) / Gui.ratio);
+    this.speed.setEndY((pod.position.y + pod.vy) / Gui.ratio);
     
     this.direction.setStartX(pod.position.x / Gui.ratio);
     this.direction.setStartY(pod.position.y / Gui.ratio);
