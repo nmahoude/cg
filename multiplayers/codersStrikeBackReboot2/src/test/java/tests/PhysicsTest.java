@@ -1048,7 +1048,8 @@ public class PhysicsTest {
   }
 
   public void checkPod(Pod pod, int x, int y, int vx, int vy, int angle, int nextCheckpoint) {
-    assertThat(pod.position, is(new Point(x, y)));
+    assertThat((int)pod.x, is(x));
+    assertThat((int)pod.y, is(y));
     assertThat((int)pod.vx, is(vx));
     assertThat((int)pod.vy, is(vy));
   }

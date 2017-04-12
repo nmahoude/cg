@@ -48,8 +48,8 @@ public class Referee {
     generateMap(random, maps.get(random.nextInt(maps.size())));
     this.checkPointCount = checkPoints.length;
     
-    Point origin = checkPoints[0].position;
-    Vector dir = checkPoints[1].position.sub(checkPoints[0].position);
+    Point origin = new Point(checkPoints[0].x, checkPoints[0].y);
+    Vector dir = new Vector(checkPoints[1].x-checkPoints[0].x, checkPoints[1].y-checkPoints[0].y);
     Vector ortho = dir.rotate(Math.PI/2).normalize();
     
     double radius= 400;
@@ -68,9 +68,10 @@ public class Referee {
     for (int i=0;i<playerCount;i++) {
       int index = (i+1) % (playerCount);
       pods[i].nextCheckPointId = 1;
-      pods[i].position = new Point((int)(origin.x-ortho.vx*(index*(radius*2+space))), (int)(origin.y-ortho.vy*(index*(radius*2+space))));
-      pods[i].direction = checkPoints[1].position.sub(pods[i].position).normalize();
-      target[i] = checkPoints[1].position;
+      pods[i].x=(int)(origin.x-ortho.vx*(index*(radius*2+space)));
+      pods[i].y=(int)(origin.y-ortho.vy*(index*(radius*2+space)));
+      pods[i].direction = new Vector(checkPoints[1].x-pods[i].x, checkPoints[1].y-pods[i].y) .normalize();
+      target[i] = new Point(checkPoints[1].x, checkPoints[1].y);
       pods[i].backup();
     }
     
@@ -106,7 +107,7 @@ public class Referee {
       Pod pod = pods[playerIdx];
       Vector currentDirection = pod.direction;
       Vector n = currentDirection.ortho();
-      Vector wishedDirection = new Point(x, y).sub(pod.position).normalize();
+      Vector wishedDirection = new Vector(x-pod.x, y-pod.y).normalize();
       double wishedAngle = Math.acos(currentDirection.dot(wishedDirection));
       double sign = n.dot(wishedDirection) > 0 ? 1.0 : -1.0;
       // limit angle

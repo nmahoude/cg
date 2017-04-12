@@ -2,6 +2,7 @@ package csb.game;
 
 import csb.entities.CheckPoint;
 import csb.entities.Collision;
+import csb.entities.Entity;
 import csb.entities.Pod;
 import csb.entities.Type;
 
@@ -18,65 +19,80 @@ public class PhysicsEngine {
    * output : new position of pods, direction, speed & new checkpoint updated
    */
   public void simulate() {
-    // get collision
-    Collision nextCollision = null, collision;
+    Collision nextCollision;
     double t = 0.0;
     
-    while(t <1.0) {
-      nextCollision = null;
-      for (int i=0;i<pods.length;i++) {
+    while(t < 1.0) {
+      nextCollision = Entity.fakeCollision;
+      for (int i=0;i<4;i++) {
           Pod pod = pods[i];
-          pod.radius = 1;// sale hack pour ne considerer que le centre du pod
-          collision = pod.collision(checkPoints[pod.nextCheckPointId], t);
-          if (collision != null && (nextCollision == null || nextCollision.t > collision.t)) {
-            nextCollision = collision;
-          }
-          pod.radius = 400; 
+
+          nextCollision = podCheckPointCollision(nextCollision, t, pod); 
         
         if (collisionSimualtion) {
-          for (int j=i+1;j<pods.length;j++) {
-            collision = pod.collision(pods[j], t);
-            if (collision != null && (nextCollision == null || nextCollision.t > collision.t)) {
-              nextCollision = collision;
-            }
-          }
+          nextCollision = podToPodCollision(nextCollision, t, i, pod);
         }
       }    
 
-      if (nextCollision != null) {
+      if (nextCollision != Entity.fakeCollision) {
         double delta = nextCollision.t - t;
-        for (Pod pod : pods) {
-          pod.move(delta);
+        for (int i=0;i<4;i++) {
+          pods[i].move(delta);
         }
         t = nextCollision.t;
         if (nextCollision.b.type == Type.CHECKPOINT) {
-          Pod pod = (Pod) nextCollision.a;
-
-          pod.team.timeout = 0;
-          pod.nextCheckPointId++;
-          if (pod.nextCheckPointId == checkPoints.length) {
-            pod.nextCheckPointId = 0;
-          }
-          if (pod.nextCheckPointId == 1) {
-            pod.lap++;
-          }
+          calculateNextCheckpoint(nextCollision);
         } else { /* POD */
           nextCollision.a.bounce(nextCollision.b);
         }
       } else {
-        double delta = 1.0 - t;
-        for (Pod pod : pods) {
-          pod.move(delta);
-        }
+        moveToEndOfSimulation(t);
         break;
       }
     }
 
-    for (Pod pod : pods) {
-      pod.end();
+    for (int i=0;i<4;i++) {
+      pods[i].end();
     }
     // add timeout of the team of team leaders
     pods[0].team.timeout++;
     pods[2].team.timeout++;
+  }
+  private void moveToEndOfSimulation(double t) {
+    double delta = 1.0 - t;
+    for (Pod pod : pods) {
+      pod.move(delta);
+    }
+  }
+  private void calculateNextCheckpoint(Collision nextCollision) {
+    Pod pod = (Pod) nextCollision.a;
+
+    pod.team.timeout = 0;
+    pod.nextCheckPointId++;
+    if (pod.nextCheckPointId == checkPoints.length) {
+      pod.nextCheckPointId = 0;
+    }
+    if (pod.nextCheckPointId == 1) {
+      pod.lap++;
+    }
+  }
+  private Collision podToPodCollision(Collision nextCollision, double t, int i, Pod pod) {
+    Collision collision;
+    for (int j=i+1;j<pods.length;j++) {
+      collision = Entity.collision(pod, pods[j], t);
+      if (collision != null && nextCollision.t > collision.t) {
+        nextCollision = collision;
+      }
+    }
+    return nextCollision;
+  }
+  private Collision podCheckPointCollision(Collision nextCollision, double t, Pod pod) {
+    pod.radius = 1;// sale hack pour ne considerer que le centre du pod
+    Collision collision = Entity.collision(pod, checkPoints[pod.nextCheckPointId], t);
+    if (nextCollision.t > collision.t) {
+      nextCollision = collision;
+    }
+    pod.radius = 400;
+    return nextCollision;
   }
 }

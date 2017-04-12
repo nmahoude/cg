@@ -59,12 +59,12 @@ public class Pod extends Entity {
   }
 
   public void applyNoAngleCheck(Point target, double thrust) {
-    Vector desiredDirection = target.sub(position).normalize();
+    Vector desiredDirection = target.sub(new Point(x,y)).normalize();
     apply(desiredDirection, thrust);
   }
   
   public void apply(Point target, double thrust) {
-    Vector desiredDirection = target.sub(position).normalize();
+    Vector desiredDirection = target.sub(new Point(x,y)).normalize();
     if (Math.acos(desiredDirection.dot(direction)) > Math.PI / 10 ) {
       Vector ortho = direction.ortho();
       double signum = ortho.dot(desiredDirection) > 0 ? 1.0 : -1.0;
@@ -74,11 +74,13 @@ public class Pod extends Entity {
   }
 
   public void move(double t) {
-    position = position.add(new Vector(vx*t, vy*t));
+    x = x+vx*t;
+    y = y+vy*t;
   }
   
   public void end() {
-    position = new Point(Math.round(position.x), Math.round(position.y));
+    x = Math.round(x);
+    y = Math.round(y);
     vx = (int)(vx*0.85);
     vy = (int)(vy*0.85);
     if (shield>0) shield--;
@@ -104,7 +106,8 @@ public class Pod extends Entity {
 
   public void readInput(int x, int y, int vx, int vy, int angle, int nextCheckPointId) {
     System.err.println("pod.readInput("+x+","+y+","+vx+","+vy+","+angle+","+nextCheckPointId+");");
-    this.position = new Point(x, y);
+    this.x = x;
+    this.y = y;
     this.vx = vx;
     this.vy = vy;
     this.direction = new Vector(Math.cos(angle * Math.PI / 180.0), Math.sin(angle * Math.PI / 180.0));

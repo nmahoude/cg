@@ -44,6 +44,7 @@ public class AGEvaluator {
   private double distanceToCheckPointFeature(Pod pod) {
     final int MAX_DIST = 16000*16000+9000*9000;
     CheckPoint nextCheckPoint = state.checkPoints[pod.nextCheckPointId];
-    return (MAX_DIST - Math.min(MAX_DIST, pod.position.squareDistance(nextCheckPoint.position))) / MAX_DIST;
+    double dist2 = Vector.distance2(pod.x-nextCheckPoint.x, pod.y-nextCheckPoint.y);
+    return (MAX_DIST - Math.min(MAX_DIST, dist2)) / MAX_DIST;
   }
 }

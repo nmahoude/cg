@@ -5,6 +5,7 @@ import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import trigonometry.Point;
 
 public class PodRepresentation extends Group {
   public Pod pod;
@@ -49,19 +50,22 @@ public class PodRepresentation extends Group {
   }
   
   public void update() {
-    trajectory.addPoint(pod.position);
+    trajectory.addPoint(podPosition(pod));
     
-    this.podCircle.setCenterX(pod.position.x / Gui.ratio);
-    this.podCircle.setCenterY(pod.position.y / Gui.ratio);
+    this.podCircle.setCenterX(pod.x / Gui.ratio);
+    this.podCircle.setCenterY(pod.y / Gui.ratio);
 
-    this.speed.setStartX(pod.position.x / Gui.ratio);
-    this.speed.setStartY(pod.position.y / Gui.ratio);
-    this.speed.setEndX((pod.position.x + pod.vx) / Gui.ratio);
-    this.speed.setEndY((pod.position.y + pod.vy) / Gui.ratio);
+    this.speed.setStartX(pod.x / Gui.ratio);
+    this.speed.setStartY(pod.y / Gui.ratio);
+    this.speed.setEndX((pod.x + pod.vx) / Gui.ratio);
+    this.speed.setEndY((pod.y + pod.vy) / Gui.ratio);
     
-    this.direction.setStartX(pod.position.x / Gui.ratio);
-    this.direction.setStartY(pod.position.y / Gui.ratio);
-    this.direction.setEndX((pod.position.x + pod.radius*pod.direction.vx) / Gui.ratio);
-    this.direction.setEndY((pod.position.y + pod.radius*pod.direction.vy) / Gui.ratio);
+    this.direction.setStartX(pod.x / Gui.ratio);
+    this.direction.setStartY(pod.y / Gui.ratio);
+    this.direction.setEndX((pod.x + pod.radius*pod.direction.vx) / Gui.ratio);
+    this.direction.setEndY((pod.y + pod.radius*pod.direction.vy) / Gui.ratio);
+  }
+  private Point podPosition(Pod pod) {
+    return new Point(pod.x, pod.y);
   }
 }

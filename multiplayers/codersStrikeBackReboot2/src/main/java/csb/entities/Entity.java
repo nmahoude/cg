@@ -1,18 +1,20 @@
 package csb.entities;
 
-import trigonometry.Point;
 import trigonometry.Vector;
 
 public class Entity {
+  public static final Collision fakeCollision = new Collision();
+  static { fakeCollision.t = 2.0;}
+
   public static final Vector NO_SPEED = new Vector(0,0);
   public final Type type;
   public final int id;
   public double radius;
-  public Point position = new Point(0,0);
-  
+
+  public double x,y;
   public double vx, vy;
 
-  private Point b_position;
+  public double b_x, b_y;
   private double b_vx, b_vy;
   
   public Entity(Type type, int id, int radius) {
@@ -21,54 +23,56 @@ public class Entity {
     this.radius = radius;
   }
   public void backup() {
-    b_position = position;
-
+    b_x = x;
+    b_y = y;
     b_vx = vx;
     b_vy = vy;
   }
   public void restore() {
-    position = b_position;
+    x = b_x;
+    y = b_y;
     vx = b_vx;
     vy = b_vy;
   }
   public void copyTo(Entity entity) {
-    entity.position = position;
+    entity.x = x;
+    entity.y = y;
     entity.vx = vx;
     entity.vy = vy;
   }
   
-  public Collision collision(Entity u, double from) {
-    double x2 = position.x - u.position.x;
-    double y2 = position.y - u.position.y;
-    double r2 = radius + u.radius;
-    double vx2 = vx - u.vx;
-    double vy2 = vy - u.vy;
+  public static Collision collision(Entity e1, Entity e2, double from) {
+    double x2 = e1.x - e2.x;
+    double y2 = e1.y - e2.y;
+    double r2 = e1.radius + e2.radius;
+    double vx2 = e1.vx - e2.vx;
+    double vy2 = e1.vy - e2.vy;
     double a = vx2*vx2 + vy2*vy2;
 
     if (a < Collision.EPSILON) {
-      return null;
+      return fakeCollision;
     }
 
     double b = -2.0*(x2*vx2 + y2*vy2);
     double delta = b*b - 4.0*a*(x2*x2 + y2*y2 - r2*r2);
 
     if (delta < 0.0) {
-      return null;
+      return fakeCollision;
     }
 
     double t = (b - Math.sqrt(delta))*(1.0/(2.0*a));
 
     if (t <= 0.0) {
-      return null;
+      return fakeCollision;
     }
 
     t += from;
 
     if (t > 1.0) {
-      return null;
+      return fakeCollision;
     }
 
-    return new Collision().update(t, this, u);
+    return new Collision().update(t, e1, e2);
   }
   
   public void bounce(Entity other) {
@@ -82,8 +86,8 @@ public class Entity {
     float m2 = pod2.shield>0 ? 10 : 1;
     
     double mcoeff = (m1 + m2) / (m1 * m2);
-    double nx = position.x - other.position.x;
-    double ny = position.y - other.position.y; // TODO vector
+    double nx = x - other.x;
+    double ny = y - other.y; // TODO vector
     double nxnydeux = nx*nx + ny*ny;
     double dvx = vx - other.vx;
     double dvy = vy - other.vy;

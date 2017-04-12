@@ -5,6 +5,7 @@ import java.util.Random;
 import csb.GameState;
 import csb.ai.AISolution;
 import trigonometry.Point;
+import trigonometry.Vector;
 
 public class AGSolution implements AISolution {
   public static final int DEPTH = 2*6;
@@ -78,11 +79,15 @@ public class AGSolution implements AISolution {
 
   @Override
   public String[] output() {
-    Point target1 = state.pods[0].position.add(state.pods[0].direction.rotate(getAngle(0)).dot(1000.0));
-    output[0] = ""+(int)target1.x+" "+(int)target1.y+" "+(int)getThrust(0);
+    Vector dot1 = state.pods[0].direction.rotate(getAngle(0)).dot(1000.0);
+    output[0] = ""+(int)(state.pods[0].x+dot1.vx)
+              +" "+(int)(state.pods[0].y+dot1.vy)
+              +" "+(int)getThrust(0);
 
-    Point target2 = state.pods[1].position.add(state.pods[1].direction.rotate(getAngle(DEPTH/2+0)).dot(1000.0));
-    output[1] = ""+(int)target2.x+" "+(int)target2.y+" "+(int)getThrust(DEPTH/2+0);
+    Vector dot2 = state.pods[1].direction.rotate(getAngle(DEPTH/2+0)).dot(1000.0);
+    output[1] = ""+(int)(state.pods[1].x+dot2.vx)
+        +" "+(int)(state.pods[1].y+dot2.vy)
+        +" "+(int)getThrust(DEPTH/2+0);
     
     return output;
   }

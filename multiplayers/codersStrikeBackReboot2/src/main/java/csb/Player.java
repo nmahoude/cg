@@ -29,7 +29,7 @@ public class Player {
         int nextCheckPointId = in.nextInt(); // next check point id of your pod
         if (round == 1) {
           // get the angle as it pleases us, it's first turn
-          Vector dir = new Vector(state.checkPoints[0].position.x - x, state.checkPoints[0].position.y - y).normalize();
+          Vector dir = new Vector(state.checkPoints[0].x - x, state.checkPoints[0].y - y).normalize();
           angle = (int) (Math.signum(dir.ortho().dot(DIR_X)) * Math.acos(dir.dot(DIR_X)) * 180 / Math.PI);
         }
         state.pods[i].readInput(x, y, vx, vy, angle, nextCheckPointId);

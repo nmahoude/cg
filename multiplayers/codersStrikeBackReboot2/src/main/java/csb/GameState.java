@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import csb.entities.CheckPoint;
 import csb.entities.Pod;
+import lib.trigo.Vector;
 
 public class GameState {
   public CheckPoint[] checkPoints;
@@ -41,7 +42,7 @@ public class GameState {
     for (int i=0;i<checkPoints.length;i++) {
       CheckPoint p1 = checkPoints[i];
       CheckPoint p2 = checkPoints[(i+1)%checkPoints.length];
-      tempDistance += p1.position.sub(p2.position).length();
+      tempDistance += Vector.length(p2.x-p1.x, p2.y-p1.y);
     }
     lapLength = (int)tempDistance;
   }

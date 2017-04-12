@@ -6,6 +6,7 @@ import csb.GameState;
 import csb.ai.AI;
 import csb.ai.AISolution;
 import csb.game.PhysicsEngine;
+import trigonometry.Point;
 
 public class AGAI implements AI {
   private static final Random rand= new Random();
@@ -96,8 +97,8 @@ public class AGAI implements AI {
       state.pods[1].apply(sol.getAngle(depth+i), sol.getThrust(depth+i));
       engine.simulate();
     }
-    sol.finalPosition0 = state.pods[0].position;
-    sol.finalPosition1 = state.pods[1].position;
+    sol.finalPosition0 = new Point(state.pods[0].x,state.pods[0].y);
+    sol.finalPosition1 = new Point(state.pods[1].x,state.pods[1].y);
   }
 
   @Override

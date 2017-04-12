@@ -30,6 +30,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import tests.Controller;
 import tests.RaceFinished;
+import trigonometry.Point;
 
 public class Gui extends Application {
   public static final int ratio = 10;
@@ -154,7 +155,7 @@ public class Gui extends Application {
     Frame frame = new Frame();
     for (int i=0;i<controller.getPods().length;i++) {
       frame.pods[i] = controller.getPods()[i].clone();
-      frame.targetPoints[i] = controller.getPods()[i].position;
+      frame.targetPoints[i] = new Point(controller.getPods()[i].x, controller.getPods()[i].y);
     }
 
     frames.add(frame);
@@ -196,7 +197,7 @@ public class Gui extends Application {
     int seed = (int)System.currentTimeMillis();
     System.out.println("Seed : "+seed);
     controller.init(seed);
-    controller.referee.physics.collisionSimualtion = false;
+//    controller.referee.physics.collisionSimualtion = false;
     
     controller.setAI1(new DummyAI());
     agai = new AGAI();
