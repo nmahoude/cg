@@ -102,11 +102,11 @@ public class Controller {
     referee.initReferee(seed, 4);
     
     state1 = new GameState();
-    state1.checkPoints = referee.checkPoints;
+    state1.setCheckPoints(referee.checkPoints);
     refereeToState1();
     
     state2 = new GameState();
-    state2.checkPoints = referee.checkPoints;
+    state2.setCheckPoints(referee.checkPoints);
     refereeToState2();
     
     round = 0;

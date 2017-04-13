@@ -3,7 +3,7 @@ package csb.ai.ag;
 import csb.GameState;
 import csb.entities.CheckPoint;
 import csb.entities.Pod;
-import lib.trigo.Vector;
+import lib.trigo.VectorLib;
 
 public class AGEvaluator {
   GameState state;
@@ -13,19 +13,28 @@ public class AGEvaluator {
   }
 
   public void evaluate(AGSolution sol) {
-    Pod pod0 = state.pods[0];
-    Pod pod1 = state.pods[1];
-    
     sol.energy = 0.0
-        + 10.0*checkPointPassedFeature(pod0)
-        + 5.0*distanceToCheckPointFeature(pod0)
-        + 0.4*speedFeature(pod0);
+        + 10.0*checkPointPassedFeature(state.myRunner)
+        + 5.0*distanceToCheckPointFeature(state.checkPoints[state.myRunner.nextCheckPointId], state.myRunner)
+        + 0.0*speedFeature(state.myRunner)
+        
+        + 3.0 * distanceToCheckPointFeature(state.checkPoints[state.hisRunner.nextCheckPointId], state.myBlocker)
+        + 1.0 * distance2ToPodFeature(state.myBlocker, state.hisRunner)
+        - 1.0 * checkPointPassedFeature(state.hisRunner)
+        + 0.5*distanceToCheckPointFeature(state.checkPoints[state.hisRunner.nextCheckPointId], state.hisRunner)
+        
         ;
+  }
+
+  private double distance2ToPodFeature(Pod pod, Pod target) {
+    final int MAX_DIST = 16000*16000+9000*9000;
+    double dist2 = VectorLib.distance2(pod.x-target.x, pod.y-target.y);
+    return (MAX_DIST - Math.min(MAX_DIST, dist2)) / MAX_DIST;
   }
 
   private double speedFeature(Pod pod) {
     final int MAX_SPEED = 600;
-    double speed = Vector.length(pod.vx, pod.vy) / MAX_SPEED;
+    double speed = VectorLib.length(pod.vx, pod.vy) / MAX_SPEED;
     return speed;
   }
 
@@ -41,10 +50,9 @@ public class AGEvaluator {
    * 0 is far
    * 1 is on
    */
-  private double distanceToCheckPointFeature(Pod pod) {
+  private double distanceToCheckPointFeature(CheckPoint nextCheckPoint, Pod pod) {
     final int MAX_DIST = 16000*16000+9000*9000;
-    CheckPoint nextCheckPoint = state.checkPoints[pod.nextCheckPointId];
-    double dist2 = Vector.distance2(pod.x-nextCheckPoint.x, pod.y-nextCheckPoint.y);
+    double dist2 = VectorLib.distance2(pod.x-nextCheckPoint.x, pod.y-nextCheckPoint.y) - CheckPoint.RADIUS*CheckPoint.RADIUS;
     return (MAX_DIST - Math.min(MAX_DIST, dist2)) / MAX_DIST;
   }
 }

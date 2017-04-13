@@ -11,7 +11,7 @@ public class Pod extends Entity {
   
   public static Vector xVector = new Vector(1, 0);
   public Vector direction = new Vector(1,0);
-  public int nextCheckPointId;
+  public int nextCheckPointId = 1;
   public int shield;
   public int lap;
   
@@ -106,6 +106,10 @@ public class Pod extends Entity {
 
   public void readInput(int x, int y, int vx, int vy, int angle, int nextCheckPointId) {
     System.err.println("pod.readInput("+x+","+y+","+vx+","+vy+","+angle+","+nextCheckPointId+");");
+    if (nextCheckPointId == 1 && this.nextCheckPointId == 0) {
+      lap++;
+    }
+    
     this.x = x;
     this.y = y;
     this.vx = vx;

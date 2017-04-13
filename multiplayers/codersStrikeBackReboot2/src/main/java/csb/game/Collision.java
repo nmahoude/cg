@@ -1,6 +1,11 @@
-package csb.entities;
+package csb.game;
+
+import csb.entities.Entity;
 
 public class Collision {
+  public static final Collision noCollision = new Collision();
+  static { noCollision.t = 10.0;}
+
   public static final double EPSILON = 0.001;
   public double t;
   public int dir;

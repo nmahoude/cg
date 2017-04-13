@@ -2,6 +2,8 @@ package csb;
 
 import java.util.Scanner;
 
+import csb.ai.AISolution;
+import csb.ai.ag.AGAI;
 import trigonometry.Vector;
 
 public class Player {
@@ -36,8 +38,13 @@ public class Player {
       }
       state.backup();
 
-      System.out.println("0 0 0");
-      System.out.println("0 0 0");
+      AGAI ag = new AGAI();
+      ag.setState(state);
+      
+      AISolution best = ag.evolve();
+      String[] output = best.output();
+      System.out.println(output[0]);
+      System.out.println(output[1]);
     }
   }
 }

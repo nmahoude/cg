@@ -15,8 +15,8 @@ public class AGAI implements AI {
   private PhysicsEngine engine = new PhysicsEngine();
   private AGEvaluator evaluator;
   
-  public static final int OCCURENCES = 100;
-  public static final int POPULATION = 100;
+  public static final int OCCURENCES = 50;
+  public static final int POPULATION = 20;
   
   public AGSolution[] pool = new AGSolution[POPULATION];
   public AGSolution[] newPool = new AGSolution[POPULATION];
@@ -59,7 +59,7 @@ public class AGAI implements AI {
       swapPools();
     }
     
-    System.err.println("Final best is "+best.energy+" at generation "+bestGeneration);
+    //System.err.println("Final best is "+best.energy+" at generation "+bestGeneration);
     return best;
   }
 

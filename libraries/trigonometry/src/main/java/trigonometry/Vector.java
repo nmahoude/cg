@@ -21,8 +21,9 @@ public class Vector {
    * @return
    */
   public Vector rotate(double angle) {
-    return new Vector(vx*Math.cos(angle) - vy*Math.sin(angle),
-        vx*Math.sin(angle) + vy*Math.cos(angle));
+    double cos = Math.cos(angle);
+    double sin = Math.sin(angle);
+    return new Vector(vx*cos - vy*sin, vx*sin + vy*cos);
   }
   public Vector add(Vector v) {
     return new Vector(vx+v.vx, vy+v.vy);

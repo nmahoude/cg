@@ -1,11 +1,9 @@
 package csb.entities;
 
+import csb.game.Collision;
 import trigonometry.Vector;
 
 public class Entity {
-  public static final Collision fakeCollision = new Collision();
-  static { fakeCollision.t = 2.0;}
-
   public static final Vector NO_SPEED = new Vector(0,0);
   public final Type type;
   public final int id;
@@ -50,26 +48,26 @@ public class Entity {
     double a = vx2*vx2 + vy2*vy2;
 
     if (a < Collision.EPSILON) {
-      return fakeCollision;
+      return Collision.noCollision;
     }
 
     double b = -2.0*(x2*vx2 + y2*vy2);
     double delta = b*b - 4.0*a*(x2*x2 + y2*y2 - r2*r2);
 
     if (delta < 0.0) {
-      return fakeCollision;
+      return Collision.noCollision;
     }
 
     double t = (b - Math.sqrt(delta))*(1.0/(2.0*a));
 
     if (t <= 0.0) {
-      return fakeCollision;
+      return Collision.noCollision;
     }
 
     t += from;
 
     if (t > 1.0) {
-      return fakeCollision;
+      return Collision.noCollision;
     }
 
     return new Collision().update(t, e1, e2);

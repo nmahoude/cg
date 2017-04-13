@@ -200,6 +200,7 @@ public class Gui extends Application {
 //    controller.referee.physics.collisionSimualtion = false;
     
     controller.setAI1(new DummyAI());
+    
     agai = new AGAI();
     controller.setAI2(agai);
     
