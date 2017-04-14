@@ -4,7 +4,7 @@ import csb.entities.Entity;
 
 public class Collision {
   public static final Collision noCollision = new Collision();
-  static { noCollision.t = 10.0;}
+  static { noCollision.t = 1.1;}
 
   public static final double EPSILON = 0.001;
   public double t;

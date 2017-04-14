@@ -15,7 +15,7 @@ public class AGAI implements AI {
   private PhysicsEngine engine = new PhysicsEngine();
   private AGEvaluator evaluator;
   
-  public static final int OCCURENCES = 50;
+  public static final int OCCURENCES = 1000;
   public static final int POPULATION = 20;
   
   public AGSolution[] pool = new AGSolution[POPULATION];

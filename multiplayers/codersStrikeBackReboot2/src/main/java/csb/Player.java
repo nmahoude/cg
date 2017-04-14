@@ -31,18 +31,27 @@ public class Player {
         int nextCheckPointId = in.nextInt(); // next check point id of your pod
         if (round == 1) {
           // get the angle as it pleases us, it's first turn
-          Vector dir = new Vector(state.checkPoints[0].x - x, state.checkPoints[0].y - y).normalize();
+          Vector dir = new Vector(state.checkPoints[1].x - x, state.checkPoints[1].y - y).normalize();
           angle = (int) (Math.signum(dir.ortho().dot(DIR_X)) * Math.acos(dir.dot(DIR_X)) * 180 / Math.PI);
         }
         state.pods[i].readInput(x, y, vx, vy, angle, nextCheckPointId);
       }
       state.backup();
 
+      if (round== 1) {
+        System.out.println(""+(int)state.checkPoints[1].x+" "+(int)state.checkPoints[1].y+" BOOST");
+        System.out.println(""+(int)state.checkPoints[1].x+" "+(int)state.checkPoints[1].y+" BOOST");
+        continue;
+      }
+      long start = System.currentTimeMillis();
       AGAI ag = new AGAI();
       ag.setState(state);
       
       AISolution best = ag.evolve();
       String[] output = best.output();
+
+      long end= System.currentTimeMillis();
+      System.err.println("Time : "+(end-start)+" ms");
       System.out.println(output[0]);
       System.out.println(output[1]);
     }

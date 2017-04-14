@@ -21,10 +21,10 @@ public class PhysicsEngine {
    * input : speed and direction of Pods are updated
    * output : new position of pods, direction, speed & new checkpoint updated
    */
+  Collision nextCollision;
+  double t;
   public void simulate() {
-    Collision nextCollision;
-    double t = 0.0;
-    
+    t = 0.0;
     // 1st round of collision (full)
     nextCollision = Collision.noCollision;
     CollisionFE = 0;
@@ -39,12 +39,12 @@ public class PhysicsEngine {
           if (collision != Collision.noCollision) {
             collisionCache[CollisionFE++] = collision;
           }
-          if (collision != null && nextCollision.t > collision.t) {
+          if (collision.t < nextCollision.t) {
             nextCollision = collision;
           }
         }
       }
-    }    
+    }
 
     while(t < 1.0) {
       if (nextCollision == Collision.noCollision) {
@@ -110,15 +110,19 @@ public class PhysicsEngine {
     Collision best = Collision.noCollision;
     int collisionNewFE=0;
     for (int i=0;i<CollisionFE;i++) {
-      if (collisionCache[i].a != a && collisionCache[i].a != b 
-          & collisionCache[i].b != a || collisionCache[i].b != b ) {
-        collisionNewCache[collisionNewFE++] = collisionCache[i];
-        if (best.t > collisionCache[i].t) {
-          best = collisionCache[i];
+      Collision collision = collisionCache[i];
+      if (collision.a != a && collision.a != b && collision.b != a && collision.b != b ) {
+        collisionNewCache[collisionNewFE++] = collision;
+        if (collision.t < best.t) {
+          best = collision;
         }
       }
     }
+    // swap caches
+    Collision[] temp = collisionCache;
     collisionCache = collisionNewCache;
+    collisionNewCache = temp;
+    
     CollisionFE = collisionNewFE;
     return best;
   }
@@ -135,8 +139,8 @@ public class PhysicsEngine {
   
   private void moveToEndOfSimulation(double t) {
     double delta = 1.0 - t;
-    for (Pod pod : pods) {
-      pod.move(delta);
+    for (int i =0;i<4;i++) {
+      pods[i].move(delta);
     }
   }
   private void calculateNextCheckpoint(Collision nextCollision) {
@@ -159,7 +163,7 @@ public class PhysicsEngine {
       collisionCache[CollisionFE++] = collision;
     }
 
-    if (nextCollision.t > collision.t) {
+    if (collision.t < nextCollision.t) {
       nextCollision = collision;
     }
     pod.radius = 400;

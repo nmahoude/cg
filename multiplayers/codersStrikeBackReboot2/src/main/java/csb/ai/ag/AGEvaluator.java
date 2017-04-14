@@ -16,7 +16,7 @@ public class AGEvaluator {
     sol.energy = 0.0
         + 10.0*checkPointPassedFeature(state.myRunner)
         + 5.0*distanceToCheckPointFeature(state.checkPoints[state.myRunner.nextCheckPointId], state.myRunner)
-        + 0.0*speedFeature(state.myRunner)
+        + 0.5*exitSpeedFeature(state.myRunner)
         
         + 3.0 * distanceToCheckPointFeature(state.checkPoints[state.hisRunner.nextCheckPointId], state.myBlocker)
         + 1.0 * distance2ToPodFeature(state.myBlocker, state.hisRunner)
@@ -32,7 +32,9 @@ public class AGEvaluator {
     return (MAX_DIST - Math.min(MAX_DIST, dist2)) / MAX_DIST;
   }
 
-  private double speedFeature(Pod pod) {
+  private double exitSpeedFeature(Pod pod) {
+    if (pod.nextCheckPointId == pod.b_nextCheckPointId) return 0.0;
+    
     final int MAX_SPEED = 600;
     double speed = VectorLib.length(pod.vx, pod.vy) / MAX_SPEED;
     return speed;

@@ -3,7 +3,6 @@ package tests.viewer;
 import java.util.ArrayList;
 import java.util.List;
 
-import csb.ai.DummyAI;
 import csb.ai.ag.AGAI;
 import csb.entities.CheckPoint;
 import csb.entities.Pod;
@@ -107,7 +106,7 @@ public class Gui extends Application {
     updateFrames();
 
     Timeline timeline = new Timeline(new KeyFrame(
-        Duration.millis(60),
+        Duration.millis(120),
         ae -> update()));
     timeline.setCycleCount(Animation.INDEFINITE);
     timeline.play();
@@ -199,7 +198,7 @@ public class Gui extends Application {
     controller.init(seed);
 //    controller.referee.physics.collisionSimualtion = false;
     
-    controller.setAI1(new DummyAI());
+    controller.setAI1(new AGAI());
     
     agai = new AGAI();
     controller.setAI2(agai);

@@ -49,7 +49,7 @@ public class AGSolution implements AISolution {
 
   private void randomize(int depth) {
     angles[depth] = rand.nextDouble();                 // 0->1 linear
-    thrusts[depth] = Math.min(1.0, Math.abs(rand.nextGaussian())); // 0->1 in a gaussian curve (thrust max is better) 
+    thrusts[depth] = 0.5+0.5*rand.nextDouble(); // 0-> linear 
   }
   
   public void cross(AGSolution parent1, AGSolution parent2) {
