@@ -1,16 +1,9 @@
 package cotc.game;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import cotc.utils.Coord;
+import cotc.utils.Util;
 
 public class Damage {
-  @SafeVarargs
-  static final <T> String join(T... v) {
-      return Stream.of(v).map(String::valueOf).collect(Collectors.joining(" "));
-  }
-
   private final Coord position;
   private final int health;
   private final boolean hit;
@@ -22,6 +15,6 @@ public class Damage {
   }
 
   public String toViewString() {
-      return join(position.y, position.x, health, (hit ? 1 : 0));
+      return Util.join(position.y, position.x, health, (hit ? 1 : 0));
   }
 }

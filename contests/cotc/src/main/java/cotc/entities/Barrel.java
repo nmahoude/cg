@@ -1,21 +1,26 @@
 package cotc.entities;
 
 public class Barrel extends Entity{
-  int rum;
+  public int health;
   
-  int b_rum;
+  int b_health;
   
-  public Barrel(int entityId, int x, int y, int arg1, int arg2, int arg3, int arg4) {
+  public Barrel(int entityId, int x, int y, int rum) {
     super(EntityType.BARREL, entityId, x, y);
-    rum = arg1;
+    this.health = rum;
   }
   public void backup() {
     super.backup();
-    b_rum = rum;
+    b_health = health;
   }
   
   public void restore() {
     super.restore();
-    rum = b_rum;
+    health = b_health;
   }
+  
+  public String toPlayerString(int playerIdx) {
+    return toPlayerString(health, 0, 0, 0);
+  }
+
 }

@@ -2,17 +2,18 @@ package cotc.tests;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 
 import cotc.GameState;
 import cotc.ai.AI;
 import cotc.ai.DummyAI;
-import cotc.tests.RaceFinished.TeamType;
 
 public class Controller {
-  public static Referee referee;
-  public static GameState state1;
-  public static GameState state2;
+  private static int rounds;
+  public Referee referee;
+  public GameState state1;
+  public GameState state2;
   public AI ai1;
   public AI ai2;
   private int round;
@@ -24,7 +25,7 @@ public class Controller {
     AI ai2 = new DummyAI();
     List<AI> ais = Arrays.asList(ai1, ai2);
     
-    final int matchPerEvaluation = 2;
+    final int matchPerEvaluation = 1;
     int totalMatches = matchPerEvaluation * factoriel(ais.size()-1);
     int matches = 0;
     
@@ -36,17 +37,17 @@ public class Controller {
         for (int i=0;i<matchPerEvaluation;i++) {
           try {
             if (i % 2 == 0) {
-              oneRace(rand.nextInt(), ais.get(team1), ais.get(team2));
+              oneGame(rand.nextInt(), ais.get(team1), ais.get(team2));
             } else {
-              oneRace(rand.nextInt(), ais.get(team2), ais.get(team1));
+              oneGame(rand.nextInt(), ais.get(team2), ais.get(team1));
             }
-          } catch(RaceFinished rf) {
-            if (rf.team == TeamType.TEAM_1) {if (i % 2 == 0) score1++; else score2++;}
-            if (rf.team == TeamType.TEAM_2) {if (i % 2 == 0) score2++; else score1++;}
+          } catch(GameFinished rf) {
+            if (rf.teamId == 0) {if (i % 2 == 0) score1++; else score2++;}
+            if (rf.teamId == 1) {if (i % 2 == 0) score2++; else score1++;}
           } catch(Exception e) {
           }
           matches++;
-          System.out.println("match "+matches);
+          System.out.println("match "+matches+" ("+rounds+" rounds)");
         }
         scoreMatrix[team1][team2] = score1;
         scoreMatrix[team2][team1] = score2;
@@ -74,13 +75,19 @@ public class Controller {
     }
   }
 
-  private static void oneRace(int seed, AI ai1, AI ai2) throws Exception {
+  private static void oneGame(int seed, AI ai1, AI ai2) throws Exception {
     Controller controller = new Controller();
     controller.init(seed);
     controller.setAI1(ai1);
     controller.setAI2(ai2);
+    rounds = 0;
     while(true) {
-      controller.playOneTurn();
+      try { 
+        controller.playOneTurn();
+        rounds++;
+      } catch (Exception e) {
+        throw new GameFinished(controller.referee.winner());
+      }
     }
   }
 
@@ -96,7 +103,7 @@ public class Controller {
 
   public void init(int seed) throws Exception {
     referee = new Referee();
-    referee.initReferee(seed, 4);
+    referee.initReferee(seed, 2, new Properties());
     
     state1 = new GameState();
     refereeToState1();
@@ -111,10 +118,8 @@ public class Controller {
     String[] output1 = ai1.evolve().output();
     String[] output2 = ai2.evolve().output();
     
-    referee.handlePlayerOutput(0, round, 0, output1[0]);
-    referee.handlePlayerOutput(0, round, 1, output1[1]);
-    referee.handlePlayerOutput(0, round, 2, output2[0]);
-    referee.handlePlayerOutput(0, round, 3, output2[1]);
+    referee.handlePlayerOutput(0, round, 0, output1);
+    referee.handlePlayerOutput(0, round, 1, output2);
     
     referee.updateGame(round);
     
@@ -123,11 +128,13 @@ public class Controller {
     round++;
   }
   
-  private static void refereeToState1() {
+  private void refereeToState1() {
+    state1.shipCount = referee.shipsPerPlayer;
     state1.backup();
   }
 
-  private static void refereeToState2() {
+  private void refereeToState2() {
+    state1.shipCount = referee.shipsPerPlayer;
     state2.backup();
   }
 }

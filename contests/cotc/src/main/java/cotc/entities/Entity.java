@@ -1,17 +1,9 @@
 package cotc.entities;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import cotc.utils.Coord;
+import cotc.utils.Util;
 
 public class Entity {
-  @SafeVarargs
-  static final <T> String join(T... v) {
-      return Stream.of(v).map(String::valueOf).collect(Collectors.joining(" "));
-  }
-
-  
   public final EntityType type;
   public final int id;
   public Coord position;
@@ -35,10 +27,10 @@ public class Entity {
   }
   
   public String toViewString() {
-    return join(id, position.y, position.x);
+    return Util.join(id, position.y, position.x);
 }
 
 protected String toPlayerString(int arg1, int arg2, int arg3, int arg4) {
-    return join(id, type.name(), position.x, position.y, arg1, arg2, arg3, arg4);
+    return Util.join(id, type.name(), position.x, position.y, arg1, arg2, arg3, arg4);
 }
 }

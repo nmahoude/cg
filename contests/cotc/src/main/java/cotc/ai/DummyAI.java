@@ -10,7 +10,7 @@ public class DummyAI implements AI {
 
   @Override
   public AISolution evolve() {
-    DummySolution solution = new DummySolution();
+    DummySolution solution = new DummySolution(state);
 
     return solution;
   }

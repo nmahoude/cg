@@ -1,13 +1,6 @@
 package cotc.utils;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class Coord {
-  @SafeVarargs
-  static final <T> String join(T... v) {
-      return Stream.of(v).map(String::valueOf).collect(Collectors.joining(" "));
-  }
   
   private static final int MAP_WIDTH = 23;
   private static final int MAP_HEIGHT = 21;
@@ -78,7 +71,7 @@ public class Coord {
 
   @Override
   public String toString() {
-      return join(x, y);
+      return Util.join(x, y);
   }
 
 }

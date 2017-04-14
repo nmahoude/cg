@@ -50,26 +50,29 @@ public class Player {
               ship = getEntity(otherShips, entityId);
             }
             if (ship == null) {
-              ship = new Ship(entityId, x, y, arg1, arg2, arg3, arg4);
+              ship = new Ship(entityId, x, y, arg1 /*orientation*/, arg4 /*owner*/);
               if (ship.owner == 1) {
                 myShips.add(ship);
               } else {
                 otherShips.add(ship);
               }
-            } else {
-              ship.update(x, y, arg1, arg2, arg3, arg4);
             }
+            ship.update(x, y, arg1 /*orientation*/, arg2 /*speed*/, arg3 /*stock of rum*/, arg4 /*owner*/);
             break;
           case "BARREL":
-            Barrel barrel = new Barrel(entityId, x, y, arg1, arg2, arg3, arg4);
+            Barrel barrel = new Barrel  (entityId, x, y, arg1 /*rum in barrel*/);
             barrels.add(barrel);
             break;
           case "CANNONBALL":
-            CannonBall ball = new CannonBall(entityId, x, y, arg1, arg2, arg3, arg4);
+            Ship sender = getEntity(myShips, arg1);
+            if (sender == null) {
+              sender = getEntity(otherShips, arg1);
+            }
+            CannonBall ball = new CannonBall(entityId, x, y, sender /*sender entityId*/, arg2 /*turns*/);
             balls.add(ball);
             break;
           case "MINE":
-            Mine mine = new Mine(entityId, x, y, arg1, arg2, arg3, arg4);
+            Mine mine = new Mine(entityId, x, y);
             mines.add(mine);
             break;
         }

@@ -2,7 +2,7 @@ package cotc.tests.viewer;
 
 import cotc.ai.DummyAI;
 import cotc.tests.Controller;
-import cotc.tests.RaceFinished;
+import cotc.tests.GameFinished;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -129,8 +129,8 @@ public class Gui extends Application {
       try {
         controller.playOneTurn();
         updateFrames();
-      } catch (RaceFinished rf) {
-        System.out.println("Race finished "+rf.team+" has won");
+      } catch (GameFinished rf) {
+        System.out.println("Race finished "+rf.teamId+" has won");
         Platform.exit();
       } catch(Exception e) {
         e.printStackTrace();

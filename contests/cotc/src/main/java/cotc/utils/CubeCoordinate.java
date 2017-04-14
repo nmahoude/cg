@@ -1,13 +1,6 @@
 package cotc.utils;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class CubeCoordinate {
-  @SafeVarargs
-  static final <T> String join(T... v) {
-      return Stream.of(v).map(String::valueOf).collect(Collectors.joining(" "));
-  }
 
   static int[][] directions = new int[][] { { 1, -1, 0 }, { +1, 0, -1 }, { 0, +1, -1 }, { -1, +1, 0 }, { -1, 0, +1 }, { 0, -1, +1 } };
   int x, y, z;
@@ -38,7 +31,7 @@ public class CubeCoordinate {
 
   @Override
   public String toString() {
-      return join(x, y, z);
+      return Util.join(x, y, z);
   }
 
 }
