@@ -153,7 +153,7 @@ public class Ship extends Entity {
   }
 
   public void fire(int x, int y) {
-    Coord target = new Coord(x, y);
+    Coord target = Coord.get(x, y);
     this.target = target;
     this.action = Action.FIRE;
   }

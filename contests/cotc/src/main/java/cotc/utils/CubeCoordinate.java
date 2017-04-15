@@ -14,7 +14,7 @@ public class CubeCoordinate {
   Coord toOffsetCoordinate() {
       int newX = x + (z - (z & 1)) / 2;
       int newY = z;
-      return new Coord(newX, newY);
+      return Coord.get(newX, newY);
   }
 
   CubeCoordinate neighbor(int orientation) {

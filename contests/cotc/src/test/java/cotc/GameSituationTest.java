@@ -47,7 +47,7 @@ public class GameSituationTest {
     
     simulation.playOneTurn();
 
-    assertThat(myShip.position, is(new Coord(12,14)));
+    assertThat(myShip.position, is(Coord.get(12,14)));
     assertThat(myShip.health, is(2));
   }
   
@@ -90,7 +90,7 @@ public class GameSituationTest {
     myShip.action = Action.MINE;
     simulation.playOneTurn();
 
-    assertThat(myShip.position, is(new Coord(6,5)));
+    assertThat(myShip.position, is(Coord.get(6,5)));
     assertThat(myShip.health, is(72));
   }
   

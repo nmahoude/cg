@@ -2,6 +2,19 @@ package cotc.utils;
 
 public class Coord {
   
+  private static Coord[] cache;
+  static {
+    cache = new Coord[50*50];
+    for (int x=-10;x<40;x++) {
+      for (int y=-10;y<40;y++) {
+        cache[x+10 + (y+10)*50] = new Coord(x,y);
+      }
+    }
+  }
+  public static Coord get(int x, int y) {
+    return cache[x+10 + (y+10)*50];
+  }
+  
   private static final int MAP_WIDTH = 23;
   private static final int MAP_HEIGHT = 21;
 
@@ -10,12 +23,12 @@ public class Coord {
   public final int x;
   public final int y;
 
-  public Coord(int x, int y) {
+  private Coord(int x, int y) {
       this.x = x;
       this.y = y;
   }
 
-  public Coord(Coord other) {
+  private Coord(Coord other) {
       this.x = other.x;
       this.y = other.y;
   }
@@ -60,7 +73,6 @@ public class Coord {
       return this.toCubeCoordinate().distanceTo(dst.toCubeCoordinate());
   }
 
-  @Override
   public boolean equals(Object obj) {
     // SPeed hack
     //      if (obj == null || getClass() != obj.getClass()) {

@@ -14,7 +14,7 @@ public class Entity {
   public Entity(EntityType type, int entityId, int x, int y) {
     this.type = type;
     this.id = entityId;
-    this.position = new Coord(x,y);
+    this.position = Coord.get(x,y);
   }
   public void backup() {
     b_position = position;
@@ -23,7 +23,7 @@ public class Entity {
     position = b_position;
   }
   public void update(int x, int y) {
-    this.position = new Coord(x,y);
+    this.position = Coord.get(x,y);
   }
   
   public String toViewString() {
