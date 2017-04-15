@@ -10,19 +10,19 @@ public class Team {
   public final List<Ship> shipsAlive = new ArrayList<>();
   public final int id;
 
-  public int timeout;
-  private int b_timeout;
+  public boolean dead;
+  private boolean b_dead;
 
   public Team(int id) {
     this.id = id;
   }
 
   public void backup() {
-    b_timeout = timeout;
+    b_dead = dead;
   }
 
   public void restore() {
-    timeout = b_timeout;
+    dead = b_dead;
   }
 
   public void setDead() {

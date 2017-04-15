@@ -6,6 +6,8 @@ public class CannonBall extends Entity {
   final int srcY;
   final int initialRemainingTurns;
   public int remainingTurns;
+  
+  private int b_remainingTurns;
 
   public CannonBall(int entityId, int x, int y, Ship sender, int remaining) {
     super(EntityType.CANNONBALL, entityId, x, y);
@@ -32,5 +34,15 @@ public class CannonBall extends Entity {
   public String toPlayerString(int playerIdx) {
     return toPlayerString(ownerEntityId, remainingTurns, 0, 0);
 }
+  @Override
+  public void backup() {
+    super.backup();
+    b_remainingTurns = remainingTurns;
+  }
 
+  @Override
+  public void restore() {
+    super.restore();
+    remainingTurns = b_remainingTurns;
+  }
 }

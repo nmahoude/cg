@@ -7,7 +7,6 @@ import cotc.game.Damage;
 import cotc.utils.Coord;
 
 public class Mine extends Entity {
-  private static final int MINE_VISIBILITY_RANGE = 5;
   private static final int MINE_DAMAGE = 25;
   private static final int NEAR_MINE_DAMAGE = 10;
 
