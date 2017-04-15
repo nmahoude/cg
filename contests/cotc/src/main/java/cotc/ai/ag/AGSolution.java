@@ -83,7 +83,7 @@ public class AGSolution implements AISolution{
     movementFeature = 0;
     
     for (Ship ship : state.teams.get(0).shipsAlive) {
-      if (!ship.position.equals(ship.b_position)) {
+      if (ship.position != ship.b_position) {
         movementFeature+=1.0;
       }
     }

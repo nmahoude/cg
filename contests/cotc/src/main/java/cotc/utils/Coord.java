@@ -62,7 +62,7 @@ public class Coord {
           newX = this.x + DIRECTIONS_EVEN[orientation][0];
       }
 
-      return new Coord(newX, newY);
+      return Coord.get(newX, newY);
   }
 
   public boolean isInsideMap() {

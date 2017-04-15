@@ -22,7 +22,7 @@ public class Mine extends Entity {
     boolean exploded = false;
 
     for (Ship ship : ships) {
-        if (position.equals(ship.bow()) || position.equals(ship.stern()) || position.equals(ship.position)) {
+        if (position == ship.bow() || position == ship.stern() || position == ship.position) {
           exploded = true;
           ship.damage(MINE_DAMAGE);
           victim = ship;

@@ -119,7 +119,7 @@ public class Referee {
         }
       }
       for (Mine mine : state.mines) {
-        if (mine.position.equals(m.position)) {
+        if (mine.position == m.position) {
           valid = false;
           break;
         }

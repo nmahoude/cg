@@ -104,12 +104,14 @@ public class Ship extends Entity {
   public boolean at(Coord coord) {
     Coord stern = stern();
     Coord bow = bow();
-    return stern != null && stern.equals(coord) || bow != null && bow.equals(coord) || position.equals(coord);
+    return stern == coord || bow == coord || position == coord;
   }
 
   public boolean newBowIntersect(Ship other) {
-    return newBowCoordinate != null && (newBowCoordinate.equals(other.newBowCoordinate) || newBowCoordinate.equals(other.newPosition)
-        || newBowCoordinate.equals(other.newSternCoordinate));
+    return newBowCoordinate != null && (
+           newBowCoordinate == other.newBowCoordinate
+        || newBowCoordinate == other.newPosition
+        || newBowCoordinate == other.newSternCoordinate);
   }
 
   public boolean newBowIntersect(List<Ship> ships) {
@@ -122,10 +124,14 @@ public class Ship extends Entity {
   }
 
   public boolean newPositionsIntersect(Ship other) {
-    boolean sternCollision = newSternCoordinate != null && (newSternCoordinate.equals(other.newBowCoordinate)
-        || newSternCoordinate.equals(other.newPosition) || newSternCoordinate.equals(other.newSternCoordinate));
-    boolean centerCollision = newPosition != null && (newPosition.equals(other.newBowCoordinate) || newPosition.equals(other.newPosition)
-        || newPosition.equals(other.newSternCoordinate));
+    boolean sternCollision = newSternCoordinate != null && 
+        (  newSternCoordinate == other.newBowCoordinate
+        || newSternCoordinate == other.newPosition
+        || newSternCoordinate == other.newSternCoordinate);
+    boolean centerCollision = newPosition != null && (
+           newPosition == other.newBowCoordinate 
+        || newPosition == other.newPosition
+        || newPosition == other.newSternCoordinate);
     return newBowIntersect(other) || sternCollision || centerCollision;
   }
 

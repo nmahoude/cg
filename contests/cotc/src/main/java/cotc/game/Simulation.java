@@ -175,7 +175,7 @@ public class Simulation {
                 Coord target = ship.stern().neighbor((ship.orientation + 3) % 6);
 
                 if (target.isInsideMap()) {
-                  boolean cellIsFreeOfBarrels = state.barrels.stream().noneMatch(barrel -> barrel.position.equals(target));
+                  boolean cellIsFreeOfBarrels = state.barrels.stream().noneMatch(barrel -> barrel.position == target);
                   boolean cellIsFreeOfShips = state.ships.stream().filter(b -> b != ship).noneMatch(b -> b.at(target));
 
                   if (cellIsFreeOfBarrels && cellIsFreeOfShips) {
@@ -347,11 +347,11 @@ public class Simulation {
     for (Iterator<Coord> it = cannonBallExplosions.iterator(); it.hasNext();) {
       Coord position = it.next();
       for (Ship ship : state.ships) {
-        if (position.equals(ship.bow()) || position.equals(ship.stern())) {
+        if (position == ship.bow() || position == ship.stern()) {
           ship.damage(Simulation.LOW_DAMAGE);
           it.remove();
           break;
-        } else if (position.equals(ship.position)) {
+        } else if (position == ship.position) {
           ship.damage(Simulation.HIGH_DAMAGE);
           it.remove();
           break;
@@ -364,7 +364,7 @@ public class Simulation {
       Coord position = itBall.next();
       for (Iterator<Mine> it = state.mines.iterator(); it.hasNext();) {
         Mine mine = it.next();
-        if (mine.position.equals(position)) {
+        if (mine.position == position) {
           it.remove();
           itBall.remove();
           break;
@@ -378,7 +378,7 @@ public class Simulation {
       Coord position = itBall.next();
       for (Iterator<Barrel> it = state.barrels.iterator(); it.hasNext();) {
         Barrel barrel = it.next();
-        if (barrel.position.equals(position)) {
+        if (barrel.position == position) {
           it.remove();
           itBall.remove();
           break;
@@ -394,7 +394,7 @@ public class Simulation {
     // Collision with the barrels
     for (Iterator<Barrel> it = state.barrels.iterator(); it.hasNext();) {
       Barrel barrel = it.next();
-      if (barrel.position.equals(bow) || barrel.position.equals(stern) || barrel.position.equals(center)) {
+      if (barrel.position == bow || barrel.position == stern || barrel.position == center) {
         ship.heal(barrel.health);
         it.remove();
       }
