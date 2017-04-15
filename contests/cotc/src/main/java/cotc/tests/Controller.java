@@ -8,6 +8,12 @@ import java.util.Random;
 import cotc.GameState;
 import cotc.ai.AI;
 import cotc.ai.DummyAI;
+import cotc.ai.ag.AG;
+import cotc.entities.Barrel;
+import cotc.entities.CannonBall;
+import cotc.entities.Mine;
+import cotc.entities.Ship;
+import cotc.game.Simulation;
 
 public class Controller {
   private static int rounds;
@@ -22,10 +28,10 @@ public class Controller {
     Random rand = new Random(System.currentTimeMillis());
 
     AI ai1 = new DummyAI();
-    AI ai2 = new DummyAI();
+    AI ai2 = new AG();
     List<AI> ais = Arrays.asList(ai1, ai2);
     
-    final int matchPerEvaluation = 1000;
+    final int matchPerEvaluation = 250;
     int totalMatches = matchPerEvaluation * factoriel(ais.size()-1);
     int matches = 0;
     
@@ -86,6 +92,7 @@ public class Controller {
         controller.playOneTurn();
         rounds++;
       } catch (Exception e) {
+        //e.printStackTrace();
         throw new GameFinished(controller.referee.winner());
       }
     }
@@ -106,10 +113,10 @@ public class Controller {
     referee.initReferee(seed, 2, new Properties());
     
     state1 = new GameState();
-    refereeToState1();
+    initState(0, state1);
     
     state2 = new GameState();
-    refereeToState2();
+    initState(1, state2);
     
     round = 0;
   }
@@ -123,18 +130,54 @@ public class Controller {
     
     referee.updateGame(round);
     
-    refereeToState1();
-    refereeToState2();
+    refereeToState(0, state1);
+    refereeToState(1, state2);
     round++;
   }
   
-  private void refereeToState1() {
-    state1.shipCount = referee.shipsPerPlayer;
-    state1.backup();
+  private void initState(int playerIdx, GameState state) {
+    state.shipCount = referee.shipsPerPlayer;
+    state.teams.add(referee.state.teams.get(playerIdx));
+    state.teams.add(referee.state.teams.get((playerIdx + 1) % 2));
+    refereeToState(playerIdx, state);
   }
+  private void refereeToState(int playerIdx, GameState state) {
+    state.clear();
+    
+    // Player's ships first
+    for (Ship ship : referee.state.teams.get(playerIdx).shipsAlive) {
+      state.myShips.add(ship);
+      state.ships.add(ship);
+    }
 
-  private void refereeToState2() {
-    state1.shipCount = referee.shipsPerPlayer;
-    state2.backup();
+    // Opponent's ships
+    for (Ship ship : referee.state.teams.get((playerIdx + 1) % 2).shipsAlive) {
+      state.otherShips.add(ship);
+      state.ships.add(ship);
+    }
+
+    // Visible mines
+    for (Mine mine : referee.state.mines) {
+        boolean visible = false;
+        for (Ship ship : referee.state.teams.get(playerIdx).ships) {
+            if (ship.position.distanceTo(mine.position) <= Simulation.MINE_VISIBILITY_RANGE) {
+                visible = true;
+                break;
+            }
+        }
+        if (visible) {
+          state.mines.add(mine);
+        }
+    }
+
+    for (CannonBall ball : referee.state.cannonballs) {
+      state.cannonballs.add(ball);
+    }
+
+    for (Barrel barrel : referee.state.barrels) {
+      state.barrels.add(barrel);
+    }
+
+    state.backup();
   }
 }

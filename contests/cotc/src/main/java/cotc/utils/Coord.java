@@ -62,9 +62,10 @@ public class Coord {
 
   @Override
   public boolean equals(Object obj) {
-      if (obj == null || getClass() != obj.getClass()) {
-          return false;
-      }
+    // SPeed hack
+    //      if (obj == null || getClass() != obj.getClass()) {
+    //          return false;
+    //      }
       Coord other = (Coord) obj;
       return y == other.y && x == other.x;
   }

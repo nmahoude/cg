@@ -1,9 +1,7 @@
 package cotc.entities;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import cotc.game.Damage;
 import cotc.utils.Coord;
 
 public class Mine extends Entity {
@@ -19,21 +17,21 @@ public class Mine extends Entity {
   public String toPlayerString(int playerIdx) {
     return toPlayerString(0, 0, 0, 0);
 }
-  public List<Damage> explode(List<Ship> ships, boolean force) {
-    List<Damage> damage = new ArrayList<>();
+  public boolean explode(List<Ship> ships, boolean force) {
     Ship victim = null;
+    boolean exploded = false;
 
     for (Ship ship : ships) {
         if (position.equals(ship.bow()) || position.equals(ship.stern()) || position.equals(ship.position)) {
-            damage.add(new Damage(this.position, MINE_DAMAGE, true));
-            ship.damage(MINE_DAMAGE);
-            victim = ship;
+          exploded = true;
+          ship.damage(MINE_DAMAGE);
+          victim = ship;
         }
     }
 
     if (force || victim != null) {
         if (victim == null) {
-            damage.add(new Damage(this.position, MINE_DAMAGE, true));
+          exploded = true;
         }
 
         for (Ship ship : ships) {
@@ -51,12 +49,12 @@ public class Mine extends Entity {
 
                 if (impactPosition != null) {
                     ship.damage(NEAR_MINE_DAMAGE);
-                    damage.add(new Damage(impactPosition, NEAR_MINE_DAMAGE, true));
+                    exploded = true;
                 }
             }
         }
     }
 
-    return damage;
+    return exploded;
 }
 }

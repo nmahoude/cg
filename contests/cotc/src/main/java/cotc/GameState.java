@@ -9,10 +9,11 @@ import cotc.entities.Mine;
 import cotc.entities.Ship;
 
 public class GameState {
+  
   public int shipCount;
+  public List<Team> teams = new ArrayList<>();
 
   public int rounds;
-  public List<Team> teams = new ArrayList<>();
   public List<CannonBall> cannonballs = new ArrayList<>();
   public List<Mine> mines = new ArrayList<>();
   public List<Barrel> barrels = new ArrayList<>();
@@ -21,7 +22,6 @@ public class GameState {
   public List<Ship> otherShips = new ArrayList<>();
   
   public int b_rounds;
-  public List<Team> b_teams = new ArrayList<>();
   public List<CannonBall> b_cannonballs = new ArrayList<>();
   public List<Mine> b_mines = new ArrayList<>();
   public List<Barrel> b_barrels = new ArrayList<>();
@@ -29,10 +29,9 @@ public class GameState {
   public List<Ship> b_myShips = new ArrayList<>();
   public List<Ship> b_otherShips = new ArrayList<>();
 
-
   public void backup() {
     b_rounds = rounds;
-    b_teams.addAll(teams);
+    clearBackups();
     b_cannonballs.addAll(cannonballs);
     b_mines.addAll(mines);
     b_barrels.addAll(barrels);
@@ -40,6 +39,7 @@ public class GameState {
     b_myShips.addAll(myShips);
     b_otherShips.addAll(otherShips);
     
+    teams.forEach(Team::backup);
     cannonballs.forEach(CannonBall::backup);
     mines.forEach(Mine::backup);
     barrels.forEach(Barrel::backup);
@@ -48,30 +48,44 @@ public class GameState {
 
   public void restore() {
     rounds = b_rounds;
-    teams.clear();
+    clear();
+
+    cannonballs.addAll(b_cannonballs);
+    mines.addAll(b_mines);
+    barrels.addAll(b_barrels);
+    ships.addAll(b_ships);
+    myShips.addAll(b_myShips);
+    otherShips.addAll(b_otherShips);
+
+    teams.forEach(Team::restore);
+    cannonballs.forEach(CannonBall::restore);
+    mines.forEach(Mine::restore);
+    barrels.forEach(Barrel::restore);
+    ships.forEach(Ship::restore);
+  }
+
+  public void clear() {
     cannonballs.clear();
     mines.clear();
     barrels.clear();
     ships.clear();
     myShips.clear();
     otherShips.clear();
+  }
 
-    teams.addAll(teams);
-    cannonballs.addAll(cannonballs);
-    mines.addAll(mines);
-    barrels.addAll(barrels);
-    ships.addAll(ships);
-    myShips.addAll(myShips);
-    otherShips.addAll(otherShips);
-
-    cannonballs.forEach(CannonBall::restore);
-    mines.forEach(Mine::restore);
-    barrels.forEach(Barrel::restore);
-    ships.forEach(Ship::restore);
+  public void clearBackups() {
+    b_cannonballs.clear();
+    b_mines.clear();
+    b_barrels.clear();
+    b_ships.clear();
+    b_myShips.clear();
+    b_otherShips.clear();
   }
   
   void initRound() {
     // kill all ships ! (will be revive in the update process)
+    teams.get(0).shipsAlive.clear();
+    teams.get(1).shipsAlive.clear();
     for (Ship ship : myShips) {
       ship.health = 0;
     }
@@ -92,4 +106,40 @@ public class GameState {
     }
     return null;
   }
+
+  public void updateShip(Ship ship) {
+    if (ship.owner == 1) {
+      teams.get(0).shipsAlive.add(ship);
+    } else {
+      teams.get(1).shipsAlive.add(ship);
+    }
+  }
+  
+  public Barrel getClosestBarrel(Ship ship) {
+    int bestDist = Integer.MAX_VALUE;
+    Barrel best = null;
+    for (Barrel barrel : barrels) {
+      int dist = barrel.position.distanceTo(ship.position);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = barrel;
+      }
+    }
+    return best;
+  }
+
+  public Ship getClosestEnnemy(Ship me) {
+    int bestDist = Integer.MAX_VALUE;
+    Ship best = null;
+    for (Ship other : otherShips) {
+      if (other.health == 0) continue;
+      int dist = other.position.distanceTo(me.position);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = other;
+      }
+    }
+    return best;
+  }
+
 }

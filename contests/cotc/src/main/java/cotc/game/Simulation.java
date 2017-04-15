@@ -3,9 +3,13 @@ package cotc.game;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import cotc.GameState;
 import cotc.Team;
+import cotc.ai.ag.AGSolution;
+import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
 import cotc.entities.Mine;
@@ -44,26 +48,46 @@ public class Simulation {
 
   private List<Coord> cannonBallExplosions = new ArrayList<>();
   private List<Ship> shipLosts = new ArrayList<>();
-  private List<Damage> damage = new ArrayList<>();
 
   public Simulation(GameState state) {
     this.state = state;
   }
 
-  public void simulate() {
+  public void simulate(AGSolution sol) {
+    Map<Ship, Action[]> actions = sol.actions;
     state.backup();
-    for (int i = 0; i < 10; i++) {
+
+    double energy = 0;
+    for (int i = 0; i < AGSolution.DEPTH; i++) {
+      if( state.teams.get(0).dead || state.teams.get(1).dead) break;
+      
+      applyActions(i, actions);
       playOneTurn();
       state.rounds ++;
       if (state.rounds == 200) break;
+      
+      if (i==0) {
+        sol.calculateFeature(state);
+        energy += sol.speedFeature * 10 + sol.movementFeature;
+        //System.err.println(actions[0][0] + " -> "+sol.speedFeature+" ==> "+energy);
+      }
     }
     if (state.rounds == 200) {
       checkEndConditions();
     }
     
-    // TODO  evaluate HERE !
+    sol.calculateFeature(state);
+    energy += sol.healtFeature + sol.speedFeature;
+    sol.energy = energy;
     
     state.restore();
+  }
+
+  private void applyActions(int i, Map<Ship, Action[]> actions) {
+    for (Entry<Ship, Action[]> entry : actions.entrySet()) {
+      Action action = entry.getValue()[i];
+      entry.getKey().action = action;
+    }
   }
 
   private void checkEndConditions() {
@@ -91,10 +115,6 @@ public class Simulation {
 
     for (Ship ship : shipLosts) {
       state.barrels.add(new Barrel(0, ship.position.x, ship.position.y, REWARD_RUM_BARREL_VALUE));
-    }
-
-    for (Coord position : cannonBallExplosions) {
-      damage.add(new Damage(position, 0, false));
     }
 
     for (Iterator<Ship> it = state.ships.iterator(); it.hasNext();) {
@@ -135,6 +155,9 @@ public class Simulation {
               if (ship.speed > 0) {
                 ship.speed--;
               }
+              break;
+            case WAIT:
+              // nothing
               break;
             case PORT:
               ship.newOrientation = (ship.orientation + 1) % 6;
@@ -179,7 +202,6 @@ public class Simulation {
   private void reinitSimulation() {
     cannonBallExplosions.clear();
     shipLosts.clear();
-    damage.clear();
   }
 
   private void moveCannonballs() {
@@ -325,12 +347,10 @@ public class Simulation {
       Coord position = it.next();
       for (Ship ship : state.ships) {
         if (position.equals(ship.bow()) || position.equals(ship.stern())) {
-          damage.add(new Damage(position, Simulation.LOW_DAMAGE, true));
           ship.damage(Simulation.LOW_DAMAGE);
           it.remove();
           break;
         } else if (position.equals(ship.position)) {
-          damage.add(new Damage(position, Simulation.HIGH_DAMAGE, true));
           ship.damage(Simulation.HIGH_DAMAGE);
           it.remove();
           break;
@@ -344,7 +364,6 @@ public class Simulation {
       for (Iterator<Mine> it = state.mines.iterator(); it.hasNext();) {
         Mine mine = it.next();
         if (mine.position.equals(position)) {
-          damage.addAll(mine.explode(state.ships, true));
           it.remove();
           itBall.remove();
           break;
@@ -359,7 +378,6 @@ public class Simulation {
       for (Iterator<Barrel> it = state.barrels.iterator(); it.hasNext();) {
         Barrel barrel = it.next();
         if (barrel.position.equals(position)) {
-          damage.add(new Damage(position, 0, true));
           it.remove();
           itBall.remove();
           break;
@@ -384,10 +402,8 @@ public class Simulation {
     // Collision with the mines
     for (Iterator<Mine> it = state.mines.iterator(); it.hasNext();) {
       Mine mine = it.next();
-      List<Damage> mineDamage = mine.explode(state.ships, false);
-
-      if (!mineDamage.isEmpty()) {
-        damage.addAll(mineDamage);
+      
+      if (mine.explode(state.ships, false)) {
         it.remove();
       }
     }

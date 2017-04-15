@@ -6,12 +6,15 @@ import java.util.List;
 import cotc.entities.Ship;
 
 public class Team {
-  public final List<Ship> ships = new ArrayList<>();
-  public final List<Ship> shipsAlive = new ArrayList<>();
   public final int id;
 
   public boolean dead;
+  public final List<Ship> ships = new ArrayList<>();
+  public final List<Ship> shipsAlive = new ArrayList<>();
+  
   private boolean b_dead;
+  public final List<Ship> b_ships = new ArrayList<>();
+  private final List<Ship> b_shipsAlive = new ArrayList<>();
 
   public Team(int id) {
     this.id = id;
@@ -19,10 +22,22 @@ public class Team {
 
   public void backup() {
     b_dead = dead;
+
+    b_ships.clear();
+    b_ships.addAll(ships);
+    
+    b_shipsAlive.clear();
+    b_shipsAlive.addAll(shipsAlive);
   }
 
   public void restore() {
     dead = b_dead;
+    
+    ships.clear();
+    ships.addAll(b_ships);
+
+    shipsAlive.clear();
+    shipsAlive.addAll(b_shipsAlive);
   }
 
   public void setDead() {

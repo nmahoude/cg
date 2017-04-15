@@ -8,7 +8,7 @@ public class Entity {
   public final int id;
   public Coord position;
   
-  Coord b_position;
+  public Coord b_position;
 
   
   public Entity(EntityType type, int entityId, int x, int y) {

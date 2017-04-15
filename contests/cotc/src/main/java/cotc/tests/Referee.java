@@ -34,11 +34,6 @@ public class Referee {
   int nextEntityId = 0;
 
   private long seed;
-  private List<CannonBall> cannonballs;
-  private List<Mine> mines;
-  private List<Barrel> barrels;
-  private List<Team> teams;
-  private List<Ship> ships;
   
   int shipsPerPlayer;
   private int mineCount;
@@ -50,7 +45,7 @@ public class Referee {
   
   public void initReferee(int seed, int playerCount, Properties prop) throws Exception {
     random = new Random(this.seed);
-
+    
     shipsPerPlayer = Util.clamp(
         Integer.valueOf(prop.getProperty("shipsPerPlayer", String.valueOf(random.nextInt(1 + Simulation.MAX_SHIPS - Simulation.MIN_SHIPS) + Simulation.MIN_SHIPS))), Simulation.MIN_SHIPS,
         Simulation.MAX_SHIPS);
@@ -62,12 +57,9 @@ public class Referee {
         Integer.valueOf(prop.getProperty("barrelCount", String.valueOf(random.nextInt(Simulation.MAX_RUM_BARRELS - Simulation.MIN_RUM_BARRELS) + Simulation.MIN_RUM_BARRELS))),
         Simulation.MIN_RUM_BARRELS, Simulation.MAX_RUM_BARRELS);
 
-    cannonballs = new ArrayList<>();
-
     // Generate Players
-    this.teams = new ArrayList<Team>(playerCount);
     for (int i = 0; i < playerCount; i++) {
-      this.teams.add(new Team(i));
+      state.teams.add(new Team(i));
     }
     // Generate Ships
     for (int j = 0; j < shipsPerPlayer; j++) {
@@ -81,23 +73,23 @@ public class Referee {
       Ship ship0 = new Ship(nextEntityId++, x, y, orientation, 0);
       Ship ship1 = new Ship(nextEntityId++, x, Simulation.MAP_HEIGHT - 1 - y, (6 - orientation) % 6, 1);
 
-      this.teams.get(0).ships.add(ship0);
-      this.teams.get(1).ships.add(ship1);
-      this.teams.get(0).shipsAlive.add(ship0);
-      this.teams.get(1).shipsAlive.add(ship1);
+      state.teams.get(0).ships.add(ship0);
+      state.teams.get(1).ships.add(ship1);
+      state.teams.get(0).shipsAlive.add(ship0);
+      state.teams.get(1).shipsAlive.add(ship1);
+
     }
 
-    this.ships = teams.stream().map(p -> p.ships).flatMap(List::stream).collect(Collectors.toList());
+    state.ships = state.teams.stream().map(p -> p.ships).flatMap(List::stream).collect(Collectors.toList());
 
     // Generate mines
-    mines = new ArrayList<>();
-    while (mines.size() < mineCount) {
+    while (state.mines.size() < mineCount) {
       int x = 1 + random.nextInt(Simulation.MAP_WIDTH - 2);
       int y = 1 + random.nextInt(Simulation.MAP_HEIGHT / 2);
 
       Mine m = new Mine(nextEntityId++, x, y);
       boolean valid = true;
-      for (Ship ship : this.ships) {
+      for (Ship ship : state.ships) {
         if (ship.at(m.position)) {
           valid = false;
           break;
@@ -105,28 +97,28 @@ public class Referee {
       }
       if (valid) {
         if (y != Simulation.MAP_HEIGHT - 1 - y) {
-          mines.add(new Mine(nextEntityId++, x, Simulation.MAP_HEIGHT - 1 - y));
+          state.mines.add(new Mine(nextEntityId++, x, Simulation.MAP_HEIGHT - 1 - y));
         }
-        mines.add(m);
+        state.mines.add(m);
       }
     }
 
     // Generate supplies
-    barrels = new ArrayList<>();
-    while (barrels.size() < barrelCount) {
+    state.barrels = new ArrayList<>();
+    while (state.barrels.size() < barrelCount) {
       int x = 1 + random.nextInt(Simulation.MAP_WIDTH - 2);
       int y = 1 + random.nextInt(Simulation.MAP_HEIGHT / 2);
       int h = Simulation.MIN_RUM_BARREL_VALUE + random.nextInt(1 + Simulation.MAX_RUM_BARREL_VALUE - Simulation.MIN_RUM_BARREL_VALUE);
 
       Barrel m = new Barrel(nextEntityId++, x, y, h);
       boolean valid = true;
-      for (Ship ship : this.ships) {
+      for (Ship ship : state.ships) {
         if (ship.at(m.position)) {
           valid = false;
           break;
         }
       }
-      for (Mine mine : this.mines) {
+      for (Mine mine : state.mines) {
         if (mine.position.equals(m.position)) {
           valid = false;
           break;
@@ -134,16 +126,16 @@ public class Referee {
       }
       if (valid) {
         if (y != Simulation.MAP_HEIGHT - 1 - y) {
-          barrels.add(new Barrel(nextEntityId++, x, Simulation.MAP_HEIGHT - 1 - y, h));
+          state.barrels.add(new Barrel(nextEntityId++, x, Simulation.MAP_HEIGHT - 1 - y, h));
         }
-        barrels.add(m);
+        state.barrels.add(m);
       }
     }
   }
 
   public void handlePlayerOutput(int frame, int round, int playerIdx, String[] outputs)
       throws WinException, LostException, InvalidInputException {
-    Team team = this. teams.get(playerIdx);
+    Team team = state.teams.get(playerIdx);
 
     try {
       int i = 0;
@@ -187,15 +179,9 @@ public class Referee {
   }
 
   public void updateGame(int round) throws GameOverException {
-    state.teams= this.teams;
-    state.ships = this.ships;
-    state.barrels = this.barrels;
-    state.mines = this.mines;
-    state.cannonballs = this.cannonballs;
-    
     simulation.playOneTurn();
 
-    if (teams.get(0).dead == true || teams.get(1).dead == true) {
+    if (state.teams.get(0).dead == true || state.teams.get(1).dead == true) {
       throw new GameOverException("endReached");
     }
   }
@@ -204,7 +190,7 @@ public class Referee {
     List<String> data = new ArrayList<>();
 
     // Player's ships first
-    for (Ship ship : teams.get(playerIdx).shipsAlive) {
+    for (Ship ship : state.teams.get(playerIdx).shipsAlive) {
         data.add(ship.toPlayerString(playerIdx));
     }
 
@@ -212,14 +198,14 @@ public class Referee {
     data.add(0, String.valueOf(data.size()));
 
     // Opponent's ships
-    for (Ship ship : teams.get((playerIdx + 1) % 2).shipsAlive) {
+    for (Ship ship : state.teams.get((playerIdx + 1) % 2).shipsAlive) {
         data.add(ship.toPlayerString(playerIdx));
     }
 
     // Visible mines
-    for (Mine mine : mines) {
+    for (Mine mine : state.mines) {
         boolean visible = false;
-        for (Ship ship : teams.get(playerIdx).ships) {
+        for (Ship ship : state.teams.get(playerIdx).ships) {
             if (ship.position.distanceTo(mine.position) <= Simulation.MINE_VISIBILITY_RANGE) {
                 visible = true;
                 break;
@@ -230,11 +216,11 @@ public class Referee {
         }
     }
 
-    for (CannonBall ball : cannonballs) {
+    for (CannonBall ball : state.cannonballs) {
         data.add(ball.toPlayerString(playerIdx));
     }
 
-    for (Barrel barrel : barrels) {
+    for (Barrel barrel : state.barrels) {
         data.add(barrel.toPlayerString(playerIdx));
     }
 
@@ -244,13 +230,13 @@ public class Referee {
 }
 
   public int winner() {
-    for (Team team : teams) {
+    for (Team team : state.teams) {
       if (team.shipsAlive.isEmpty()) {
         return 1-team.id; // the other team won
       }
     }
 
-    return teams.get(0).getScore() > teams.get(1).getScore() ? 0 : 1;
+    return state.teams.get(0).getScore() > state.teams.get(1).getScore() ? 0 : 1;
   }
 
 }
