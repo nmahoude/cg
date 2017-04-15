@@ -49,6 +49,9 @@ public class Simulation {
   private List<Coord> cannonBallExplosions = new ArrayList<>();
   private List<Ship> shipLosts = new ArrayList<>();
 
+  Ship[] collisions = new Ship[20];
+  int collisionsFE = 0;
+
   public Simulation(GameState state) {
     this.state = state;
   }
@@ -261,18 +264,19 @@ public class Simulation {
       }
 
       // Check ship and obstacles collisions
-      List<Ship> collisions = new ArrayList<>();
       boolean collisionDetected = true;
       while (collisionDetected) {
         collisionDetected = false;
+        collisionsFE = 0;
 
         for (Ship ship : state.ships) {
           if (ship.newBowIntersect(state.ships)) {
-            collisions.add(ship);
+            collisions[collisionsFE++] = ship;
           }
         }
 
-        for (Ship ship : collisions) {
+        for (int s=0;s<collisionsFE;s++) {
+          Ship ship = collisions[s];
           // Revert last move
           ship.newPosition = ship.position;
           ship.newBowCoordinate = ship.bow();
@@ -283,7 +287,6 @@ public class Simulation {
 
           collisionDetected = true;
         }
-        collisions.clear();
       }
 
       for (Team team : state.teams) {
@@ -308,17 +311,19 @@ public class Simulation {
 
     // Check collisions
     boolean collisionDetected = true;
-    List<Ship> collisions = new ArrayList<>();
+
     while (collisionDetected) {
+      collisionsFE = 0;
       collisionDetected = false;
 
       for (Ship ship : state.ships) {
         if (ship.newPositionsIntersect(state.ships)) {
-          collisions.add(ship);
+          collisions[collisionsFE++] = ship;
         }
       }
 
-      for (Ship ship : collisions) {
+      for (int i=0;i<collisionsFE;i++) {
+        Ship ship = collisions[i];
         ship.newOrientation = ship.orientation;
         ship.newBowCoordinate = ship.newBow();
         ship.newSternCoordinate = ship.newStern();
@@ -326,7 +331,6 @@ public class Simulation {
         collisionDetected = true;
       }
 
-      collisions.clear();
     }
 
     // Apply rotation
