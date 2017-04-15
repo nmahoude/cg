@@ -57,6 +57,13 @@ public class Simulation {
     Map<Ship, Action[]> actions = sol.actions;
     state.backup();
 
+    coreSimulation(sol, actions);
+    
+    state.restore();
+  }
+
+  /* without backup  / restore */
+  public void coreSimulation(AGSolution sol, Map<Ship, Action[]> actions) {
     double energy = 0;
     for (int i = 0; i < AGSolution.DEPTH; i++) {
       if( state.teams.get(0).dead || state.teams.get(1).dead) break;
@@ -66,21 +73,19 @@ public class Simulation {
       state.rounds ++;
       if (state.rounds == 200) break;
       
-      if (i==0) {
-        sol.calculateFeature(state);
-        energy += sol.speedFeature * 10 + sol.movementFeature;
-        //System.err.println(actions[0][0] + " -> "+sol.speedFeature+" ==> "+energy);
-      }
+//      if (i==0) {
+//        sol.calculateFeature(state);
+//        energy += sol.speedFeature;
+//        //System.err.println(actions[0][0] + " -> "+sol.speedFeature+" ==> "+energy);
+//      }
     }
     if (state.rounds == 200) {
       checkEndConditions();
     }
     
     sol.calculateFeature(state);
-    energy += sol.healtFeature + sol.speedFeature;
+    energy += sol.myHealtFeature + sol.speedFeature;
     sol.energy = energy;
-    
-    state.restore();
   }
 
   private void applyActions(int i, Map<Ship, Action[]> actions) {
@@ -185,7 +190,7 @@ public class Simulation {
             case FIRE:
               int distance = ship.bow().distanceTo(ship.target);
               if (ship.target.isInsideMap() && distance <= Simulation.FIRE_DISTANCE_MAX && ship.cannonCooldown == 0) {
-                int travelTime = 1 + Math.round(ship.bow().distanceTo(ship.target) / 3);
+                int travelTime = (int) (1 + Math.round(ship.bow().distanceTo(ship.target) / 3.0));
                 state.cannonballs.add(new CannonBall(0, ship.target.x, ship.target.y, ship.id, ship.bow().x, ship.bow().y, travelTime));
                 ship.cannonCooldown = Simulation.COOLDOWN_CANNON;
               }
@@ -283,10 +288,6 @@ public class Simulation {
 
       for (Team team : state.teams) {
         for (Ship ship : team.shipsAlive) {
-          if (ship.health == 0) {
-            continue;
-          }
-
           ship.position = ship.newPosition;
           if (checkCollisions(ship)) {
             shipLosts.add(ship);

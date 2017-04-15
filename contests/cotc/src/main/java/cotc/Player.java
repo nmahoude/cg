@@ -32,7 +32,9 @@ public class Player {
       state.initRound();
 
       readState(in);
-      
+      if (debugOutput) {
+        state.debugOutput();
+      }
       //doDirectAction();
       AG ag = new AG();
       ag.setState(state);
@@ -66,6 +68,8 @@ public class Player {
       if (debugOutput) {
         System.err.println("readEntity("+entityId+","+entityType+","+x+","+y+","+arg1+","+arg2+","+arg3+","+arg4+");");
       }
+      arg4 = 1-arg4; // arg4 == 1 -> owner = 0 !
+      
       switch (entityType) {
         case "SHIP":
           Ship ship = null;
@@ -76,8 +80,7 @@ public class Player {
           }
           if (ship == null) {
             ship = new Ship(entityId, x, y, arg1 /*orientation*/, arg4 /*owner*/);
-            state.ships.add(ship);
-            if (ship.owner == 1) {
+            if (ship.owner == 0) {
               state.myShips.add(ship);
               state.teams.get(0).ships.add(ship);
             } else {
@@ -86,7 +89,7 @@ public class Player {
             }
           }
           ship.update(x, y, arg1 /*orientation*/, arg2 /*speed*/, arg3 /*stock of rum*/, arg4 /*owner*/);
-          state.updateShip(ship);
+          state.updateShip(ship); // add in ships and shipsAlive of teams
           break;
         case "BARREL":
           Barrel barrel = new Barrel  (entityId, x, y, arg1 /*rum in barrel*/);

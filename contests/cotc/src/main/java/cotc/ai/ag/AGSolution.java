@@ -19,15 +19,18 @@ public class AGSolution implements AISolution{
   private int shipCount;
   
   public double energy;
-  public double healtFeature;
+  public double myHealtFeature;
   public double speedFeature;
   public double distToBarrelFeature;
   public double movementFeature;
+  private GameState state;
+  private int hisHealthFeature;
 
   private AGSolution() {
   }
   
   public AGSolution(GameState state) {
+    this.state = state;
     this.shipCount = state.shipCount;
     actions = new HashMap<>();
     for (Ship ship : state.teams.get(0).shipsAlive) {
@@ -39,9 +42,8 @@ public class AGSolution implements AISolution{
   public String[] output() {
     String[] output = new String[shipCount];
     int i=0;
-    for (Entry<Ship, Action[]> entry : actions.entrySet()) {
-      output[i] = entry.getValue()[0].toString();
-      i++;
+    for (Ship ship : state.teams.get(0).shipsAlive) {
+      output[i++] = actions.get(ship)[0].toString();
     }
     return output;
   }
@@ -73,7 +75,9 @@ public class AGSolution implements AISolution{
   }
 
   public void calculateFeature(GameState state) {
-    healtFeature = 0;
+    myHealtFeature = 0;
+    hisHealthFeature = 0;
+
     speedFeature = 0;
     distToBarrelFeature = 0;
     movementFeature = 0;
@@ -85,12 +89,12 @@ public class AGSolution implements AISolution{
     }
     
     for (Ship ship : state.teams.get(0).shipsAlive) {
-      healtFeature += ship.health;
+      myHealtFeature += ship.health;
       speedFeature += ship.speed;
     }
     
     for (Ship ship : state.teams.get(1).shipsAlive) {
-      healtFeature -= ship.health;
+      hisHealthFeature += ship.health;
     }
     
     // distToBarrel
@@ -118,7 +122,7 @@ public class AGSolution implements AISolution{
     }
     
     System.err.println("Energy : "+energy+" from "
-      + "health: "+healtFeature 
+      + "health: "+myHealtFeature 
       + " speed: "+speedFeature
       + " distToB: "+distToBarrelFeature
       );

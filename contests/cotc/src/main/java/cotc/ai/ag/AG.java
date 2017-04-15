@@ -18,8 +18,14 @@ public class AG implements AI {
     AGSolution best = fake;
     System.err.println("Start ag");
     while (System.currentTimeMillis() < stopTime) {
+      if (simulations <= 2) {
+        System.err.println("Simulation start");
+      }
       AGSolution sol = new AGSolution(state);
       sol.randomize(state);
+      if (simulations <= 2) {
+        System.err.println("Sol randomize");
+      }
       
       simulation.simulate(sol);
       simulations++;

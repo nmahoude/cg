@@ -29,6 +29,12 @@ public class GameState {
   public List<Ship> b_myShips = new ArrayList<>();
   public List<Ship> b_otherShips = new ArrayList<>();
 
+  public void debugOutput() {
+    System.err.println("canonballs: "+cannonballs.size());
+    System.err.println("mines: "+mines.size());
+    System.err.println("barrels: "+barrels.size());
+    System.err.println("ships: "+ships.size());
+  }
   public void backup() {
     b_rounds = rounds;
     clearBackups();
@@ -86,6 +92,7 @@ public class GameState {
     // kill all ships ! (will be revive in the update process)
     teams.get(0).shipsAlive.clear();
     teams.get(1).shipsAlive.clear();
+    
     for (Ship ship : myShips) {
       ship.health = 0;
     }
@@ -93,6 +100,7 @@ public class GameState {
       ship.health = 0;
     }
     
+    ships.clear();
     cannonballs.clear();
     mines.clear();
     barrels.clear();
@@ -108,7 +116,8 @@ public class GameState {
   }
 
   public void updateShip(Ship ship) {
-    if (ship.owner == 1) {
+    ships.add(ship);
+    if (ship.owner == 0) {
       teams.get(0).shipsAlive.add(ship);
     } else {
       teams.get(1).shipsAlive.add(ship);
