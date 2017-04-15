@@ -1,6 +1,11 @@
 package cotc.utils;
 
 public class Coord {
+  private static final int MAP_WIDTH = 23;
+  private static final int MAP_HEIGHT = 21;
+
+  private final static int[][] DIRECTIONS_EVEN = new int[][] { { 1, 0 }, { 0, -1 }, { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 } };
+  private final static int[][] DIRECTIONS_ODD = new int[][] { { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, 0 }, { 0, 1 }, { 1, 1 } };
   
   private static Coord[] cache;
   static {
@@ -10,18 +15,23 @@ public class Coord {
         cache[x+10 + (y+10)*50] = new Coord(x,y);
       }
     }
+    for (int x=-5;x<MAP_WIDTH+5;x++) {
+      for (int y=-5;y<MAP_HEIGHT+5;y++) {
+        Coord coord = get(x,y);
+        for (int i=0;i<6;i++) {
+          coord.neighborsCache[i] = precalculateNeighbor(x, y, i);
+        }
+      }
+    }
   }
+  
   public static Coord get(int x, int y) {
     return cache[x+10 + (y+10)*50];
   }
   
-  private static final int MAP_WIDTH = 23;
-  private static final int MAP_HEIGHT = 21;
-
-  private final static int[][] DIRECTIONS_EVEN = new int[][] { { 1, 0 }, { 0, -1 }, { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 } };
-  private final static int[][] DIRECTIONS_ODD = new int[][] { { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, 0 }, { 0, 1 }, { 1, 1 } };
   public final int x;
   public final int y;
+  private Coord[] neighborsCache = new Coord[6];
 
   private Coord(int x, int y) {
       this.x = x;
@@ -46,25 +56,28 @@ public class Coord {
   }
 
   public CubeCoordinate toCubeCoordinate() {
-      int xp = x - (y - (y & 1)) / 2;
-      int zp = y;
-      int yp = -(xp + zp);
-      return new CubeCoordinate(xp, yp, zp);
+    int xp = x - (y - (y & 1)) / 2;
+    int zp = y;
+    int yp = -(xp + zp);
+    return new CubeCoordinate(xp, yp, zp);
   }
 
-  public Coord neighbor(int orientation) {
+  private static Coord precalculateNeighbor(int x, int y, int orientation) {
       int newY, newX;
-      if (this.y % 2 == 1) {
-          newY = this.y + DIRECTIONS_ODD[orientation][1];
-          newX = this.x + DIRECTIONS_ODD[orientation][0];
+      if (y % 2 == 1) {
+          newY = y + DIRECTIONS_ODD[orientation][1];
+          newX = x + DIRECTIONS_ODD[orientation][0];
       } else {
-          newY = this.y + DIRECTIONS_EVEN[orientation][1];
-          newX = this.x + DIRECTIONS_EVEN[orientation][0];
+          newY = y + DIRECTIONS_EVEN[orientation][1];
+          newX = x + DIRECTIONS_EVEN[orientation][0];
       }
 
       return Coord.get(newX, newY);
   }
 
+  public Coord neighbor(int orientation) {
+    return neighborsCache[orientation];
+  }
   public boolean isInsideMap() {
       return x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT;
   }

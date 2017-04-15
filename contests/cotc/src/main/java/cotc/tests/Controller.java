@@ -31,7 +31,7 @@ public class Controller {
     AI ai2 = new AG();
     List<AI> ais = Arrays.asList(ai1, ai2);
     
-    final int matchPerEvaluation = 250;
+    final int matchPerEvaluation = 50;
     int totalMatches = matchPerEvaluation * factoriel(ais.size()-1);
     int matches = 0;
     
@@ -51,6 +51,7 @@ public class Controller {
             if (rf.teamId == 0) {if (i % 2 == 0) score1++; else score2++;}
             if (rf.teamId == 1) {if (i % 2 == 0) score2++; else score1++;}
           } catch(Exception e) {
+            e.printStackTrace();
           }
           matches++;
           System.out.println("match "+matches+" ("+rounds+" rounds)");
@@ -92,7 +93,7 @@ public class Controller {
         controller.playOneTurn();
         rounds++;
       } catch (Exception e) {
-        //e.printStackTrace();
+//        e.printStackTrace();
         throw new GameFinished(controller.referee.winner());
       }
     }

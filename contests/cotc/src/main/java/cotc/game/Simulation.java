@@ -241,10 +241,10 @@ public class Simulation {
           ship.newPosition = ship.position;
           ship.newBowCoordinate = ship.bow();
           ship.newSternCoordinate = ship.stern();
-
           if (i > ship.speed) {
             continue;
           }
+
 
           Coord newCoordinate = ship.position.neighbor(ship.orientation);
 

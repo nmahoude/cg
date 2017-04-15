@@ -11,7 +11,7 @@ import cotc.entities.Mine;
 import cotc.entities.Ship;
 
 public class Player {
-  private static boolean debugOutput = true;
+  private static boolean debugOutput = false;
   
   private static final int FIRE_COOLDOWN = 4;
   public static long startTime = 0;
@@ -32,18 +32,17 @@ public class Player {
       state.initRound();
 
       readState(in);
-      if (debugOutput) {
-        state.debugOutput();
-      }
-      //doDirectAction();
+
+      //old AI (dummy with MOVE) doDirectAction();
+      
       AG ag = new AG();
       ag.setState(state);
       AGSolution sol = (AGSolution)ag.evolve(startTime+ (round == 1 ? 800 : 45));
-      
-      sol.debugOutput();
+      if (debugOutput) {
+        sol.debugOutput();
+      }
       
       String[] output = sol.output();
-      System.err.println(""+output.length+" output lines");
       for (int i=0;i<output.length;i++) {
         System.out.println(output[i]);
       }

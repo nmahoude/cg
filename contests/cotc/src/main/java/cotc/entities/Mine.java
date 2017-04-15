@@ -37,11 +37,13 @@ public class Mine extends Entity {
         for (Ship ship : ships) {
             if (ship != victim) {
                 Coord impactPosition = null;
-                if (ship.stern().distanceTo(position) <= 1) {
-                    impactPosition = ship.stern();
+                Coord stern = ship.stern();
+                Coord bow = ship.bow();
+                if (stern.distanceTo(position) <= 1) {
+                    impactPosition = stern;
                 }
-                if (ship.bow().distanceTo(position) <= 1) {
-                    impactPosition = ship.bow();
+                if (bow.distanceTo(position) <= 1) {
+                    impactPosition = bow;
                 }
                 if (ship.position.distanceTo(position) <= 1) {
                     impactPosition = ship.position;
