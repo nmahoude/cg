@@ -407,9 +407,12 @@ public class Simulation {
     // Collision with the mines
     for (Iterator<Mine> it = state.mines.iterator(); it.hasNext();) {
       Mine mine = it.next();
-      
-      if (mine.explode(state.ships, false)) {
-        it.remove();
+
+      //TODO check if <4 is sufficient to explode mine
+      if (mine.position.distanceTo(ship.position) < 4) {
+        if (mine.explode(state.ships, false)) {
+          it.remove();
+        }
       }
     }
 
