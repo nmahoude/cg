@@ -8,11 +8,27 @@ public class Coord {
   private final static int[][] DIRECTIONS_ODD = new int[][] { { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, 0 }, { 0, 1 }, { 1, 1 } };
   
   private static Coord[] cache;
+  private static int distanceCache[][];
+  
   static {
     cache = new Coord[50*50];
+    distanceCache = new int[50*50][50*50];
+    
     for (int x=-10;x<40;x++) {
       for (int y=-10;y<40;y++) {
         cache[x+10 + (y+10)*50] = new Coord(x,y);
+        cache[x+10 + (y+10)*50].cubeCoordinateCache = preCalculateCubeCoordinate(x,y);
+      }
+    }
+
+    for (int x=-10;x<40;x++) {
+      for (int y=-10;y<40;y++) {
+        for (int x2=-10;x2<40;x2++) {
+          for (int y2=-10;y2<40;y2++) {
+            int dist = cache[x+10 + (y+10)*50].toCubeCoordinate().distanceTo(cache[x2+10 + (y2+10)*50].toCubeCoordinate());
+            distanceCache[x+10 + (y+10)*50][x2+10 + (y2+10)*50] =dist;  
+          }
+        }
       }
     }
     for (int x=-5;x<MAP_WIDTH+5;x++) {
@@ -29,10 +45,18 @@ public class Coord {
     return cache[x+10 + (y+10)*50];
   }
   
+  private static CubeCoordinate preCalculateCubeCoordinate(int x, int y) {
+    int xp = x - (y - (y & 1)) / 2;
+    int zp = y;
+    int yp = -(xp + zp);
+    return new CubeCoordinate(xp, yp, zp);
+  }
+
   public final int x;
   public final int y;
   private Coord[] neighborsCache = new Coord[6];
-
+  private CubeCoordinate cubeCoordinateCache;
+  
   private Coord(int x, int y) {
       this.x = x;
       this.y = y;
@@ -56,10 +80,7 @@ public class Coord {
   }
 
   public CubeCoordinate toCubeCoordinate() {
-    int xp = x - (y - (y & 1)) / 2;
-    int zp = y;
-    int yp = -(xp + zp);
-    return new CubeCoordinate(xp, yp, zp);
+    return cubeCoordinateCache;
   }
 
   private static Coord precalculateNeighbor(int x, int y, int orientation) {
@@ -83,11 +104,11 @@ public class Coord {
   }
 
   public int distanceTo(Coord dst) {
-      return this.toCubeCoordinate().distanceTo(dst.toCubeCoordinate());
+    return distanceCache[x+10 + (y+10)*50][dst.x+10 + (dst.y+10)*50];
   }
 
   public boolean equals(Object obj) {
-    // SPeed hack
+    // Speed hack
     //      if (obj == null || getClass() != obj.getClass()) {
     //          return false;
     //      }
