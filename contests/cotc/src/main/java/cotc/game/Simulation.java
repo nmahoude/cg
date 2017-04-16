@@ -408,8 +408,8 @@ public class Simulation {
     for (Iterator<Mine> it = state.mines.iterator(); it.hasNext();) {
       Mine mine = it.next();
 
-      //TODO check if <4 is sufficient to explode mine
-      if (mine.position.distanceTo(ship.position) < 4) {
+      //TODO check if <3 is sufficient to explode mine
+      if (mine.position.distanceTo(ship.position) < 3) {
         if (mine.explode(state.ships, false)) {
           it.remove();
         }
