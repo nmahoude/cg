@@ -1,4 +1,4 @@
-package cotc.ai.ag;
+package cotc.ai.ag.ref1;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,12 +6,11 @@ import java.util.Map.Entry;
 import java.util.Random;
 
 import cotc.GameState;
-import cotc.ai.AISolution;
 import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.Ship;
 
-public class AGSolution implements AISolution{
+public class AGSolution extends cotc.ai.ag.AGSolution {
   public static int DEPTH = 5;
   public static Random rand = new Random();
   
