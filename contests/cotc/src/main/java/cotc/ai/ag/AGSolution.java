@@ -58,7 +58,7 @@ public class AGSolution implements AISolution{
         }
         if (i == 0) {
           // eliminate impossible actions
-          if (action == Action.SLOWER && state.myShips.get(i).speed == 0) {
+          if (action == Action.SLOWER && ship.speed == 0) {
             action = Action.FASTER;
           }
         }

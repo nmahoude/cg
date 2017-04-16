@@ -122,19 +122,12 @@ public class GameSituationTest {
     arg4 = 1-arg4; // arg4 == 1 -> owner = 0 !
     switch (entityType) {
       case SHIP:
-        Ship ship = null;
-        if (arg4 == 0) {
-          ship = state.getShip(state.myShips, entityId);
-        } else {
-          ship = state.getShip(state.otherShips, entityId);
-        }
+        Ship ship = state.getShip(state.ships, entityId);
         if (ship == null) {
           ship = new Ship(entityId, x, y, arg1 /*orientation*/, arg4 /*owner*/);
           if (ship.owner == 1) {
-            state.myShips.add(ship);
             state.teams.get(0).ships.add(ship);
           } else {
-            state.otherShips.add(ship);
             state.teams.get(1).ships.add(ship);
           }
         }
@@ -146,10 +139,7 @@ public class GameSituationTest {
         state.barrels.add(barrel);
         break;
       case CANNONBALL:
-        Ship sender = state.getShip(state.myShips, arg1);
-        if (sender == null) {
-          sender = state.getShip(state.otherShips, arg1);
-        }
+        Ship sender = state.getShip(state.ships, arg1);
         CannonBall ball = new CannonBall(entityId, x, y, sender /*sender entityId*/, arg2 /*turns*/);
         state.cannonballs.add(ball);
         break;

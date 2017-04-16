@@ -147,13 +147,11 @@ public class Controller {
     
     // Player's ships first
     for (Ship ship : referee.state.teams.get(playerIdx).shipsAlive) {
-      state.myShips.add(ship);
       state.ships.add(ship);
     }
 
     // Opponent's ships
     for (Ship ship : referee.state.teams.get((playerIdx + 1) % 2).shipsAlive) {
-      state.otherShips.add(ship);
       state.ships.add(ship);
     }
 

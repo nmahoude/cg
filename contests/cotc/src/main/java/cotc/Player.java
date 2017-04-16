@@ -71,19 +71,12 @@ public class Player {
       
       switch (entityType) {
         case "SHIP":
-          Ship ship = null;
-          if (arg4 == 1) {
-            ship = state.getShip(state.myShips, entityId);
-          } else {
-            ship = state.getShip(state.otherShips, entityId);
-          }
+          Ship ship = state.getShip(state.ships, entityId);
           if (ship == null) {
             ship = new Ship(entityId, x, y, arg1 /*orientation*/, arg4 /*owner*/);
             if (ship.owner == 0) {
-              state.myShips.add(ship);
               state.teams.get(0).ships.add(ship);
             } else {
-              state.otherShips.add(ship);
               state.teams.get(1).ships.add(ship);
             }
           }
@@ -95,9 +88,9 @@ public class Player {
           state.barrels.add(barrel);
           break;
         case "CANNONBALL":
-          Ship sender = state.getShip(state.myShips, arg1);
+          Ship sender = state.getShip(state.teams.get(0).ships, arg1);
           if (sender == null) {
-            sender = state.getShip(state.otherShips, arg1);
+            sender = state.getShip(state.teams.get(1).ships, arg1);
           }
           CannonBall ball = new CannonBall(entityId, x, y, sender /*sender entityId*/, arg2 /*turns*/);
           state.cannonballs.add(ball);
@@ -113,7 +106,7 @@ public class Player {
 
   private static void doDirectAction() {
     for (int i = 0; i < state.shipCount; i++) {
-      Ship ship = state.myShips.get(i);
+      Ship ship = state.teams.get(0).shipsAlive.get(i);
       System.err.println("Ship "+i +" with playerId "+ship.owner);
       if (ship.cannonCooldown > 0)
         ship.cannonCooldown--;

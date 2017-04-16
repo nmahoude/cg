@@ -18,16 +18,12 @@ public class GameState {
   public List<Mine> mines = new ArrayList<>();
   public List<Barrel> barrels = new ArrayList<>();
   public List<Ship> ships = new ArrayList<>(); // all ships
-  public List<Ship> myShips = new ArrayList<>();
-  public List<Ship> otherShips = new ArrayList<>();
   
   public int b_rounds;
   public List<CannonBall> b_cannonballs = new ArrayList<>();
   public List<Mine> b_mines = new ArrayList<>();
   public List<Barrel> b_barrels = new ArrayList<>();
   public List<Ship> b_ships = new ArrayList<>(); // all ships
-  public List<Ship> b_myShips = new ArrayList<>();
-  public List<Ship> b_otherShips = new ArrayList<>();
 
   public void debugOutput() {
     System.err.println("canonballs: "+cannonballs.size());
@@ -42,8 +38,6 @@ public class GameState {
     b_mines.addAll(mines);
     b_barrels.addAll(barrels);
     b_ships.addAll(ships);
-    b_myShips.addAll(myShips);
-    b_otherShips.addAll(otherShips);
     
     teams.forEach(Team::backup);
     cannonballs.forEach(CannonBall::backup);
@@ -60,8 +54,6 @@ public class GameState {
     mines.addAll(b_mines);
     barrels.addAll(b_barrels);
     ships.addAll(b_ships);
-    myShips.addAll(b_myShips);
-    otherShips.addAll(b_otherShips);
 
     teams.forEach(Team::restore);
     cannonballs.forEach(CannonBall::restore);
@@ -75,8 +67,6 @@ public class GameState {
     mines.clear();
     barrels.clear();
     ships.clear();
-    myShips.clear();
-    otherShips.clear();
   }
 
   public void clearBackups() {
@@ -84,22 +74,13 @@ public class GameState {
     b_mines.clear();
     b_barrels.clear();
     b_ships.clear();
-    b_myShips.clear();
-    b_otherShips.clear();
   }
   
   void initRound() {
     // kill all ships ! (will be revive in the update process)
     teams.get(0).shipsAlive.clear();
     teams.get(1).shipsAlive.clear();
-    
-    for (Ship ship : myShips) {
-      ship.health = 0;
-    }
-    for (Ship ship : otherShips) {
-      ship.health = 0;
-    }
-    
+
     ships.clear();
     cannonballs.clear();
     mines.clear();
@@ -140,7 +121,7 @@ public class GameState {
   public Ship getClosestEnnemy(Ship me) {
     int bestDist = Integer.MAX_VALUE;
     Ship best = null;
-    for (Ship other : otherShips) {
+    for (Ship other : teams.get(1).shipsAlive) {
       if (other.health == 0) continue;
       int dist = other.position.distanceTo(me.position);
       if (dist < bestDist) {
