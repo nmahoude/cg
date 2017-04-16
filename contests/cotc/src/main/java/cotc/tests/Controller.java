@@ -14,8 +14,11 @@ import cotc.entities.CannonBall;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
+import cotc.utils.Coord;
 
 public class Controller {
+  private static Coord coord = Coord.get(0, 0); // force Coord caches initialisation
+
   private static int rounds;
   public Referee referee;
   public GameState state1;
@@ -25,6 +28,7 @@ public class Controller {
   private int round;
 
   public static void main(String[] args) throws Exception {
+    
     Random rand = new Random(System.currentTimeMillis());
 
     AI ai1 = new DummyAI();
