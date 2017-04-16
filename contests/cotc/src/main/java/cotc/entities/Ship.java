@@ -29,6 +29,9 @@ public class Ship extends Entity {
   public Coord newSternCoordinate;
   public Coord target;
 
+  // work variable used in simulation. Not clean
+  public int initialHealth;
+
   public Ship(int entityId, int x, int y, int orientation, int owner) {
     super(EntityType.SHIP, entityId, x, y);
     this.orientation = orientation;

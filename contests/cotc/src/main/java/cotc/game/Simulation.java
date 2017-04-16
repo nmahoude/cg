@@ -47,7 +47,6 @@ public class Simulation {
   }
 
   private List<Coord> cannonBallExplosions = new ArrayList<>();
-  private List<Ship> shipLosts = new ArrayList<>();
 
   Ship[] collisions = new Ship[20];
   int collisionsFE = 0;
@@ -111,7 +110,8 @@ public class Simulation {
 
     moveCannonballs();
     decrementRum();
-
+    updateInitialRum();
+    
     applyActions();
     
     moveShips();
@@ -121,10 +121,14 @@ public class Simulation {
     explodeMines();
     explodeBarrels();
 
-    for (Ship ship : shipLosts) {
-      state.barrels.add(new Barrel(0, ship.position.x, ship.position.y, REWARD_RUM_BARREL_VALUE));
+    for (Ship ship : state.ships) {
+      if (ship.health <= 0) {
+        int reward = Math.min(REWARD_RUM_BARREL_VALUE, ship.initialHealth);
+        if (reward > 0) {
+          state.barrels.add(new Barrel(0, ship.position.x, ship.position.y, reward));
+        }
+      }
     }
-
     for (Iterator<Ship> it = state.ships.iterator(); it.hasNext();) {
       Ship ship = it.next();
       if (ship.health <= 0) {
@@ -179,9 +183,10 @@ public class Simulation {
 
                 if (target.isInsideMap()) {
                   boolean cellIsFreeOfBarrels = state.barrels.stream().noneMatch(barrel -> barrel.position == target);
+                  boolean cellIsFreeOfMines = state.mines.stream().noneMatch(mine -> mine.position.equals(target));
                   boolean cellIsFreeOfShips = state.ships.stream().filter(b -> b != ship).noneMatch(b -> b.at(target));
 
-                  if (cellIsFreeOfBarrels && cellIsFreeOfShips) {
+                  if (cellIsFreeOfBarrels && cellIsFreeOfShips && cellIsFreeOfMines) {
                     ship.mineCooldown = Simulation.COOLDOWN_MINE;
                     Mine mine = new Mine(0, target.x, target.y);
                     state.mines.add(mine);
@@ -209,7 +214,6 @@ public class Simulation {
 
   private void reinitSimulation() {
     cannonBallExplosions.clear();
-    shipLosts.clear();
   }
 
   private void moveCannonballs() {
@@ -292,9 +296,7 @@ public class Simulation {
       for (Team team : state.teams) {
         for (Ship ship : team.shipsAlive) {
           ship.position = ship.newPosition;
-          if (checkCollisions(ship)) {
-            shipLosts.add(ship);
-          }
+          checkCollisions(ship);
         }
       }
     }
@@ -336,17 +338,18 @@ public class Simulation {
     // Apply rotation
     for (Team team : state.teams) {
       for (Ship ship : team.shipsAlive) {
-        if (ship.health == 0) {
-          continue;
-        }
-
         ship.orientation = ship.newOrientation;
-        if (checkCollisions(ship)) {
-          shipLosts.add(ship);
-        }
+        checkCollisions(ship);
       }
     }
   }
+  
+  private void updateInitialRum() {
+    for (Ship ship : state.ships) {
+      ship.initialHealth = ship.health;
+    }
+  }
+
   void explodeShips() {
     for (Iterator<Coord> it = cannonBallExplosions.iterator(); it.hasNext();) {
       Coord position = it.next();
@@ -390,7 +393,7 @@ public class Simulation {
       }
     }
   }
-  private boolean checkCollisions(Ship ship) {
+  private void checkCollisions(Ship ship) {
     Coord bow = ship.bow();
     Coord stern = ship.stern();
     Coord center = ship.position;
@@ -415,7 +418,5 @@ public class Simulation {
         }
       }
     }
-
-    return ship.health <= 0;
   }
 }

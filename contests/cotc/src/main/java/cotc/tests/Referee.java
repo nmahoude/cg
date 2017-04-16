@@ -18,8 +18,7 @@ import cotc.game.Simulation;
 import cotc.utils.Util;
 
 public class Referee {
-  private static final Pattern PLAYER_INPUT_MOVE_PATTERN = Pattern.compile("MOVE (?<x>[0-9]{1,8})\\s+(?<y>[0-9]{1,8})(?:\\s+(?<message>.+))?",
-      Pattern.CASE_INSENSITIVE);
+  private static final Pattern PLAYER_INPUT_MOVE_PATTERN = Pattern.compile("MOVE (?<x>-?[0-9]{1,8})\\s+(?<y>-?[0-9]{1,8})(?:\\s+(?<message>.+))?",      Pattern.CASE_INSENSITIVE);
   private static final Pattern PLAYER_INPUT_SLOWER_PATTERN = Pattern.compile("SLOWER(?:\\s+(?<message>.+))?", Pattern.CASE_INSENSITIVE);
   private static final Pattern PLAYER_INPUT_FASTER_PATTERN = Pattern.compile("FASTER(?:\\s+(?<message>.+))?", Pattern.CASE_INSENSITIVE);
   private static final Pattern PLAYER_INPUT_WAIT_PATTERN = Pattern.compile("WAIT(?:\\s+(?<message>.+))?", Pattern.CASE_INSENSITIVE);
@@ -88,14 +87,10 @@ public class Referee {
       int y = 1 + random.nextInt(Simulation.MAP_HEIGHT / 2);
 
       Mine m = new Mine(nextEntityId++, x, y);
-      boolean valid = true;
-      for (Ship ship : state.ships) {
-        if (ship.at(m.position)) {
-          valid = false;
-          break;
-        }
-      }
-      if (valid) {
+      boolean cellIsFreeOfMines = state.mines.stream().noneMatch(mine -> mine.position.equals(m.position));
+      boolean cellIsFreeOfShips = state.ships.stream().noneMatch(ship -> ship.at(m.position));
+
+      if (cellIsFreeOfShips && cellIsFreeOfMines) {
         if (y != Simulation.MAP_HEIGHT - 1 - y) {
           state.mines.add(new Mine(nextEntityId++, x, Simulation.MAP_HEIGHT - 1 - y));
         }
@@ -205,7 +200,7 @@ public class Referee {
     // Visible mines
     for (Mine mine : state.mines) {
         boolean visible = false;
-        for (Ship ship : state.teams.get(playerIdx).ships) {
+        for (Ship ship : state.teams.get(playerIdx).shipsAlive) {
             if (ship.position.distanceTo(mine.position) <= Simulation.MINE_VISIBILITY_RANGE) {
                 visible = true;
                 break;
