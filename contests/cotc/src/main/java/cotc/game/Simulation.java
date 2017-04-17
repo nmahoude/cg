@@ -123,8 +123,9 @@ public class Simulation {
       if (ship.health <= 0) {
         int reward = Math.min(REWARD_RUM_BARREL_VALUE, ship.initialHealth);
         if (reward > 0) {
-          state.barrels.add(new Barrel(0, ship.position.x, ship.position.y, reward));
-          state.mapCache[ship.position.x][ship.position.y] = state.MAPCACHE_BARREL;
+          Barrel barrel = new Barrel(0, ship.position.x, ship.position.y, reward);
+          state.barrels.add(barrel);
+          state.mapCache[ship.position.x+ship.position.y*Simulation.MAP_WIDTH] = barrel;
         }
       }
     }
@@ -189,7 +190,7 @@ public class Simulation {
                     ship.mineCooldown = Simulation.COOLDOWN_MINE;
                     Mine mine = new Mine(0, target.x, target.y);
                     state.mines.add(mine);
-                    state.mapCache[target.x][target.y] = GameState.MAPCACHE_MINE;
+                    state.mapCache[target.x+target.y*Simulation.MAP_WIDTH] = mine;
                   }
                 }
 
@@ -297,7 +298,7 @@ public class Simulation {
         for (Ship ship : team.shipsAlive) {
           ship.position = ship.newPosition;
           Coord bow = ship.bow();
-          if (bow.isInsideMap() && state.mapCache[bow.x][bow.y] != 0) {
+          if (bow.isInsideMap() && state.mapCache[bow.x+bow.y*Simulation.MAP_WIDTH] != null) {
             checkCollisions(ship);
           }
         }

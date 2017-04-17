@@ -73,7 +73,7 @@ public class AGSolution extends cotc.ai.ag.AGSolution {
     }
   }
 
-  public void calculateFeature(GameState state) {
+  public void calculateFeatures(GameState state) {
     myHealtFeature = 0;
     hisHealthFeature = 0;
 
@@ -139,7 +139,7 @@ public class AGSolution extends cotc.ai.ag.AGSolution {
 
   public void updateEnergy(GameState state2) {
     // feature after turn DEPTH, less precise, but more insight
-    calculateFeature(state);
+    calculateFeatures(state);
     energy += 0
         + myHealtFeature 
         + speedFeature
