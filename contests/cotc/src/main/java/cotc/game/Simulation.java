@@ -125,8 +125,7 @@ public class Simulation {
     rotateShips();
 
     explodeShips();
-    explodeMines();
-    explodeBarrels();
+    explodeMinesAndBarrels();
 
     for (Ship ship : state.ships) {
       if (ship.health <= 0) {
@@ -379,36 +378,26 @@ public class Simulation {
       }
     }
   }
-  void explodeMines() {
+  void explodeMinesAndBarrels() {
     for (Iterator<Coord> itBall = cannonBallExplosions.iterator(); itBall.hasNext();) {
       Coord position = itBall.next();
-      for (Iterator<Mine> it = state.mines.iterator(); it.hasNext();) {
-        Mine mine = it.next();
-        if (mine.position == position) {
-          it.remove();
+      Entity entityAtPosition = state.getEntityAt(position);
+      if (entityAtPosition != null) {
+        if (entityAtPosition.type == EntityType.MINE) {
+          Mine mine = (Mine)entityAtPosition;
+          state.mines.remove(mine);
           state.clearEntityAt(mine.position);
           itBall.remove();
-          break;
+        } else {
+          Barrel barrel = (Barrel)entityAtPosition;
+          state.barrels.remove(barrel);
+          state.clearEntityAt(barrel.position);
+          itBall.remove();
         }
       }
     }
   }
 
-  void explodeBarrels() {
-    for (Iterator<Coord> itBall = cannonBallExplosions.iterator(); itBall.hasNext();) {
-      Coord position = itBall.next();
-      for (Iterator<Barrel> it = state.barrels.iterator(); it.hasNext();) {
-        Barrel barrel = it.next();
-        if (barrel.position == position) {
-          it.remove();
-          state.clearEntityAt(barrel.position);
-          itBall.remove();
-          break;
-        }
-      }
-    }
-  }
-  
   private void doCollisionWithMinesAndBarrels(Ship ship, Coord coord) {
     if (!coord.isInsideMap()) return;
     

@@ -19,7 +19,7 @@ public class GameState {
 
   public int rounds;
   public List<CannonBall> cannonballs = new ArrayList<>();
-  private List<Mine> mines = new ArrayList<>();
+  public List<Mine> mines = new ArrayList<>();
   public List<Barrel> barrels = new ArrayList<>();
   public List<Ship> ships = new ArrayList<>(); // all ships
   private Entity mapCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
