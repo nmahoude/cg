@@ -131,4 +131,19 @@ public class AGSolution extends cotc.ai.ag.AGSolution {
     fake.energy = Double.NEGATIVE_INFINITY;
     return fake;
   }
+  
+  public void updateEnergyTurn1(GameState state2) {
+    // feature after turn 1, will be more precise, but no insight
+    // TODO nothing atm
+  }
+
+  public void updateEnergy(GameState state2) {
+    // feature after turn DEPTH, less precise, but more insight
+    calculateFeature(state);
+    energy += 0
+        + myHealtFeature 
+        + speedFeature
+        //+ 0.1*(sol.barrelDomination.rumCount0-sol.barrelDomination.rumCount1)
+        ;
+  }
 }

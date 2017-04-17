@@ -57,16 +57,14 @@ public class Simulation {
 
   public void simulate(AGSolution sol) {
     Map<Ship, Action[]> actions = sol.actions;
-    state.backup();
 
     coreSimulation(sol, actions);
-    
     state.restore();
   }
 
   /* without backup  / restore */
   public void coreSimulation(AGSolution sol, Map<Ship, Action[]> actions) {
-    double energy = 0;
+    sol.energy = 0;
     for (int i = 0; i < AGSolution.DEPTH; i++) {
       if( state.teams.get(0).dead || state.teams.get(1).dead) break;
       
@@ -75,25 +73,19 @@ public class Simulation {
       state.rounds ++;
       if (state.rounds == 200) break;
       
-//      if (i==0) {
-//        sol.calculateFeature(state);
-//        energy += sol.speedFeature;
-//        //System.err.println(actions[0][0] + " -> "+sol.speedFeature+" ==> "+energy);
-//      }
+      if (i == 0) {
+        sol.updateEnergyTurn1(state);
+      }
     }
     if (state.rounds == 200) {
       checkEndConditions();
-      if (state.teams.get(0).dead) {
-        sol.energy = -1_000_000;
-        return;
-      }
     }
-    
-    sol.calculateFeature(state);
-    energy += 0
-        + sol.myHealtFeature 
-        + 0.1*(sol.barrelDomination.rumCount0-sol.barrelDomination.rumCount1);
-    sol.energy = energy;
+    if (state.teams.get(0).dead) {
+      sol.energy = -1_000_000;
+      return;
+    }
+
+    sol.updateEnergy(state);
   }
 
   private void applyActions(int i, Map<Ship, Action[]> actions) {
@@ -132,6 +124,7 @@ public class Simulation {
         int reward = Math.min(REWARD_RUM_BARREL_VALUE, ship.initialHealth);
         if (reward > 0) {
           state.barrels.add(new Barrel(0, ship.position.x, ship.position.y, reward));
+          state.mapCache[ship.position.x][ship.position.y] = state.MAPCACHE_BARREL;
         }
       }
     }
@@ -196,6 +189,7 @@ public class Simulation {
                     ship.mineCooldown = Simulation.COOLDOWN_MINE;
                     Mine mine = new Mine(0, target.x, target.y);
                     state.mines.add(mine);
+                    state.mapCache[target.x][target.y] = GameState.MAPCACHE_MINE;
                   }
                 }
 
@@ -251,21 +245,21 @@ public class Simulation {
     for (int i = 1; i <= MAX_SHIP_SPEED; i++) {
       for (Team team : state.teams) {
         for (Ship ship : team.shipsAlive) {
+          Coord bow = ship.bow();
+
           ship.newPosition = ship.position;
-          ship.newBowCoordinate = ship.bow();
+          ship.newBowCoordinate = bow;
           ship.newSternCoordinate = ship.stern();
+          
           if (i > ship.speed) {
             continue;
           }
 
-
-          Coord newCoordinate = ship.position.neighbor(ship.orientation);
-
-          if (newCoordinate.isInsideMap()) {
+          if (bow.isInsideMap()) {
             // Set new coordinate.
-            ship.newPosition = newCoordinate;
-            ship.newBowCoordinate = newCoordinate.neighbor(ship.orientation);
-            ship.newSternCoordinate = newCoordinate.neighbor((ship.orientation + 3) % 6);
+            ship.newPosition = bow;
+            ship.newBowCoordinate = bow.neighbor(ship.orientation);
+            ship.newSternCoordinate = ship.position;
           } else {
             // Stop ship!
             ship.speed = 0;
@@ -302,7 +296,10 @@ public class Simulation {
       for (Team team : state.teams) {
         for (Ship ship : team.shipsAlive) {
           ship.position = ship.newPosition;
-          checkCollisions(ship);
+          Coord bow = ship.bow();
+          if (bow.isInsideMap() && state.mapCache[bow.x][bow.y] != 0) {
+            checkCollisions(ship);
+          }
         }
       }
     }

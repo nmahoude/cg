@@ -7,6 +7,7 @@ import java.util.Random;
 
 import cotc.GameState;
 import cotc.ai.AI;
+import cotc.ai.DummyAI;
 import cotc.ai.ag.AG;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
@@ -30,11 +31,11 @@ public class Controller {
     
     Random rand = new Random(System.currentTimeMillis());
 
-    AI ai1 = new cotc.ai.ag.ref1.AG();
+    AI ai1 = new DummyAI(); //new cotc.ai.ag.ref1.AG();
     AI ai2 = new AG();
     List<AI> ais = Arrays.asList(ai1, ai2);
     
-    final int matchPerEvaluation = 500;
+    final int matchPerEvaluation = 50;
     int totalMatches = matchPerEvaluation * factoriel(ais.size()-1);
     int matches = 0;
     
@@ -96,7 +97,7 @@ public class Controller {
         controller.playOneTurn();
         rounds++;
       } catch (Exception e) {
-        e.printStackTrace();
+        //e.printStackTrace();
         throw new GameFinished(controller.referee.winner());
       }
     }

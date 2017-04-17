@@ -7,8 +7,12 @@ import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
+import cotc.game.Simulation;
 
 public class GameState {
+  
+  public static final int MAPCACHE_MINE = 1;
+  public static final int MAPCACHE_BARREL = 2;
   
   public int shipCount;
   public List<Team> teams = new ArrayList<>();
@@ -18,12 +22,14 @@ public class GameState {
   public List<Mine> mines = new ArrayList<>();
   public List<Barrel> barrels = new ArrayList<>();
   public List<Ship> ships = new ArrayList<>(); // all ships
+  public int mapCache[][] = new int[Simulation.MAP_WIDTH][Simulation.MAP_HEIGHT];
   
   public int b_rounds;
   public List<CannonBall> b_cannonballs = new ArrayList<>();
   public List<Mine> b_mines = new ArrayList<>();
   public List<Barrel> b_barrels = new ArrayList<>();
   public List<Ship> b_ships = new ArrayList<>(); // all ships
+  public int b_mapCache[][] = new int[Simulation.MAP_WIDTH][Simulation.MAP_HEIGHT];
 
   public void debugOutput() {
     System.err.println("canonballs: "+cannonballs.size());
@@ -44,6 +50,23 @@ public class GameState {
     mines.forEach(Mine::backup);
     barrels.forEach(Barrel::backup);
     ships.forEach(Ship::backup);
+    
+    // before backuping the state, we update the map (hopefully, we won't backup to much ^^)
+    createMapCache();
+    for (int x=0;x<Simulation.MAP_WIDTH;x++) {
+      for (int y=0;y<Simulation.MAP_HEIGHT;y++) {
+        b_mapCache[x][y] = mapCache[x][y];
+      }
+    }
+  }
+  private void createMapCache() {
+    for (int x=0;x<Simulation.MAP_WIDTH;x++) {
+      for (int y=0;y<Simulation.MAP_HEIGHT;y++) {
+        mapCache[x][y] = 0;
+      }
+    }
+    mines.forEach(mine -> mapCache[mine.position.x][mine.position.y] = MAPCACHE_MINE);
+    barrels.forEach(barrel -> mapCache[barrel.position.x][barrel.position.y] = MAPCACHE_BARREL);
   }
 
   public void restore() {
@@ -60,6 +83,12 @@ public class GameState {
     mines.forEach(Mine::restore);
     barrels.forEach(Barrel::restore);
     ships.forEach(Ship::restore);
+
+    for (int x=0;x<Simulation.MAP_WIDTH;x++) {
+      for (int y=0;y<Simulation.MAP_HEIGHT;y++) {
+        mapCache[x][y] = b_mapCache[x][y];
+      }
+    }
   }
 
   public void clear() {
