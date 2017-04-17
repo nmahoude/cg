@@ -12,7 +12,7 @@ import cotc.entities.Ship;
 import cotc.utils.Coord;
 
 public class Player {
-  private static boolean debugOutput = true;
+  private static boolean debugOutput = false;
   private static Coord coord = Coord.get(0, 0); // force Coord caches initialisation
   
   private static final int FIRE_COOLDOWN = 4;
@@ -34,7 +34,14 @@ public class Player {
       state.initRound();
 
       readState(in);
-
+      // debug rum domination
+      BarrelDomination barrelDominitation = state.getBarrelDominitation();
+      System.err.println("Rum dom : ");
+      System.err.println("barrel0 : "+barrelDominitation.barrelCount0);
+      System.err.println("barrel1 : "+barrelDominitation.barrelCount1);
+      System.err.println("rum0 : "+barrelDominitation.rumCount0);
+      System.err.println("rum1 : "+barrelDominitation.rumCount1);
+      
       //old AI (dummy with MOVE) doDirectAction();
       
       AG ag = new AG();

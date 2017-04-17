@@ -131,5 +131,31 @@ public class GameState {
     }
     return best;
   }
+  public BarrelDomination getBarrelDominitation() {
+    BarrelDomination bd = new BarrelDomination();
+    
+    for (Barrel barrel : barrels) {
+      Ship closest = null;
+      int best = Integer.MAX_VALUE;
+      for (Ship ship : ships) {
+        if (ship.health <= 0) continue;
+        int dist = ship.position.distanceTo(barrel.position);
+        if (dist < best) {
+          best = dist;
+          closest = ship;
+        }
+      }
+      if (closest != null) {
+        if (closest.owner == 0) {
+          bd.barrelCount0+=1; 
+          bd.rumCount0 += barrel.health;
+        } else {
+          bd.barrelCount1+=1;
+          bd.rumCount1 += barrel.health;
+        }
+      }
+    }
+    return bd;
+  }
 
 }

@@ -27,6 +27,7 @@ public class AG implements AI {
       }
     }
     System.err.println("Simulations "+simulations);
+    System.err.println("barrel dom : "+best.barrelDomination);
     return best;
   }
 

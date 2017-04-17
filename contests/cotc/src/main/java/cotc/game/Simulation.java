@@ -83,10 +83,16 @@ public class Simulation {
     }
     if (state.rounds == 200) {
       checkEndConditions();
+      if (state.teams.get(0).dead) {
+        sol.energy = -1_000_000;
+        return;
+      }
     }
     
     sol.calculateFeature(state);
-    energy += sol.myHealtFeature + sol.speedFeature;
+    energy += 0
+        + sol.myHealtFeature 
+        + 0.1*(sol.barrelDomination.rumCount0-sol.barrelDomination.rumCount1);
     sol.energy = energy;
   }
 
