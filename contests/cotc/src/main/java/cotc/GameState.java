@@ -134,7 +134,18 @@ public class GameState {
     }
     return best;
   }
+  public int getClosestBarrelDistance(Ship ship) {
+    int bestDist = Integer.MAX_VALUE;
+    for (Barrel barrel : barrels) {
+      int dist = barrel.position.distanceTo(ship.position);
+      if (dist < bestDist) {
+        bestDist = dist;
+      }
+    }
+    return bestDist;
+  }
 
+  
   public Ship getClosestEnnemy(Ship me) {
     int bestDist = Integer.MAX_VALUE;
     Ship best = null;

@@ -32,6 +32,7 @@ public class AGSolution implements AISolution{
   public int hisHealthFeature;
   public BarrelDomination barrelDomination;
   private double distanceToCenterFeature;
+  private int distanceToClosestBarrelFeature;
 
   protected AGSolution() {
   }
@@ -88,8 +89,17 @@ public class AGSolution implements AISolution{
     distToBarrelFeature = 0;
     movementFeature = 0;
     distanceToCenterFeature = 0;
+    distanceToClosestBarrelFeature = 0;
     
     barrelDomination = state.getBarrelDominitation();
+
+    if (state.barrels.size() > 0) {
+      for (Ship ship : state.teams.get(0).shipsAlive) {
+        if (ship.health < 75) {
+          distanceToClosestBarrelFeature += 40-state.getClosestBarrelDistance(ship);
+        }
+      }
+    }
     
     for (Ship ship : state.teams.get(0).shipsAlive) {
       if (ship.position != ship.b_position) {
@@ -155,6 +165,7 @@ public class AGSolution implements AISolution{
         + myHealtFeature 
         - hisHealthFeature
         + speedFeature
+        + 0.1*distanceToClosestBarrelFeature
         //+ distanceToCenterFeature
         //+ 0.1*(sol.barrelDomination.rumCount0-sol.barrelDomination.rumCount1)
         ;
