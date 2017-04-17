@@ -11,8 +11,10 @@ import cotc.ai.AISolution;
 import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.Ship;
+import cotc.utils.Coord;
 
 public class AGSolution implements AISolution{
+  private static final Coord MAP_CENTER = Coord.get(11, 10);
   public static int DEPTH = 5;
   public static Random rand = new Random();
   
@@ -22,12 +24,14 @@ public class AGSolution implements AISolution{
   private GameState state;
 
   public double energy;
+ 
   public double myHealtFeature;
   public double speedFeature;
   public double distToBarrelFeature;
   public double movementFeature;
   public int hisHealthFeature;
   public BarrelDomination barrelDomination;
+  private double distanceToCenterFeature;
 
   protected AGSolution() {
   }
@@ -77,12 +81,13 @@ public class AGSolution implements AISolution{
     }
   }
 
-  public void calculateFeature(GameState state) {
+  public void calculateFeatures(GameState state) {
     myHealtFeature = 0;
     hisHealthFeature = 0;
     speedFeature = 0;
     distToBarrelFeature = 0;
     movementFeature = 0;
+    distanceToCenterFeature = 0;
     
     barrelDomination = state.getBarrelDominitation();
     
@@ -90,6 +95,7 @@ public class AGSolution implements AISolution{
       if (ship.position != ship.b_position) {
         movementFeature+=1.0;
       }
+      distanceToCenterFeature += 10-(ship.position.distanceTo(MAP_CENTER));
     }
     
     for (Ship ship : state.teams.get(0).shipsAlive) {
@@ -144,10 +150,12 @@ public class AGSolution implements AISolution{
 
   public void updateEnergy(GameState state2) {
     // feature after turn DEPTH, less precise, but more insight
-    calculateFeature(state);
+    calculateFeatures(state);
     energy += 0
         + myHealtFeature 
+        - hisHealthFeature
         + speedFeature
+        + distanceToCenterFeature
         //+ 0.1*(sol.barrelDomination.rumCount0-sol.barrelDomination.rumCount1)
         ;
   }
