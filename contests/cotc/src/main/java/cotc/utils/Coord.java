@@ -54,7 +54,7 @@ public class Coord {
 
   public final int x;
   public final int y;
-  private Coord[] neighborsCache = new Coord[6];
+  public Coord[] neighborsCache = new Coord[6];
   private CubeCoordinate cubeCoordinateCache;
   
   private Coord(int x, int y) {

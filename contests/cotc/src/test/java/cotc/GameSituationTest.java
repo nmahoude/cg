@@ -38,8 +38,8 @@ public class GameSituationTest {
     readEntity(10,MINE,6,3,0,0,0,0);
     readEntity(47,CANNONBALL,18,10,3,1,0,0);
     readEntity(49,CANNONBALL,15,12,3,3,0,0);
-    
-    
+    state.backup();
+
     Simulation simulation = new Simulation(state);
     
     Ship myShip = state.teams.get(0).shipsAlive.get(0);
@@ -80,6 +80,7 @@ public class GameSituationTest {
     readEntity(29,BARREL,14,7,13,0,0,0);
     readEntity(32,BARREL,17,13,15,0,0,0);
     readEntity(31,BARREL,17,7,15,0,0,0);
+    state.backup();
 
     Simulation simulation = new Simulation(state);
     Ship myShip = state.teams.get(0).shipsAlive.get(0);
@@ -104,6 +105,7 @@ public class GameSituationTest {
     readEntity(79,MINE,5,1,0,0,0,0);
     readEntity(85,MINE,16,19,0,0,0,0);
     readEntity(94,CANNONBALL,12,9,1,1,0,0);
+    state.backup();
 
     Simulation simulation = new Simulation(state);
     Ship myShip = state.teams.get(0).shipsAlive.get(0);
@@ -148,7 +150,6 @@ public class GameSituationTest {
         state.mines.add(mine);
         break;
     }
-    state.backup();
   }
 
 }

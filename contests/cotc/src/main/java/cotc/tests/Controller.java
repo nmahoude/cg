@@ -134,7 +134,7 @@ public class Controller {
     referee.handlePlayerOutput(0, round, 1, output2);
     
     referee.updateGame(round);
-    
+
     refereeToState(0, state1);
     refereeToState(1, state2);
     round++;

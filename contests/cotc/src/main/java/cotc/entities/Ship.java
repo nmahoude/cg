@@ -89,19 +89,19 @@ public class Ship extends Entity {
   }
 
   public Coord stern() {
-    return position.neighbor((orientation + 3) % 6);
+    return position.neighborsCache[((orientation + 3) % 6)];
   }
 
   public Coord bow() {
-    return position.neighbor(orientation);
+    return position.neighborsCache[orientation];
   }
 
   public Coord newStern() {
-    return position.neighbor((newOrientation + 3) % 6);
+    return position.neighborsCache[(newOrientation + 3) % 6];
   }
 
   public Coord newBow() {
-    return position.neighbor(newOrientation);
+    return position.neighborsCache[(newOrientation)];
   }
 
   public boolean at(Coord coord) {

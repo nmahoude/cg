@@ -175,7 +175,8 @@ public class Referee {
 
   public void updateGame(int round) throws GameOverException {
     simulation.playOneTurn();
-
+    state.backup();
+    
     if (state.teams.get(0).dead == true || state.teams.get(1).dead == true) {
       throw new GameOverException("endReached");
     }

@@ -12,6 +12,8 @@ import cotc.ai.ag.AGSolution;
 import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
+import cotc.entities.Entity;
+import cotc.entities.EntityType;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.utils.Coord;
@@ -38,7 +40,14 @@ public class Simulation {
   public static final int HIGH_DAMAGE = 50;
   public static final int NEAR_MINE_DAMAGE = 10;
   public static final int MINE_VISIBILITY_RANGE = 5;
-  
+
+  private static int travelTimeCache[];
+  static {
+    travelTimeCache = new int[30];
+    for (int dist=0;dist<travelTimeCache.length;dist++) {
+      travelTimeCache[dist] = (int) (1 + Math.round(dist / 3.0));
+    }
+  }
   static {
     MAX_SHIPS = 3;
     MIN_MINES = 5;
@@ -125,7 +134,7 @@ public class Simulation {
         if (reward > 0) {
           Barrel barrel = new Barrel(0, ship.position.x, ship.position.y, reward);
           state.barrels.add(barrel);
-          state.mapCache[ship.position.x+ship.position.y*Simulation.MAP_WIDTH] = barrel;
+          state.setEntityAt(ship.position, barrel);
         }
       }
     }
@@ -182,15 +191,14 @@ public class Simulation {
                 Coord target = ship.stern().neighbor((ship.orientation + 3) % 6);
 
                 if (target.isInsideMap()) {
-                  boolean cellIsFreeOfBarrels = state.barrels.stream().noneMatch(barrel -> barrel.position == target);
-                  boolean cellIsFreeOfMines = state.mines.stream().noneMatch(mine -> mine.position.equals(target));
                   boolean cellIsFreeOfShips = state.ships.stream().filter(b -> b != ship).noneMatch(b -> b.at(target));
-
-                  if (cellIsFreeOfBarrels && cellIsFreeOfShips && cellIsFreeOfMines) {
+                  boolean cellIsFreeOfMinesAndBarrels = state.getEntityAt(target) == null;
+                  
+                  if (cellIsFreeOfMinesAndBarrels && cellIsFreeOfShips ) {
                     ship.mineCooldown = Simulation.COOLDOWN_MINE;
                     Mine mine = new Mine(0, target.x, target.y);
                     state.mines.add(mine);
-                    state.mapCache[target.x+target.y*Simulation.MAP_WIDTH] = mine;
+                    state.setEntityAt(target, mine);
                   }
                 }
 
@@ -199,7 +207,7 @@ public class Simulation {
             case FIRE:
               int distance = ship.bow().distanceTo(ship.target);
               if (ship.target.isInsideMap() && distance <= Simulation.FIRE_DISTANCE_MAX && ship.cannonCooldown == 0) {
-                int travelTime = (int) (1 + Math.round(ship.bow().distanceTo(ship.target) / 3.0));
+                int travelTime = travelTimeCache[ship.bow().distanceTo(ship.target)];
                 state.cannonballs.add(new CannonBall(0, ship.target.x, ship.target.y, ship.id, ship.bow().x, ship.bow().y, travelTime));
                 ship.cannonCooldown = Simulation.COOLDOWN_CANNON;
               }
@@ -211,7 +219,6 @@ public class Simulation {
       }
     }
   }
-
 
   private void reinitSimulation() {
     cannonBallExplosions.clear();
@@ -247,10 +254,11 @@ public class Simulation {
       for (Team team : state.teams) {
         for (Ship ship : team.shipsAlive) {
           Coord bow = ship.bow();
+          Coord stern = ship.stern();
 
           ship.newPosition = ship.position;
           ship.newBowCoordinate = bow;
-          ship.newSternCoordinate = ship.stern();
+          ship.newSternCoordinate = stern;
           
           if (i > ship.speed) {
             continue;
@@ -287,7 +295,7 @@ public class Simulation {
           ship.newBowCoordinate = ship.bow();
           ship.newSternCoordinate = ship.stern();
 
-          // Stop ships
+          // Stop ship
           ship.speed = 0;
 
           collisionDetected = true;
@@ -297,10 +305,8 @@ public class Simulation {
       for (Team team : state.teams) {
         for (Ship ship : team.shipsAlive) {
           ship.position = ship.newPosition;
-          Coord bow = ship.bow();
-          if (bow.isInsideMap() && state.mapCache[bow.x+bow.y*Simulation.MAP_WIDTH] != null) {
-            checkCollisions(ship);
-          }
+          doCollisionWithMinesAndBarrels(ship, ship.bow()); // only bow can collide
+          //checkCollisions(ship);
         }
       }
     }
@@ -343,7 +349,10 @@ public class Simulation {
     for (Team team : state.teams) {
       for (Ship ship : team.shipsAlive) {
         ship.orientation = ship.newOrientation;
-        checkCollisions(ship);
+        
+        //checkCollisions(ship);
+        doCollisionWithMinesAndBarrels(ship, ship.bow()); 
+        doCollisionWithMinesAndBarrels(ship, ship.stern());
       }
     }
   }
@@ -377,6 +386,7 @@ public class Simulation {
         Mine mine = it.next();
         if (mine.position == position) {
           it.remove();
+          state.clearEntityAt(mine.position);
           itBall.remove();
           break;
         }
@@ -391,13 +401,35 @@ public class Simulation {
         Barrel barrel = it.next();
         if (barrel.position == position) {
           it.remove();
+          state.clearEntityAt(barrel.position);
           itBall.remove();
           break;
         }
       }
     }
   }
-  private void checkCollisions(Ship ship) {
+  
+  private void doCollisionWithMinesAndBarrels(Ship ship, Coord coord) {
+    if (!coord.isInsideMap()) return;
+    
+    Entity entity = state.getEntityAt(coord);
+    if (entity != null) {
+      if (entity.type == EntityType.BARREL) {
+        Barrel barrel = (Barrel)entity;
+        ship.heal(barrel.health);
+        state.clearEntityAt(coord);
+        state.barrels.remove(barrel);
+      } else { // MINE
+        Mine mine = (Mine)entity;
+        if (mine.explode(state.ships, false)) {
+          state.mines.remove(mine);
+          state.clearEntityAt(coord);
+        }
+      }
+    }
+  }
+  
+  private boolean checkCollisions(Ship ship) {
     Coord bow = ship.bow();
     Coord stern = ship.stern();
     Coord center = ship.position;
@@ -405,12 +437,14 @@ public class Simulation {
     // Collision with the barrels
     for (Iterator<Barrel> it = state.barrels.iterator(); it.hasNext();) {
       Barrel barrel = it.next();
-      if (barrel.position == bow || barrel.position == stern || barrel.position == center) {
+      if (barrel.position == center || barrel.position == bow || barrel.position == stern) {
         ship.heal(barrel.health);
         it.remove();
+        state.clearEntityAt(barrel.position);
       }
     }
 
+    boolean mineExploded = false;
     // Collision with the mines
     for (Iterator<Mine> it = state.mines.iterator(); it.hasNext();) {
       Mine mine = it.next();
@@ -419,8 +453,11 @@ public class Simulation {
       if (mine.position.distanceTo(ship.position) < 3) {
         if (mine.explode(state.ships, false)) {
           it.remove();
+          state.clearEntityAt(mine.position);
+          mineExploded = true;
         }
       }
     }
+    return mineExploded;
   }
 }

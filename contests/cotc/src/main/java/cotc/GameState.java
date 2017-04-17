@@ -9,6 +9,7 @@ import cotc.entities.Entity;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
+import cotc.utils.Coord;
 
 public class GameState {
   private Entity mapEmptyCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
@@ -18,10 +19,10 @@ public class GameState {
 
   public int rounds;
   public List<CannonBall> cannonballs = new ArrayList<>();
-  public List<Mine> mines = new ArrayList<>();
+  private List<Mine> mines = new ArrayList<>();
   public List<Barrel> barrels = new ArrayList<>();
   public List<Ship> ships = new ArrayList<>(); // all ships
-  public Entity mapCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
+  private Entity mapCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
   
   public int b_rounds;
   public List<CannonBall> b_cannonballs = new ArrayList<>();
@@ -56,8 +57,8 @@ public class GameState {
   }
   private void createMapCache() {
     System.arraycopy(mapEmptyCache, 0, mapCache, 0, Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT);
-    mines.forEach(mine -> mapCache[mine.position.x+mine.position.y*Simulation.MAP_WIDTH] = mine);
-    barrels.forEach(barrel -> mapCache[barrel.position.x+barrel.position.y*Simulation.MAP_WIDTH] = barrel);
+    mines.forEach(mine -> this.setEntityAt(mine.position, mine));
+    barrels.forEach(barrel -> this.setEntityAt(barrel.position, barrel));
   }
 
   public void restore() {
@@ -172,6 +173,15 @@ public class GameState {
       }
     }
     return bd;
+  }
+  public Entity getEntityAt(Coord coord) {
+    return mapCache[coord.x+coord.y*Simulation.MAP_WIDTH];
+  }
+  public void clearEntityAt(Coord coord) {
+    mapCache[coord.x+coord.y*Simulation.MAP_WIDTH] = null;
+  }
+  public void setEntityAt(Coord coord, Entity entity) {
+    mapCache[coord.x+coord.y*Simulation.MAP_WIDTH] = entity;
   }
 
 }

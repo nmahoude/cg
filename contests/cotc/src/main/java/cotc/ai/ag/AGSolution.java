@@ -155,7 +155,7 @@ public class AGSolution implements AISolution{
         + myHealtFeature 
         - hisHealthFeature
         + speedFeature
-        + distanceToCenterFeature
+        //+ distanceToCenterFeature
         //+ 0.1*(sol.barrelDomination.rumCount0-sol.barrelDomination.rumCount1)
         ;
   }
