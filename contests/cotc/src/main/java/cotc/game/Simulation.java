@@ -40,6 +40,7 @@ public class Simulation {
   public static final int HIGH_DAMAGE = 50;
   public static final int NEAR_MINE_DAMAGE = 10;
   public static final int MINE_VISIBILITY_RANGE = 5;
+  public static final Coord MAP_CENTER = Coord.get(11, 10);
 
   private static int travelTimeCache[];
   static {

@@ -192,6 +192,7 @@ public class GameState {
     mapCache[coord.x+coord.y*Simulation.MAP_WIDTH] = null;
   }
   public void setEntityAt(Coord coord, Entity entity) {
+    if (!coord.isInsideMap()) return;
     mapCache[coord.x+coord.y*Simulation.MAP_WIDTH] = entity;
   }
 

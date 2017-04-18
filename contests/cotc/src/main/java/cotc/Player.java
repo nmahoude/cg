@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 import cotc.ai.ag.AG;
 import cotc.ai.ag.AGSolution;
+import cotc.ai.ag.Feature;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
 import cotc.entities.Mine;
@@ -35,7 +36,9 @@ public class Player {
 
       readState(in);
       // debugRumDomination();
-      
+      Feature feature= new Feature();
+      feature.calculateFeatures(state);
+      feature.debug();
       //old AI (dummy with MOVE) doDirectAction();
       
       AG ag = new AG();

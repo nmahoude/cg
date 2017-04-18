@@ -16,11 +16,6 @@ import cotc.game.Simulation;
 import cotc.utils.Coord;
 
 public class GameSituationTest {
-  EntityType SHIP = EntityType.SHIP;
-  EntityType MINE = EntityType.MINE;
-  EntityType BARREL = EntityType.BARREL;
-  EntityType CANNONBALL= EntityType.CANNONBALL;
-
   GameState state;
   
   @Before
@@ -119,8 +114,15 @@ public class GameSituationTest {
     assertThat(myShip.health, is(0));
   }
   
-  
+  EntityType SHIP = EntityType.SHIP;
+  EntityType MINE = EntityType.MINE;
+  EntityType BARREL = EntityType.BARREL;
+  EntityType CANNONBALL= EntityType.CANNONBALL;
   private void readEntity(int entityId, EntityType entityType, int x, int y, int arg1, int arg2, int arg3, int arg4) {
+    GameSituationTest.readEntity(state, entityId, entityType, x, y, arg1, arg2, arg3, arg4);
+  }
+  
+  public static void readEntity(GameState state, int entityId, EntityType entityType, int x, int y, int arg1, int arg2, int arg3, int arg4) {
     arg4 = 1-arg4; // arg4 == 1 -> owner = 0 !
     switch (entityType) {
       case SHIP:

@@ -5,16 +5,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
-import cotc.BarrelDomination;
 import cotc.GameState;
 import cotc.ai.AISolution;
 import cotc.entities.Action;
-import cotc.entities.Barrel;
 import cotc.entities.Ship;
-import cotc.utils.Coord;
 
 public class AGSolution implements AISolution{
-  private static final Coord MAP_CENTER = Coord.get(11, 10);
   public static int DEPTH = 5;
   public static Random rand = new Random();
   
@@ -25,14 +21,6 @@ public class AGSolution implements AISolution{
 
   public double energy;
  
-  public double myHealtFeature;
-  public double speedFeature;
-  public double distToBarrelFeature;
-  public double movementFeature;
-  public int hisHealthFeature;
-  public BarrelDomination barrelDomination;
-  private double distanceToCenterFeature;
-  private int distanceToClosestBarrelFeature;
 
   protected AGSolution() {
   }
@@ -81,54 +69,6 @@ public class AGSolution implements AISolution{
       }
     }
   }
-
-  public void calculateFeatures(GameState state) {
-    myHealtFeature = 0;
-    hisHealthFeature = 0;
-    speedFeature = 0;
-    distToBarrelFeature = 0;
-    movementFeature = 0;
-    distanceToCenterFeature = 0;
-    distanceToClosestBarrelFeature = 0;
-    
-    barrelDomination = state.getBarrelDominitation();
-
-    if (state.barrels.size() > 0) {
-      for (Ship ship : state.teams.get(0).shipsAlive) {
-        if (ship.health < 75) {
-          distanceToClosestBarrelFeature += 40-state.getClosestBarrelDistance(ship);
-        }
-      }
-    }
-    
-    for (Ship ship : state.teams.get(0).shipsAlive) {
-      if (ship.position != ship.b_position) {
-        movementFeature+=1.0;
-      }
-      distanceToCenterFeature += 10-(ship.position.distanceTo(MAP_CENTER));
-    }
-    
-    for (Ship ship : state.teams.get(0).shipsAlive) {
-      myHealtFeature += ship.health;
-      speedFeature += ship.speed;
-    }
-    
-    for (Ship ship : state.teams.get(1).shipsAlive) {
-      hisHealthFeature += ship.health;
-    }
-    
-    // distToBarrel
-    for (Ship ship : state.teams.get(0).shipsAlive) {
-      Barrel barrel = state.getClosestBarrel(ship);
-      if (barrel != null) {
-        int dist = barrel.position.distanceTo(ship.position);
-        distToBarrelFeature +=(45.0-dist) / 45.0;
-      } else {
-        break; // don't go further, no more barrels
-      }
-    }
-  }
-  
   public void debugOutput() {
     System.err.println("Actions ");
     for (Entry<Ship, Action[]> entry : actions.entrySet()) {
@@ -140,12 +80,6 @@ public class AGSolution implements AISolution{
       }
       System.err.println();
     }
-    
-    System.err.println("Energy : "+energy+" from "
-      + "health: "+myHealtFeature 
-      + " speed: "+speedFeature
-      + " distToB: "+distToBarrelFeature
-      );
   }
   public static AGSolution createFake() {
     AGSolution fake = new AGSolution();
@@ -160,12 +94,14 @@ public class AGSolution implements AISolution{
 
   public void updateEnergy(GameState state2) {
     // feature after turn DEPTH, less precise, but more insight
-    calculateFeatures(state);
+    Feature feature = new Feature();
+    feature.calculateFeatures(state);
     energy += 0
-        + myHealtFeature 
-        - hisHealthFeature
-        + speedFeature
-        + 0.1*distanceToClosestBarrelFeature
+        + feature.myHealtFeature 
+        - feature.hisHealthFeature
+        + feature.speedFeature
+        + 0.1*feature.distanceToClosestBarrelFeature
+        //+ feature.myMobilityFeature
         //+ distanceToCenterFeature
         //+ 0.1*(sol.barrelDomination.rumCount0-sol.barrelDomination.rumCount1)
         ;

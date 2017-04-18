@@ -171,5 +171,4 @@ public class Ship extends Entity {
     return toPlayerString(orientation, speed, health, owner == playerIdx ? 1 : 0);
   }
 
-
 }
