@@ -1,17 +1,20 @@
 package cotc.utils;
 
+import java.lang.reflect.Array;
+
 public class FastArray <T> {
-  public Object elements[];
+  public T elements[];
   public int FE;
   
-  public FastArray(int maxSize) {
-    elements = new Object[maxSize];
+  @SuppressWarnings("unchecked")
+  public FastArray(Class<T> c, int maxSize) {
+    elements = (T[]) Array.newInstance(c, maxSize);
     FE = 0;
   }
 
   @SuppressWarnings("unchecked")
   public T get(int i) {
-    return (T) elements[i];
+    return elements[i];
   }
   
   public void add(T t) {

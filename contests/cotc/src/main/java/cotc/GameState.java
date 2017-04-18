@@ -9,8 +9,8 @@ import cotc.entities.Entity;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
-import cotc.utils.FastArray;
 import cotc.utils.Coord;
+import cotc.utils.FastArray;
 
 public class GameState {
   private Entity mapEmptyCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
@@ -22,7 +22,7 @@ public class GameState {
   public List<CannonBall> cannonballs = new ArrayList<>();
   public List<Mine> mines = new ArrayList<>();
   public List<Barrel> barrels = new ArrayList<>();
-  public FastArray<Ship> ships = new FastArray<>(6);
+  public FastArray<Ship> ships = new FastArray<>(Ship.class, 6);
 
   private Entity mapCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
   
@@ -30,7 +30,7 @@ public class GameState {
   public List<CannonBall> b_cannonballs = new ArrayList<>();
   public List<Mine> b_mines = new ArrayList<>();
   public List<Barrel> b_barrels = new ArrayList<>();
-  public FastArray<Ship> b_ships = new FastArray<>(6);
+  public FastArray<Ship> b_ships = new FastArray<>(Ship.class, 6);
   public Entity b_mapCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
 
   public void debugOutput() {

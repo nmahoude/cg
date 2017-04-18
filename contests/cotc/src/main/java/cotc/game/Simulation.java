@@ -264,8 +264,6 @@ public class Simulation {
       for (int s=0;s<state.ships.size();s++) {
         Ship ship = state.ships.get(s);
         if (ship.health <=0) continue;
-      //for (Team team : state.teams) {
-        //for (Ship ship : team.shipsAlive) {
           Coord bow = ship.bow();
           Coord stern = ship.stern();
 
