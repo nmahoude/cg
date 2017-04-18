@@ -23,7 +23,6 @@ public class GameState {
   public FastArray<Mine> mines = new FastArray<>(Mine.class, 100);
   public FastArray<Barrel> barrels = new FastArray<>(Barrel.class, 100);
   public FastArray<Ship> ships = new FastArray<>(Ship.class, 6);
-
   private Entity mapCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
   
   public int b_rounds;
@@ -107,14 +106,14 @@ public class GameState {
     System.arraycopy(b_mapCache, 0, mapCache, 0, Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT);
   }
 
-  void initRound() {
+  public void initRound() {
     // kill all ships ! (will be revive in the update process)
     teams.get(0).shipsAlive.clear();
     teams.get(1).shipsAlive.clear();
 
     ships.clear();
     cannonballs.clear();
-    mines.clear();
+    mines.clear(); //TODO handle fog of war
     barrels.clear();
   }
 

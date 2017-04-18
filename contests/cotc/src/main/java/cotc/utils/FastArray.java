@@ -28,7 +28,8 @@ public class FastArray <T> {
   public void remove(T t) {
     for (int i=0;i<FE;i++) {
       if (elements[i] == t) {
-        elements[i] = elements[FE--];
+        elements[i] = elements[FE-1];
+        FE--;
         return;
       }
     }

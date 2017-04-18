@@ -94,9 +94,10 @@ public class Controller {
       try { 
         controller.playOneTurn();
         rounds++;
-      } catch (Exception e) {
-        //e.printStackTrace();
+      } catch (GameOverException goe) {
         throw new GameFinished(controller.referee.winner());
+      } catch (Exception e) {
+        e.printStackTrace();
       }
     }
   }
@@ -145,17 +146,20 @@ public class Controller {
     refereeToState(playerIdx, state);
   }
   private void refereeToState(int playerIdx, GameState state) {
-    // Player's ships first
-    for (Ship ship : referee.state.teams.get(playerIdx).shipsAlive) {
-      state.ships.add(ship);
-    }
-
-    // Opponent's ships
-    for (Ship ship : referee.state.teams.get((playerIdx + 1) % 2).shipsAlive) {
-      state.ships.add(ship);
+    {
+      state.ships.clear();
+      // Player's ships first
+      for (Ship ship : referee.state.teams.get(playerIdx).shipsAlive) {
+        state.ships.add(ship);
+      }
+      // Opponent's ships
+      for (Ship ship : referee.state.teams.get((playerIdx + 1) % 2).shipsAlive) {
+        state.ships.add(ship);
+      }
     }
 
     // Visible mines
+    state.mines.clear(); //TODO handle fog of war
     for (int i=0;i<referee.state.mines.FE;i++) {
       Mine mine = referee.state.mines.get(i);
         boolean visible = false;
@@ -175,6 +179,7 @@ public class Controller {
       state.cannonballs.add(referee.state.cannonballs.get(i));
     }
 
+    state.barrels.clear();
     for (int i=0;i<referee.state.barrels.FE;i++) {
       state.barrels.add(referee.state.barrels.get(i));
     }
