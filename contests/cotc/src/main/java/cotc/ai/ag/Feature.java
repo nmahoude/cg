@@ -67,14 +67,16 @@ public class Feature {
   // TODO handle cannonBalls
   private void updateMobilityFeature(GameState state) {
     // sale hack sans risque (pun intended).....
-    for (Ship ship : state.ships) {
+    for (int i=0;i<state.ships.size();i++) {
+      Ship ship = state.ships.get(i);
       if (ship.health<=0) continue;
       state.setEntityAt(ship.position, ship);
       state.setEntityAt(ship.bow(), ship);
       state.setEntityAt(ship.stern(), ship);
     }
     
-    for (Ship ship : state.ships) {
+    for (int i=0;i<state.ships.size();i++) {
+      Ship ship = state.ships.get(i);
       if (ship.health<=0) continue;
 //      Coord nextShipPosition = ship.position;
 //      for (int i=0;i<ship.speed;i++) {
@@ -115,7 +117,8 @@ public class Feature {
       }
     }
 
-    for (Ship ship : state.ships) {
+    for (int i=0;i<state.ships.size();i++) {
+      Ship ship = state.ships.get(i);
       if (ship.health<=0) continue;
       state.setEntityAt(ship.position, null);
       state.setEntityAt(ship.bow(), null);

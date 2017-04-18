@@ -1,10 +1,10 @@
 package cotc.entities;
 
 public class CannonBall extends Entity {
-  final int ownerEntityId;
-  final int srcX;
-  final int srcY;
-  final int initialRemainingTurns;
+  public final int ownerEntityId;
+  public final int srcX;
+  public final int srcY;
+  public final int initialRemainingTurns;
   public int remainingTurns;
   
   private int b_remainingTurns;

@@ -7,6 +7,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import cotc.utils.FastArray;
+
 public class MineTest {
 
   @Test
@@ -15,8 +17,11 @@ public class MineTest {
     
     Ship detonatorShip = new Ship(1, 5, 5, 0, 0);
     Ship proximityShip = new Ship(1, 5, 6, 0, 0);
+    FastArray<Ship> ships = new FastArray<>(10);
+    ships.add(detonatorShip);
+    ships.add(proximityShip);
     
-    boolean exploded = mine.explode(Arrays.asList(detonatorShip, proximityShip), false);
+    boolean exploded = mine.explode(ships, false);
     
     assertThat(exploded, is(true));
     
@@ -30,8 +35,11 @@ public class MineTest {
     
     Ship detonatorShip = new Ship(1, 5, 5, 0, 0);
     Ship proximityShip = new Ship(1, 7, 6, 0, 0);
+    FastArray<Ship> ships = new FastArray<>(10);
+    ships.add(detonatorShip);
+    ships.add(proximityShip);
     
-    boolean exploded = mine.explode(Arrays.asList(detonatorShip, proximityShip), false);
+    boolean exploded = mine.explode(ships, false);
     
     assertThat(exploded, is(true));
     
@@ -45,8 +53,11 @@ public class MineTest {
     
     Ship detonatorShip = new Ship(1, 5, 5, 0, 0);
     Ship proximityShip = new Ship(1, 4, 6, 0, 0);
-    
-    boolean exploded = mine.explode(Arrays.asList(detonatorShip, proximityShip), false);
+    FastArray<Ship> ships = new FastArray<>(10);
+    ships.add(detonatorShip);
+    ships.add(proximityShip);
+
+    boolean exploded = mine.explode(ships, false);
     
     assertThat(exploded, is(true));
     

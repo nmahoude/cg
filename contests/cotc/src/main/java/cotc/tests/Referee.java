@@ -79,7 +79,12 @@ public class Referee {
 
     }
 
-    state.ships = state.teams.stream().map(p -> p.ships).flatMap(List::stream).collect(Collectors.toList());
+    for (Ship ship : state.teams.get(0).ships) {
+      state.ships.add(ship);
+    }
+    for (Ship ship : state.teams.get(1).ships) {
+      state.ships.add(ship);
+    }
 
     // Generate mines
     while (state.mines.size() < mineCount) {
@@ -88,8 +93,12 @@ public class Referee {
 
       Mine m = new Mine(nextEntityId++, x, y);
       boolean cellIsFreeOfMines = state.mines.stream().noneMatch(mine -> mine.position.equals(m.position));
-      boolean cellIsFreeOfShips = state.ships.stream().noneMatch(ship -> ship.at(m.position));
-
+      boolean cellIsFreeOfShips = true;
+      for (int i=0;i<state.ships.size();i++) {
+        Ship b = state.ships.get(i);
+        cellIsFreeOfShips= cellIsFreeOfShips && !b.at(m.position);
+      }
+      
       if (cellIsFreeOfShips && cellIsFreeOfMines) {
         if (y != Simulation.MAP_HEIGHT - 1 - y) {
           state.mines.add(new Mine(nextEntityId++, x, Simulation.MAP_HEIGHT - 1 - y));
@@ -107,7 +116,8 @@ public class Referee {
 
       Barrel m = new Barrel(nextEntityId++, x, y, h);
       boolean valid = true;
-      for (Ship ship : state.ships) {
+      for (int i=0;i<state.ships.size();i++) {
+        Ship ship = state.ships.get(i);
         if (ship.at(m.position)) {
           valid = false;
           break;

@@ -1,6 +1,6 @@
 package cotc.entities;
 
-import java.util.List;
+import cotc.utils.FastArray;
 
 public class Mine extends Entity {
   private static final int MINE_DAMAGE = 25;
@@ -16,11 +16,12 @@ public class Mine extends Entity {
     return toPlayerString(0, 0, 0, 0);
   }
 
-  public boolean explode(List<Ship> ships, boolean force) {
+  public boolean explode(FastArray<Ship> ships, boolean force) {
     Ship victim = null;
     boolean exploded = false;
 
-    for (Ship ship : ships) {
+    for (int i=0;i<ships.size();i++) {
+      Ship ship = ships.get(i);
       if (position == ship.bow() || position == ship.stern() || position == ship.position) {
         exploded = true;
         ship.damage(MINE_DAMAGE);
@@ -33,7 +34,8 @@ public class Mine extends Entity {
         exploded = true;
       }
 
-      for (Ship ship : ships) {
+      for (int i=0;i<ships.size();i++) {
+        Ship ship = ships.get(i);
         if (ship != victim) {
           boolean impact = false;
           int distanceToCenter = ship.position.distanceTo(position);

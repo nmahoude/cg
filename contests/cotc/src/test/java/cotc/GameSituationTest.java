@@ -114,6 +114,28 @@ public class GameSituationTest {
     assertThat(myShip.health, is(0));
   }
   
+  @Test
+  public void getACannonBall() throws Exception {
+    readEntity(0,SHIP,11,5,0,0,89,1);
+    readEntity(1,SHIP,1,9,2,2,86,0);
+    readEntity(40,CANNONBALL,11,5,1,2,0,0);
+    state.backup();
+
+    Simulation simulation = new Simulation(state);
+    Ship myShip = state.teams.get(0).shipsAlive.get(0);
+    Ship hisShip = state.teams.get(1).shipsAlive.get(0);
+    
+    Action myActions[] = new Action[] { Action.WAIT, Action.WAIT};
+    for (Action action : myActions) {
+      myShip.action = action;
+      simulation.playOneTurn();
+    }
+    assertThat(myShip.health, is(37));
+  }
+  
+  
+  
+  
   EntityType SHIP = EntityType.SHIP;
   EntityType MINE = EntityType.MINE;
   EntityType BARREL = EntityType.BARREL;

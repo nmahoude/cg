@@ -3,6 +3,7 @@ package cotc.entities;
 import java.util.List;
 
 import cotc.utils.Coord;
+import cotc.utils.FastArray;
 
 public class Ship extends Entity {
   public static final int MAX_SHIP_HEALTH = 100;
@@ -140,6 +141,16 @@ public class Ship extends Entity {
 
   public boolean newPositionsIntersect(List<Ship> ships) {
     for (Ship other : ships) {
+      if (this != other && newPositionsIntersect(other)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean newPositionsIntersect(FastArray<Ship> ships) {
+    for (int i=0;i<ships.size();i++) {
+      Ship other = ships.get(i);
       if (this != other && newPositionsIntersect(other)) {
         return true;
       }

@@ -1,16 +1,10 @@
 package cotc.ai;
 
 import cotc.GameState;
-import trigonometry.Point;
 
 public class DummySolution implements AISolution {
   GameState state;
   
-  public Point target1;
-  public int thrust1;
-  public Point target2;
-  public int thrust2;
-
   public DummySolution(GameState state) {
     this.state = state;
   }

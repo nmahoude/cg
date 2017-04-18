@@ -13,7 +13,7 @@ import cotc.entities.Ship;
 import cotc.utils.Coord;
 
 public class Player {
-  private static boolean debugOutput = false;
+  private static boolean debugOutput = true;
   private static Coord coord = Coord.get(0, 0); // force Coord caches initialisation
   
   private static final int FIRE_COOLDOWN = 4;
@@ -38,14 +38,15 @@ public class Player {
       // debugRumDomination();
       Feature feature= new Feature();
       feature.calculateFeatures(state);
-      feature.debug();
+      //feature.debug();
+      
       //old AI (dummy with MOVE) doDirectAction();
       
       AG ag = new AG();
       ag.setState(state);
       AGSolution sol = (AGSolution)ag.evolve(startTime+ (round == 1 ? 800 : 45));
       if (debugOutput) {
-        sol.debugOutput();
+        //sol.debugOutput();
       }
       
       String[] output = sol.output();

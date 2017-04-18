@@ -9,6 +9,7 @@ import cotc.entities.Entity;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
+import cotc.utils.FastArray;
 import cotc.utils.Coord;
 
 public class GameState {
@@ -21,14 +22,15 @@ public class GameState {
   public List<CannonBall> cannonballs = new ArrayList<>();
   public List<Mine> mines = new ArrayList<>();
   public List<Barrel> barrels = new ArrayList<>();
-  public List<Ship> ships = new ArrayList<>(); // all ships
+  public FastArray<Ship> ships = new FastArray<>(6);
+
   private Entity mapCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
   
   public int b_rounds;
   public List<CannonBall> b_cannonballs = new ArrayList<>();
   public List<Mine> b_mines = new ArrayList<>();
   public List<Barrel> b_barrels = new ArrayList<>();
-  public List<Ship> b_ships = new ArrayList<>(); // all ships
+  public FastArray<Ship> b_ships = new FastArray<>(6);
   public Entity b_mapCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
 
   public void debugOutput() {
@@ -43,14 +45,16 @@ public class GameState {
     b_cannonballs.addAll(cannonballs);
     b_mines.addAll(mines);
     b_barrels.addAll(barrels);
-    b_ships.addAll(ships);
+    b_ships.copyFrom(ships);
     
     teams.forEach(Team::backup);
     cannonballs.forEach(CannonBall::backup);
     mines.forEach(Mine::backup);
     barrels.forEach(Barrel::backup);
-    ships.forEach(Ship::backup);
-    
+    for (int i=0;i<ships.FE;i++) {
+      ships.get(i).backup();
+    }
+
     // before backuping the state, we update the map (hopefully, we won't backup to much ^^)
     createMapCache();
     System.arraycopy(mapCache, 0, b_mapCache, 0, Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT);
@@ -68,14 +72,15 @@ public class GameState {
     cannonballs.addAll(b_cannonballs);
     mines.addAll(b_mines);
     barrels.addAll(b_barrels);
-    ships.addAll(b_ships);
-
+    ships.copyFrom(b_ships);
+    
     teams.forEach(Team::restore);
     cannonballs.forEach(CannonBall::restore);
     mines.forEach(Mine::restore);
     barrels.forEach(Barrel::restore);
-    ships.forEach(Ship::restore);
-
+    for (int i=0;i<ships.FE;i++) {
+      ships.get(i).restore();
+    }
     System.arraycopy(b_mapCache, 0, mapCache, 0, Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT);
   }
 
@@ -113,8 +118,19 @@ public class GameState {
     return null;
   }
 
+  Ship getShip(FastArray<Ship> fromShips, int entityId) {
+    for (int i=0;i<fromShips.size();i++) {
+      Ship ship = fromShips.get(i);
+      if (ship.id == entityId) {
+        return ship;
+      }
+    }
+    return null;
+  }
+  
   public void updateShip(Ship ship) {
     ships.add(ship);
+    
     if (ship.owner == 0) {
       teams.get(0).shipsAlive.add(ship);
     } else {
@@ -167,7 +183,8 @@ public class GameState {
     for (Barrel barrel : barrels) {
       Ship closest = null;
       int best = Integer.MAX_VALUE;
-      for (Ship ship : ships) {
+      for (int i=0;i<ships.size();i++) {
+        Ship ship = ships.get(i);
         if (ship.health <= 0) continue;
         int dist = Coord.distanceCache[ship.position.x+10 + (ship.position.y+10)*50][barrel.position.x+10 + (barrel.position.y+10)*50];
         //int dist = ship.position.distanceTo(barrel.position);
