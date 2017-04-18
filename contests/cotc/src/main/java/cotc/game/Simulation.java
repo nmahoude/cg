@@ -301,11 +301,15 @@ public class Simulation {
         }
       }
 
+      // 1st move all ships, then doCollision
       for (Team team : state.teams) {
         for (Ship ship : team.shipsAlive) {
           ship.position = ship.newPosition;
+        }
+      }
+      for (Team team : state.teams) {
+        for (Ship ship : team.shipsAlive) {
           doCollisionWithMinesAndBarrels(ship, ship.bow()); // only bow can collide
-          //checkCollisions(ship);
         }
       }
     }
@@ -344,12 +348,14 @@ public class Simulation {
 
     }
 
-    // Apply rotation
+    // Apply rotation (1st move to newOrientation, then check collision)
     for (Team team : state.teams) {
       for (Ship ship : team.shipsAlive) {
         ship.orientation = ship.newOrientation;
-        
-        //checkCollisions(ship);
+      }
+    }
+    for (Team team : state.teams) {
+      for (Ship ship : team.shipsAlive) {
         doCollisionWithMinesAndBarrels(ship, ship.bow()); 
         doCollisionWithMinesAndBarrels(ship, ship.stern());
       }
