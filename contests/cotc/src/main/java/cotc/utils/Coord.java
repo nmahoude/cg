@@ -8,7 +8,7 @@ public class Coord {
   private final static int[][] DIRECTIONS_ODD = new int[][] { { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, 0 }, { 0, 1 }, { 1, 1 } };
   
   private static Coord[] cache;
-  private static int distanceCache[][];
+  public static int distanceCache[][];
   
   static {
     cache = new Coord[50*50];

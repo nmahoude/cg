@@ -126,7 +126,8 @@ public class GameState {
     int bestDist = Integer.MAX_VALUE;
     Barrel best = null;
     for (Barrel barrel : barrels) {
-      int dist = barrel.position.distanceTo(ship.position);
+      int dist = Coord.distanceCache[ship.position.x+10 + (ship.position.y+10)*50][barrel.position.x+10 + (barrel.position.y+10)*50];
+      //int dist = barrel.position.distanceTo(ship.position);
       if (dist < bestDist) {
         bestDist = dist;
         best = barrel;
@@ -137,7 +138,8 @@ public class GameState {
   public int getClosestBarrelDistance(Ship ship) {
     int bestDist = Integer.MAX_VALUE;
     for (Barrel barrel : barrels) {
-      int dist = barrel.position.distanceTo(ship.position);
+      //int dist = barrel.position.distanceTo(ship.position);
+      int dist = Coord.distanceCache[ship.position.x+10 + (ship.position.y+10)*50][barrel.position.x+10 + (barrel.position.y+10)*50];
       if (dist < bestDist) {
         bestDist = dist;
       }
@@ -167,7 +169,8 @@ public class GameState {
       int best = Integer.MAX_VALUE;
       for (Ship ship : ships) {
         if (ship.health <= 0) continue;
-        int dist = ship.position.distanceTo(barrel.position);
+        int dist = Coord.distanceCache[ship.position.x+10 + (ship.position.y+10)*50][barrel.position.x+10 + (barrel.position.y+10)*50];
+        //int dist = ship.position.distanceTo(barrel.position);
         if (dist < best) {
           best = dist;
           closest = ship;
