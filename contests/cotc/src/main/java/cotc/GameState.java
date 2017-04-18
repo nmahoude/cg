@@ -13,23 +13,23 @@ import cotc.utils.Coord;
 import cotc.utils.FastArray;
 
 public class GameState {
-  private Entity mapEmptyCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
+  private static Entity mapEmptyCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
   
   public int shipCount;
   public List<Team> teams = new ArrayList<>();
 
   public int rounds;
-  public List<CannonBall> cannonballs = new ArrayList<>();
-  public List<Mine> mines = new ArrayList<>();
-  public List<Barrel> barrels = new ArrayList<>();
+  public FastArray<CannonBall> cannonballs = new FastArray<>(CannonBall.class, 100);
+  public FastArray<Mine> mines = new FastArray<>(Mine.class, 100);
+  public FastArray<Barrel> barrels = new FastArray<>(Barrel.class, 100);
   public FastArray<Ship> ships = new FastArray<>(Ship.class, 6);
 
   private Entity mapCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
   
   public int b_rounds;
-  public List<CannonBall> b_cannonballs = new ArrayList<>();
-  public List<Mine> b_mines = new ArrayList<>();
-  public List<Barrel> b_barrels = new ArrayList<>();
+  public FastArray<CannonBall> b_cannonballs = new FastArray<>(CannonBall.class, 100);
+  public FastArray<Mine> b_mines = new FastArray<>(Mine.class, 100);
+  public FastArray<Barrel> b_barrels = new FastArray<>(Barrel.class, 100);
   public FastArray<Ship> b_ships = new FastArray<>(Ship.class, 6);
   public Entity b_mapCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
 
@@ -41,16 +41,25 @@ public class GameState {
   }
   public void backup() {
     b_rounds = rounds;
-    clearBackups();
-    b_cannonballs.addAll(cannonballs);
-    b_mines.addAll(mines);
-    b_barrels.addAll(barrels);
-    b_ships.copyFrom(ships);
     
     teams.forEach(Team::backup);
-    cannonballs.forEach(CannonBall::backup);
-    mines.forEach(Mine::backup);
-    barrels.forEach(Barrel::backup);
+
+    b_cannonballs.copyFrom(cannonballs);
+    for (int i=0;i<cannonballs.FE;i++) {
+      cannonballs.elements[i].backup();
+    }
+
+    b_mines.copyFrom(mines);
+    for (int i=0;i<mines.FE;i++) {
+      mines.elements[i].backup();
+    }
+
+    b_barrels.copyFrom(barrels);
+    for (int i=0;i<barrels.FE;i++) {
+      barrels.elements[i].backup();
+    }
+    
+    b_ships.copyFrom(ships);
     for (int i=0;i<ships.FE;i++) {
       ships.get(i).backup();
     }
@@ -61,43 +70,43 @@ public class GameState {
   }
   private void createMapCache() {
     System.arraycopy(mapEmptyCache, 0, mapCache, 0, Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT);
-    mines.forEach(mine -> this.setEntityAt(mine.position, mine));
-    barrels.forEach(barrel -> this.setEntityAt(barrel.position, barrel));
+    for (int i=0;i<mines.FE;i++) {
+      Mine mine = mines.elements[i];
+      this.setEntityAt(mine.position, mine);
+    }
+    for (int i=0;i<barrels.FE;i++) {
+      Barrel barrel = barrels.elements[i];
+      this.setEntityAt(barrel.position, barrel);
+    }
   }
 
   public void restore() {
     rounds = b_rounds;
-    clear();
 
-    cannonballs.addAll(b_cannonballs);
-    mines.addAll(b_mines);
-    barrels.addAll(b_barrels);
-    ships.copyFrom(b_ships);
-    
     teams.forEach(Team::restore);
-    cannonballs.forEach(CannonBall::restore);
-    mines.forEach(Mine::restore);
-    barrels.forEach(Barrel::restore);
+
+    cannonballs.copyFrom(b_cannonballs);
+    for (int i=0;i<cannonballs.FE;i++) {
+      cannonballs.elements[i].restore();
+    }
+
+    barrels.copyFrom(b_barrels);
+    for (int i=0;i<barrels.FE;i++) {
+      barrels.elements[i].restore();
+    }
+    
+    mines.copyFrom(b_mines);
+    for (int i=0;i<mines.FE;i++) {
+      mines.elements[i].restore();
+    }
+
+    ships.copyFrom(b_ships);
     for (int i=0;i<ships.FE;i++) {
       ships.get(i).restore();
     }
     System.arraycopy(b_mapCache, 0, mapCache, 0, Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT);
   }
 
-  public void clear() {
-    cannonballs.clear();
-    mines.clear();
-    barrels.clear();
-    ships.clear();
-  }
-
-  public void clearBackups() {
-    b_cannonballs.clear();
-    b_mines.clear();
-    b_barrels.clear();
-    b_ships.clear();
-  }
-  
   void initRound() {
     // kill all ships ! (will be revive in the update process)
     teams.get(0).shipsAlive.clear();
@@ -141,9 +150,9 @@ public class GameState {
   public Barrel getClosestBarrel(Ship ship) {
     int bestDist = Integer.MAX_VALUE;
     Barrel best = null;
-    for (Barrel barrel : barrels) {
+    for (int i=0;i<barrels.FE;i++) {
+      Barrel barrel = barrels.elements[i];
       int dist = Coord.distanceCache[ship.position.x+10 + (ship.position.y+10)*50][barrel.position.x+10 + (barrel.position.y+10)*50];
-      //int dist = barrel.position.distanceTo(ship.position);
       if (dist < bestDist) {
         bestDist = dist;
         best = barrel;
@@ -153,8 +162,8 @@ public class GameState {
   }
   public int getClosestBarrelDistance(Ship ship) {
     int bestDist = Integer.MAX_VALUE;
-    for (Barrel barrel : barrels) {
-      //int dist = barrel.position.distanceTo(ship.position);
+    for (int i=0;i<barrels.FE;i++) {
+      Barrel barrel = barrels.elements[i];
       int dist = Coord.distanceCache[ship.position.x+10 + (ship.position.y+10)*50][barrel.position.x+10 + (barrel.position.y+10)*50];
       if (dist < bestDist) {
         bestDist = dist;
@@ -180,11 +189,12 @@ public class GameState {
   public BarrelDomination getBarrelDominitation() {
     BarrelDomination bd = new BarrelDomination();
     
-    for (Barrel barrel : barrels) {
+    for (int b=0;b<barrels.FE;b++) {
+      Barrel barrel = barrels.elements[b];
       Ship closest = null;
       int best = Integer.MAX_VALUE;
-      for (int i=0;i<ships.size();i++) {
-        Ship ship = ships.get(i);
+      for (int s=0;s<ships.size();s++) {
+        Ship ship = ships.elements[s];
         if (ship.health <= 0) continue;
         int dist = Coord.distanceCache[ship.position.x+10 + (ship.position.y+10)*50][barrel.position.x+10 + (barrel.position.y+10)*50];
         //int dist = ship.position.distanceTo(barrel.position);

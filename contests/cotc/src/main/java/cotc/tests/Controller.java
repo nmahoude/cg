@@ -9,8 +9,6 @@ import cotc.GameState;
 import cotc.ai.AI;
 import cotc.ai.DummyAI;
 import cotc.ai.ag.AG;
-import cotc.entities.Barrel;
-import cotc.entities.CannonBall;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
@@ -147,8 +145,6 @@ public class Controller {
     refereeToState(playerIdx, state);
   }
   private void refereeToState(int playerIdx, GameState state) {
-    state.clear();
-    
     // Player's ships first
     for (Ship ship : referee.state.teams.get(playerIdx).shipsAlive) {
       state.ships.add(ship);
@@ -160,7 +156,8 @@ public class Controller {
     }
 
     // Visible mines
-    for (Mine mine : referee.state.mines) {
+    for (int i=0;i<referee.state.mines.FE;i++) {
+      Mine mine = referee.state.mines.get(i);
         boolean visible = false;
         for (Ship ship : referee.state.teams.get(playerIdx).ships) {
             if (ship.position.distanceTo(mine.position) <= Simulation.MINE_VISIBILITY_RANGE) {
@@ -173,12 +170,13 @@ public class Controller {
         }
     }
 
-    for (CannonBall ball : referee.state.cannonballs) {
-      state.cannonballs.add(ball);
+    state.cannonballs.clear();
+    for (int i=0;i<referee.state.cannonballs.FE;i++) {
+      state.cannonballs.add(referee.state.cannonballs.get(i));
     }
 
-    for (Barrel barrel : referee.state.barrels) {
-      state.barrels.add(barrel);
+    for (int i=0;i<referee.state.barrels.FE;i++) {
+      state.barrels.add(referee.state.barrels.get(i));
     }
 
     state.backup();

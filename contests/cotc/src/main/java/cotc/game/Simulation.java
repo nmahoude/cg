@@ -1,8 +1,5 @@
 package cotc.game;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -17,6 +14,7 @@ import cotc.entities.EntityType;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.utils.Coord;
+import cotc.utils.FastArray;
 
 public class Simulation {
   private GameState state;
@@ -56,10 +54,8 @@ public class Simulation {
     MAX_SHIP_SPEED = 2;
   }
 
-  private List<Coord> cannonBallExplosions = new ArrayList<>();
-
-  Ship[] collisions = new Ship[20];
-  int collisionsFE = 0;
+  FastArray<Coord> cannonBallExplosions = new FastArray<>(Coord.class, 100);
+  FastArray<Ship> collisions = new FastArray<>(Ship.class, 20);
 
   public Simulation(GameState state) {
     this.state = state;
@@ -234,17 +230,18 @@ public class Simulation {
   }
 
   private void moveCannonballs() {
-    for (Iterator<CannonBall> it = state.cannonballs.iterator(); it.hasNext();) {
-      CannonBall ball = it.next();
+    cannonBallExplosions.clear();
+    for (int i=0;i<state.cannonballs.FE;i++) {
+      CannonBall ball = state.cannonballs.elements[i];
       if (ball.remainingTurns == 0) {
-        it.remove();
+        state.cannonballs.removeAt(i);
+        i--; // we remove an object, so we have to get back one item
         continue;
+      } else if (ball.remainingTurns == 1) {
+        ball.remainingTurns = 0;
+        cannonBallExplosions.add(ball.position);
       } else if (ball.remainingTurns > 0) {
         ball.remainingTurns--;
-      }
-
-      if (ball.remainingTurns == 0) {
-        cannonBallExplosions.add(ball.position);
       }
     }
   }
@@ -291,7 +288,7 @@ public class Simulation {
       boolean collisionDetected = true;
       while (collisionDetected) {
         collisionDetected = false;
-        collisionsFE = 0;
+        collisions.clear();
 
         for (int s=0;s<state.ships.size();s++) {
           Ship ship = state.ships.get(s);
@@ -299,13 +296,13 @@ public class Simulation {
             if (s == s2) continue;
             Ship other = state.ships.get(s2);
             if (ship.newBowIntersect(other)) {
-              collisions[collisionsFE++] = ship;
+              collisions.add(ship);
             }
           }
         }
 
-        for (int s=0;s<collisionsFE;s++) {
-          Ship ship = collisions[s];
+        for (int s=0;s<collisions.FE;s++) {
+          Ship ship = collisions.elements[s];
           // Revert last move
           ship.newPosition = ship.position;
           ship.newBowCoordinate = ship.bow();
@@ -343,20 +340,19 @@ public class Simulation {
 
     // Check collisions
     boolean collisionDetected = true;
-
     while (collisionDetected) {
-      collisionsFE = 0;
+      collisions.clear();
       collisionDetected = false;
 
       for (int s=0;s<state.ships.size();s++) {
         Ship ship = state.ships.get(s);
         if (ship.newPositionsIntersect(state.ships)) {
-          collisions[collisionsFE++] = ship;
+          collisions.add(ship);
         }
       }
 
-      for (int i=0;i<collisionsFE;i++) {
-        Ship ship = collisions[i];
+      for (int i=0;i<collisions.FE;i++) {
+        Ship ship = collisions.elements[i];
         ship.newOrientation = ship.orientation;
         ship.newBowCoordinate = ship.newBow();
         ship.newSternCoordinate = ship.newStern();
@@ -388,37 +384,42 @@ public class Simulation {
   }
 
   void explodeShips() {
-    for (Iterator<Coord> it = cannonBallExplosions.iterator(); it.hasNext();) {
-      Coord position = it.next();
+    
+    for (int i=0;i<cannonBallExplosions.FE; i++) {
+      Coord position = cannonBallExplosions.elements[i];
       for (int s=0;s<state.ships.size();s++) {
         Ship ship = state.ships.get(s);
         if (position == ship.bow() || position == ship.stern()) {
           ship.damage(Simulation.LOW_DAMAGE);
-          it.remove();
+          cannonBallExplosions.removeAt(i);
+          i--;
           break;
         } else if (position == ship.position) {
           ship.damage(Simulation.HIGH_DAMAGE);
-          it.remove();
+          cannonBallExplosions.removeAt(i);
+          i--;
           break;
         }
       }
     }
   }
   void explodeMinesAndBarrels() {
-    for (Iterator<Coord> itBall = cannonBallExplosions.iterator(); itBall.hasNext();) {
-      Coord position = itBall.next();
+    for (int i=0;i<cannonBallExplosions.FE; i++) {
+      Coord position = cannonBallExplosions.elements[i];
       Entity entityAtPosition = state.getEntityAt(position);
       if (entityAtPosition != null) {
         if (entityAtPosition.type == EntityType.MINE) {
           Mine mine = (Mine)entityAtPosition;
           state.mines.remove(mine);
           state.clearEntityAt(mine.position);
-          itBall.remove();
+          cannonBallExplosions.removeAt(i);
+          i--;
         } else {
           Barrel barrel = (Barrel)entityAtPosition;
           state.barrels.remove(barrel);
           state.clearEntityAt(barrel.position);
-          itBall.remove();
+          cannonBallExplosions.removeAt(i);
+          i--;
         }
       }
     }
@@ -442,37 +443,5 @@ public class Simulation {
         }
       }
     }
-  }
-  
-  private boolean checkCollisions(Ship ship) {
-    Coord bow = ship.bow();
-    Coord stern = ship.stern();
-    Coord center = ship.position;
-
-    // Collision with the barrels
-    for (Iterator<Barrel> it = state.barrels.iterator(); it.hasNext();) {
-      Barrel barrel = it.next();
-      if (barrel.position == center || barrel.position == bow || barrel.position == stern) {
-        ship.heal(barrel.health);
-        it.remove();
-        state.clearEntityAt(barrel.position);
-      }
-    }
-
-    boolean mineExploded = false;
-    // Collision with the mines
-    for (Iterator<Mine> it = state.mines.iterator(); it.hasNext();) {
-      Mine mine = it.next();
-
-      //TODO check if <3 is sufficient to explode mine
-      if (mine.position.distanceTo(ship.position) < 3) {
-        if (mine.explode(state.ships, false)) {
-          it.remove();
-          state.clearEntityAt(mine.position);
-          mineExploded = true;
-        }
-      }
-    }
-    return mineExploded;
   }
 }

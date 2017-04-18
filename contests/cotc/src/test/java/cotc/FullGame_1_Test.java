@@ -2453,7 +2453,8 @@ public class FullGame_1_Test {
         break;
       case CANNONBALL:
         CannonBall cb = null;
-        for (CannonBall c : state.cannonballs) {
+        for (int i=0;i<state.cannonballs.size();i++) {
+          CannonBall c = state.cannonballs.get(i);
           if (c.position.x == x && c.position.y == y && c.ownerEntityId == arg1) {
             cb = c;
             break;

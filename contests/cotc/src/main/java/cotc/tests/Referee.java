@@ -6,12 +6,10 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import cotc.GameState;
 import cotc.Team;
 import cotc.entities.Barrel;
-import cotc.entities.CannonBall;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
@@ -92,7 +90,12 @@ public class Referee {
       int y = 1 + random.nextInt(Simulation.MAP_HEIGHT / 2);
 
       Mine m = new Mine(nextEntityId++, x, y);
-      boolean cellIsFreeOfMines = state.mines.stream().noneMatch(mine -> mine.position.equals(m.position));
+      boolean cellIsFreeOfMines = true;
+      for (int i=0;i<state.mines.size();i++) {
+        Mine mine = state.mines.get(i);
+        cellIsFreeOfMines= cellIsFreeOfMines && (mine.position != m.position);
+      }
+      
       boolean cellIsFreeOfShips = true;
       for (int i=0;i<state.ships.size();i++) {
         Ship b = state.ships.get(i);
@@ -108,7 +111,7 @@ public class Referee {
     }
 
     // Generate supplies
-    state.barrels = new ArrayList<>();
+    state.barrels.clear();
     while (state.barrels.size() < barrelCount) {
       int x = 1 + random.nextInt(Simulation.MAP_WIDTH - 2);
       int y = 1 + random.nextInt(Simulation.MAP_HEIGHT / 2);
@@ -123,7 +126,8 @@ public class Referee {
           break;
         }
       }
-      for (Mine mine : state.mines) {
+      for (int i=0;i<state.mines.FE;i++) {
+        Mine mine = state.mines.get(i);
         if (mine.position == m.position) {
           valid = false;
           break;
@@ -209,7 +213,8 @@ public class Referee {
     }
 
     // Visible mines
-    for (Mine mine : state.mines) {
+    for (int i=0;i<state.mines.FE;i++) {
+      Mine mine = state.mines.get(i);
         boolean visible = false;
         for (Ship ship : state.teams.get(playerIdx).shipsAlive) {
             if (ship.position.distanceTo(mine.position) <= Simulation.MINE_VISIBILITY_RANGE) {
@@ -222,12 +227,13 @@ public class Referee {
         }
     }
 
-    for (CannonBall ball : state.cannonballs) {
-        data.add(ball.toPlayerString(playerIdx));
+    for (int i=0;i<state.cannonballs.FE;i++) {
+        data.add(state.cannonballs.get(i).toPlayerString(playerIdx));
     }
 
-    for (Barrel barrel : state.barrels) {
-        data.add(barrel.toPlayerString(playerIdx));
+    for (int i=0;i<state.barrels.FE;i++) {
+      Barrel barrel = state.barrels.get(i);
+      data.add(barrel.toPlayerString(playerIdx));
     }
 
     data.add(1, String.valueOf(data.size() - 1));
