@@ -251,8 +251,10 @@ public class Simulation {
     // Go forward
     // ---
     for (int i = 1; i <= MAX_SHIP_SPEED; i++) {
-      for (Team team : state.teams) {
-        for (Ship ship : team.shipsAlive) {
+      for (Ship ship : state.ships) {
+        if (ship.health <=0) continue;
+      //for (Team team : state.teams) {
+        //for (Ship ship : team.shipsAlive) {
           Coord bow = ship.bow();
           Coord stern = ship.stern();
 
@@ -273,7 +275,7 @@ public class Simulation {
             // Stop ship!
             ship.speed = 0;
           }
-        }
+        //}
       }
 
       // Check ship and obstacles collisions
@@ -303,26 +305,23 @@ public class Simulation {
       }
 
       // 1st move all ships, then doCollision
-      for (Team team : state.teams) {
-        for (Ship ship : team.shipsAlive) {
+      for (Ship ship : state.ships) {
+        if (ship.health <=0) continue;
           ship.position = ship.newPosition;
-        }
       }
-      for (Team team : state.teams) {
-        for (Ship ship : team.shipsAlive) {
+      for (Ship ship : state.ships) {
+        if (ship.health <=0) continue;
           doCollisionWithMinesAndBarrels(ship, ship.bow()); // only bow can collide
-        }
       }
     }
   }
   private void rotateShips() {
     // Rotate
-    for (Team team : state.teams) {
-      for (Ship ship : team.shipsAlive) {
+    for (Ship ship : state.ships) {
+      if (ship.health <=0) continue;
         ship.newPosition = ship.position;
         ship.newBowCoordinate = ship.newBow();
         ship.newSternCoordinate = ship.newStern();
-      }
     }
 
     // Check collisions
@@ -350,16 +349,14 @@ public class Simulation {
     }
 
     // Apply rotation (1st move to newOrientation, then check collision)
-    for (Team team : state.teams) {
-      for (Ship ship : team.shipsAlive) {
+    for (Ship ship : state.ships) {
+      if (ship.health <=0) continue;
         ship.orientation = ship.newOrientation;
-      }
     }
-    for (Team team : state.teams) {
-      for (Ship ship : team.shipsAlive) {
+    for (Ship ship : state.ships) {
+      if (ship.health <=0) continue;
         doCollisionWithMinesAndBarrels(ship, ship.bow()); 
         doCollisionWithMinesAndBarrels(ship, ship.stern());
-      }
     }
   }
   
