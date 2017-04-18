@@ -20,8 +20,8 @@ public class Mine extends Entity {
     Ship victim = null;
     boolean exploded = false;
 
-    for (int i=0;i<ships.size();i++) {
-      Ship ship = ships.get(i);
+    for (int i=0;i<ships.FE;i++) {
+      Ship ship = ships.elements[i];
       if (position == ship.bow() || position == ship.stern() || position == ship.position) {
         exploded = true;
         ship.damage(MINE_DAMAGE);
@@ -34,8 +34,8 @@ public class Mine extends Entity {
         exploded = true;
       }
 
-      for (int i=0;i<ships.size();i++) {
-        Ship ship = ships.get(i);
+      for (int i=0;i<ships.FE;i++) {
+        Ship ship = ships.elements[i];
         if (ship != victim) {
           boolean impact = false;
           int distanceToCenter = ship.position.distanceTo(position);

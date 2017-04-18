@@ -124,8 +124,8 @@ public class Simulation {
     explodeShips();
     explodeMinesAndBarrels();
 
-    for (int i=0;i<state.ships.size();i++) {
-      Ship ship = state.ships.get(i);
+    for (int i=0;i<state.ships.FE;i++) {
+      Ship ship = state.ships.elements[i];
 
       if (ship.health <= 0) {
         int reward = Math.min(REWARD_RUM_BARREL_VALUE, ship.initialHealth);
@@ -136,13 +136,12 @@ public class Simulation {
         }
       }
     }
-    for (int i=0;i<state.ships.size();) {
-      Ship ship = state.ships.get(i);
+    for (int i=0;i<state.ships.FE;i++) {
+      Ship ship = state.ships.elements[i];
       if (ship.health <= 0) {
         state.teams.get(ship.owner).shipsAlive.remove(ship);
         state.ships.removeAt(i);
-      } else {
-        i++;
+        i--;
       }
     }
     
@@ -192,8 +191,8 @@ public class Simulation {
 
                 if (target.isInsideMap()) {
                   boolean cellIsFreeOfShips = true;
-                  for (int i=0;i<state.ships.size();i++) {
-                    Ship b = state.ships.get(i);
+                  for (int i=0;i<state.ships.FE;i++) {
+                    Ship b = state.ships.elements[i];
                     if (b == ship) continue;
                     cellIsFreeOfShips = cellIsFreeOfShips && !b.at(target);
                   }
@@ -247,8 +246,8 @@ public class Simulation {
   }
 
   private void decrementRum() {
-    for (int i=0;i<state.ships.size();i++) {
-      Ship ship = state.ships.get(i);
+    for (int i=0;i<state.ships.FE;i++) {
+      Ship ship = state.ships.elements[i];
       ship.damage(1);
     }
   }
@@ -258,8 +257,8 @@ public class Simulation {
     // Go forward
     // ---
     for (int i = 1; i <= MAX_SHIP_SPEED; i++) {
-      for (int s=0;s<state.ships.size();s++) {
-        Ship ship = state.ships.get(s);
+      for (int s=0;s<state.ships.FE;s++) {
+        Ship ship = state.ships.elements[s];
         if (ship.health <=0) continue;
           Coord bow = ship.bow();
           Coord stern = ship.stern();
@@ -290,11 +289,11 @@ public class Simulation {
         collisionDetected = false;
         collisions.clear();
 
-        for (int s=0;s<state.ships.size();s++) {
-          Ship ship = state.ships.get(s);
-          for (int s2=0;s2<state.ships.size();s2++) {
+        for (int s=0;s<state.ships.FE;s++) {
+          Ship ship = state.ships.elements[s];
+          for (int s2=0;s2<state.ships.FE;s2++) {
             if (s == s2) continue;
-            Ship other = state.ships.get(s2);
+            Ship other = state.ships.elements[s2];
             if (ship.newBowIntersect(other)) {
               collisions.add(ship);
             }
@@ -316,13 +315,13 @@ public class Simulation {
       }
 
       // 1st move all ships, then doCollision
-      for (int s=0;s<state.ships.size();s++) {
-        Ship ship = state.ships.get(s);
+      for (int s=0;s<state.ships.FE;s++) {
+        Ship ship = state.ships.elements[s];
         if (ship.health <=0) continue;
           ship.position = ship.newPosition;
       }
-      for (int s=0;s<state.ships.size();s++) {
-        Ship ship = state.ships.get(s);
+      for (int s=0;s<state.ships.FE;s++) {
+        Ship ship = state.ships.elements[s];
         if (ship.health <=0) continue;
           doCollisionWithMinesAndBarrels(ship, ship.bow()); // only bow can collide
       }
@@ -330,8 +329,8 @@ public class Simulation {
   }
   private void rotateShips() {
     // Rotate
-    for (int s=0;s<state.ships.size();s++) {
-      Ship ship = state.ships.get(s);
+    for (int s=0;s<state.ships.FE;s++) {
+      Ship ship = state.ships.elements[s];
       if (ship.health <=0) continue;
         ship.newPosition = ship.position;
         ship.newBowCoordinate = ship.newBow();
@@ -344,8 +343,8 @@ public class Simulation {
       collisions.clear();
       collisionDetected = false;
 
-      for (int s=0;s<state.ships.size();s++) {
-        Ship ship = state.ships.get(s);
+      for (int s=0;s<state.ships.FE;s++) {
+        Ship ship = state.ships.elements[s];
         if (ship.newPositionsIntersect(state.ships)) {
           collisions.add(ship);
         }
@@ -363,13 +362,13 @@ public class Simulation {
     }
 
     // Apply rotation (1st move to newOrientation, then check collision)
-    for (int s=0;s<state.ships.size();s++) {
-      Ship ship = state.ships.get(s);
+    for (int s=0;s<state.ships.FE;s++) {
+      Ship ship = state.ships.elements[s];
       if (ship.health <=0) continue;
         ship.orientation = ship.newOrientation;
     }
-    for (int s=0;s<state.ships.size();s++) {
-      Ship ship = state.ships.get(s);
+    for (int s=0;s<state.ships.FE;s++) {
+      Ship ship = state.ships.elements[s];
       if (ship.health <=0) continue;
         doCollisionWithMinesAndBarrels(ship, ship.bow()); 
         doCollisionWithMinesAndBarrels(ship, ship.stern());
@@ -377,8 +376,8 @@ public class Simulation {
   }
   
   private void updateInitialRum() {
-    for (int s=0;s<state.ships.size();s++) {
-      Ship ship = state.ships.get(s);
+    for (int s=0;s<state.ships.FE;s++) {
+      Ship ship = state.ships.elements[s];
       ship.initialHealth = ship.health;
     }
   }
@@ -387,8 +386,8 @@ public class Simulation {
     
     for (int i=0;i<cannonBallExplosions.FE; i++) {
       Coord position = cannonBallExplosions.elements[i];
-      for (int s=0;s<state.ships.size();s++) {
-        Ship ship = state.ships.get(s);
+      for (int s=0;s<state.ships.FE;s++) {
+        Ship ship = state.ships.elements[s];
         if (position == ship.bow() || position == ship.stern()) {
           ship.damage(Simulation.LOW_DAMAGE);
           cannonBallExplosions.removeAt(i);

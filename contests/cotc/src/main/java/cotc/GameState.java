@@ -60,7 +60,7 @@ public class GameState {
     
     b_ships.copyFrom(ships);
     for (int i=0;i<ships.FE;i++) {
-      ships.get(i).backup();
+      ships.elements[i].backup();
     }
 
     // before backuping the state, we update the map (hopefully, we won't backup to much ^^)
@@ -101,7 +101,7 @@ public class GameState {
 
     ships.copyFrom(b_ships);
     for (int i=0;i<ships.FE;i++) {
-      ships.get(i).restore();
+      ships.elements[i].restore();
     }
     System.arraycopy(b_mapCache, 0, mapCache, 0, Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT);
   }
@@ -127,8 +127,8 @@ public class GameState {
   }
 
   Ship getShip(FastArray<Ship> fromShips, int entityId) {
-    for (int i=0;i<fromShips.size();i++) {
-      Ship ship = fromShips.get(i);
+    for (int i=0;i<fromShips.FE;i++) {
+      Ship ship = fromShips.elements[i];
       if (ship.id == entityId) {
         return ship;
       }

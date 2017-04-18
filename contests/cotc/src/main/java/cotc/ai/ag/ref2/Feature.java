@@ -1,4 +1,4 @@
-package cotc.ai.ag;
+package cotc.ai.ag.ref2;
 
 import cotc.BarrelDomination;
 import cotc.GameState;
@@ -32,7 +32,7 @@ public class Feature {
         
     barrelDomination = state.getBarrelDominitation();
 
-    if (state.barrels.size() > 0) {
+    if (state.barrels.FE > 0) {
       for (Ship ship : state.teams.get(0).shipsAlive) {
         if (ship.health < 75) {
           distanceToClosestBarrelFeature += 40-state.getClosestBarrelDistance(ship);

@@ -149,8 +149,8 @@ public class Ship extends Entity {
   }
 
   public boolean newPositionsIntersect(FastArray<Ship> ships) {
-    for (int i=0;i<ships.size();i++) {
-      Ship other = ships.get(i);
+    for (int i=0;i<ships.FE;i++) {
+      Ship other = ships.elements[i];
       if (this != other && newPositionsIntersect(other)) {
         return true;
       }
