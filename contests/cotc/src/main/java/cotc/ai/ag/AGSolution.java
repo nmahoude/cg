@@ -11,6 +11,7 @@ import cotc.entities.Action;
 import cotc.entities.Ship;
 
 public class AGSolution implements AISolution{
+  private static final Action[] ACTION_VALUES = Action.values();
   public static int DEPTH = 5;
   public static Random rand = new Random();
   
@@ -48,7 +49,7 @@ public class AGSolution implements AISolution{
     for (Ship ship : state.teams.get(0).shipsAlive) {
       Action[] shipActions = actions.get(ship);
       for (int i=0;i<DEPTH;i++) {
-        Action action = Action.values()[rand.nextInt(Action.values().length)];
+        Action action = ACTION_VALUES[rand.nextInt(ACTION_VALUES.length)];
         if (action == Action.FIRE) {
           action = Action.WAIT;
         }
@@ -56,6 +57,9 @@ public class AGSolution implements AISolution{
           // eliminate impossible actions
           if (action == Action.SLOWER && ship.speed == 0) {
             action = Action.FASTER;
+          }
+          if (action == Action.FASTER && ship.speed == 2) {
+            action = Action.WAIT;
           }
         }
         // debug NPE :(
