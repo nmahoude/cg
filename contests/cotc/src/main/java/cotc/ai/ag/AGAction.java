@@ -15,8 +15,10 @@ public class AGAction {
   @Override
   public String toString() {
     if (action == Action.FIRE) {
-      return "FIRE "+target.toString();
-    } 
+      return "FIRE "+target.x+" "+target.y;
+    }  else if (action == Action.MINE) {
+      return "MINE";
+    }
     return action.toString();
   }
 }

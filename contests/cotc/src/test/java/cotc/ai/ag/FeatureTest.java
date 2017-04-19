@@ -68,8 +68,8 @@ GameState state;
     Feature feature = new Feature();
     feature.calculateFeatures(state);
     
-    assertThat(feature.myMobilityFeature, is(10));
-    assertThat(feature.hisMobilityFeature, is(10));
+    assertThat(feature.features[Feature.MY_MOBILITY_FEATURE], is(10.0));
+    assertThat(feature.features[Feature.HIS_MOBILITY_FEATURE], is(10.0));
   }
   
   EntityType SHIP = EntityType.SHIP;

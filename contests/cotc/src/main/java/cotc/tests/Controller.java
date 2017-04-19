@@ -16,8 +16,9 @@ import cotc.utils.Coord;
 
 public class Controller {
   private static Coord coord = Coord.get(0, 0); // force Coord caches initialisation
-
+  static Random rand = new Random(System.currentTimeMillis());
   private static int rounds;
+
   public Referee referee;
   public GameState state1;
   public GameState state2;
@@ -27,9 +28,9 @@ public class Controller {
 
   public static void main(String[] args) throws Exception {
     
-    Random rand = new Random(System.currentTimeMillis());
 
-    AI ai1 = new DummyAI(); //new cotc.ai.ag.ref1.AG();
+    //AI ai1 = new cotc.ai.ag.ref2.AG();
+    AI ai1 = new DummyAI();
     AI ai2 = new AG();
     List<AI> ais = Arrays.asList(ai1, ai2);
     
@@ -40,26 +41,12 @@ public class Controller {
     int scoreMatrix[][] = new int[ais.size()][ais.size()];
     for (int team1 = 0;team1<ais.size()-1;team1++) {
       for (int team2 = team1+1;team2<ais.size();team2++) {
-        int score1 = 0, score2 = 0;
-        
-        for (int i=0;i<matchPerEvaluation;i++) {
-          try {
-            if (i % 2 == 0) {
-              oneGame(rand.nextInt(), ais.get(team1), ais.get(team2));
-            } else {
-              oneGame(rand.nextInt(), ais.get(team2), ais.get(team1));
-            }
-          } catch(GameFinished rf) {
-            if (rf.teamId == 0) {if (i % 2 == 0) score1++; else score2++;}
-            if (rf.teamId == 1) {if (i % 2 == 0) score2++; else score1++;}
-          } catch(Exception e) {
-            e.printStackTrace();
-          }
-          matches++;
-          System.out.println("match "+matches+" ("+rounds+" rounds)");
-        }
-        scoreMatrix[team1][team2] = score1;
-        scoreMatrix[team2][team1] = score2;
+
+        int scores[] = doMatches(matchPerEvaluation, ais.get(team1), ais.get(team2));
+        System.out.println("match "+(++matches)+" ("+rounds+" rounds)");
+
+        scoreMatrix[team1][team2] = scores[0];
+        scoreMatrix[team2][team1] = scores[1];
       }      
     }
     System.out.println("Score matrix : ");
@@ -76,7 +63,25 @@ public class Controller {
     }
   }
 
-  private static int factoriel(int fac) {
+  public static int[] doMatches(int matchCount, AI ai1, AI ai2) {
+    int scores[] = new int[2];
+    for (int i=0;i<matchCount;i++) {
+      try {
+        if (i % 2 == 0) {
+          oneGame(rand.nextInt(), ai1, ai2);
+        } else {
+          oneGame(rand.nextInt(), ai2, ai1);
+        }
+      } catch(GameFinished rf) {
+        if (rf.teamId == 0) {if (i % 2 == 0) scores[0]++; else scores[1]++;}
+        if (rf.teamId == 1) {if (i % 2 == 0) scores[1]++; else scores[0]++;}
+      } catch(Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return scores;
+  }
+  public static int factoriel(int fac) {
     if (fac <= 1) {
       return 1;
     } else {
@@ -84,7 +89,7 @@ public class Controller {
     }
   }
 
-  private static void oneGame(int seed, AI ai1, AI ai2) throws Exception {
+  public static void oneGame(int seed, AI ai1, AI ai2) throws Exception {
     Controller controller = new Controller();
     controller.init(seed);
     controller.setAI1(ai1);

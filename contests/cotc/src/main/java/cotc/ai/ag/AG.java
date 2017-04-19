@@ -8,17 +8,22 @@ import cotc.game.Simulation;
 public class AG implements AI {
   private static AGSolution fake = AGSolution.createFake();
 
-  private GameState state;
-  private Simulation simulation;
+  protected GameState state;
+  protected Simulation simulation;
+  public FeatureWeight weights = new FeatureWeight();
   
   public AISolution evolve(long stopTime) {
     int simulations = 0;
     simulation = new Simulation(state);
+    // Pre analyse
+    StateAnalyser analyser = new StateAnalyser();
+    analyser.analyse(state);
+    analyser.debug();
     
     AGSolution best = fake;
     while (System.currentTimeMillis() < stopTime) {
-      AGSolution sol = new AGSolution(state);
-      sol.randomize(state);
+      AGSolution sol = new AGSolution(state, weights);
+      sol.randomize(state, analyser);
       
       simulation.simulate(sol);
       simulations++;
@@ -33,11 +38,14 @@ public class AG implements AI {
   @Override
   public AISolution evolve() {
     simulation = new Simulation(state);
+    // Pre analyse
+    StateAnalyser analyser = new StateAnalyser();
+    analyser.analyse(state);
     
     AGSolution best = fake;
-    for (int i =0;i<50;i++) {
-      AGSolution sol = new AGSolution(state);
-      sol.randomize(state);
+    for (int i =0;i<100;i++) {
+      AGSolution sol = new AGSolution(state,weights);
+      sol.randomize(state, analyser);
       
       simulation.simulate(sol);
       if (sol.energy > best.energy) {

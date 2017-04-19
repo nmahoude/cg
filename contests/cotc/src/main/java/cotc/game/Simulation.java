@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import cotc.GameState;
 import cotc.Team;
+import cotc.ai.AISolution;
 import cotc.ai.ag.AGAction;
 import cotc.ai.ag.AGSolution;
 import cotc.entities.Barrel;
@@ -61,16 +62,15 @@ public class Simulation {
     this.state = state;
   }
 
-  public void simulate(AGSolution sol) {
-    Map<Ship, AGAction[]> actions = sol.actions;
-
+  public void simulate(AISolution sol) {
+    Map<Ship, AGAction[]> actions = sol.getActions();
     coreSimulation(sol, actions);
     state.restore();
   }
 
   /* without backup  / restore */
-  public void coreSimulation(AGSolution sol, Map<Ship, AGAction[]> actions) {
-    sol.energy = 0;
+  public void coreSimulation(AISolution sol, Map<Ship, AGAction[]> actions) {
+    sol.resetEnergy();
     for (int i = 0; i < AGSolution.DEPTH; i++) {
       if( state.teams.get(0).dead || state.teams.get(1).dead) break;
       
@@ -87,7 +87,7 @@ public class Simulation {
       checkEndConditions();
     }
     if (state.teams.get(0).dead) {
-      sol.energy = -1_000_000;
+      sol.setEnergy(-1_000_000);
       return;
     }
 

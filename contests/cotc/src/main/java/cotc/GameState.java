@@ -175,8 +175,9 @@ public class GameState {
   public Ship getClosestEnnemy(Ship me) {
     int bestDist = Integer.MAX_VALUE;
     Ship best = null;
-    for (Ship other : teams.get(1).shipsAlive) {
-      if (other.health == 0) continue;
+    for (int i=0;i<ships.FE;i++) {
+      Ship other = ships.elements[i];
+      if (other.owner == me.owner || other.health <= 0) continue;
       int dist = other.position.distanceTo(me.position);
       if (dist < bestDist) {
         bestDist = dist;

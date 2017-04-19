@@ -1,5 +1,7 @@
 package cotc.ai.ag;
 
+import java.awt.event.WindowEvent;
+
 import cotc.BarrelDomination;
 import cotc.GameState;
 import cotc.entities.Barrel;
@@ -10,32 +12,36 @@ import cotc.game.Simulation;
 import cotc.utils.Coord;
 
 public class Feature {
-  public int myHealtFeature;
-  public int speedFeature;
-  public int distToBarrelFeature;
-  public int hisHealthFeature;
-  public BarrelDomination barrelDomination;
-  public int distanceToCenterFeature;
-  public int distanceToClosestBarrelFeature;
-  public int myMobilityFeature;
-  public int hisMobilityFeature;
-
+  public static final int MY_HEALT_FEATURE = 0;
+  public static final int HIS_HEALTH_FEATURE = 1;
+  public static final int SPEED_FEATURE = 2;
+  public static final int DISTANCE_TO_CLOSEST_BARREL_FEATURE = 3;
+  public static final int DIST_TO_BARREL_FEATURE = 4;
+  public static final int BARREL_COUNT0_FEATURE = 5;
+  public static final int BARREL_COUNT1_FEATURE = 6;
+  public static final int RUM_COUNT0_FEATURE = 7;
+  public static final int RUM_COUNT1_FEATURE = 8;
+  public static final int DISTANCE_TO_CENTER_FEATURE = 9;
+  public static final int MY_MOBILITY_FEATURE = 10;
+  public static final int HIS_MOBILITY_FEATURE = 11;
+  public static final int LAST = 12;
+  public double features[] = new double[LAST];
+  
   public void calculateFeatures(GameState state) {
-    myHealtFeature = 0;
-    hisHealthFeature = 0;
-    speedFeature = 0;
-    distToBarrelFeature = 0;
-    distanceToCenterFeature = 0;
-    distanceToClosestBarrelFeature = 0;
-    myMobilityFeature = 0;
-    hisMobilityFeature = 0;
-        
-    barrelDomination = state.getBarrelDominitation();
+    for (int i=0;i<LAST;i++) {
+      features[i] = 0;
+    }
+    BarrelDomination barrelDomination = state.getBarrelDominitation();
+    features[BARREL_COUNT0_FEATURE] = barrelDomination.barrelCount0;
+    features[BARREL_COUNT1_FEATURE] = barrelDomination.barrelCount1;
+    features[RUM_COUNT0_FEATURE] = barrelDomination.rumCount0;
+    features[RUM_COUNT1_FEATURE] = barrelDomination.rumCount1;
 
+    
     if (state.barrels.size() > 0) {
       for (Ship ship : state.teams.get(0).shipsAlive) {
         if (ship.health < 75) {
-          distanceToClosestBarrelFeature += 40-state.getClosestBarrelDistance(ship);
+          features[DISTANCE_TO_CLOSEST_BARREL_FEATURE] += 40-state.getClosestBarrelDistance(ship);
         }
       }
     }
@@ -43,13 +49,14 @@ public class Feature {
     updateMobilityFeature(state);
     
     for (Ship ship : state.teams.get(0).shipsAlive) {
-      myHealtFeature += ship.health;
-      speedFeature += ship.speed;
-      distanceToCenterFeature += 10-(ship.position.distanceTo(Simulation.MAP_CENTER));
+      
+      features[MY_HEALT_FEATURE] += ship.health;
+      features[SPEED_FEATURE] += ship.speed;
+      features[DISTANCE_TO_CENTER_FEATURE] += 10-(ship.position.distanceTo(Simulation.MAP_CENTER));
     }
     
     for (Ship ship : state.teams.get(1).shipsAlive) {
-      hisHealthFeature += ship.health;
+      features[HIS_HEALTH_FEATURE] += ship.health;
     }
     
     // distToBarrel
@@ -57,7 +64,7 @@ public class Feature {
       Barrel barrel = state.getClosestBarrel(ship);
       if (barrel != null) {
         int dist = barrel.position.distanceTo(ship.position);
-        distToBarrelFeature +=(45.0-dist) / 45.0;
+        features[DIST_TO_BARREL_FEATURE] +=(45.0-dist) / 45.0;
       } else {
         break; // don't go further, no more barrels
       }
@@ -111,9 +118,9 @@ public class Feature {
                        + (canMove1 ? 1:0) 
                        + (canMove2 ? 1:0);
       if (ship.owner == 0) {
-        myMobilityFeature += mobility;
+        features[MY_MOBILITY_FEATURE] += mobility;
       } else {
-        hisMobilityFeature += mobility;
+        features[HIS_MOBILITY_FEATURE] += mobility;
       }
     }
 
@@ -128,12 +135,18 @@ public class Feature {
   }
 
   public void debug() {
-    System.err.println("HealtFeature: " + myHealtFeature + " / "+hisHealthFeature);
-    System.err.println("MobilityFeature: " + myMobilityFeature + " / "+hisMobilityFeature);
-    System.err.println("speedFeature: " + speedFeature);
-    System.err.println("distToBarrelFeature: " + distanceToCenterFeature);
-    System.err.println("distanceToCenterFeature: " + distanceToCenterFeature);
-    System.err.println("distanceToClosestBarrelFeature: " + distanceToClosestBarrelFeature);
-    barrelDomination.debug();
+    System.err.println("HealtFeature: " + features[MY_HEALT_FEATURE] + " / "+features[HIS_HEALTH_FEATURE]);
+    System.err.println("MobilityFeature: " + features[MY_MOBILITY_FEATURE] + " / "+features[HIS_MOBILITY_FEATURE]);
+    System.err.println("speedFeature: " + features[SPEED_FEATURE]);
+    System.err.println("distToBarrelFeature: " + features[DISTANCE_TO_CENTER_FEATURE]);
+    System.err.println("distanceToCenterFeature: " + features[DISTANCE_TO_CENTER_FEATURE]);
+    System.err.println("distanceToClosestBarrelFeature: " + features[DISTANCE_TO_CLOSEST_BARREL_FEATURE]);
+  }
+  public double applyWeights(FeatureWeight weights) {
+    double total = 0;
+    for (int i=0;i<LAST;i++) {
+      total += weights.weights[i] * features[i];
+    }
+    return total;
   }
 }

@@ -4,6 +4,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import cotc.ai.ag.AG;
+import cotc.ai.ag.AGAction;
 import cotc.ai.ag.AGSolution;
 import cotc.ai.ag.Feature;
 import cotc.entities.Barrel;
@@ -21,6 +22,11 @@ public class Player {
 
   static Random rand = new Random();
   static GameState state;
+  
+  //stats
+  static int mines = 0;
+  static int fires = 0;
+  static int wait = 0;
   
   public static void main(String args[]) {
     state = new GameState();
@@ -53,6 +59,34 @@ public class Player {
       for (int i=0;i<output.length;i++) {
         System.out.println(output[i]);
       }
+      
+      for (AGAction[] agActions : sol.actions.values()) {
+        switch(agActions[0].action) {
+          case FASTER:
+            break;
+          case FIRE:
+            fires++;
+            break;
+          case MINE:
+            mines++;
+            break;
+          case PORT:
+            break;
+          case SLOWER:
+            break;
+          case STARBOARD:
+            break;
+          case WAIT:
+            wait++;
+            break;
+          default:
+            break;
+        }
+      }
+      System.err.println("stats : ");
+      System.err.println("waits : "+wait);
+      System.err.println("mines : "+mines);
+      System.err.println("fires : "+fires);
     }
   }
 
@@ -67,6 +101,7 @@ public class Player {
   }
 
   private static void readState(Scanner in) {
+    // free stuff ?
     state.shipCount = in.nextInt();
     int entityCount = in.nextInt();
     startTime =System.currentTimeMillis();

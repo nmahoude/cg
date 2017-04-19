@@ -1,10 +1,11 @@
 package cotc.ai.ag.ref2;
 
 import cotc.GameState;
+import cotc.ai.AI;
 import cotc.ai.AISolution;
 import cotc.game.Simulation;
 
-public class AG extends cotc.ai.ag.AG {
+public class AG implements AI {
   private static AGSolution fake = AGSolution.createFake();
 
   private GameState state;
