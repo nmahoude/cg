@@ -17,8 +17,8 @@ GameState state;
   @Before
   public void setup() {
     state = new GameState();
-    state.teams.add(new Team(0));
-    state.teams.add(new Team(1));
+    state.teams[0] = new Team(0);
+    state.teams[1] = new Team(1);
   }
   
   @Test

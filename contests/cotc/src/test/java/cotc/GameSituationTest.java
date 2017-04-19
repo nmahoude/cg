@@ -21,8 +21,8 @@ public class GameSituationTest {
   @Before
   public void setup() {
     state = new GameState();
-    state.teams.add(new Team(0));
-    state.teams.add(new Team(1));
+    state.teams[0] = new Team(0);
+    state.teams[1] = new Team(1);
   }
   
   @Test
@@ -37,7 +37,7 @@ public class GameSituationTest {
 
     Simulation simulation = new Simulation(state);
     
-    Ship myShip = state.teams.get(0).shipsAlive.get(0);
+    Ship myShip = state.teams[0].shipsAlive.get(0);
     myShip.action = Action.PORT;
     
     simulation.playOneTurn();
@@ -78,7 +78,7 @@ public class GameSituationTest {
     state.backup();
 
     Simulation simulation = new Simulation(state);
-    Ship myShip = state.teams.get(0).shipsAlive.get(0);
+    Ship myShip = state.teams[0].shipsAlive.get(0);
     myShip.action = Action.STARBOARD;
     simulation.playOneTurn();
     myShip.action = Action.FASTER;
@@ -103,7 +103,7 @@ public class GameSituationTest {
     state.backup();
 
     Simulation simulation = new Simulation(state);
-    Ship myShip = state.teams.get(0).shipsAlive.get(0);
+    Ship myShip = state.teams[0].shipsAlive.get(0);
     
     Action actions[] = new Action[] { Action.STARBOARD, Action.SLOWER, Action.STARBOARD, Action.WAIT, Action.FASTER};
     for (Action action : actions) {
@@ -122,8 +122,8 @@ public class GameSituationTest {
     state.backup();
 
     Simulation simulation = new Simulation(state);
-    Ship myShip = state.teams.get(0).shipsAlive.get(0);
-    Ship hisShip = state.teams.get(1).shipsAlive.get(0);
+    Ship myShip = state.teams[0].shipsAlive.get(0);
+    Ship hisShip = state.teams[1].shipsAlive.get(0);
     
     Action myActions[] = new Action[] { Action.WAIT, Action.WAIT};
     for (Action action : myActions) {
@@ -157,8 +157,8 @@ public class GameSituationTest {
     state.backup();
 
     Simulation simulation = new Simulation(state);
-    Ship myShip = state.teams.get(0).shipsAlive.get(1);
-    Ship hisShip = state.teams.get(1).shipsAlive.get(0);
+    Ship myShip = state.teams[0].shipsAlive.get(1);
+    Ship hisShip = state.teams[1].shipsAlive.get(0);
     
     Action myActions[] = new Action[] { Action.WAIT};
     for (Action action : myActions) {
@@ -189,7 +189,7 @@ public class GameSituationTest {
     state.backup();
 
     Simulation simulation = new Simulation(state);
-    Ship myShip = state.teams.get(0).shipsAlive.get(0);
+    Ship myShip = state.teams[0].shipsAlive.get(0);
     
     Action myActions[] = new Action[] { Action.WAIT};
     for (Action action : myActions) {
@@ -217,9 +217,9 @@ public class GameSituationTest {
         if (ship == null) {
           ship = new Ship(entityId, x, y, arg1 /*orientation*/, arg4 /*owner*/);
           if (ship.owner == 1) {
-            state.teams.get(0).ships.add(ship);
+            state.teams[0].ships.add(ship);
           } else {
-            state.teams.get(1).ships.add(ship);
+            state.teams[1].ships.add(ship);
           }
         }
         ship.update(x, y, arg1 /*orientation*/, arg2 /*speed*/, arg3 /*stock of rum*/, arg4 /*owner*/);

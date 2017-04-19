@@ -4,17 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cotc.entities.Ship;
+import cotc.utils.FastArray;
 
 public class Team {
   public final int id;
 
   public boolean dead;
-  public final List<Ship> ships = new ArrayList<>();
-  public final List<Ship> shipsAlive = new ArrayList<>();
+  public final FastArray<Ship> ships = new FastArray<>(Ship.class, 3);
+  public final FastArray<Ship> shipsAlive = new FastArray<>(Ship.class, 3);
   
   private boolean b_dead;
-  public final List<Ship> b_ships = new ArrayList<>();
-  private final List<Ship> b_shipsAlive = new ArrayList<>();
+  public final FastArray<Ship> b_ships = new FastArray<>(Ship.class, 3);
+  public final FastArray<Ship> b_shipsAlive = new FastArray<>(Ship.class, 3);
 
   public Team(int id) {
     this.id = id;
@@ -23,45 +24,27 @@ public class Team {
   public void backup() {
     b_dead = dead;
 
-    b_ships.clear();
-    b_ships.addAll(ships);
-    
-    b_shipsAlive.clear();
-    b_shipsAlive.addAll(shipsAlive);
+    b_ships.copyFrom(ships);
+    b_shipsAlive.copyFrom(shipsAlive);
   }
 
   public void restore() {
     dead = b_dead;
     
-    ships.clear();
-    ships.addAll(b_ships);
-
-    shipsAlive.clear();
-    shipsAlive.addAll(b_shipsAlive);
+    ships.copyFrom(b_ships);
+    shipsAlive.copyFrom(b_shipsAlive);
   }
 
   public void setDead() {
-    for (Ship ship : ships) {
-      ship.health = 0;
-    }
+    for (int s=0;s<ships.FE;s++)
+      ships.elements[s].health = 0;
   }
 
   public int getScore() {
     int score = 0;
-    for (Ship ship : ships) {
-      score += ship.health;
+    for (int s=0;s<ships.FE;s++) {
+      score += ships.elements[s].health;
     }
     return score;
-  }
-
-  public List<String> toViewString() {
-    List<String> data = new ArrayList<>();
-
-    data.add(String.valueOf(this.id));
-    for (Ship ship : ships) {
-      data.add(ship.toViewString());
-    }
-
-    return data;
   }
 }

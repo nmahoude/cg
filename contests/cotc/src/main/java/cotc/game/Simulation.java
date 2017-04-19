@@ -8,6 +8,7 @@ import cotc.Team;
 import cotc.ai.AISolution;
 import cotc.ai.ag.AGAction;
 import cotc.ai.ag.AGSolution;
+import cotc.ai.ag.ShipActions;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
 import cotc.entities.Entity;
@@ -41,6 +42,8 @@ public class Simulation {
   public static final int MINE_VISIBILITY_RANGE = 5;
   public static final Coord MAP_CENTER = Coord.get(11, 10);
 
+  public static final Coord COORD_ZERO = Coord.get(0, 0);
+
   private static int travelTimeCache[];
   static {
     travelTimeCache = new int[30];
@@ -62,6 +65,35 @@ public class Simulation {
     this.state = state;
   }
 
+  public void simulateNew(AGSolution sol) {
+    coreSimulation(sol, sol.getActionsNew());
+    state.restore();
+  }
+
+  /* without backup  / restore */
+  public void coreSimulation(AISolution sol, ShipActions[] actions) {
+    sol.resetEnergy();
+    for (int i = 0; i < AGSolution.DEPTH; i++) {
+      if( state.teams[0].dead || state.teams[1].dead) break;
+      ShipActions sActions = actions[0];
+      applyActions(i, actions);
+      playOneTurn();
+      state.rounds ++;
+      if (state.rounds == 200) break;
+      
+      sol.updateEnergyTurn(i, state);
+    }
+    if (state.rounds == 200) {
+      checkEndConditions();
+    }
+    if (state.teams[0].dead) {
+      sol.setEnergy(-1_000_000);
+      return;
+    }
+
+    sol.updateEnergyEnd(state);
+  }
+
   public void simulate(AISolution sol) {
     Map<Ship, AGAction[]> actions = sol.getActions();
     coreSimulation(sol, actions);
@@ -72,26 +104,24 @@ public class Simulation {
   public void coreSimulation(AISolution sol, Map<Ship, AGAction[]> actions) {
     sol.resetEnergy();
     for (int i = 0; i < AGSolution.DEPTH; i++) {
-      if( state.teams.get(0).dead || state.teams.get(1).dead) break;
+      if( state.teams[0].dead || state.teams[1].dead) break;
       
       applyActions(i, actions);
       playOneTurn();
       state.rounds ++;
       if (state.rounds == 200) break;
       
-      if (i == 0) {
-        sol.updateEnergyTurn1(state);
-      }
+      sol.updateEnergyTurn(i, state);
     }
     if (state.rounds == 200) {
       checkEndConditions();
     }
-    if (state.teams.get(0).dead) {
+    if (state.teams[0].dead) {
       sol.setEnergy(-1_000_000);
       return;
     }
 
-    sol.updateEnergy(state);
+    sol.updateEnergyEnd(state);
   }
 
   private void applyActions(int i, Map<Ship, AGAction[]> actions) {
@@ -103,10 +133,10 @@ public class Simulation {
   }
 
   private void checkEndConditions() {
-    if (state.teams.get(0).getScore() >= state.teams.get(1).getScore()) {
-      state.teams.get(1).dead = true;
+    if (state.teams[0].getScore() >= state.teams[1].getScore()) {
+      state.teams[1].dead = true;
     } else {
-      state.teams.get(0).dead = true;
+      state.teams[0].dead = true;
     }
   }
 
@@ -140,7 +170,7 @@ public class Simulation {
     for (int i=0;i<state.ships.FE;i++) {
       Ship ship = state.ships.elements[i];
       if (ship.health <= 0) {
-        state.teams.get(ship.owner).shipsAlive.remove(ship);
+        state.teams[ship.owner].shipsAlive.remove(ship);
         state.ships.removeAt(i);
         i--;
       }
@@ -153,9 +183,20 @@ public class Simulation {
     }
   }
 
+  private void applyActions(int i, ShipActions[] actions) {
+    for (int s=0;s<state.teams[0].ships.FE;s++) {
+      Ship ship = state.teams[0].ships.elements[s];
+      AGAction agAction = actions[i].actions[s];
+      ship.action = agAction.action;
+      ship.target = agAction.target;
+    }
+  }
+
+
   private void applyActions() {
     for (Team team : state.teams) {
-      for (Ship ship : team.shipsAlive) {
+      for (int s=0;s<team.shipsAlive.FE;s++) {
+        Ship ship = team.shipsAlive.elements[s];
         if (ship.mineCooldown > 0) {
           ship.mineCooldown--;
         }

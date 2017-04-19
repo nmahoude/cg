@@ -32,7 +32,8 @@ public class AGSolution extends cotc.ai.ag.AGSolution {
     this.state = state;
     this.shipCount = state.shipCount;
     actions = new HashMap<>();
-    for (Ship ship : state.teams.get(0).shipsAlive) {
+    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+      Ship ship = state.teams[0].shipsAlive.elements[s];
       actions.put(ship, new Action[DEPTH]);
     }
   }
@@ -41,14 +42,16 @@ public class AGSolution extends cotc.ai.ag.AGSolution {
   public String[] output() {
     String[] output = new String[shipCount];
     int i=0;
-    for (Ship ship : state.teams.get(0).shipsAlive) {
+    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+      Ship ship = state.teams[0].shipsAlive.elements[s];
       output[i++] = actions.get(ship)[0].toString();
     }
     return output;
   }
 
   public void randomize(GameState state) {
-    for (Ship ship : state.teams.get(0).shipsAlive) {
+    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+      Ship ship = state.teams[0].shipsAlive.elements[s];
       Action[] shipActions = actions.get(ship);
       for (int i=0;i<DEPTH;i++) {
         Action action = Action.values()[rand.nextInt(Action.values().length)];
@@ -81,23 +84,27 @@ public class AGSolution extends cotc.ai.ag.AGSolution {
     distToBarrelFeature = 0;
     movementFeature = 0;
     
-    for (Ship ship : state.teams.get(0).shipsAlive) {
+    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+      Ship ship = state.teams[0].shipsAlive.elements[s];
       if (ship.position != ship.b_position) {
         movementFeature+=1.0;
       }
     }
     
-    for (Ship ship : state.teams.get(0).shipsAlive) {
+    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+      Ship ship = state.teams[0].shipsAlive.elements[s];
       myHealtFeature += ship.health;
       speedFeature += ship.speed;
     }
     
-    for (Ship ship : state.teams.get(1).shipsAlive) {
+    for (int s=0;s<state.teams[1].shipsAlive.FE;s++) {
+      Ship ship = state.teams[1].shipsAlive.elements[s];
       hisHealthFeature += ship.health;
     }
     
     // distToBarrel
-    for (Ship ship : state.teams.get(0).shipsAlive) {
+    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+      Ship ship = state.teams[0].shipsAlive.elements[s];
       Barrel barrel = state.getClosestBarrel(ship);
       if (barrel != null) {
         int dist = barrel.position.distanceTo(ship.position);
@@ -137,7 +144,7 @@ public class AGSolution extends cotc.ai.ag.AGSolution {
     // TODO nothing atm
   }
 
-  public void updateEnergy(GameState state2) {
+  public void updateEnergyEnd(GameState state2) {
     // feature after turn DEPTH, less precise, but more insight
     calculateFeatures(state);
     energy += 0

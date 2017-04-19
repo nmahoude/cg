@@ -1,6 +1,5 @@
 package cotc;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import cotc.entities.Barrel;
@@ -16,7 +15,7 @@ public class GameState {
   private static Entity mapEmptyCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
   
   public int shipCount;
-  public List<Team> teams = new ArrayList<>();
+  public Team teams[] = new Team[2];
 
   public int rounds;
   public FastArray<CannonBall> cannonballs = new FastArray<>(CannonBall.class, 100);
@@ -41,7 +40,9 @@ public class GameState {
   public void backup() {
     b_rounds = rounds;
     
-    teams.forEach(Team::backup);
+    for (int t=0;t<2;t++) {
+      teams[t].backup();
+    }
 
     b_cannonballs.copyFrom(cannonballs);
     for (int i=0;i<cannonballs.FE;i++) {
@@ -82,7 +83,9 @@ public class GameState {
   public void restore() {
     rounds = b_rounds;
 
-    teams.forEach(Team::restore);
+    for (Team team : teams) {
+      team.restore();
+    }
 
     cannonballs.copyFrom(b_cannonballs);
     for (int i=0;i<cannonballs.FE;i++) {
@@ -108,8 +111,10 @@ public class GameState {
 
   public void initRound() {
     // kill all ships ! (will be revive in the update process)
-    teams.get(0).shipsAlive.clear();
-    teams.get(1).shipsAlive.clear();
+    teams[0].shipsAlive.clear();
+    teams[0].ships.clear();
+    teams[1].shipsAlive.clear();
+    teams[1].ships.clear();
 
     ships.clear();
     cannonballs.clear();
@@ -140,9 +145,9 @@ public class GameState {
     ships.add(ship);
     
     if (ship.owner == 0) {
-      teams.get(0).shipsAlive.add(ship);
+      teams[0].shipsAlive.add(ship);
     } else {
-      teams.get(1).shipsAlive.add(ship);
+      teams[1].shipsAlive.add(ship);
     }
   }
   

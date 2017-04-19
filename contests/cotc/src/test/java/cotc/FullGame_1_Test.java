@@ -26,8 +26,8 @@ public class FullGame_1_Test {
   @Before
   public void setup() {
     state = new GameState();
-    state.teams.add(new Team(0));
-    state.teams.add(new Team(1));
+    state.teams[0] = new Team(0);
+    state.teams[1] = new Team(1);
   }
 
   @Test
@@ -2481,11 +2481,11 @@ public class FullGame_1_Test {
 
   private Ship getShipForAction() {
     Ship ship=null; 
-    int alive1 = state.teams.get(0).shipsAlive.size();
+    int alive1 = state.teams[0].shipsAlive.size();
     if (actionIndex<alive1) {
-      ship = state.teams.get(0).shipsAlive.get(actionIndex);
+      ship = state.teams[0].shipsAlive.get(actionIndex);
     } else {
-      ship = state.teams.get(1).shipsAlive.get(actionIndex-alive1);
+      ship = state.teams[1].shipsAlive.get(actionIndex-alive1);
     }
     return ship;
   }

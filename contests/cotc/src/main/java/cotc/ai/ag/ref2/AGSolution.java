@@ -8,6 +8,7 @@ import java.util.Random;
 import cotc.GameState;
 import cotc.ai.AISolution;
 import cotc.ai.ag.AGAction;
+import cotc.ai.ag.ShipActions;
 import cotc.entities.Action;
 import cotc.entities.Ship;
 
@@ -31,7 +32,8 @@ public class AGSolution implements AISolution {
     this.state = state;
     this.shipCount = state.shipCount;
     actions = new HashMap<>();
-    for (Ship ship : state.teams.get(0).shipsAlive) {
+    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+      Ship ship = state.teams[0].shipsAlive.elements[s];
       actions.put(ship, new AGAction[DEPTH]);
     }
   }
@@ -40,14 +42,16 @@ public class AGSolution implements AISolution {
   public String[] output() {
     String[] output = new String[shipCount];
     int i=0;
-    for (Ship ship : state.teams.get(0).shipsAlive) {
+    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+      Ship ship = state.teams[0].shipsAlive.elements[s];
       output[i++] = actions.get(ship)[0].toString();
     }
     return output;
   }
 
   public void randomize(GameState state) {
-    for (Ship ship : state.teams.get(0).shipsAlive) {
+    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+      Ship ship = state.teams[0].shipsAlive.elements[s];
       AGAction[] shipActions = actions.get(ship);
       for (int i=0;i<DEPTH;i++) {
         Action action = ACTION_VALUES[rand.nextInt(ACTION_VALUES.length)];
@@ -92,12 +96,11 @@ public class AGSolution implements AISolution {
     return fake;
   }
 
-  public void updateEnergyTurn1(GameState state2) {
-    // feature after turn 1, will be more precise, but no insight
+  public void updateEnergyTurn(int turn, GameState state2) {
     // TODO nothing atm
   }
 
-  public void updateEnergy(GameState state2) {
+  public void updateEnergyEnd(GameState state2) {
     // feature after turn DEPTH, less precise, but more insight
     Feature feature = new Feature();
     feature.calculateFeatures(state);
@@ -123,6 +126,12 @@ public class AGSolution implements AISolution {
   @Override
   public Map<Ship, AGAction[]> getActions() {
     return actions;
+  }
+
+  @Override
+  public ShipActions[] getActionsNew() {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

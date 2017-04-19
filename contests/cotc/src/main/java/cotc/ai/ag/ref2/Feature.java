@@ -33,7 +33,8 @@ public class Feature {
     barrelDomination = state.getBarrelDominitation();
 
     if (state.barrels.FE > 0) {
-      for (Ship ship : state.teams.get(0).shipsAlive) {
+      for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+        Ship ship = state.teams[0].shipsAlive.elements[s];
         if (ship.health < 75) {
           distanceToClosestBarrelFeature += 40-state.getClosestBarrelDistance(ship);
         }
@@ -42,18 +43,21 @@ public class Feature {
     
     updateMobilityFeature(state);
     
-    for (Ship ship : state.teams.get(0).shipsAlive) {
+    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+      Ship ship = state.teams[0].shipsAlive.elements[s];
       myHealtFeature += ship.health;
       speedFeature += ship.speed;
       distanceToCenterFeature += 10-(ship.position.distanceTo(Simulation.MAP_CENTER));
     }
     
-    for (Ship ship : state.teams.get(1).shipsAlive) {
+    for (int s=0;s<state.teams[1].shipsAlive.FE;s++) {
+      Ship ship = state.teams[1].shipsAlive.elements[s];
       hisHealthFeature += ship.health;
     }
     
     // distToBarrel
-    for (Ship ship : state.teams.get(0).shipsAlive) {
+    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+      Ship ship = state.teams[0].shipsAlive.elements[s];
       Barrel barrel = state.getClosestBarrel(ship);
       if (barrel != null) {
         int dist = barrel.position.distanceTo(ship.position);

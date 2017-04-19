@@ -1,4 +1,4 @@
-package cotc.ai.ag;
+package cotc.ai.ag.ref3;
 
 import cotc.GameState;
 import cotc.ai.AI;
@@ -25,7 +25,7 @@ public class AG implements AI {
       AGSolution sol = new AGSolution(state, weights);
       sol.randomize(state, analyser);
       
-      simulation.simulateNew(sol);
+      simulation.simulate(sol);
       simulations++;
       if (sol.energy > best.energy) {
         best = sol;
@@ -47,7 +47,7 @@ public class AG implements AI {
       AGSolution sol = new AGSolution(state,weights);
       sol.randomize(state, analyser);
       
-      simulation.simulateNew(sol);
+      simulation.simulate(sol);
       if (sol.energy > best.energy) {
         best = sol;
       }

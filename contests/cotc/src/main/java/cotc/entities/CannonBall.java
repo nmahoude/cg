@@ -2,8 +2,6 @@ package cotc.entities;
 
 public class CannonBall extends Entity {
   public final int ownerEntityId;
-  public final int srcX;
-  public final int srcY;
   public final int initialRemainingTurns;
   public int remainingTurns;
   
@@ -11,17 +9,13 @@ public class CannonBall extends Entity {
 
   public CannonBall(int entityId, int x, int y, Ship sender, int remaining) {
     super(EntityType.CANNONBALL, entityId, x, y);
-    srcX = sender.position.x;
-    srcY = sender.position.y;
-    ownerEntityId = sender.id;
+    ownerEntityId = sender != null ? sender.id : 1;
     remainingTurns = remaining;
     initialRemainingTurns = remaining;
   }
 
   public CannonBall(int entityId, int x, int y, int senderId, int srcX, int srcY, int remaining) {
     super(EntityType.CANNONBALL, entityId, x, y);
-    this.srcX = srcX;
-    this.srcY = srcY;
     ownerEntityId = senderId;
     remainingTurns = remaining;
     initialRemainingTurns = remaining;

@@ -7,7 +7,6 @@ import java.util.Random;
 
 import cotc.GameState;
 import cotc.ai.AI;
-import cotc.ai.DummyAI;
 import cotc.ai.ag.AG;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
@@ -30,11 +29,11 @@ public class Controller {
     
 
     //AI ai1 = new cotc.ai.ag.ref2.AG();
-    AI ai1 = new DummyAI();
+    AI ai1 = new cotc.ai.ag.ref2.AG();
     AI ai2 = new AG();
     List<AI> ais = Arrays.asList(ai1, ai2);
     
-    final int matchPerEvaluation = 50;
+    final int matchPerEvaluation = 500;
     int totalMatches = matchPerEvaluation * factoriel(ais.size()-1);
     int matches = 0;
     
@@ -146,19 +145,21 @@ public class Controller {
   
   private void initState(int playerIdx, GameState state) {
     state.shipCount = referee.shipsPerPlayer;
-    state.teams.add(referee.state.teams.get(playerIdx));
-    state.teams.add(referee.state.teams.get((playerIdx + 1) % 2));
+    state.teams[0] = referee.state.teams[playerIdx];
+    state.teams[1] = referee.state.teams[(playerIdx + 1) % 2];
     refereeToState(playerIdx, state);
   }
   private void refereeToState(int playerIdx, GameState state) {
     {
       state.ships.clear();
       // Player's ships first
-      for (Ship ship : referee.state.teams.get(playerIdx).shipsAlive) {
+      for (int s=0;s<referee.state.teams[playerIdx].shipsAlive.FE;s++) {
+        Ship ship = referee.state.teams[playerIdx].shipsAlive.elements[s];
         state.ships.add(ship);
       }
       // Opponent's ships
-      for (Ship ship : referee.state.teams.get((playerIdx + 1) % 2).shipsAlive) {
+      for (int s = 0; s < referee.state.teams[(playerIdx + 1) % 2].shipsAlive.FE; s++) {
+        Ship ship = referee.state.teams[(playerIdx + 1) % 2].shipsAlive.elements[s];
         state.ships.add(ship);
       }
     }
@@ -168,11 +169,13 @@ public class Controller {
     for (int i=0;i<referee.state.mines.FE;i++) {
       Mine mine = referee.state.mines.get(i);
         boolean visible = false;
-        for (Ship ship : referee.state.teams.get(playerIdx).ships) {
-            if (ship.position.distanceTo(mine.position) <= Simulation.MINE_VISIBILITY_RANGE) {
-                visible = true;
-                break;
-            }
+        
+        for (int s=0;s<referee.state.teams[playerIdx].shipsAlive.FE;s++) {
+          Ship ship = referee.state.teams[playerIdx].shipsAlive.elements[s];
+          if (ship.position.distanceTo(mine.position) <= Simulation.MINE_VISIBILITY_RANGE) {
+              visible = true;
+              break;
+          }
         }
         if (visible) {
           state.mines.add(mine);

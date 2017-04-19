@@ -4,6 +4,7 @@ import java.util.Map;
 
 import cotc.GameState;
 import cotc.ai.ag.AGAction;
+import cotc.ai.ag.ShipActions;
 import cotc.entities.Ship;
 
 public interface AISolution {
@@ -13,9 +14,9 @@ public interface AISolution {
   void setEnergy(int i);
   void resetEnergy();
 
-  void updateEnergyTurn1(GameState state);
-  void updateEnergy(GameState state);
+  void updateEnergyTurn(int turn, GameState state);
+  void updateEnergyEnd(GameState state);
 
   Map<Ship, AGAction[]> getActions();
-
+  ShipActions[] getActionsNew();
 }

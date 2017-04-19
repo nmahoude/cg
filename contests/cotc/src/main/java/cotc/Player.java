@@ -7,6 +7,7 @@ import cotc.ai.ag.AG;
 import cotc.ai.ag.AGAction;
 import cotc.ai.ag.AGSolution;
 import cotc.ai.ag.Feature;
+import cotc.ai.ag.ShipActions;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
 import cotc.entities.Mine;
@@ -30,8 +31,8 @@ public class Player {
   
   public static void main(String args[]) {
     state = new GameState();
-    state.teams.add(new Team(0));
-    state.teams.add(new Team(1));
+    state.teams[0] = new Team(0);
+    state.teams[1] = new Team(1);
     
     Scanner in = new Scanner(System.in);
     int round = 0;
@@ -60,8 +61,10 @@ public class Player {
         System.out.println(output[i]);
       }
       
-      for (AGAction[] agActions : sol.actions.values()) {
-        switch(agActions[0].action) {
+      ShipActions sActions = sol.actions[0];
+      for (AGAction action : sActions.actions) {
+        if (action == null) continue;
+        switch(action.action) {
           case FASTER:
             break;
           case FIRE:
@@ -127,9 +130,9 @@ public class Player {
           if (ship == null) {
             ship = new Ship(entityId, x, y, arg1 /*orientation*/, arg4 /*owner*/);
             if (ship.owner == 0) {
-              state.teams.get(0).ships.add(ship);
+              state.teams[0].ships.add(ship);
             } else {
-              state.teams.get(1).ships.add(ship);
+              state.teams[1].ships.add(ship);
             }
           }
           ship.update(x, y, arg1 /*orientation*/, arg2 /*speed*/, arg3 /*stock of rum*/, arg4 /*owner*/);
@@ -140,10 +143,7 @@ public class Player {
           state.barrels.add(barrel);
           break;
         case "CANNONBALL":
-          Ship sender = state.getShip(state.teams.get(0).ships, arg1);
-          if (sender == null) {
-            sender = state.getShip(state.teams.get(1).ships, arg1);
-          }
+          Ship sender = state.getShip(state.ships, arg1);
           CannonBall ball = new CannonBall(entityId, x, y, sender /*sender entityId*/, arg2 /*turns*/);
           state.cannonballs.add(ball);
           break;

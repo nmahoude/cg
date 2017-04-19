@@ -22,10 +22,10 @@ public class Referee {
   private static final Pattern PLAYER_INPUT_WAIT_PATTERN = Pattern.compile("WAIT(?:\\s+(?<message>.+))?", Pattern.CASE_INSENSITIVE);
   private static final Pattern PLAYER_INPUT_PORT_PATTERN = Pattern.compile("PORT(?:\\s+(?<message>.+))?", Pattern.CASE_INSENSITIVE);
   private static final Pattern PLAYER_INPUT_STARBOARD_PATTERN = Pattern.compile("STARBOARD(?:\\s+(?<message>.+))?", Pattern.CASE_INSENSITIVE);
-  private static final Pattern PLAYER_INPUT_FIRE_PATTERN = Pattern.compile("FIRE (?<x>[0-9]{1,8})\\s+(?<y>[0-9]{1,8})(?:\\s+(?<message>.+))?",
+  private static final Pattern PLAYER_INPUT_FIRE_PATTERN = Pattern.compile("FIRE (?<x>-?[0-9]{1,8})\\s+(?<y>-?[0-9]{1,8})(?:\\s+(?<message>.+))?",
       Pattern.CASE_INSENSITIVE);
   private static final Pattern PLAYER_INPUT_MINE_PATTERN = Pattern.compile("MINE(?:\\s+(?<message>.+))?", Pattern.CASE_INSENSITIVE);
-
+      
   public static boolean debugoutput = false;
 
   int nextEntityId = 0;
@@ -56,7 +56,7 @@ public class Referee {
 
     // Generate Players
     for (int i = 0; i < playerCount; i++) {
-      state.teams.add(new Team(i));
+      state.teams[i] = new Team(i);
     }
     // Generate Ships
     for (int j = 0; j < shipsPerPlayer; j++) {
@@ -70,18 +70,18 @@ public class Referee {
       Ship ship0 = new Ship(nextEntityId++, x, y, orientation, 0);
       Ship ship1 = new Ship(nextEntityId++, x, Simulation.MAP_HEIGHT - 1 - y, (6 - orientation) % 6, 1);
 
-      state.teams.get(0).ships.add(ship0);
-      state.teams.get(1).ships.add(ship1);
-      state.teams.get(0).shipsAlive.add(ship0);
-      state.teams.get(1).shipsAlive.add(ship1);
+      state.teams[0].ships.add(ship0);
+      state.teams[1].ships.add(ship1);
+      state.teams[0].shipsAlive.add(ship0);
+      state.teams[1].shipsAlive.add(ship1);
 
     }
 
-    for (Ship ship : state.teams.get(0).ships) {
-      state.ships.add(ship);
+    for (int s=0;s<state.teams[0].ships.FE;s++) {
+      state.ships.add(state.teams[0].ships.elements[s]);
     }
-    for (Ship ship : state.teams.get(1).ships) {
-      state.ships.add(ship);
+    for (int s=0;s<state.teams[1].ships.FE;s++) {
+      state.ships.add(state.teams[1].ships.elements[s]);
     }
 
     // Generate mines
@@ -144,7 +144,7 @@ public class Referee {
 
   public void handlePlayerOutput(int frame, int round, int playerIdx, String[] outputs)
       throws WinException, LostException, InvalidInputException {
-    Team team = state.teams.get(playerIdx);
+    Team team = state.teams[playerIdx];
 
     try {
       int i = 0;
@@ -191,7 +191,7 @@ public class Referee {
     simulation.playOneTurn();
     state.backup();
     
-    if (state.teams.get(0).dead == true || state.teams.get(1).dead == true) {
+    if (state.teams[0].dead == true || state.teams[1].dead == true) {
       throw new GameOverException("endReached");
     }
   }
@@ -200,27 +200,30 @@ public class Referee {
     List<String> data = new ArrayList<>();
 
     // Player's ships first
-    for (Ship ship : state.teams.get(playerIdx).shipsAlive) {
-        data.add(ship.toPlayerString(playerIdx));
+    for (int s=0;s<state.teams[playerIdx].shipsAlive.FE;s++) {
+      Ship ship = state.teams[playerIdx].shipsAlive.elements[s];
+      data.add(ship.toPlayerString(playerIdx));
     }
 
     // Number of ships
     data.add(0, String.valueOf(data.size()));
 
     // Opponent's ships
-    for (Ship ship : state.teams.get((playerIdx + 1) % 2).shipsAlive) {
-        data.add(ship.toPlayerString(playerIdx));
+    for (int s=0;s<state.teams[(playerIdx + 1) % 2].shipsAlive.FE;s++) {
+      Ship ship = state.teams[playerIdx].shipsAlive.elements[s];
+      data.add(ship.toPlayerString(playerIdx));
     }
 
     // Visible mines
     for (int i=0;i<state.mines.FE;i++) {
       Mine mine = state.mines.get(i);
         boolean visible = false;
-        for (Ship ship : state.teams.get(playerIdx).shipsAlive) {
-            if (ship.position.distanceTo(mine.position) <= Simulation.MINE_VISIBILITY_RANGE) {
-                visible = true;
-                break;
-            }
+        for (int s=0;s<state.teams[playerIdx].shipsAlive.FE;s++) {
+          Ship ship = state.teams[playerIdx].shipsAlive.elements[s];
+          if (ship.position.distanceTo(mine.position) <= Simulation.MINE_VISIBILITY_RANGE) {
+              visible = true;
+              break;
+          }
         }
         if (visible) {
             data.add(mine.toPlayerString(playerIdx));
@@ -248,7 +251,7 @@ public class Referee {
       }
     }
 
-    return state.teams.get(0).getScore() > state.teams.get(1).getScore() ? 0 : 1;
+    return state.teams[0].getScore() > state.teams[1].getScore() ? 0 : 1;
   }
 
 }

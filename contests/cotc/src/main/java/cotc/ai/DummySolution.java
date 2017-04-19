@@ -5,6 +5,7 @@ import java.util.Map;
 
 import cotc.GameState;
 import cotc.ai.ag.AGAction;
+import cotc.ai.ag.ShipActions;
 import cotc.entities.Action;
 import cotc.entities.Ship;
 
@@ -25,7 +26,9 @@ public class DummySolution implements AISolution {
   @Override
   public Map<Ship, AGAction[]> getActions() {
     Map<Ship, AGAction[]> actions = new HashMap<>();
-    for (Ship ship : state.teams.get(0).shipsAlive) {
+    for (int s = 0; s < state.teams[0].shipsAlive.FE; s++) {
+      Ship ship = state.teams[0].shipsAlive.elements[s];
+
       AGAction[] agActions = new AGAction[1];
       agActions[0] = new AGAction(Action.WAIT, null);
       actions.put(ship, agActions);
@@ -40,9 +43,14 @@ public class DummySolution implements AISolution {
   public void resetEnergy() {
   }
   @Override
-  public void updateEnergyTurn1(GameState state) {
+  public void updateEnergyTurn(int turn, GameState state) {
   }
   @Override
-  public void updateEnergy(GameState state) {
+  public void updateEnergyEnd(GameState state) {
+  }
+  @Override
+  public ShipActions[] getActionsNew() {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

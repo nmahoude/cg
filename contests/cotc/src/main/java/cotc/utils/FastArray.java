@@ -52,4 +52,8 @@ public class FastArray <T> {
     }
     FE--;
   }
+
+  public boolean isEmpty() {
+    return FE==0;
+  }
 }
