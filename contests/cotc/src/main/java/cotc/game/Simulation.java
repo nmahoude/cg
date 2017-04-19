@@ -410,6 +410,7 @@ public class Simulation {
       if (entityAtPosition != null) {
         if (entityAtPosition.type == EntityType.MINE) {
           Mine mine = (Mine)entityAtPosition;
+          mine.explode(state.ships, true);
           state.mines.remove(mine);
           state.clearEntityAt(mine.position);
           cannonBallExplosions.removeAt(i);
