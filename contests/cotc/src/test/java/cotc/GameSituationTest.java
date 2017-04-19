@@ -133,7 +133,72 @@ public class GameSituationTest {
     assertThat(myShip.health, is(37));
   }
   
+  @Test
+  public void whyIsGoingOnMineTheBestMove() throws Exception {
+    readEntity(0,SHIP,19,5,5,2,15,1);
+    readEntity(2,SHIP,12,16,2,0,65,1);
+    readEntity(4,SHIP,20,16,3,1,51,1);
+    readEntity(1,SHIP,13,12,2,0,85,0);
+    readEntity(3,SHIP,8,13,4,2,81,0);
+    readEntity(5,SHIP,6,20,3,2,78,0);
+    readEntity(7,MINE,21,18,0,0,0,0);
+    readEntity(6,MINE,21,2,0,0,0,0);
+    readEntity(9,MINE,8,17,0,0,0,0);
+    readEntity(11,MINE,14,17,0,0,0,0);
+    readEntity(30,MINE,20,2,0,0,0,0);
+    readEntity(49,MINE,14,14,0,0,0,0);
+    readEntity(64,MINE,11,14,0,0,0,0);
+    readEntity(61,CANNONBALL,13,5,5,0,0,0);
+    readEntity(62,CANNONBALL,11,5,3,0,0,0);
+    readEntity(65,CANNONBALL,11,14,1,1,0,0);
+    readEntity(66,CANNONBALL,11,14,3,1,0,0);
+    readEntity(67,CANNONBALL,12,16,5,3,0,0);
+
+    state.backup();
+
+    Simulation simulation = new Simulation(state);
+    Ship myShip = state.teams.get(0).shipsAlive.get(1);
+    Ship hisShip = state.teams.get(1).shipsAlive.get(0);
+    
+    Action myActions[] = new Action[] { Action.WAIT};
+    for (Action action : myActions) {
+      myShip.action = action;
+      simulation.playOneTurn();
+    }
+    assertThat(myShip.health, is(54));
+  }
   
+  @Test
+  public void cannonBallWillHitMyShipAtCenter() throws Exception {
+    readEntity(0,SHIP,6,7,0,1,83,1);
+    readEntity(2,SHIP,6,17,2,2,50,1);
+    readEntity(4,SHIP,0,0,4,0,25,1);
+    readEntity(1,SHIP,8,7,4,1,46,0);
+    readEntity(3,SHIP,2,10,0,2,84,0);
+    readEntity(5,SHIP,7,13,0,1,81,0);
+    readEntity(9,MINE,8,17,0,0,0,0);
+    readEntity(8,MINE,8,3,0,0,0,0);
+    readEntity(13,MINE,5,18,0,0,0,0);
+    readEntity(12,MINE,5,2,0,0,0,0);
+    readEntity(14,MINE,2,8,0,0,0,0);
+    readEntity(36,MINE,10,7,0,0,0,0);
+    readEntity(51,MINE,4,6,0,0,0,0);
+    readEntity(63,MINE,3,7,0,0,0,0);
+    readEntity(62,CANNONBALL,6,7,1,1,0,0);
+    
+    state.backup();
+
+    Simulation simulation = new Simulation(state);
+    Ship myShip = state.teams.get(0).shipsAlive.get(0);
+    
+    Action myActions[] = new Action[] { Action.WAIT};
+    for (Action action : myActions) {
+      myShip.action = action;
+      simulation.playOneTurn();
+    }
+    assertThat(myShip.health, is(32));
+    
+  }
   
   
   EntityType SHIP = EntityType.SHIP;

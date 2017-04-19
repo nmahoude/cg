@@ -122,7 +122,7 @@ public class AGSolution implements AISolution{
         + feature.myHealtFeature 
         - 0.2*feature.hisHealthFeature // don't take too much credit for 
         + feature.speedFeature
-        + 0.1*feature.distanceToClosestBarrelFeature
+        //+ 0.1*feature.distanceToClosestBarrelFeature
         //+ feature.myMobilityFeature
         //+ distanceToCenterFeature
         //+ 0.1*(sol.barrelDomination.rumCount0-sol.barrelDomination.rumCount1)
