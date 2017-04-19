@@ -5,8 +5,8 @@ import java.util.Map.Entry;
 
 import cotc.GameState;
 import cotc.Team;
+import cotc.ai.ag.AGAction;
 import cotc.ai.ag.AGSolution;
-import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
 import cotc.entities.Entity;
@@ -62,14 +62,14 @@ public class Simulation {
   }
 
   public void simulate(AGSolution sol) {
-    Map<Ship, Action[]> actions = sol.actions;
+    Map<Ship, AGAction[]> actions = sol.actions;
 
     coreSimulation(sol, actions);
     state.restore();
   }
 
   /* without backup  / restore */
-  public void coreSimulation(AGSolution sol, Map<Ship, Action[]> actions) {
+  public void coreSimulation(AGSolution sol, Map<Ship, AGAction[]> actions) {
     sol.energy = 0;
     for (int i = 0; i < AGSolution.DEPTH; i++) {
       if( state.teams.get(0).dead || state.teams.get(1).dead) break;
@@ -94,10 +94,11 @@ public class Simulation {
     sol.updateEnergy(state);
   }
 
-  private void applyActions(int i, Map<Ship, Action[]> actions) {
-    for (Entry<Ship, Action[]> entry : actions.entrySet()) {
-      Action action = entry.getValue()[i];
-      entry.getKey().action = action;
+  private void applyActions(int i, Map<Ship, AGAction[]> actions) {
+    for (Entry<Ship, AGAction[]> entry : actions.entrySet()) {
+      AGAction action = entry.getValue()[i];
+      entry.getKey().action = action.action;
+      entry.getKey().target = action.target;
     }
   }
 

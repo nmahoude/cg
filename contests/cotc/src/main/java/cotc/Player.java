@@ -44,7 +44,7 @@ public class Player {
       
       AG ag = new AG();
       ag.setState(state);
-      AGSolution sol = (AGSolution)ag.evolve(startTime+ (round == 1 ? 800 : 45));
+      AGSolution sol = (AGSolution)ag.evolve(startTime+ (round == 1 ? 800 : 44));
       if (debugOutput) {
         //sol.debugOutput();
       }

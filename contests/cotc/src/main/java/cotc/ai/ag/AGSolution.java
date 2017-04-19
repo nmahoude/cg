@@ -9,13 +9,14 @@ import cotc.GameState;
 import cotc.ai.AISolution;
 import cotc.entities.Action;
 import cotc.entities.Ship;
+import cotc.utils.Coord;
 
 public class AGSolution implements AISolution{
   private static final Action[] ACTION_VALUES = Action.values();
   public static int DEPTH = 5;
   public static Random rand = new Random();
-  
-  public Map<Ship, Action[]> actions;
+  private final static int AGACTION_SIZE = 1000;
+  public Map<Ship, AGAction[]> actions;
   private int shipCount;
   
   private GameState state;
@@ -31,7 +32,7 @@ public class AGSolution implements AISolution{
     this.shipCount = state.shipCount;
     actions = new HashMap<>();
     for (Ship ship : state.teams.get(0).shipsAlive) {
-      actions.put(ship, new Action[DEPTH]);
+      actions.put(ship, new AGAction[DEPTH]);
     }
   }
   
@@ -47,7 +48,7 @@ public class AGSolution implements AISolution{
 
   public void randomize(GameState state) {
     for (Ship ship : state.teams.get(0).shipsAlive) {
-      Action[] shipActions = actions.get(ship);
+      AGAction[] shipActions = actions.get(ship);
       for (int i=0;i<DEPTH;i++) {
         Action action = ACTION_VALUES[rand.nextInt(ACTION_VALUES.length)];
         if (action == Action.FIRE) {
@@ -69,15 +70,19 @@ public class AGSolution implements AISolution{
 //          System.err.println("ship.id is "+ship.id);
 //          System.err.println(""+ship.id+" y est avec "+actions.get(ship).toString());
 //        }
-        shipActions[i] = action;
+        if (i == 0 && action == Action.WAIT) {
+          shipActions[i] = new AGAction(Action.FIRE, Coord.get(rand.nextInt(23),rand.nextInt(21)));
+        } else {
+          shipActions[i] = new AGAction(action, null);
+        }
       }
     }
   }
   public void debugOutput() {
     System.err.println("Actions ");
-    for (Entry<Ship, Action[]> entry : actions.entrySet()) {
+    for (Entry<Ship, AGAction[]> entry : actions.entrySet()) {
       System.err.print("  For "+entry.getKey().id);
-      for (Action action : entry.getValue()) {
+      for (AGAction action : entry.getValue()) {
         if (action != null) {
           System.err.print(action.toString()+", ");
         }
@@ -102,7 +107,7 @@ public class AGSolution implements AISolution{
     feature.calculateFeatures(state);
     energy += 0
         + feature.myHealtFeature 
-        - feature.hisHealthFeature
+        - 0.2*feature.hisHealthFeature // don't take too much credit for 
         + feature.speedFeature
         + 0.1*feature.distanceToClosestBarrelFeature
         //+ feature.myMobilityFeature
