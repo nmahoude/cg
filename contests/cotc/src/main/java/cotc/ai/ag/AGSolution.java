@@ -70,8 +70,21 @@ public class AGSolution implements AISolution{
 //          System.err.println("ship.id is "+ship.id);
 //          System.err.println(""+ship.id+" y est avec "+actions.get(ship).toString());
 //        }
-        if (i == 0 && action == Action.WAIT) {
-          shipActions[i] = new AGAction(Action.FIRE, Coord.get(rand.nextInt(23),rand.nextInt(21)));
+        if (action == Action.WAIT) {
+          Coord coord= null;
+//          for (int r=0;r<3;r++) {
+//            coord = Coord.get(ship.position.x+5-rand.nextInt(10),5-rand.nextInt(10));
+//            if (coord.isInsideMap()) {
+//              break;
+//            } else {
+//              coord = null;
+//            }
+//          }
+          if (coord != null) {
+            shipActions[i] = new AGAction(Action.FIRE, coord);
+          } else {
+            shipActions[i] = new AGAction(Action.WAIT, null);
+          }
         } else {
           shipActions[i] = new AGAction(action, null);
         }
