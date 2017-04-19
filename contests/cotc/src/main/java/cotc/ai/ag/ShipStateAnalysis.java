@@ -9,8 +9,6 @@ public class ShipStateAnalysis {
   boolean canMove[] = new boolean[2]; // can the ship move ?
   boolean mineAt[] = new boolean[2]; // is there a mine in front ?
   
-  
-  
   public void debug() {
     System.err.println("enemy at stern "+enemyAtStern);
     System.err.println("canMoves: "+canMove[0]+" "+canMove[1]);

@@ -75,7 +75,6 @@ public class Simulation {
     sol.resetEnergy();
     for (int i = 0; i < AGSolution.DEPTH; i++) {
       if( state.teams[0].dead || state.teams[1].dead) break;
-      ShipActions sActions = actions[0];
       applyActions(i, actions);
       playOneTurn();
       state.rounds ++;

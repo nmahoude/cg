@@ -37,13 +37,17 @@ public class AG implements AI {
 
   @Override
   public AISolution evolve() {
+    return evolve(100);
+  }
+
+  public AISolution evolve(int iteration) {
     simulation = new Simulation(state);
     // Pre analyse
     StateAnalyser analyser = new StateAnalyser();
     analyser.analyse(state);
     
     AGSolution best = fake;
-    for (int i =0;i<100;i++) {
+    for (int i =0;i<iteration;i++) {
       AGSolution sol = new AGSolution(state,weights);
       sol.randomize(state, analyser);
       
