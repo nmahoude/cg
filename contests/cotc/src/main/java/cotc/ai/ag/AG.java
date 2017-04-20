@@ -1,10 +1,15 @@
 package cotc.ai.ag;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cotc.GameState;
 import cotc.ai.AI;
 import cotc.ai.AISolution;
+import cotc.entities.Action;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
+import cotc.utils.FastArray;
 
 public class AG implements AI {
   private static AGSolution fake = AGSolution.createFake();
@@ -12,7 +17,12 @@ public class AG implements AI {
   protected GameState state;
   protected Simulation simulation;
   public FeatureWeight weights = new FeatureWeight();
+
   
+  // Possible moves at turns 0 for each ships (the same for all simulations)
+  public List<FastArray<Action> > turn0PossibleActions = new ArrayList<>();
+  
+
   public AISolution evolve(long stopTime) {
     updateChampions();
     int simulations = 0;
@@ -22,11 +32,13 @@ public class AG implements AI {
     analyser.analyse(state);
     analyser.debug();
     
+    createPossibleActionsAtTurn0();
+    
     AGSolution best = fake;
     int bestGeneration = 0;
     while (System.currentTimeMillis() < stopTime) {
       AGSolution sol = new AGSolution(state, weights);
-      sol.randomize(state, analyser);
+      sol.randomize(state, analyser, turn0PossibleActions);
       
       simulation.simulateNew(sol);
       simulations++;
@@ -39,6 +51,28 @@ public class AG implements AI {
     return best;
   }
 
+  private void createPossibleActionsAtTurn0() {
+    turn0PossibleActions.clear();
+    for (int s=0;s<state.teams[0].ships.FE;s++) {
+      Ship ship = state.teams[0].ships.elements[s];
+      FastArray<Action> actions = new FastArray<Action>(Action.class, 20);
+      getPossibleActions(actions, state, ship);
+      turn0PossibleActions.add(actions);
+    }
+  }
+  
+  private void getPossibleActions(FastArray<Action> actions, GameState state, Ship ship) {
+    actions.clear();
+    actions.add(Action.WAIT);
+    if (ship.speed < 2) actions.add(Action.FASTER);
+    if (ship.speed > 0) actions.add(Action.SLOWER);
+    actions.add(Action.PORT);
+    actions.add(Action.STARBOARD);
+    if (ship.mineCooldown == 0) actions.add(Action.MINE);
+    if (ship.cannonCooldown == 0) actions.add(Action.FIRE);
+  }
+
+  
   private void updateChampions() {
     Ship best = null;
     int bestHealth = 0;
@@ -67,8 +101,10 @@ public class AG implements AI {
     AGSolution best = fake;
     for (int i =0;i<iteration;i++) {
       AGSolution sol = new AGSolution(state,weights);
-      sol.randomize(state, analyser);
-      
+      createPossibleActionsAtTurn0();
+
+      sol.randomize(state, analyser, turn0PossibleActions);
+
       simulation.simulateNew(sol);
       if (sol.energy > best.energy) {
         best = sol;

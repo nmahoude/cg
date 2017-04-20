@@ -32,7 +32,7 @@ public class MiniMaxNode {
       Ship ship = state.teams[0].shipsAlive.elements[s];
       ShipStateAnalysis shipAnalysis = analyser.analyse.get(ship);
       Action action = ACTION_VALUES[MiniMax.rand.nextInt(ACTION_VALUES.length)];
-      Coord target = Simulation.COORD_ZERO;
+      Coord target = Coord.ZERO;
       
       // eliminate impossible actions
       if (action == Action.SLOWER && ship.speed == 0) {
