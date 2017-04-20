@@ -9,6 +9,7 @@ import cotc.entities.Action;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
 import cotc.utils.Coord;
+import cotc.utils.FastArray;
 
 public class AGSolution implements AISolution{
   public final static int AGACTION_SIZE = 1000;
@@ -18,7 +19,7 @@ public class AGSolution implements AISolution{
 
   public static double patience[] = new double[]{ 1.0, 0.8, 0.6, 0.4, 0.2, 0.1};
   
-  public ShipActions actions[] = new ShipActions[DEPTH];
+  public FastArray<AGAction> actions = new FastArray<AGAction>(AGAction.class, 3 * DEPTH);
   protected int shipCount;
   
   protected GameState state;
@@ -33,17 +34,16 @@ public class AGSolution implements AISolution{
     this.state = state;
     this.weights = weights;
     this.shipCount = state.teams[0].shipsAlive.size();
-    for (int i=0;i<DEPTH;i++) {
-      actions[i] = new ShipActions();
+    for (int i=0;i<3*DEPTH;i++) {
+      actions.add(new AGAction());
     }
   }
   
   @Override
   public String[] output() {
     String[] output = new String[shipCount];
-    int i=0;
     for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
-      output[i++] = actions[0].actions[s].toString();
+      output[s] = actions.elements[0 + s*DEPTH].toString();
     }
     return output;
   }
@@ -96,33 +96,21 @@ public class AGSolution implements AISolution{
               action = Action.WAIT;
             }
           }
-          actions[i].actions[s] = new AGAction(action, target);
+          actions.elements[i + s*DEPTH].action = action;
+          actions.elements[i + s*DEPTH].target = target;
         } else {
           // other turns is more random
           action = ACTION_VALUES[rand.nextInt(ACTION_VALUES.length)];
           if (action == Action.FIRE) {
             action = Action.WAIT;
           }
-          actions[i].actions[s] = new AGAction(action, null);
+          actions.elements[i + s*DEPTH].action = action;
+          actions.elements[i + s*DEPTH].target = Coord.ZERO;
         }
       }
     }
   }
   
-  public void debugOutput() {
-    System.err.println("Actions ");
-    
-    for (int sa=0;sa<DEPTH;sa++) {
-      ShipActions shipActions = actions[sa];
-      System.err.print("  For "+sa);
-      for (AGAction action : shipActions.actions) {
-        if (action != null) {
-          System.err.print(action.toString()+", ");
-        }
-      }
-      System.err.println();
-    }
-  }
   public static AGSolution createFake() {
     AGSolution fake = new AGSolution();
     fake.energy = Double.NEGATIVE_INFINITY;
@@ -156,7 +144,7 @@ public class AGSolution implements AISolution{
   }
   
   @Override
-  public ShipActions[] getActionsNew() {
+  public FastArray<AGAction> getActionsNew() {
     return actions;
   }
 

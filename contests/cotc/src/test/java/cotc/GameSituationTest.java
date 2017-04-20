@@ -1,6 +1,7 @@
 package cotc;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
@@ -8,7 +9,8 @@ import org.junit.Test;
 
 import cotc.ai.AISolution;
 import cotc.ai.ag.AG;
-import cotc.ai.ag.ShipActions;
+import cotc.ai.ag.AGAction;
+import cotc.ai.ag.AGSolution;
 import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
@@ -17,6 +19,7 @@ import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
 import cotc.utils.Coord;
+import cotc.utils.FastArray;
 
 public class GameSituationTest {
   GameState state;
@@ -206,16 +209,23 @@ public class GameSituationTest {
   
   @Test
   public void IASendMeOnMine() throws Exception {
-    readEntity(0,SHIP,20,8,5,1,100,1);
-    readEntity(1,SHIP,18,4,5,1,100,0);
+    readEntity(2,SHIP,13,8,4,1,40,1);
+    readEntity(1,SHIP,9,10,5,1,27,0);
+    readEntity(5,SHIP,11,7,0,1,44,0);
+    readEntity(6,MINE,9,5,0,0,0,0);
+    readEntity(8,MINE,10,9,0,0,0,0);
+    readEntity(11,MINE,15,11,0,0,0,0);
+    readEntity(10,MINE,15,9,0,0,0,0);
+    readEntity(12,MINE,15,4,0,0,0,0);
+    readEntity(118,CANNONBALL,11,11,5,1,0,0);
     state.backup();
 
     AG ag = new AG();
     ag.setState(state);
     AISolution solution = ag.evolve(10000);
     
-    ShipActions[] actions = solution.getActionsNew();
-    assertThat(actions[0].actions[0].action, is (Action.MINE));
+    FastArray<AGAction> actions = solution.getActionsNew();
+    assertThat(actions.elements[0+0*AGSolution.DEPTH].action, is (not(Action.STARBOARD)));
   }
   
   EntityType SHIP = EntityType.SHIP;

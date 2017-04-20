@@ -8,7 +8,6 @@ import cotc.Team;
 import cotc.ai.AISolution;
 import cotc.ai.ag.AGAction;
 import cotc.ai.ag.AGSolution;
-import cotc.ai.ag.ShipActions;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
 import cotc.entities.Entity;
@@ -73,11 +72,11 @@ public class Simulation {
   }
 
   /* without backup  / restore */
-  public void coreSimulation(AISolution sol, ShipActions[] actions) {
+  public void coreSimulation(AISolution sol, FastArray<AGAction> fastArray) {
     sol.resetEnergy();
     for (int i = 0; i < AGSolution.DEPTH; i++) {
       if( state.teams[0].dead || state.teams[1].dead) break;
-      applyActions(i, actions);
+      applyActions(i, fastArray);
       playOneTurn();
       state.rounds ++;
       if (state.rounds == 200) break;
@@ -132,6 +131,13 @@ public class Simulation {
       entry.getKey().target = action.target;
     }
   }
+  private void applyActions(int depth, FastArray<AGAction> actions) {
+    for (int s=0;s<state.teams[0].ships.FE;s++) {
+      Ship ship = state.teams[0].ships.elements[s];
+      ship.action = actions.elements[depth + s*AGSolution.DEPTH].action;
+      ship.target = actions.elements[depth + s*AGSolution.DEPTH].target;
+    }
+  }
 
   private void checkEndConditions() {
     if (state.teams[0].getScore() >= state.teams[1].getScore()) {
@@ -160,39 +166,23 @@ public class Simulation {
       Ship ship = state.ships.elements[i];
 
       if (ship.health <= 0) {
+        // reward !
         int reward = Math.min(REWARD_RUM_BARREL_VALUE, ship.initialHealth);
         if (reward > 0) {
           Barrel barrel = new Barrel(0, ship.position.x, ship.position.y, reward);
           state.barrels.add(barrel);
           state.setEntityAt(ship.position, barrel);
         }
-      }
-    }
-    for (int i=0;i<state.ships.FE;i++) {
-      Ship ship = state.ships.elements[i];
-      if (ship.health <= 0) {
+        // remove ships from lists
         state.teams[ship.owner].shipsAlive.remove(ship);
         state.ships.removeAt(i);
         i--;
       }
     }
     
-    for (Team team : state.teams) {
-      if (team.shipsAlive.isEmpty()) {
-        team.dead = true;
-      }
-    }
+    if (state.teams[0].shipsAlive.FE == 0) state.teams[0].dead = true;
+    if (state.teams[1].shipsAlive.FE == 0) state.teams[1].dead = true;
   }
-
-  private void applyActions(int i, ShipActions[] actions) {
-    for (int s=0;s<state.teams[0].ships.FE;s++) {
-      Ship ship = state.teams[0].ships.elements[s];
-      AGAction agAction = actions[i].actions[s];
-      ship.action = agAction.action;
-      ship.target = agAction.target;
-    }
-  }
-
 
   private void applyActions() {
     for (Team team : state.teams) {
