@@ -31,6 +31,10 @@ public class GameState {
   public FastArray<Ship> b_ships = new FastArray<>(Ship.class, 6);
   public Entity b_mapCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
 
+  // simulation data
+  public int firedCannonballs;
+  public int droppedMines;
+
   public void debugOutput() {
     System.err.println("canonballs: "+cannonballs.size());
     System.err.println("mines: "+mines.size());
@@ -83,6 +87,10 @@ public class GameState {
   public void restore() {
     rounds = b_rounds;
 
+    // simulation data
+    firedCannonballs = 0;
+    droppedMines = 0;
+    
     for (Team team : teams) {
       team.restore();
     }
@@ -110,6 +118,10 @@ public class GameState {
   }
 
   public void initRound() {
+    // simulation data
+    firedCannonballs = 0;
+    droppedMines = 0;
+    
     // kill all ships ! (will be revive in the update process)
     teams[0].shipsAlive.clear();
     teams[0].ships.clear();

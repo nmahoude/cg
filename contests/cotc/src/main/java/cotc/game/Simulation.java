@@ -242,6 +242,7 @@ public class Simulation {
                   if (cellIsFreeOfMinesAndBarrels && cellIsFreeOfShips ) {
                     ship.mineCooldown = Simulation.COOLDOWN_MINE;
                     Mine mine = new Mine(0, target.x, target.y);
+                    state.droppedMines++;
                     state.mines.add(mine);
                     state.setEntityAt(target, mine);
                   }
@@ -254,6 +255,7 @@ public class Simulation {
               if (ship.target.isInsideMap() && distance <= Simulation.FIRE_DISTANCE_MAX && ship.cannonCooldown == 0) {
                 int travelTime = travelTimeCache[ship.bow().distanceTo(ship.target)];
                 state.cannonballs.add(new CannonBall(0, ship.target.x, ship.target.y, ship.id, ship.bow().x, ship.bow().y, travelTime));
+                state.firedCannonballs++;
                 ship.cannonCooldown = Simulation.COOLDOWN_CANNON;
               }
               break;

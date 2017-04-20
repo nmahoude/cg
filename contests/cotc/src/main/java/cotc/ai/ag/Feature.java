@@ -1,7 +1,5 @@
 package cotc.ai.ag;
 
-import java.awt.event.WindowEvent;
-
 import cotc.BarrelDomination;
 import cotc.GameState;
 import cotc.entities.Barrel;
@@ -24,7 +22,14 @@ public class Feature {
   public static final int DISTANCE_TO_CENTER_FEATURE = 9;
   public static final int MY_MOBILITY_FEATURE = 10;
   public static final int HIS_MOBILITY_FEATURE = 11;
-  public static final int LAST = 12;
+  public static final int DISTANCE_TO_CLOSEST_ENEMY_FEATURE = 12;
+  public static final int DISTANCE_TO_ALL_ENEMY_FEATURE = 13;
+  public static final int CANNONBALL_FIRED_FEATURE = 14;
+  public static final int BARREL_COUNT_FEATURE = 15;
+  public static final int MINE_DROPPED_FEATURE = 16;
+
+  public static final int LAST = 17;
+
   public double features[] = new double[LAST];
   
   public void calculateFeatures(GameState state) {
@@ -37,7 +42,10 @@ public class Feature {
     features[RUM_COUNT0_FEATURE] = barrelDomination.rumCount0;
     features[RUM_COUNT1_FEATURE] = barrelDomination.rumCount1;
 
-    
+    features[CANNONBALL_FIRED_FEATURE] = state.firedCannonballs; // hack to know how many cannonballs have been shot during the simulation
+    features[MINE_DROPPED_FEATURE] = state.droppedMines; // hack to know how many cannonballs have been shot during the simulation
+    features[BARREL_COUNT_FEATURE] = state.barrels.FE;
+
     if (state.barrels.size() > 0) {
       for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
         Ship ship = state.teams[0].shipsAlive.elements[s];
@@ -53,7 +61,7 @@ public class Feature {
       Ship ship = state.teams[0].shipsAlive.elements[s];
       features[MY_HEALTH_FEATURE] += ship.health;
       features[SPEED_FEATURE] += ship.speed;
-      features[DISTANCE_TO_CENTER_FEATURE] += 10-(ship.position.distanceTo(Simulation.MAP_CENTER));
+      features[DISTANCE_TO_CENTER_FEATURE] += 20-(ship.position.distanceTo(Simulation.MAP_CENTER));
     }
     
     for (int s=0;s<state.teams[1].shipsAlive.FE;s++) {
@@ -61,15 +69,31 @@ public class Feature {
       features[HIS_HEALTH_FEATURE] += ship.health;
     }
     
-    // distToBarrel
     for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
-      Barrel barrel = state.getClosestBarrel(ship);
-      if (barrel != null) {
-        int dist = barrel.position.distanceTo(ship.position);
-        features[DIST_TO_BARREL_FEATURE] +=(45.0-dist) / 45.0;
-      } else {
-        break; // don't go further, no more barrels
+
+      // distances to ships
+      double bestDist = Integer.MAX_VALUE;
+      for (int s2=0;s2<state.teams[1].shipsAlive.FE;s2++) {
+        Ship other = state.teams[1].shipsAlive.elements[s2];
+        if (other.health <= 0) continue;
+        int distanceTo = other.position.distanceTo(ship.position);
+        features[DISTANCE_TO_ALL_ENEMY_FEATURE] += distanceTo;
+        if (distanceTo < bestDist) {
+          bestDist = distanceTo;
+        }
+      }
+      features[DISTANCE_TO_CLOSEST_ENEMY_FEATURE] += bestDist;
+
+      // distToBarrel
+      if (state.barrels.FE > 0) {
+        Barrel barrel = state.getClosestBarrel(ship);
+        if (barrel != null) {
+          int dist = barrel.position.distanceTo(ship.position);
+          features[DIST_TO_BARREL_FEATURE] += (20 - dist);
+        } else {
+          break; // don't go further, no more barrels
+        }
       }
     }
   }
