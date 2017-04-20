@@ -6,45 +6,53 @@ import cotc.GameState;
 import cotc.ai.ag.FeatureWeight;
 import cotc.ai.ag.StateAnalyser;
 import cotc.entities.Ship;
-import cotc.game.Simulation;
 
 public class MiniMax {
-
-  private static final MiniMaxNode fake = new MiniMaxNode(Double.NEGATIVE_INFINITY);
   public static Random rand = new Random(System.currentTimeMillis());
   
-  static GameState myState;
-  static GameState hisState;
-  static StateAnalyser myAnalyser;
-  static StateAnalyser hisAnalyser;
+  private GameState state;
+  private StateAnalyser myAnalyser;
 
-  private Simulation simulation;
   FeatureWeight weighs = new FeatureWeight();
   
-  public void setState(GameState myState, GameState hisState) {
-    this.myState = myState;
-    this.hisState = hisState;
+  public void setState(GameState state) {
+    this.state = state;
   }
 
   public MiniMaxNode evolve(long stopTime) {
     int beams = 0;
-    updateChampions(myState);
-    updateChampions(hisState);
+    updateChampions(state);
 
     myAnalyser = new StateAnalyser();
-    myAnalyser.analyse(myState);
+    myAnalyser.analyse(state);
     myAnalyser.debug();
-    hisAnalyser = new StateAnalyser();
-    hisAnalyser.analyse(myState);
-    hisAnalyser.debug();
 
-    MiniMaxNode rootNode = new MiniMaxNode(0);
+    MiniMaxNode rootNode = new MiniMaxNode();
+    
     while (System.currentTimeMillis() < stopTime) {
-      rootNode.sendOneBeam(5, myState, hisState);
-      myState.restore();
-      hisState.restore();
+      rootNode.startMinimax(5, state);
+      state.restore();
       beams++;
-    }    
+    }
+    System.err.println("Minimax beams "+beams);
+    return rootNode.getBestChild();
+  }
+
+  public MiniMaxNode evolve() {
+    int beams = 0;
+    updateChampions(state);
+
+    myAnalyser = new StateAnalyser();
+    myAnalyser.analyse(state);
+
+    MiniMaxNode rootNode = new MiniMaxNode();
+    
+    for (int i=0;i<10;i++) {
+      rootNode.startMinimax(2, state);
+      state.restore();
+      beams++;
+    }
+    System.err.println("Minimax beams "+beams);
     return rootNode.getBestChild();
   }
 

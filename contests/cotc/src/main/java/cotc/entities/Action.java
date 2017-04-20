@@ -1,5 +1,5 @@
 package cotc.entities;
 
 public enum Action {
-  WAIT, FASTER, SLOWER, PORT, STARBOARD, MINE, FIRE
+  FASTER, WAIT,  SLOWER, PORT, STARBOARD, MINE, FIRE
 }
