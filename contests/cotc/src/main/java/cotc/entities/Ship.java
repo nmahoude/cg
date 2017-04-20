@@ -13,7 +13,6 @@ public class Ship extends Entity {
   public final int owner;
   public int orientation;
   public int speed;
-  public int health;
   public int cannonCooldown;
   public int mineCooldown;
 
@@ -169,10 +168,7 @@ public class Ship extends Entity {
   }
 
   public void heal(int health) {
-    this.health += health;
-    if (this.health > MAX_SHIP_HEALTH) {
-      this.health = MAX_SHIP_HEALTH;
-    }
+    this.health = Math.min(this.health + health, MAX_SHIP_HEALTH);
   }
 
   public void fire(int x, int y) {

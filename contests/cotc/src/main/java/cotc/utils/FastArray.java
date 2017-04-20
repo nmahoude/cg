@@ -25,7 +25,7 @@ public class FastArray <T> {
    * warning : suppose the order is not important
    * @param t
    */
-  public void remove(T t) {
+  public void remove(Object t) {
     for (int i=0;i<FE;i++) {
       if (elements[i] == t) {
         elements[i] = elements[FE-1];

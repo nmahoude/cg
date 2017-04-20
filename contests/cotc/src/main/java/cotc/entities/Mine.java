@@ -16,6 +16,7 @@ public class Mine extends Entity {
     return toPlayerString(0, 0, 0, 0);
   }
 
+  @Override
   public boolean explode(FastArray<Ship> ships, boolean force) {
     Ship victim = null;
     boolean exploded = false;

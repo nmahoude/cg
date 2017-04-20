@@ -1,15 +1,16 @@
 package cotc.entities;
 
 import cotc.utils.Coord;
+import cotc.utils.FastArray;
 import cotc.utils.Util;
 
 public class Entity {
   public final EntityType type;
   public final int id;
   public Coord position;
+  public int health; // ship, barrels(rhum) & mines (0)
   
   public Coord b_position;
-
   
   public Entity(EntityType type, int entityId, int x, int y) {
     this.type = type;
@@ -30,7 +31,10 @@ public class Entity {
     return Util.join(id, position.y, position.x);
 }
 
-protected String toPlayerString(int arg1, int arg2, int arg3, int arg4) {
-    return Util.join(id, type.name(), position.x, position.y, arg1, arg2, arg3, arg4);
-}
+  protected String toPlayerString(int arg1, int arg2, int arg3, int arg4) {
+      return Util.join(id, type.name(), position.x, position.y, arg1, arg2, arg3, arg4);
+  }
+  public boolean explode(FastArray<Ship> ships, boolean b) {
+    return true;
+  }
 }

@@ -61,6 +61,8 @@ public class Simulation {
   FastArray<Coord> cannonBallExplosions = new FastArray<>(Coord.class, 100);
   FastArray<Ship> collisions = new FastArray<>(Ship.class, 20);
 
+  private int currentDepth;
+
   public Simulation(GameState state) {
     this.state = state;
   }
@@ -102,15 +104,15 @@ public class Simulation {
   /* without backup  / restore */
   public void coreSimulation(AISolution sol, Map<Ship, AGAction[]> actions) {
     sol.resetEnergy();
-    for (int i = 0; i < AGSolution.DEPTH; i++) {
+    for (currentDepth = 0; currentDepth < AGSolution.DEPTH; currentDepth++) {
       if( state.teams[0].dead || state.teams[1].dead) break;
       
-      applyActions(i, actions);
+      applyActions(currentDepth, actions);
       playOneTurn();
       state.rounds ++;
       if (state.rounds == 200) break;
       
-      sol.updateEnergyTurn(i, state);
+      sol.updateEnergyTurn(currentDepth, state);
     }
     if (state.rounds == 200) {
       checkEndConditions();
@@ -143,6 +145,11 @@ public class Simulation {
     reinitSimulation();
 
     moveCannonballs();
+    // check cannonballs
+    FastArray<Coord> coords = state.cannonballsImpacts.get(currentDepth);
+    if (cannonBallExplosions.size() != coords.size()) {
+      System.err.println("ERROR simulated cannon explosions " + cannonBallExplosions.size() +" vs " + coords.size());
+    }
     decrementRum();
     updateInitialRum();
     
@@ -254,7 +261,9 @@ public class Simulation {
               int distance = ship.bow().distanceTo(ship.target);
               if (ship.target.isInsideMap() && distance <= Simulation.FIRE_DISTANCE_MAX && ship.cannonCooldown == 0) {
                 int travelTime = travelTimeCache[ship.bow().distanceTo(ship.target)];
-                state.cannonballs.add(new CannonBall(0, ship.target.x, ship.target.y, ship.id, ship.bow().x, ship.bow().y, travelTime));
+                CannonBall cannonBall = new CannonBall(0, ship.target.x, ship.target.y, ship.id, ship.bow().x, ship.bow().y, travelTime);
+                state.cannonballs.add(cannonBall);
+                state.addCannonBall(cannonBall.position, travelTime);
                 state.firedCannonballs++;
                 ship.cannonCooldown = Simulation.COOLDOWN_CANNON;
               }
@@ -472,18 +481,15 @@ public class Simulation {
     if (!coord.isInsideMap()) return;
     
     Entity entity = state.getEntityAt(coord);
-    if (entity != null) {
-      if (entity.type == EntityType.BARREL) {
-        Barrel barrel = (Barrel)entity;
-        ship.heal(barrel.health);
-        state.clearEntityAt(coord);
-        state.barrels.remove(barrel);
-      } else { // MINE
-        Mine mine = (Mine)entity;
-        if (mine.explode(state.ships, false)) {
-          state.mines.remove(mine);
-          state.clearEntityAt(coord);
+    if (entity != null && entity.type != EntityType.SHIP) {
+      ship.heal(entity.health);
+      if (entity.explode(state.ships, false)) {
+        if (entity.type == EntityType.BARREL) {
+          state.barrels.remove(entity);
+        } else {
+          state.mines.remove(entity);
         }
+        state.clearEntityAt(coord);
       }
     }
   }
