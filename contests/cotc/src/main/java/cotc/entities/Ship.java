@@ -115,10 +115,9 @@ public class Ship extends Entity {
   }
 
   public boolean newBowIntersect(Ship other) {
-    return newBowCoordinate != null && (
-           newBowCoordinate == other.newBowCoordinate
+    return newBowCoordinate == other.newBowCoordinate
         || newBowCoordinate == other.newPosition
-        || newBowCoordinate == other.newSternCoordinate);
+        || newBowCoordinate == other.newSternCoordinate;
   }
 
   public boolean newBowIntersect(List<Ship> ships) {
