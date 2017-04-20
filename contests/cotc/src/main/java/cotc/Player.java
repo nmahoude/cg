@@ -8,10 +8,12 @@ import cotc.ai.ag.AGAction;
 import cotc.ai.ag.AGSolution;
 import cotc.ai.ag.Feature;
 import cotc.ai.ag.ShipActions;
+import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
+import cotc.game.Simulation;
 import cotc.utils.Coord;
 import cotc.utils.FastArray;
 
@@ -62,8 +64,16 @@ public class Player {
       }
       
       String[] output = sol.output();
-      for (int i=0;i<output.length;i++) {
-        System.out.println(output[i]);
+      for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+        Ship ship = state.teams[0].shipsAlive.elements[s];
+        if (sol.actions[0].actions[s].action == Action.FIRE) {
+          ship.cannonCooldown = Simulation.COOLDOWN_CANNON;
+        }
+        if (sol.actions[0].actions[s].action == Action.MINE) {
+          ship.mineCooldown = Simulation.COOLDOWN_MINE;
+        }
+
+        System.out.println(output[s] + " "+ship.cannonCooldown + " / "+ship.mineCooldown);
       }
       
       ShipActions sActions = sol.actions[0];

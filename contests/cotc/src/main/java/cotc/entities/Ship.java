@@ -46,6 +46,9 @@ public class Ship extends Entity {
     this.orientation = orientation;
     this.speed = speed;
     this.health = health;
+    
+    if (cannonCooldown > 0) cannonCooldown--;
+    if (mineCooldown > 0) mineCooldown--;
   }
 
 
