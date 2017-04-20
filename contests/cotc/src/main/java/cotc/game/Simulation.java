@@ -302,31 +302,30 @@ public class Simulation {
     // ---
     // Go forward
     // ---
+    // init new positions
+    for (int s=0;s<state.ships.FE;s++) {
+      Ship ship = state.ships.elements[s];
+      ship.newPosition = ship.position;
+      ship.newBowCoordinate = ship.bow();
+      ship.newSternCoordinate = ship.stern();
+    }
+    
     for (int i = 1; i <= MAX_SHIP_SPEED; i++) {
-      for (int s=0;s<state.ships.FE;s++) {
+      for (int s = 0; s < state.ships.FE; s++) {
         Ship ship = state.ships.elements[s];
-        if (ship.health <=0) continue;
-          Coord bow = ship.bow();
-          Coord stern = ship.stern();
+        if (ship.health <= 0) continue;
+        if (i > ship.speed)   continue;
 
-          ship.newPosition = ship.position;
-          ship.newBowCoordinate = bow;
-          ship.newSternCoordinate = stern;
-          
-          if (i > ship.speed) {
-            continue;
-          }
-
-          if (bow.isInsideMap()) {
-            // Set new coordinate.
-            ship.newPosition = bow;
-            ship.newBowCoordinate = bow.neighbor(ship.orientation);
-            ship.newSternCoordinate = ship.position;
-          } else {
-            // Stop ship!
-            ship.speed = 0;
-          }
-        //}
+        Coord bow = ship.bow();
+        if (bow.isInsideMap()) {
+          // Set new coordinate.
+          ship.newPosition = bow;
+          ship.newBowCoordinate = bow.neighbor(ship.orientation);
+          ship.newSternCoordinate = ship.position;
+        } else {
+          // Stop ship!
+          ship.speed = 0;
+        }
       }
 
       // Check ship and obstacles collisions
@@ -337,11 +336,15 @@ public class Simulation {
 
         for (int s=0;s<state.ships.FE;s++) {
           Ship ship = state.ships.elements[s];
-          for (int s2=0;s2<state.ships.FE;s2++) {
+          for (int s2=s+1;s2<state.ships.FE;s2++) {
             if (s == s2) continue;
             Ship other = state.ships.elements[s2];
+            
             if (ship.newBowIntersect(other)) {
               collisions.add(ship);
+            }
+            if (other.newBowIntersect(ship)) {
+              collisions.add(other);
             }
           }
         }
@@ -364,12 +367,12 @@ public class Simulation {
       for (int s=0;s<state.ships.FE;s++) {
         Ship ship = state.ships.elements[s];
         if (ship.health <=0) continue;
-          ship.position = ship.newPosition;
+        ship.position = ship.newPosition;
       }
       for (int s=0;s<state.ships.FE;s++) {
         Ship ship = state.ships.elements[s];
         if (ship.health <=0) continue;
-          doCollisionWithMinesAndBarrels(ship, ship.bow()); // only bow can collide
+        doCollisionWithMinesAndBarrels(ship, ship.bow()); // only bow can collide
       }
     }
   }
