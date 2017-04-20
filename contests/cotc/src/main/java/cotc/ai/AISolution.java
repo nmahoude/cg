@@ -4,8 +4,8 @@ import java.util.Map;
 
 import cotc.GameState;
 import cotc.ai.ag.AGAction;
-import cotc.ai.ag.ShipActions;
 import cotc.entities.Ship;
+import cotc.utils.FastArray;
 
 public interface AISolution {
 
@@ -18,5 +18,5 @@ public interface AISolution {
   void updateEnergyEnd(GameState state);
 
   Map<Ship, AGAction[]> getActions();
-  ShipActions[] getActionsNew();
+  FastArray<AGAction> getActionsNew();
 }

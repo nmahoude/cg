@@ -41,6 +41,7 @@ public class Coord {
     }
   }
   
+  public static final Coord ZERO = get(0, 0);
   public static Coord get(int x, int y) {
     return cache[x+10 + (y+10)*50];
   }

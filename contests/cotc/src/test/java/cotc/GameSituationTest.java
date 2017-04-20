@@ -9,7 +9,8 @@ import org.junit.Test;
 
 import cotc.ai.AISolution;
 import cotc.ai.ag.AG;
-import cotc.ai.ag.ShipActions;
+import cotc.ai.ag.AGAction;
+import cotc.ai.ag.AGSolution;
 import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
@@ -18,6 +19,7 @@ import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
 import cotc.utils.Coord;
+import cotc.utils.FastArray;
 
 public class GameSituationTest {
   GameState state;
@@ -222,8 +224,8 @@ public class GameSituationTest {
     ag.setState(state);
     AISolution solution = ag.evolve(10000);
     
-    ShipActions[] actions = solution.getActionsNew();
-    assertThat(actions[0].actions[0].action, is (not(Action.STARBOARD)));
+    FastArray<AGAction> actions = solution.getActionsNew();
+    assertThat(actions.elements[0+0*AGSolution.DEPTH].action, is (not(Action.STARBOARD)));
   }
   
   EntityType SHIP = EntityType.SHIP;

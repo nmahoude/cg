@@ -4,10 +4,8 @@ import java.util.Random;
 import java.util.Scanner;
 
 import cotc.ai.ag.AG;
-import cotc.ai.ag.AGAction;
 import cotc.ai.ag.AGSolution;
 import cotc.ai.ag.Feature;
-import cotc.ai.ag.ShipActions;
 import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
@@ -27,11 +25,6 @@ public class Player {
   static Random rand = new Random();
   static GameState state;
   
-  //stats
-  static int mines = 0;
-  static int fires = 0;
-  static int wait = 0;
-  
   static FastArray<Ship> shipsRoundBackup = new FastArray<>(Ship.class, 6);
   
   public static void main(String args[]) {
@@ -49,12 +42,9 @@ public class Player {
       readState(in);
 
       
-      // debugRumDomination();
       Feature feature= new Feature();
       feature.calculateFeatures(state);
       //feature.debug();
-      
-      //old AI (dummy with MOVE) doDirectAction();
       
       AG ag = new AG();
       ag.setState(state);
@@ -66,45 +56,14 @@ public class Player {
       String[] output = sol.output();
       for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
         Ship ship = state.teams[0].shipsAlive.elements[s];
-        if (sol.actions[0].actions[s].action == Action.FIRE) {
+        if (sol.actions.elements[0+s*AGSolution.DEPTH].action == Action.FIRE) {
           ship.cannonCooldown = Simulation.COOLDOWN_CANNON;
-        }
-        if (sol.actions[0].actions[s].action == Action.MINE) {
+        } else if (sol.actions.elements[0+s*AGSolution.DEPTH].action == Action.MINE) {
           ship.mineCooldown = Simulation.COOLDOWN_MINE;
         }
 
-        System.out.println(output[s] + " "+ship.cannonCooldown + " / "+ship.mineCooldown);
+        System.out.println(output[s]);
       }
-      
-      ShipActions sActions = sol.actions[0];
-      for (AGAction action : sActions.actions) {
-        if (action == null) continue;
-        switch(action.action) {
-          case FASTER:
-            break;
-          case FIRE:
-            fires++;
-            break;
-          case MINE:
-            mines++;
-            break;
-          case PORT:
-            break;
-          case SLOWER:
-            break;
-          case STARBOARD:
-            break;
-          case WAIT:
-            wait++;
-            break;
-          default:
-            break;
-        }
-      }
-      System.err.println("stats : ");
-      System.err.println("waits : "+wait);
-      System.err.println("mines : "+mines);
-      System.err.println("fires : "+fires);
     }
   }
 

@@ -5,9 +5,9 @@ import java.util.Map;
 
 import cotc.GameState;
 import cotc.ai.ag.AGAction;
-import cotc.ai.ag.ShipActions;
 import cotc.entities.Action;
 import cotc.entities.Ship;
+import cotc.utils.FastArray;
 
 public class DummySolution implements AISolution {
   GameState state;
@@ -49,7 +49,7 @@ public class DummySolution implements AISolution {
   public void updateEnergyEnd(GameState state) {
   }
   @Override
-  public ShipActions[] getActionsNew() {
+  public FastArray<AGAction> getActionsNew() {
     // TODO Auto-generated method stub
     return null;
   }

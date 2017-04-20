@@ -6,6 +6,9 @@ import cotc.utils.Coord;
 public class AGAction {
   public Action action;
   public Coord target; //only for FIRE
+
+  public AGAction() {
+  }
   
   public AGAction(Action action, Coord target) {
     this.action = action;

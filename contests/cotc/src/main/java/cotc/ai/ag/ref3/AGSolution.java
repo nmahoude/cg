@@ -8,11 +8,11 @@ import java.util.Random;
 import cotc.GameState;
 import cotc.ai.AISolution;
 import cotc.ai.ag.AGAction;
-import cotc.ai.ag.ShipActions;
 import cotc.entities.Action;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
 import cotc.utils.Coord;
+import cotc.utils.FastArray;
 
 public class AGSolution implements AISolution{
   public final static int AGACTION_SIZE = 1000;
@@ -158,7 +158,7 @@ public class AGSolution implements AISolution{
   }
 
   @Override
-  public ShipActions[] getActionsNew() {
+  public FastArray<AGAction> getActionsNew() {
     // TODO Auto-generated method stub
     return null;
   }
