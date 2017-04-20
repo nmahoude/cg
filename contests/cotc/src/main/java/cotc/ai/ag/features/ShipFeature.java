@@ -55,4 +55,13 @@ public class ShipFeature {
     }
     return total;
   }
+
+  public void debugFeature(ShipWeight shipWeight) {
+    for (int i=0;i<LAST;i++) {
+      System.err.printf("  SF %d = %.0f * %.2f = %.2f\n",
+          i, features[i], shipWeight.weights[i],
+          features[i]*shipWeight.weights[i]
+          );
+    }
+  }
 }

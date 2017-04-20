@@ -18,9 +18,9 @@ public class AGAction {
   @Override
   public String toString() {
     if (action == Action.FIRE) {
-      return "FIRE "+target.x+" "+target.y;
+      return "FIRE "+target.x+" "+target.y+ " FIRE! "+target.x+" "+target.y;
     }  else if (action == Action.MINE) {
-      return "MINE";
+      return "MINE MINE!";
     }
     return action.toString();
   }

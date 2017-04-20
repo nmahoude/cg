@@ -10,12 +10,13 @@ import cotc.ai.ag.features.Feature;
 import cotc.ai.ag.features.FeatureWeight;
 import cotc.entities.Action;
 import cotc.entities.Ship;
+import cotc.game.Simulation;
 import cotc.utils.Coord;
 import cotc.utils.FastArray;
 
 public class AGSolution implements AISolution{
   public final static int AGACTION_SIZE = 1000;
-  private static final Action[] ACTION_VALUES = Action.values();
+  private static final Action[] ACTION_VALUES = {Action.WAIT, Action.PORT, Action.STARBOARD, Action.SLOWER, Action.FASTER};
   public static int DEPTH = 5;
   public static Random rand = new Random();
 
@@ -27,6 +28,7 @@ public class AGSolution implements AISolution{
   protected GameState state;
   public double energy;
   private FeatureWeight weights;
+  public Feature feature = new Feature();
  
 
   protected AGSolution() {
@@ -43,9 +45,17 @@ public class AGSolution implements AISolution{
   
   @Override
   public String[] output() {
+    String mainStrat = "S";
+    if (weights == AG.endGameLosingWeights) {
+      mainStrat = "A";
+    } else if (weights == AG.endGameWinningWeights) {
+      mainStrat = "D";
+    }
+    
+    
     String[] output = new String[shipCount];
     for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
-      output[s] = actions.elements[0 + s*DEPTH].toString();
+      output[s] = actions.elements[0 + s*DEPTH].toString()+ " "+mainStrat+" "+weights.shipWeights[s].output();
     }
     return output;
   }
@@ -69,35 +79,40 @@ public class AGSolution implements AISolution{
             } else if (shipAnalysis.enemyAtStern[1] == true && shipAnalysis.closestEnemy.speed == 2) {
               action = Action.MINE;
             } else {
-              action = Action.WAIT;
+              action = Action.MINE;
             }
           }
           if (action == Action.FIRE) {
-            ShipStateAnalysis otherShipAnalysis = analyser.analyse.get(shipAnalysis.closestEnemy);
-            if (shipAnalysis.closestEnemy.position.distanceTo(ship.position) <= 3) {
+            Ship other = shipAnalysis.closestEnemy;
+            int distanceToOther = other.position.distanceTo(ship.position);
+            int timeToHit = Simulation.travelTimeCache[distanceToOther];
+            if (timeToHit <= 2) {
               // target the next position of the ship
-              Coord c1 = shipAnalysis.closestEnemy.position.neighborsCache[shipAnalysis.closestEnemy.orientation];
-              Coord c2 = c1.neighborsCache[shipAnalysis.closestEnemy.orientation];
-              if (shipAnalysis.closestEnemy.speed == 2 && c2.isInsideMap()) {
-                target = c2;
-              } else {
-                target = c1;
-              }
-            }
-            if (otherShipAnalysis.canMove[0] == false) {
-              target = shipAnalysis.closestEnemy.position;
+              Coord c1 = other.position.neighborsCache[other.orientation];
+              Coord c2 = c1.neighborsCache[other.orientation];
+              Coord c3 = c2.neighborsCache[other.orientation];
+              Coord c4 = c3.neighborsCache[other.orientation];
+              if (other.speed == 0 ) {
+                if (timeToHit <= 1) {
+                  target = other.position;
+                } else {
+                  target = c1; // it will FASTER to avoir the ball, so we hit the stern
+                }
+              } else if (other.speed == 1) { 
+                target = AOE(c1, 2*timeToHit); 
+              } else if (other.speed == 2 ) { 
+                action = Action.WAIT; // better opportunities later
+              } 
             } else {
+              // too far, don't shoot
               action = Action.WAIT;
             }
           }
           actions.elements[i + s*DEPTH].action = action;
           actions.elements[i + s*DEPTH].target = target;
         } else {
-          // other turns is more random
+          // other turns is more random (but no fire or mine)
           action = ACTION_VALUES[rand.nextInt(ACTION_VALUES.length)];
-          if (action == Action.FIRE) {
-            action = Action.WAIT;
-          }
           actions.elements[i + s*DEPTH].action = action;
           actions.elements[i + s*DEPTH].target = Coord.ZERO;
         }
@@ -105,6 +120,14 @@ public class AGSolution implements AISolution{
     }
   }
   
+  /** area of effect */
+  private Coord AOE(Coord coord, int radius) {
+    return Coord.get(
+        coord.x + (radius-rand.nextInt(2*radius)),
+        coord.y + (radius-rand.nextInt(2*radius))
+        );
+  }
+
   public static AGSolution createFake() {
     AGSolution fake = new AGSolution();
     fake.energy = Double.NEGATIVE_INFINITY;
@@ -116,8 +139,6 @@ public class AGSolution implements AISolution{
   }
 
   public void updateEnergyEnd(GameState state) {
-    // feature after turn DEPTH, less precise, but more insight
-    Feature feature = new Feature();
     feature.calculateFeatures(state);
     energy += feature.applyWeights(weights);
   }

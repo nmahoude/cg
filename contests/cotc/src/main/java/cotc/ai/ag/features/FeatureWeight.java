@@ -8,7 +8,7 @@ public class FeatureWeight {
   
   public FeatureWeight() {
     for (int i=0;i<3;i++) {
-      shipWeights[i] = new ShipWeight();
+      shipWeights[i] = ShipWeight.STANDARD;
     }
     soundValues();
   }

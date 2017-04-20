@@ -16,7 +16,7 @@ import cotc.utils.Coord;
 import cotc.utils.FastArray;
 
 public class Player {
-  private static boolean debugOutput = true;
+  private static boolean debugOutput = false;
   private static Coord coord = Coord.get(0, 0); // force Coord caches initialisation
   
   private static final int FIRE_COOLDOWN = 4;

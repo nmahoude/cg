@@ -18,8 +18,9 @@ public class Feature {
   public static final int CANNONBALL_FIRED_FEATURE = 8;
   public static final int BARREL_COUNT_FEATURE = 9;
   public static final int MINE_DROPPED_FEATURE = 10;
+  public static final int MINE_COUNT_FEATURE = 11;
 
-  public static final int LAST = 17;
+  public static final int LAST = 12;
 
   public ShipFeature shipFeatures[] = new ShipFeature[3];
   public double features[] = new double[LAST];
@@ -44,7 +45,8 @@ public class Feature {
     features[CANNONBALL_FIRED_FEATURE] = state.firedCannonballs; // hack to know how many cannonballs have been shot during the simulation
     features[MINE_DROPPED_FEATURE] = state.droppedMines; // hack to know how many cannonballs have been shot during the simulation
     features[BARREL_COUNT_FEATURE] = state.barrels.FE; // Number of barrels
-
+    features[MINE_COUNT_FEATURE] = state.mines.FE;
+    
     updateMobilityFeature(state);
     
     for (int s=0;s<state.teams[1].shipsAlive.FE;s++) {
@@ -132,5 +134,17 @@ public class Feature {
       total += shipFeatures[s].applyWeights(weights.shipWeights[s]);
     }
     return total;
+  }
+  public void debugFeature(FeatureWeight weights) {
+    for (int i=0;i<LAST;i++) {
+      System.err.printf("F %d = %.0f * %.2f = %.2f\n",
+          i, features[i], weights.weights[i],
+          features[i]*weights.weights[i]
+          );
+    }
+    for (int s=0;s<shipsCount;s++) {
+      System.err.println("Ship "+s);
+      shipFeatures[s].debugFeature(weights.shipWeights[s]);
+    }
   }
 }

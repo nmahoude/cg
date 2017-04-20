@@ -23,12 +23,12 @@ public class WeightEvaluator {
       int scores[] = we.oneGame();
       System.out.println("Result : "+scores[0]+" / "+scores[1]);
       if (scores[1] > 100) {
-        ai2.weights.output();
+        ai2.standardWeights.output();
       }
       if (scores[1] > scores[0]) {
         System.out.println("Candidate ! ");
         System.out.println("*********************");
-        ai2.weights.output();
+        ai2.standardWeights.output();
         System.out.println("*********************");
       }
     }
@@ -40,8 +40,8 @@ public class WeightEvaluator {
 
     //ai1.weights.output();
     
-    ai2.weights.soundValues();
-    ai2.weights.mutate();
+    ai2.standardWeights.soundValues();
+    ai2.standardWeights.mutate();
     //ai2.weights.output();
     
     int scores[] = Controller.doMatches(500, ai1, ai2);
