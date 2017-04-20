@@ -8,19 +8,32 @@ import cotc.entities.Ship;
 import cotc.utils.Coord;
 
 public class Feature {
-  public static final int HIS_HEALTH_FEATURE = 1;
-  public static final int BARREL_COUNT0_FEATURE = 2;
-  public static final int BARREL_COUNT1_FEATURE = 3;
-  public static final int RUM_COUNT0_FEATURE = 4;
-  public static final int RUM_COUNT1_FEATURE = 5;
-  public static final int MY_MOBILITY_FEATURE = 6;
-  public static final int HIS_MOBILITY_FEATURE = 7;
-  public static final int CANNONBALL_FIRED_FEATURE = 8;
-  public static final int BARREL_COUNT_FEATURE = 9;
-  public static final int MINE_DROPPED_FEATURE = 10;
-  public static final int MINE_COUNT_FEATURE = 11;
+  public static final int HIS_HEALTH_FEATURE = 0;
+  public static final int BARREL_COUNT0_FEATURE = 1;
+  public static final int BARREL_COUNT1_FEATURE = 2;
+  public static final int RUM_COUNT0_FEATURE = 3;
+  public static final int RUM_COUNT1_FEATURE = 4;
+  public static final int MY_MOBILITY_FEATURE = 5;
+  public static final int HIS_MOBILITY_FEATURE = 6;
+  public static final int CANNONBALL_FIRED_FEATURE = 7;
+  public static final int BARREL_COUNT_FEATURE = 8;
+  public static final int MINE_DROPPED_FEATURE = 9;
+  public static final int MINE_COUNT_FEATURE = 10;
 
-  public static final int LAST = 12;
+  public static final int LAST = 11;
+  public static final String[] debugFeatures= new String[]{
+      "his health   ", 
+      "barrels(me)  ",
+      "barrels(his) ",
+      "rum(me)      ",
+      "rum(his)     ",
+      "mobility(me) ",
+      "mobility(his)",
+      "cannonFired  ",
+      "barrelCount  ",
+      "mineDropped  ",
+      "mineCount    ",
+  };
 
   public ShipFeature shipFeatures[] = new ShipFeature[3];
   public double features[] = new double[LAST];
@@ -137,8 +150,8 @@ public class Feature {
   }
   public void debugFeature(FeatureWeight weights) {
     for (int i=0;i<LAST;i++) {
-      System.err.printf("F %d = %.0f * %.2f = %.2f\n",
-          i, features[i], weights.weights[i],
+      System.err.printf("F %s = %.0f * %.2f = %.2f\n",
+          debugFeatures[i], features[i], weights.weights[i],
           features[i]*weights.weights[i]
           );
     }

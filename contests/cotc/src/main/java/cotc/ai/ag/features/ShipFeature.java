@@ -6,7 +6,8 @@ import cotc.entities.Ship;
 import cotc.game.Simulation;
 
 public class ShipFeature {
-  public static final int MY_HEALTH_FEATURE = 1;
+  public static final int MY_HEALTH_FEATURE = 0;
+  public static final int GREEDY_HEALTH_FEATURE = 1;
   public static final int SPEED_FEATURE = 2;
   public static final int DISTANCE_TO_CENTER_FEATURE = 3;
   public static final int DISTANCE_TO_ALL_ENEMY_FEATURE = 4;
@@ -14,6 +15,17 @@ public class ShipFeature {
   public static final int DISTANCE_TO_ALL_BARREL_FEATURE = 6;
   public static final int DISTANCE_TO_CLOSEST_BARREL_FEATURE = 7;
   public static final int LAST = 8;
+  public static final String[] debugFeatures= {
+      "health     ", 
+      "gHealth    ",
+      "speed      ",
+      "dist2C     ",
+      "dist2AllE  ",
+      "dist2CloseE",
+      "dist2AllB  ",
+      "dist2CloseB"
+  };
+  
   public double features[] = new double[LAST];
 
   public void calculate(Ship ship, GameState state) {
@@ -58,8 +70,8 @@ public class ShipFeature {
 
   public void debugFeature(ShipWeight shipWeight) {
     for (int i=0;i<LAST;i++) {
-      System.err.printf("  SF %d = %.0f * %.2f = %.2f\n",
-          i, features[i], shipWeight.weights[i],
+      System.err.printf("  SF %s = %.0f * %.2f = %.2f\n",
+          debugFeatures[i], features[i], shipWeight.weights[i],
           features[i]*shipWeight.weights[i]
           );
     }
