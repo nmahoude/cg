@@ -41,8 +41,6 @@ public class Simulation {
   public static final int MINE_VISIBILITY_RANGE = 5;
   public static final Coord MAP_CENTER = Coord.get(11, 10);
 
-  public static final Coord COORD_ZERO = Coord.get(0, 0);
-
   private static int travelTimeCache[];
   static {
     travelTimeCache = new int[30];

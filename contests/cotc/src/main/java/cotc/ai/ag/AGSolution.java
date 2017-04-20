@@ -1,5 +1,6 @@
 package cotc.ai.ag;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -7,7 +8,6 @@ import cotc.GameState;
 import cotc.ai.AISolution;
 import cotc.entities.Action;
 import cotc.entities.Ship;
-import cotc.game.Simulation;
 import cotc.utils.Coord;
 import cotc.utils.FastArray;
 
@@ -48,32 +48,27 @@ public class AGSolution implements AISolution{
     return output;
   }
 
-  public void randomize(GameState state, StateAnalyser analyser) {
+  public void randomize(GameState state, StateAnalyser analyser, List<FastArray<Action>> turn0PossibleActions) {
     for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
       ShipStateAnalysis shipAnalysis = analyser.analyse.get(ship);
+      FastArray<Action> possibleActions = turn0PossibleActions.get(s);
+      
       for (int i=0;i<DEPTH;i++) {
         Action action;
       
         if (i == 0) {
-          action = ACTION_VALUES[rand.nextInt(ACTION_VALUES.length)];
-          Coord target = Simulation.COORD_ZERO;
+          action = possibleActions.elements[rand.nextInt(possibleActions.FE)];
+          Coord target = Coord.ZERO;
           
-          // eliminate impossible actions
-          if (action == Action.SLOWER && ship.speed == 0) {
-            action = Action.FASTER;
-          }
-          if (action == Action.FASTER && ship.speed == 2) {
-            action = Action.WAIT;
-          }
           if (action == Action.MINE) {
-            action = Action.WAIT;
             if (shipAnalysis.enemyAtStern[0] == true) {
               action = Action.MINE;
             } else if (shipAnalysis.enemyAtStern[1] == true && shipAnalysis.closestEnemy.speed == 2) {
-              // TODO enemy ship can brake, but we drop a mine anyway
               action = Action.MINE;
-            } 
+            } else {
+              action = Action.WAIT;
+            }
           }
           if (action == Action.FIRE) {
             ShipStateAnalysis otherShipAnalysis = analyser.analyse.get(shipAnalysis.closestEnemy);
