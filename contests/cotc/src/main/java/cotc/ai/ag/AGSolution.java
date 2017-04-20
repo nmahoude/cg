@@ -6,6 +6,8 @@ import java.util.Random;
 
 import cotc.GameState;
 import cotc.ai.AISolution;
+import cotc.ai.ag.features.Feature;
+import cotc.ai.ag.features.FeatureWeight;
 import cotc.entities.Action;
 import cotc.entities.Ship;
 import cotc.utils.Coord;

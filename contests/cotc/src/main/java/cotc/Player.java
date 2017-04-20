@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 import cotc.ai.ag.AG;
 import cotc.ai.ag.AGSolution;
-import cotc.ai.ag.Feature;
+import cotc.ai.ag.features.Feature;
 import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;

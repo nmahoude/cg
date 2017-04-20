@@ -6,6 +6,7 @@ import java.util.List;
 import cotc.GameState;
 import cotc.ai.AI;
 import cotc.ai.AISolution;
+import cotc.ai.ag.features.FeatureWeight;
 import cotc.entities.Action;
 import cotc.entities.Ship;
 import cotc.game.Simulation;

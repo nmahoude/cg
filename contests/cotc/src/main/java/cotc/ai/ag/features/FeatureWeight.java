@@ -1,18 +1,19 @@
-package cotc.ai.ag;
+package cotc.ai.ag.features;
 
 import java.util.Random;
 
 public class FeatureWeight {
   public double weights[] = new double[Feature.LAST];
+  public ShipWeight shipWeights[] = new ShipWeight[3];
   
   public FeatureWeight() {
+    for (int i=0;i<3;i++) {
+      shipWeights[i] = new ShipWeight();
+    }
     soundValues();
   }
   public void soundValues() {
-    weights[Feature.MY_HEALTH_FEATURE] = 1.0;
     weights[Feature.HIS_HEALTH_FEATURE] = -0.2;
-    weights[Feature.SPEED_FEATURE] = 1.0;
-    weights[Feature.DISTANCE_TO_CLOSEST_BARREL_FEATURE] = -0.2;
   }
   
   public void randomize() {

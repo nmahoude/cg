@@ -1,4 +1,4 @@
-package cotc.ai.ag;
+package cotc.ai.ag.features;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -9,6 +9,7 @@ import org.junit.Test;
 import cotc.GameSituationTest;
 import cotc.GameState;
 import cotc.Team;
+import cotc.ai.ag.features.Feature;
 import cotc.entities.EntityType;
 
 public class FeatureTest {
