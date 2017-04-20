@@ -12,7 +12,7 @@ public class FeatureWeight {
     weights[Feature.MY_HEALTH_FEATURE] = 1.0;
     weights[Feature.HIS_HEALTH_FEATURE] = -0.2;
     weights[Feature.SPEED_FEATURE] = 1.0;
-    weights[Feature.DISTANCE_TO_CLOSEST_BARREL_FEATURE] = 0.2;
+    weights[Feature.DISTANCE_TO_CLOSEST_BARREL_FEATURE] = -0.2;
   }
   
   public void randomize() {
