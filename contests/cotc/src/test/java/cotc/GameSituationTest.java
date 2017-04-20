@@ -238,11 +238,7 @@ public class GameSituationTest {
     arg4 = 1-arg4; // arg4 == 1 -> owner = 0 !
     switch (entityType) {
       case SHIP:
-        Ship ship = state.getShip(state.ships, entityId);
-        if (ship == null) {
-          ship = new Ship(entityId, x, y, arg1 /*orientation*/, arg4 /*owner*/);
-          state.teams[arg4].ships.add(ship);
-        }
+        Ship ship = new Ship(entityId, x, y, arg1 /*orientation*/, arg4 /*owner*/);
         ship.update(x, y, arg1 /*orientation*/, arg2 /*speed*/, arg3 /*stock of rum*/, arg4 /*owner*/);
         state.updateShip(ship); // add in ships and shipsAlive of teams
         break;

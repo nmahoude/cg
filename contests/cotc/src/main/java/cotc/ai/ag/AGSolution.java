@@ -68,10 +68,7 @@ public class AGSolution implements AISolution{
           }
           if (action == Action.MINE) {
             action = Action.WAIT;
-            if (rand.nextInt(5) == 0) {
-              // 20% chance of dropping a mine
-              action = Action.MINE;
-            } else if (shipAnalysis.enemyAtStern[0] == true) {
+            if (shipAnalysis.enemyAtStern[0] == true) {
               action = Action.MINE;
             } else if (shipAnalysis.enemyAtStern[1] == true && shipAnalysis.closestEnemy.speed == 2) {
               // TODO enemy ship can brake, but we drop a mine anyway
@@ -80,14 +77,6 @@ public class AGSolution implements AISolution{
           }
           if (action == Action.FIRE) {
             ShipStateAnalysis otherShipAnalysis = analyser.analyse.get(shipAnalysis.closestEnemy);
-            if (rand.nextInt(5) == 0) {
-              // 20% shoot anywhere
-              action = Action.FIRE;
-              target = Coord.get(
-                  rand.nextInt(23),
-                  rand.nextInt(21)
-                  );
-            }
             if (shipAnalysis.closestEnemy.position.distanceTo(ship.position) <= 3) {
               // target the next position of the ship
               Coord c1 = shipAnalysis.closestEnemy.position.neighborsCache[shipAnalysis.closestEnemy.orientation];

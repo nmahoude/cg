@@ -13,6 +13,7 @@ import cotc.entities.CannonBall;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.utils.Coord;
+import cotc.utils.FastArray;
 
 public class Player {
   private static boolean debugOutput = true;
@@ -29,6 +30,8 @@ public class Player {
   static int fires = 0;
   static int wait = 0;
   
+  static FastArray<Ship> shipsRoundBackup = new FastArray<>(Ship.class, 6);
+  
   public static void main(String args[]) {
     state = new GameState();
     state.teams[0] = new Team(0);
@@ -39,9 +42,11 @@ public class Player {
     // game loop
     while (true) {
       round++;
+      shipsRoundBackup.copyFrom(state.ships);
       state.initRound();
-
       readState(in);
+
+      
       // debugRumDomination();
       Feature feature= new Feature();
       feature.calculateFeatures(state);
@@ -126,16 +131,12 @@ public class Player {
       
       switch (entityType) {
         case "SHIP":
-          Ship ship = state.getShip(state.ships, entityId);
+          Ship ship = state.getShip(shipsRoundBackup, entityId);
           if (ship == null) {
             ship = new Ship(entityId, x, y, arg1 /*orientation*/, arg4 /*owner*/);
-            if (ship.owner == 0) {
-              state.teams[0].ships.add(ship);
-            } else {
-              state.teams[1].ships.add(ship);
-            }
           }
           ship.update(x, y, arg1 /*orientation*/, arg2 /*speed*/, arg3 /*stock of rum*/, arg4 /*owner*/);
+
           state.updateShip(ship); // add in ships and shipsAlive of teams
           break;
         case "BARREL":

@@ -143,12 +143,8 @@ public class GameState {
   
   public void updateShip(Ship ship) {
     ships.add(ship);
-    
-    if (ship.owner == 0) {
-      teams[0].shipsAlive.add(ship);
-    } else {
-      teams[1].shipsAlive.add(ship);
-    }
+    teams[ship.owner].ships.add(ship);
+    teams[ship.owner].shipsAlive.add(ship);
   }
   
   public Barrel getClosestBarrel(Ship ship) {
