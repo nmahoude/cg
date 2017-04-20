@@ -145,11 +145,6 @@ public class Simulation {
     reinitSimulation();
 
     moveCannonballs();
-    // check cannonballs
-    FastArray<Coord> coords = state.cannonballsImpacts.get(currentDepth);
-    if (cannonBallExplosions.size() != coords.size()) {
-      System.err.println("ERROR simulated cannon explosions " + cannonBallExplosions.size() +" vs " + coords.size());
-    }
     decrementRum();
     updateInitialRum();
     
@@ -263,7 +258,6 @@ public class Simulation {
                 int travelTime = travelTimeCache[ship.bow().distanceTo(ship.target)];
                 CannonBall cannonBall = new CannonBall(0, ship.target.x, ship.target.y, ship.id, ship.bow().x, ship.bow().y, travelTime);
                 state.cannonballs.add(cannonBall);
-                state.addCannonBall(cannonBall.position, travelTime);
                 state.firedCannonballs++;
                 ship.cannonCooldown = Simulation.COOLDOWN_CANNON;
               }
