@@ -116,8 +116,13 @@ public class AGSolution implements AISolution{
     // ATM, the health with a patience coef is not a good result (really not !)
     for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
+
+      
+      // greedy health
       energy += (ship.health-ship.b_health);
-          
+    
+      // greddy speed
+      energy += (ship.speed);
     }
   }
 
