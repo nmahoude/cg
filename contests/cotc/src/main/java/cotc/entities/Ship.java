@@ -18,7 +18,7 @@ public class Ship extends Entity {
 
   private int b_orientation;
   private int b_speed;
-  private int b_health;
+  public int b_health;
   private int b_cannonCooldown;
   private int b_mineCooldown;
 

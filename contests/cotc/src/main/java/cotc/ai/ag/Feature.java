@@ -27,8 +27,8 @@ public class Feature {
   public static final int CANNONBALL_FIRED_FEATURE = 14;
   public static final int BARREL_COUNT_FEATURE = 15;
   public static final int MINE_DROPPED_FEATURE = 16;
-
-  public static final int LAST = 17;
+  public static final int HIS_DELTA_HEALTH_FEATURE = 17;
+  public static final int LAST = 18;
 
   public double features[] = new double[LAST];
   
@@ -51,6 +51,7 @@ public class Feature {
     for (int s=0;s<state.teams[1].shipsAlive.FE;s++) {
       Ship ship = state.teams[1].shipsAlive.elements[s];
       features[HIS_HEALTH_FEATURE] += ship.health;
+      features[HIS_DELTA_HEALTH_FEATURE] = (ship.health - ship.b_health);
     }
     
     for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {

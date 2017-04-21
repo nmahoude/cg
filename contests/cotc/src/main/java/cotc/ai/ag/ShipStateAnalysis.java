@@ -10,7 +10,7 @@ public class ShipStateAnalysis {
   boolean mineAt[] = new boolean[2]; // is there a mine in front ?
   
   public void debug() {
-    System.err.println("enemy at stern "+enemyAtStern);
+    System.err.println("enemy at stern "+enemyAtStern[0]+" "+enemyAtStern[1]);
     System.err.println("canMoves: "+canMove[0]+" "+canMove[1]);
     System.err.println("mines: "+mineAt[0]+" "+mineAt[1]);
     System.err.println("Closest enemy : "+closestEnemy.id);

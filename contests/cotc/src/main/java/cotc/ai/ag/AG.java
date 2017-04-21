@@ -20,7 +20,7 @@ public class AG implements AI {
     // Pre analyse
     StateAnalyser analyser = new StateAnalyser();
     analyser.analyse(state);
-    //analyser.debug();
+    analyser.debug();
     
     AGSolution best = fake;
     int bestGeneration = 0;
