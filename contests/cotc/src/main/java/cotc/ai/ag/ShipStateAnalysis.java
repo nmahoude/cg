@@ -5,9 +5,9 @@ import cotc.entities.Ship;
 public class ShipStateAnalysis {
   public Ship closestEnemy;
 
-  boolean enemyAtStern[] = new boolean[2]; // do we have a ship that can takes a mine
-  boolean canMove[] = new boolean[2]; // can the ship move ?
-  boolean mineAt[] = new boolean[2]; // is there a mine in front ?
+  public boolean enemyAtStern[] = new boolean[2]; // do we have a ship that can takes a mine
+  public boolean canMove[] = new boolean[2]; // can the ship move ?
+  public boolean mineAt[] = new boolean[2]; // is there a mine in front ?
   
   public void debug() {
     System.err.println("enemy at stern "+enemyAtStern[0]+" "+enemyAtStern[1]);

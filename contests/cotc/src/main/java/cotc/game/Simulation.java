@@ -487,4 +487,9 @@ public class Simulation {
       }
     }
   }
+
+  public void simulate() {
+    // TODO Auto-generated method stub
+    
+  }
 }
