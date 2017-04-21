@@ -18,9 +18,10 @@ public class AG implements AI {
     // Pre analyse
     StateAnalyser analyser = new StateAnalyser();
     analyser.analyse(state);
-    analyser.debug();
+    //analyser.debug();
     
     AGSolution best = fake;
+    int bestGeneration = 0;
     while (System.currentTimeMillis() < stopTime) {
       AGSolution sol = new AGSolution(state, weights);
       sol.randomize(state, analyser);
@@ -29,9 +30,10 @@ public class AG implements AI {
       simulations++;
       if (sol.energy > best.energy) {
         best = sol;
+        bestGeneration = simulations;
       }
     }
-    System.err.println("Simulations "+simulations);
+    System.err.println("Simulations "+simulations+ " at "+bestGeneration+" with "+best.energy);
     return best;
   }
 

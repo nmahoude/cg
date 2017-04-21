@@ -4,10 +4,8 @@ import java.util.Random;
 import java.util.Scanner;
 
 import cotc.ai.ag.AG;
-import cotc.ai.ag.AGAction;
 import cotc.ai.ag.AGSolution;
 import cotc.ai.ag.Feature;
-import cotc.ai.ag.ShipActions;
 import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
@@ -18,7 +16,7 @@ import cotc.utils.Coord;
 import cotc.utils.FastArray;
 
 public class Player {
-  private static boolean debugOutput = true;
+  private static boolean debugOutput = false;
   private static Coord coord = Coord.get(0, 0); // force Coord caches initialisation
   
   private static final int FIRE_COOLDOWN = 4;
@@ -26,11 +24,6 @@ public class Player {
 
   static Random rand = new Random();
   static GameState state;
-  
-  //stats
-  static int mines = 0;
-  static int fires = 0;
-  static int wait = 0;
   
   static FastArray<Ship> shipsRoundBackup = new FastArray<>(Ship.class, 6);
   
@@ -75,36 +68,6 @@ public class Player {
 
         System.out.println(output[s] + " "+ship.cannonCooldown + " / "+ship.mineCooldown);
       }
-      
-      ShipActions sActions = sol.actions[0];
-      for (AGAction action : sActions.actions) {
-        if (action == null) continue;
-        switch(action.action) {
-          case FASTER:
-            break;
-          case FIRE:
-            fires++;
-            break;
-          case MINE:
-            mines++;
-            break;
-          case PORT:
-            break;
-          case SLOWER:
-            break;
-          case STARBOARD:
-            break;
-          case WAIT:
-            wait++;
-            break;
-          default:
-            break;
-        }
-      }
-      System.err.println("stats : ");
-      System.err.println("waits : "+wait);
-      System.err.println("mines : "+mines);
-      System.err.println("fires : "+fires);
     }
   }
 
