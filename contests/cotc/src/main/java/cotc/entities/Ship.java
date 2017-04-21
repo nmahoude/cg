@@ -28,7 +28,8 @@ public class Ship extends Entity {
   public Coord newBowCoordinate;
   public Coord newSternCoordinate;
   public Coord target;
-
+  public boolean champion;
+  
   // work variable used in simulation. Not clean
   public int initialHealth;
 

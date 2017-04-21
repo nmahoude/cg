@@ -3,6 +3,7 @@ package cotc.ai.ag;
 import cotc.GameState;
 import cotc.ai.AI;
 import cotc.ai.AISolution;
+import cotc.entities.Ship;
 import cotc.game.Simulation;
 
 public class AG implements AI {
@@ -13,6 +14,7 @@ public class AG implements AI {
   public FeatureWeight weights = new FeatureWeight();
   
   public AISolution evolve(long stopTime) {
+    updateChampions();
     int simulations = 0;
     simulation = new Simulation(state);
     // Pre analyse
@@ -35,6 +37,20 @@ public class AG implements AI {
     }
     System.err.println("Simulations "+simulations+ " at "+bestGeneration+" with "+best.energy);
     return best;
+  }
+
+  private void updateChampions() {
+    Ship best = null;
+    int bestHealth = 0;
+    for (int s=0;s<state.teams[0].ships.FE;s++) {
+      Ship ship = state.teams[0].ships.elements[s];
+      ship.champion = false;
+      if (ship.health > bestHealth) {
+        bestHealth = ship.health;
+        best = ship;
+      }
+    }
+    best.champion = true;
   }
 
   @Override

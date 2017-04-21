@@ -56,7 +56,7 @@ public class Feature {
     for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
 
-      features[MY_HEALTH_FEATURE] += ship.health;
+      features[MY_HEALTH_FEATURE] += ship.health * (ship.champion ? 2 : 1);
       features[SPEED_FEATURE] += ship.speed;
       features[DISTANCE_TO_CENTER_FEATURE] += ship.position.distanceTo(Simulation.MAP_CENTER);
 
