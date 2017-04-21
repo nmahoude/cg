@@ -8,6 +8,7 @@ import cotc.Team;
 import cotc.ai.AISolution;
 import cotc.ai.ag.AGAction;
 import cotc.ai.ag.AGSolution;
+import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
 import cotc.entities.Entity;
@@ -41,9 +42,9 @@ public class Simulation {
   public static final int MINE_VISIBILITY_RANGE = 5;
   public static final Coord MAP_CENTER = Coord.get(11, 10);
 
-  public static int travelTimeCache[];
+  private static int travelTimeCache[];
   static {
-    travelTimeCache = new int[60];
+    travelTimeCache = new int[30];
     for (int dist=0;dist<travelTimeCache.length;dist++) {
       travelTimeCache[dist] = (int) (1 + Math.round(dist / 3.0));
     }
@@ -64,25 +65,33 @@ public class Simulation {
     this.state = state;
   }
 
+  public void setState(GameState state) {
+    this.state = state;
+  }
+
   public void simulateNew(AGSolution sol) {
     coreSimulation(sol, sol.getActionsNew());
     state.restore();
   }
 
   /* without backup  / restore */
-  public void coreSimulation(AISolution sol, FastArray<AGAction> fastArray) {
+  public void coreSimulation(AISolution sol, FastArray<AGAction> actions) {
     sol.resetEnergy();
-    for (int i = 0; i < AGSolution.DEPTH; i++) {
+    for (int depth = 0; depth < AGSolution.DEPTH; depth++) {
       if( state.teams[0].dead || state.teams[1].dead) break;
-      applyActions(i, fastArray);
+      applyActions(depth, 0, actions);
+      for (int s=0;s<state.teams[1].ships.FE;s++) {
+        Ship ship = state.teams[1].ships.elements[s];
+        if (depth == 0) {
+          ship.action = Action.MINE;
+        } else {
+          ship.action = Action.WAIT;
+        }
+      }
       playOneTurn();
-      state.rounds ++;
       if (state.rounds == 200) break;
       
-      sol.updateEnergyTurn(i, state);
-    }
-    if (state.rounds == 200) {
-      checkEndConditions();
+      sol.updateEnergyTurn(depth, state);
     }
     if (state.teams[0].dead) {
       sol.setEnergy(-1_000_000);
@@ -129,9 +138,9 @@ public class Simulation {
       entry.getKey().target = action.target;
     }
   }
-  private void applyActions(int depth, FastArray<AGAction> actions) {
-    for (int s=0;s<state.teams[0].ships.FE;s++) {
-      Ship ship = state.teams[0].ships.elements[s];
+  private void applyActions(int depth, int teamId, FastArray<AGAction> actions) {
+    for (int s=0;s<state.teams[teamId].ships.FE;s++) {
+      Ship ship = state.teams[teamId].ships.elements[s];
       ship.action = actions.elements[depth + s*AGSolution.DEPTH].action;
       ship.target = actions.elements[depth + s*AGSolution.DEPTH].target;
     }
@@ -180,6 +189,10 @@ public class Simulation {
     
     if (state.teams[0].shipsAlive.FE == 0) state.teams[0].dead = true;
     if (state.teams[1].shipsAlive.FE == 0) state.teams[1].dead = true;
+    state.rounds ++;
+    if (state.rounds >= 200) {
+      checkEndConditions();
+    }
   }
 
   private void applyActions() {
@@ -477,5 +490,10 @@ public class Simulation {
         state.clearEntityAt(coord);
       }
     }
+  }
+
+  public void simulate() {
+    // TODO Auto-generated method stub
+    
   }
 }

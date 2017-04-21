@@ -12,7 +12,7 @@ import cotc.utils.Coord;
 
 public class StateAnalyser {
   
-  Map<Ship, ShipStateAnalysis> analyse = new HashMap<>();
+  public Map<Ship, ShipStateAnalysis> analyse = new HashMap<>();
   
   public void analyse(GameState state) {
     analyse.clear();

@@ -143,7 +143,7 @@ public class GameState {
     return null;
   }
 
-  Ship getShip(FastArray<Ship> fromShips, int entityId) {
+  public Ship getShip(FastArray<Ship> fromShips, int entityId) {
     for (int i=0;i<fromShips.FE;i++) {
       Ship ship = fromShips.elements[i];
       if (ship.id == entityId) {
@@ -237,6 +237,9 @@ public class GameState {
   public void setEntityAt(Coord coord, Entity entity) {
     if (!coord.isInsideMap()) return;
     mapCache[coord.x+coord.y*Simulation.MAP_WIDTH] = entity;
+  }
+  public boolean gameOver() {
+    return teams[0].dead || teams[1].dead || rounds >= 200;
   }
 
 }

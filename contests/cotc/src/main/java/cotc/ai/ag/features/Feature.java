@@ -1,50 +1,37 @@
-package cotc.ai.ag.features;
+package cotc.ai.ag;
 
 import cotc.BarrelDomination;
 import cotc.GameState;
+import cotc.entities.Barrel;
 import cotc.entities.Entity;
 import cotc.entities.EntityType;
 import cotc.entities.Ship;
+import cotc.game.Simulation;
 import cotc.utils.Coord;
 
 public class Feature {
-  public static final int HIS_HEALTH_FEATURE = 0;
-  public static final int BARREL_COUNT0_FEATURE = 1;
-  public static final int BARREL_COUNT1_FEATURE = 2;
-  public static final int RUM_COUNT0_FEATURE = 3;
-  public static final int RUM_COUNT1_FEATURE = 4;
-  public static final int MY_MOBILITY_FEATURE = 5;
-  public static final int HIS_MOBILITY_FEATURE = 6;
-  public static final int CANNONBALL_FIRED_FEATURE = 7;
-  public static final int BARREL_COUNT_FEATURE = 8;
-  public static final int MINE_DROPPED_FEATURE = 9;
-  public static final int MINE_COUNT_FEATURE = 10;
+  public static final int MY_HEALTH_FEATURE = 0;
+  public static final int HIS_HEALTH_FEATURE = 1;
+  public static final int SPEED_FEATURE = 2;
+  public static final int DISTANCE_TO_CLOSEST_BARREL_FEATURE = 3;
+  public static final int DISTANCE_TO_ALL_BARREL_FEATURE = 4;
+  public static final int BARREL_COUNT0_FEATURE = 5;
+  public static final int BARREL_COUNT1_FEATURE = 6;
+  public static final int RUM_COUNT0_FEATURE = 7;
+  public static final int RUM_COUNT1_FEATURE = 8;
+  public static final int DISTANCE_TO_CENTER_FEATURE = 9;
+  public static final int MY_MOBILITY_FEATURE = 10;
+  public static final int HIS_MOBILITY_FEATURE = 11;
+  public static final int DISTANCE_TO_CLOSEST_ENEMY_FEATURE = 12;
+  public static final int DISTANCE_TO_ALL_ENEMY_FEATURE = 13;
+  public static final int CANNONBALL_FIRED_FEATURE = 14;
+  public static final int BARREL_COUNT_FEATURE = 15;
+  public static final int MINE_DROPPED_FEATURE = 16;
+  public static final int HIS_DELTA_HEALTH_FEATURE = 17;
+  public static final int LAST = 18;
 
-  public static final int LAST = 11;
-  public static final String[] debugFeatures= new String[]{
-      "his health   ", 
-      "barrels(me)  ",
-      "barrels(his) ",
-      "rum(me)      ",
-      "rum(his)     ",
-      "mobility(me) ",
-      "mobility(his)",
-      "cannonFired  ",
-      "barrelCount  ",
-      "mineDropped  ",
-      "mineCount    ",
-  };
-
-  public ShipFeature shipFeatures[] = new ShipFeature[3];
   public double features[] = new double[LAST];
-  private int shipsCount;
   
-  public Feature() {
-    for (int i=0;i<3;i++) {
-      shipFeatures[i] = new ShipFeature();
-    }
-  }
-
   public void calculateFeatures(GameState state) {
     for (int i=0;i<LAST;i++) {
       features[i] = 0;
@@ -58,19 +45,44 @@ public class Feature {
     features[CANNONBALL_FIRED_FEATURE] = state.firedCannonballs; // hack to know how many cannonballs have been shot during the simulation
     features[MINE_DROPPED_FEATURE] = state.droppedMines; // hack to know how many cannonballs have been shot during the simulation
     features[BARREL_COUNT_FEATURE] = state.barrels.FE; // Number of barrels
-    features[MINE_COUNT_FEATURE] = state.mines.FE;
-    
+
     updateMobilityFeature(state);
     
     for (int s=0;s<state.teams[1].shipsAlive.FE;s++) {
       Ship ship = state.teams[1].shipsAlive.elements[s];
       features[HIS_HEALTH_FEATURE] += ship.health;
+      features[HIS_DELTA_HEALTH_FEATURE] = (ship.health - ship.b_health);
     }
     
-    shipsCount = state.teams[0].shipsAlive.FE;
     for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
-      shipFeatures[s].calculate(ship, state);
+
+      features[MY_HEALTH_FEATURE] += ship.health * (ship.champion ? 2 : 1);
+      features[SPEED_FEATURE] += ship.speed;
+      features[DISTANCE_TO_CENTER_FEATURE] += ship.position.distanceTo(Simulation.MAP_CENTER);
+
+      // distances to ships
+      int bestDist = Integer.MAX_VALUE;
+      for (int s2=0;s2<state.teams[1].shipsAlive.FE;s2++) {
+        Ship other = state.teams[1].shipsAlive.elements[s2];
+        if (other.health <= 0) continue;
+        int distToShip = other.position.distanceTo(ship.position);
+        features[DISTANCE_TO_ALL_ENEMY_FEATURE] += distToShip;
+        if (distToShip < bestDist) {
+          bestDist = distToShip;
+        }
+      }
+      features[DISTANCE_TO_CLOSEST_ENEMY_FEATURE] +=bestDist;
+
+      // dist To Barrels
+      bestDist = Integer.MAX_VALUE;
+      for (int b = 0; b < state.barrels.FE; b++) {
+        Barrel barrel = state.barrels.elements[b];
+        int distToBarrel = barrel.position.distanceTo(ship.position);
+        if (distToBarrel < bestDist) bestDist = distToBarrel;
+        features[DISTANCE_TO_ALL_BARREL_FEATURE] += distToBarrel;
+      }
+      features[DISTANCE_TO_CLOSEST_BARREL_FEATURE] += bestDist < Integer.MAX_VALUE ? bestDist : 0;
     }
   }
   
@@ -138,26 +150,19 @@ public class Feature {
 
   }
 
+  public void debug() {
+    System.err.println("HealtFeature: " + features[MY_HEALTH_FEATURE] + " / "+features[HIS_HEALTH_FEATURE]);
+    System.err.println("MobilityFeature: " + features[MY_MOBILITY_FEATURE] + " / "+features[HIS_MOBILITY_FEATURE]);
+    System.err.println("speedFeature: " + features[SPEED_FEATURE]);
+    System.err.println("distToBarrelFeature: " + features[DISTANCE_TO_CENTER_FEATURE]);
+    System.err.println("distanceToCenterFeature: " + features[DISTANCE_TO_CENTER_FEATURE]);
+    System.err.println("distanceToClosestBarrelFeature: " + features[DISTANCE_TO_CLOSEST_BARREL_FEATURE]);
+  }
   public double applyWeights(FeatureWeight weights) {
     double total = 0;
     for (int i=0;i<LAST;i++) {
       total += weights.weights[i] * features[i];
     }
-    for (int s=0;s<shipsCount;s++) {
-      total += shipFeatures[s].applyWeights(weights.shipWeights[s]);
-    }
     return total;
-  }
-  public void debugFeature(FeatureWeight weights) {
-    for (int i=0;i<LAST;i++) {
-      System.err.printf("F %s = %.0f * %.2f = %.2f\n",
-          debugFeatures[i], features[i], weights.weights[i],
-          features[i]*weights.weights[i]
-          );
-    }
-    for (int s=0;s<shipsCount;s++) {
-      System.err.println("Ship "+s);
-      shipFeatures[s].debugFeature(weights.shipWeights[s]);
-    }
   }
 }

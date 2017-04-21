@@ -5,27 +5,23 @@ import java.util.Scanner;
 
 import cotc.ai.ag.AG;
 import cotc.ai.ag.AGSolution;
-import cotc.ai.ag.features.Feature;
+import cotc.ai.ag.Feature;
 import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
-import cotc.utils.Coord;
 import cotc.utils.FastArray;
 
 public class Player {
   private static boolean debugOutput = false;
-  private static Coord coord = Coord.get(0, 0); // force Coord caches initialisation
   
-  private static final int FIRE_COOLDOWN = 4;
-  public static long startTime = 0;
-
   static Random rand = new Random();
   static GameState state;
-  
   static FastArray<Ship> shipsRoundBackup = new FastArray<>(Ship.class, 6);
+  public static long startTime = 0;
+  
   
   public static void main(String args[]) {
     state = new GameState();
@@ -61,7 +57,6 @@ public class Player {
         } else if (sol.actions.elements[0+s*AGSolution.DEPTH].action == Action.MINE) {
           ship.mineCooldown = Simulation.COOLDOWN_MINE;
         }
-
         System.out.println(output[s]);
       }
     }
