@@ -100,6 +100,7 @@ public class AG implements AI {
 
   private void updateWeightsForWinningState() {
     weights.weights[Feature.DISTANCE_TO_ALL_ENEMY_FEATURE] = 1.0;
+    weights.weights[Feature.DISTANCE_TO_CENTER_FEATURE] = -1.0;
   }
 
   private void createPossibleActionsAtTurn0() {
