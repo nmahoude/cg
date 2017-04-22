@@ -110,9 +110,7 @@ public class Ship extends Entity {
   }
 
   public boolean at(Coord coord) {
-    Coord stern = stern();
-    Coord bow = bow();
-    return stern == coord || bow == coord || position == coord;
+    return stern() == coord || bow() == coord || position == coord;
   }
 
   public boolean newBowIntersect(Ship other) {

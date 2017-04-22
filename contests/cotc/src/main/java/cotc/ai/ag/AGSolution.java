@@ -146,10 +146,21 @@ public class AGSolution implements AISolution{
       
       // greedy health
       energy += (ship.health-ship.b_health);
-    
       // greddy speed
       energy += (ship.speed);
-      
+
+      // don't go at ship stern-1 to avoid mines
+      if (turn < 2) {
+        double coeff = turn == 0 ? 1.0 : 0.3;
+        for (int s2=0;s2<state.teams[1].shipsAlive.FE;s2++) {
+          Ship other = state.teams[1].shipsAlive.elements[s2];
+          if (other.health <= 0 || ship.mineCooldown > 0) continue;
+          if (ship.at(other.stern().neighborsCache[(other.orientation + 3) %6])) {
+            // not good !
+            energy -= 10 * coeff;
+          }
+        }
+      }
     }
   }
 
