@@ -7,7 +7,9 @@ import java.util.Random;
 import cotc.GameState;
 import cotc.ai.AISolution;
 import cotc.entities.Action;
+import cotc.entities.Barrel;
 import cotc.entities.Ship;
+import cotc.game.Simulation;
 import cotc.utils.Coord;
 import cotc.utils.FastArray;
 
@@ -25,6 +27,7 @@ public class AGSolution implements AISolution{
   protected GameState state;
   public double energy;
   private FeatureWeight weights;
+  public Feature  feature = new Feature();
  
 
   protected AGSolution() {
@@ -70,25 +73,50 @@ public class AGSolution implements AISolution{
               weights.weights[Feature.HIS_DELTA_HEALTH_FEATURE] = -0.5; // don't care about its health
               action = Action.MINE;
             } else {
-              action = Action.WAIT;
+              if (weights.weights[Feature.MINE_DROPPED_FEATURE] > 0) {
+                action = Action.MINE;
+              } else {
+                action = Action.WAIT;
+              }
             }
           }
           if (action == Action.FIRE) {
-            ShipStateAnalysis otherShipAnalysis = analyser.analyse.get(shipAnalysis.closestEnemy);
-            if (shipAnalysis.closestEnemy.position.distanceTo(ship.position) <= 3) {
-              // target the next position of the ship
-              Coord c1 = shipAnalysis.closestEnemy.position.neighborsCache[shipAnalysis.closestEnemy.orientation];
-              Coord c2 = c1.neighborsCache[shipAnalysis.closestEnemy.orientation];
-              if (shipAnalysis.closestEnemy.speed == 2 && c2.isInsideMap()) {
-                target = c2;
-              } else {
-                target = c1;
+            if (rand.nextBoolean()) {
+              // other ships
+              ShipStateAnalysis otherShipAnalysis = analyser.analyse.get(shipAnalysis.closestEnemy);
+              if (shipAnalysis.closestEnemy.position.distanceTo(ship.position) <= 3) {
+                // target the next position of the ship
+                Coord c1 = shipAnalysis.closestEnemy.position.neighborsCache[shipAnalysis.closestEnemy.orientation];
+                Coord c2 = c1.neighborsCache[shipAnalysis.closestEnemy.orientation];
+                if (shipAnalysis.closestEnemy.speed == 2 && c2.isInsideMap()) {
+                  target = c2;
+                } else {
+                  target = c1;
+                }
+                if (otherShipAnalysis.canMove[0] == false) {
+                  target = shipAnalysis.closestEnemy.position;
+                } else {
+                  action = Action.WAIT;
+                }
               }
-            }
-            if (otherShipAnalysis.canMove[0] == false) {
-              target = shipAnalysis.closestEnemy.position;
-            } else {
-              action = Action.WAIT;
+            } else if (state.barrels.FE > 0 && ship.cannonCooldown == 0){
+              // check for barrels to explode
+              // 1. find a ship going for a barrel
+              for (int s2=0;s2<state.teams[1].ships.FE;s2++) {
+                Ship other = state.teams[1].ships.elements[s2];
+                Barrel barrel = state.getClosestBarrel(other);
+                int otherDistToBarrel = other.position.distanceTo(barrel.position);
+                if (otherDistToBarrel < 10 && otherDistToBarrel < ship.position.distanceTo(barrel.position)) {
+                  if (other.bow().distanceTo(barrel.position) < otherDistToBarrel) {
+                    // orientation gets the ship nearest
+                    if (Simulation.travelTimeCache[ship.bow().distanceTo(barrel.position)] < otherDistToBarrel) {
+                      action = Action.FIRE;
+                      target = barrel.position;
+                      weights.weights[Feature.DESTROYED_BARRELS] = 1.0;
+                    }
+                  }
+                }
+              }
             }
           }
           actions.elements[i + s*DEPTH].action = action;
@@ -116,20 +144,18 @@ public class AGSolution implements AISolution{
     // ATM, the health with a patience coef is not a good result (really not !)
     for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
-
       
       // greedy health
       energy += (ship.health-ship.b_health);
     
       // greddy speed
       energy += (ship.speed);
+      
     }
   }
 
   public void updateEnergyEnd(GameState state) {
-    // feature after turn DEPTH, less precise, but more insight
-    Feature feature = new Feature();
-    feature.calculateFeatures(state);
+    feature.calculateFeaturesFinal(state);
     energy += feature.applyWeights(weights);
   }
 

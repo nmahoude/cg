@@ -39,22 +39,20 @@ public class Player {
 
       
       Feature feature= new Feature();
-      feature.calculateFeatures(state);
+      feature.calculateFeaturesFinal(state);
       //feature.debug();
       
       AG ag = new AG();
       ag.setState(state);
-      AGSolution sol = (AGSolution)ag.evolve(startTime+ (round == 1 ? 800 : 44));
-      if (debugOutput) {
-        //sol.debugOutput();
-      }
-      
-      String[] output = sol.output();
+      AGSolution bestSol = (AGSolution)ag.evolve(startTime+ (round == 1 ? 800 : 44));
+      //bestSol.feature.debugFeature(ag.weights);
+
+      String[] output = bestSol.output();
       for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
         Ship ship = state.teams[0].shipsAlive.elements[s];
-        if (sol.actions.elements[0+s*AGSolution.DEPTH].action == Action.FIRE) {
+        if (bestSol.actions.elements[0+s*AGSolution.DEPTH].action == Action.FIRE) {
           ship.cannonCooldown = Simulation.COOLDOWN_CANNON;
-        } else if (sol.actions.elements[0+s*AGSolution.DEPTH].action == Action.MINE) {
+        } else if (bestSol.actions.elements[0+s*AGSolution.DEPTH].action == Action.MINE) {
           ship.mineCooldown = Simulation.COOLDOWN_MINE;
         }
         System.out.println(output[s]);

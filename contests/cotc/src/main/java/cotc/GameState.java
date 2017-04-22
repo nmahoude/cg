@@ -34,6 +34,7 @@ public class GameState {
   // simulation data
   public int firedCannonballs;
   public int droppedMines;
+  public int destroyedBarrels;
 
   public void debugOutput() {
     System.err.println("canonballs: "+cannonballs.size());
@@ -90,6 +91,7 @@ public class GameState {
     // simulation data
     firedCannonballs = 0;
     droppedMines = 0;
+    destroyedBarrels = 0;
     
     for (Team team : teams) {
       team.restore();
@@ -121,6 +123,7 @@ public class GameState {
     // simulation data
     firedCannonballs = 0;
     droppedMines = 0;
+    destroyedBarrels = 0;
     
     // kill all ships ! (will be revive in the update process)
     teams[0].shipsAlive.clear();

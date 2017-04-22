@@ -28,11 +28,33 @@ public class Feature {
   public static final int BARREL_COUNT_FEATURE = 15;
   public static final int MINE_DROPPED_FEATURE = 16;
   public static final int HIS_DELTA_HEALTH_FEATURE = 17;
-  public static final int LAST = 18;
+  public static final int DESTROYED_BARRELS = 18;
+  public static final int LAST = 19;
 
   public double features[] = new double[LAST];
+  public static final String[] debugFeatures= {
+      "myHealth          ",
+      "hisHealth         ",
+      "speed             ",
+      "dist2ClosestBarrel",
+      "dist2AllBarrels   ",
+      "BarrelCount0      ",
+      "BarrelCount1      ",
+      "RumCount0         ",
+      "RumCount1         ",
+      "dist2Center       ",
+      "myMobility        ",
+      "hisMobility       ",
+      "dist2ClosestEnemy ",
+      "distToAllEnemy    ",
+      "cannonBallFired   ",
+      "barrelCount       ",
+      "MineDropped       ",
+      "HisDeltaHealth    ",
+      "destroyedBarrels  ",
+  };
   
-  public void calculateFeatures(GameState state) {
+  public void calculateFeaturesFinal(GameState state) {
     for (int i=0;i<LAST;i++) {
       features[i] = 0;
     }
@@ -45,7 +67,7 @@ public class Feature {
     features[CANNONBALL_FIRED_FEATURE] = state.firedCannonballs; // hack to know how many cannonballs have been shot during the simulation
     features[MINE_DROPPED_FEATURE] = state.droppedMines; // hack to know how many cannonballs have been shot during the simulation
     features[BARREL_COUNT_FEATURE] = state.barrels.FE; // Number of barrels
-
+    features[DESTROYED_BARRELS] = state.destroyedBarrels;
     updateMobilityFeature(state);
     
     for (int s=0;s<state.teams[1].shipsAlive.FE;s++) {
@@ -56,6 +78,7 @@ public class Feature {
     
     for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
+      if (ship.health < 0) continue;
 
       features[MY_HEALTH_FEATURE] += ship.health * (ship.champion ? 2 : 1);
       features[SPEED_FEATURE] += ship.speed;
@@ -84,6 +107,17 @@ public class Feature {
       }
       features[DISTANCE_TO_CLOSEST_BARREL_FEATURE] += bestDist < Integer.MAX_VALUE ? bestDist : 0;
     }
+    
+    // update healths otherwise low health mean ship will suicide !
+    double myHealth = features[MY_HEALTH_FEATURE];
+    double hisHealth = features[HIS_HEALTH_FEATURE];
+    double total = myHealth + hisHealth;
+    if (total > 0) {
+      features[MY_HEALTH_FEATURE] = 100.0*myHealth / total;
+      features[HIS_HEALTH_FEATURE] = 100.0*hisHealth / total;
+    }
+    
+    
   }
   
   // TODO handle ship speed ????!!!
@@ -150,14 +184,15 @@ public class Feature {
 
   }
 
-  public void debug() {
-    System.err.println("HealtFeature: " + features[MY_HEALTH_FEATURE] + " / "+features[HIS_HEALTH_FEATURE]);
-    System.err.println("MobilityFeature: " + features[MY_MOBILITY_FEATURE] + " / "+features[HIS_MOBILITY_FEATURE]);
-    System.err.println("speedFeature: " + features[SPEED_FEATURE]);
-    System.err.println("distToBarrelFeature: " + features[DISTANCE_TO_CENTER_FEATURE]);
-    System.err.println("distanceToCenterFeature: " + features[DISTANCE_TO_CENTER_FEATURE]);
-    System.err.println("distanceToClosestBarrelFeature: " + features[DISTANCE_TO_CLOSEST_BARREL_FEATURE]);
+  public void debugFeature(FeatureWeight weight) {
+    for (int i=0;i<LAST;i++) {
+      System.err.printf("%s = %.0f * %.2f = %.2f\n",
+          debugFeatures[i], features[i], weight.weights[i],
+          features[i]*weight.weights[i]
+          );
+    }
   }
+    
   public double applyWeights(FeatureWeight weights) {
     double total = 0;
     for (int i=0;i<LAST;i++) {

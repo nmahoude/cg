@@ -42,9 +42,9 @@ public class Simulation {
   public static final int MINE_VISIBILITY_RANGE = 5;
   public static final Coord MAP_CENTER = Coord.get(11, 10);
 
-  private static int travelTimeCache[];
+  public static int travelTimeCache[];
   static {
-    travelTimeCache = new int[30];
+    travelTimeCache = new int[60];
     for (int dist=0;dist<travelTimeCache.length;dist++) {
       travelTimeCache[dist] = (int) (1 + Math.round(dist / 3.0));
     }
@@ -470,6 +470,7 @@ public class Simulation {
           state.clearEntityAt(barrel.position);
           cannonBallExplosions.removeAt(i);
           i--;
+          state.destroyedBarrels++;
         }
       }
     }

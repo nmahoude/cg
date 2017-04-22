@@ -30,9 +30,10 @@ public class AG implements AI {
     // Pre analyse
     StateAnalyser analyser = new StateAnalyser();
     analyser.analyse(state);
-    analyser.debug();
     
     createPossibleActionsAtTurn0();
+    
+    updateWeightsForEndGame();
     
     AGSolution best = fake;
     int bestGeneration = 0;
@@ -49,6 +50,56 @@ public class AG implements AI {
     }
     System.err.println("Simulations "+simulations+ " at "+bestGeneration+" with "+best.energy);
     return best;
+  }
+
+  private void updateWeightsForEndGame() {
+    // end game is when there is no barrels, check the scores & the max ship energy
+      if (state.barrels.FE == 0) {
+        // win/loss ?
+
+        int survivorHealth_0 = 0;
+        int survivorHealth_1 = 0;
+        int bestHealth = 0;
+        int bestTeam = 0;
+        for (int s=0;s<state.ships.FE;s++) {
+          Ship ship = state.ships.elements[s];
+          if (ship.health > 200-state.rounds) {
+            if (ship.owner == 0) {
+              survivorHealth_0 += ship.health;
+            } else {
+              survivorHealth_1 += ship.health;
+            }
+          }
+          if (bestHealth < ship.health) {
+            bestHealth = ship.health;
+            bestTeam = ship.owner;
+          }
+        }
+
+        boolean winning = 
+            (bestHealth > 0 && bestTeam == 0)
+            || (bestHealth == 0 && survivorHealth_0 > survivorHealth_1);
+        if (winning) {
+          updateWeightsForWinningState();
+        } else {
+          updateWeightsForLosingState();
+        }
+      } else {
+        updateWeightsForStandardState();
+      }
+  }
+
+  private void updateWeightsForStandardState() {
+    // don't do anything
+  }
+
+  private void updateWeightsForLosingState() {
+    // don't do anything 
+    //TODO find something interesting
+  }
+
+  private void updateWeightsForWinningState() {
+    weights.weights[Feature.DISTANCE_TO_ALL_ENEMY_FEATURE] = 1.0;
   }
 
   private void createPossibleActionsAtTurn0() {
