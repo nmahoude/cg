@@ -2,9 +2,9 @@ package cotc.ai.ag;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import cotc.GameState;
+import cotc.Player;
 import cotc.ai.AISolution;
 import cotc.entities.Action;
 import cotc.entities.Ship;
@@ -15,7 +15,6 @@ public class AGSolution implements AISolution{
   public final static int AGACTION_SIZE = 1000;
   private static final Action[] ACTION_VALUES = Action.values();
   public static int DEPTH = 5;
-  public static Random rand = new Random();
 
   public static double patience[] = new double[]{ 1.0, 0.8, 0.6, 0.4, 0.2, 0.1};
   
@@ -26,6 +25,7 @@ public class AGSolution implements AISolution{
   public double energy;
   private FeatureWeight weights;
   public Feature  feature = new Feature();
+ 
  
 
   protected AGSolution() {
@@ -60,7 +60,7 @@ public class AGSolution implements AISolution{
         Action action;
       
         if (i == 0) {
-          action = possibleActions.elements[rand.nextInt(possibleActions.FE)];
+          action = possibleActions.elements[Player.rand.nextInt(possibleActions.FE)];
           Coord target = Coord.ZERO;
           
           if (action == Action.MINE) {
@@ -83,7 +83,7 @@ public class AGSolution implements AISolution{
             if (target != null && 
                 // don't fire if it's the endgame and we are winning unless there is 40%+ chance to hit
                 (AG.status != GameStatus.ENDGAME_WINNING || AG.possibleTargetsPerShipsPercent[ship.id] > 0.4)) {
-              weights.weights[Feature.CANNONBALL_FIRED_FEATURE] = 5.0;// 1 cannonball equivalent 5 pts de vie ?
+              weights.weights[Feature.CANNONBALL_FIRED_FEATURE] = 1.0;// 1 cannonball equivalent 5 pts de vie ?
             } else {
               action = Action.WAIT;
               target = Coord.ZERO;
@@ -94,7 +94,7 @@ public class AGSolution implements AISolution{
           actions.elements[i + s*DEPTH].target = target;
         } else {
           // other turns is more random
-          action = ACTION_VALUES[rand.nextInt(ACTION_VALUES.length)];
+          action = ACTION_VALUES[Player.rand.nextInt(ACTION_VALUES.length)];
           if (action == Action.FIRE) {
             action = Action.WAIT;
           }
@@ -119,8 +119,14 @@ public class AGSolution implements AISolution{
       // greedy health
       energy += (ship.health-ship.b_health);
       // greddy speed
-      energy += (ship.speed);
+      energy += Feature.speeds [ship.speed];
 
+      Ship closestShip = state.getClosestEnnemy(ship);
+      if (closestShip != null) {
+        feature.features[Feature.DISTANCE_TO_CLOSEST_ENEMY_BOW2_FEATURE] += patience[turn] * closestShip.bow().neighborsCache[closestShip.orientation].distanceTo(ship.bow());
+      }
+
+      
       // don't go at ship stern-1 to avoid mines
       if (turn < 2) {
         double coeff = turn == 0 ? 1.0 : 0.3;

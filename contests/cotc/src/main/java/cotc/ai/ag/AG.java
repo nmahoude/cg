@@ -87,7 +87,6 @@ public class AG implements AI {
 
     Ship other = state.getClosestEnnemy(ship);
 
-    System.err.println("For "+ship.id+ " , Analyse target "+other.id+" at "+ship.position.distanceTo(other.position));
     // only check if close enough TODO 4 is good ?
     if (ship.position.distanceTo(other.position) < 4) {
       // I wait and enemy do something -> get where it will be
@@ -108,7 +107,6 @@ public class AG implements AI {
         updatePositionMap(other.stern(), 1);
         state.restore();
       }
-      System.err.println("End of sim");
       // get the coord wit maximum chance (number of times)
       Coord bestCoord = null;
       int bestCount = 0;
@@ -185,6 +183,7 @@ public class AG implements AI {
   private void updateWeightsForLosingState() {
     // don't do anything 
     //TODO find something interesting
+    weights.weights[Feature.DISTANCE_TO_CLOSEST_ENEMY_BOW2_FEATURE] = -1.0;
   }
 
   private void updateWeightsForWinningState() {

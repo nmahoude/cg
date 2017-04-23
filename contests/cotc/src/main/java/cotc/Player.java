@@ -20,7 +20,7 @@ import cotc.utils.FastArray;
 public class Player {
   private static boolean debugOutput = false;
   
-  static Random rand = new Random();
+  public static Random rand = new Random(System.currentTimeMillis());
   static GameState state;
   static FastArray<Ship> shipsRoundBackup = new FastArray<>(Ship.class, 6);
   static Coord[] lastSternPosition = new Coord[6];
