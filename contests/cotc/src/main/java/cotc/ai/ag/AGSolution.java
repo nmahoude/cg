@@ -2,9 +2,9 @@ package cotc.ai.ag;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import cotc.GameState;
+import cotc.Player;
 import cotc.ai.AISolution;
 import cotc.entities.Action;
 import cotc.entities.Ship;
@@ -15,7 +15,6 @@ public class AGSolution implements AISolution{
   public final static int AGACTION_SIZE = 1000;
   private static final Action[] ACTION_VALUES = Action.values();
   public static int DEPTH = 5;
-  public static Random rand = new Random();
 
   public static double patience[] = new double[]{ 1.0, 0.8, 0.6, 0.4, 0.2, 0.1};
   
@@ -25,6 +24,8 @@ public class AGSolution implements AISolution{
   protected GameState state;
   public double energy;
   private FeatureWeight weights;
+  public Feature  feature = new Feature();
+ 
  
 
   protected AGSolution() {
@@ -59,7 +60,7 @@ public class AGSolution implements AISolution{
         Action action;
       
         if (i == 0) {
-          action = possibleActions.elements[rand.nextInt(possibleActions.FE)];
+          action = possibleActions.elements[Player.rand.nextInt(possibleActions.FE)];
           Coord target = Coord.ZERO;
           
           if (action == Action.MINE) {
@@ -70,32 +71,30 @@ public class AGSolution implements AISolution{
               weights.weights[Feature.HIS_DELTA_HEALTH_FEATURE] = -0.5; // don't care about its health
               action = Action.MINE;
             } else {
-              action = Action.WAIT;
+              if (weights.weights[Feature.MINE_DROPPED_FEATURE] > 0) {
+                action = Action.MINE;
+              } else {
+                action = Action.WAIT;
+              }
             }
           }
           if (action == Action.FIRE) {
-            ShipStateAnalysis otherShipAnalysis = analyser.analyse.get(shipAnalysis.closestEnemy);
-            if (shipAnalysis.closestEnemy.position.distanceTo(ship.position) <= 3) {
-              // target the next position of the ship
-              Coord c1 = shipAnalysis.closestEnemy.position.neighborsCache[shipAnalysis.closestEnemy.orientation];
-              Coord c2 = c1.neighborsCache[shipAnalysis.closestEnemy.orientation];
-              if (shipAnalysis.closestEnemy.speed == 2 && c2.isInsideMap()) {
-                target = c2;
-              } else {
-                target = c1;
-              }
-            }
-            if (otherShipAnalysis.canMove[0] == false) {
-              target = shipAnalysis.closestEnemy.position;
+            target = AG.possibleTargetsPerShips[ship.id];
+            if (target != null && 
+                // don't fire if it's the endgame and we are winning unless there is 40%+ chance to hit
+                (AG.status != GameStatus.ENDGAME_WINNING || AG.possibleTargetsPerShipsPercent[ship.id] > 0.4)) {
+              weights.weights[Feature.CANNONBALL_FIRED_FEATURE] = 1.0;// 1 cannonball equivalent 5 pts de vie ?
             } else {
               action = Action.WAIT;
+              target = Coord.ZERO;
             }
           }
+          
           actions.elements[i + s*DEPTH].action = action;
           actions.elements[i + s*DEPTH].target = target;
         } else {
           // other turns is more random
-          action = ACTION_VALUES[rand.nextInt(ACTION_VALUES.length)];
+          action = ACTION_VALUES[Player.rand.nextInt(ACTION_VALUES.length)];
           if (action == Action.FIRE) {
             action = Action.WAIT;
           }
@@ -116,20 +115,35 @@ public class AGSolution implements AISolution{
     // ATM, the health with a patience coef is not a good result (really not !)
     for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
-
       
       // greedy health
       energy += (ship.health-ship.b_health);
-    
       // greddy speed
-      energy += (ship.speed);
+      energy += Feature.speeds [ship.speed];
+
+      Ship closestShip = state.getClosestEnnemy(ship);
+      if (closestShip != null) {
+        feature.features[Feature.DISTANCE_TO_CLOSEST_ENEMY_BOW2_FEATURE] += patience[turn] * closestShip.bow().neighborsCache[closestShip.orientation].distanceTo(ship.bow());
+      }
+
+      
+      // don't go at ship stern-1 to avoid mines
+      if (turn < 2) {
+        double coeff = turn == 0 ? 1.0 : 0.3;
+        for (int s2=0;s2<state.teams[1].shipsAlive.FE;s2++) {
+          Ship other = state.teams[1].shipsAlive.elements[s2];
+          if (other.health <= 0 || ship.mineCooldown > 0) continue;
+          if (ship.at(other.stern().neighborsCache[(other.orientation + 3) %6])) {
+            // not good !
+            energy -= 10 * coeff;
+          }
+        }
+      }
     }
   }
 
   public void updateEnergyEnd(GameState state) {
-    // feature after turn DEPTH, less precise, but more insight
-    Feature feature = new Feature();
-    feature.calculateFeatures(state);
+    feature.calculateFeaturesFinal(state);
     energy += feature.applyWeights(weights);
   }
 

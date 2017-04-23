@@ -42,9 +42,9 @@ public class Simulation {
   public static final int MINE_VISIBILITY_RANGE = 5;
   public static final Coord MAP_CENTER = Coord.get(11, 10);
 
-  private static int travelTimeCache[];
+  public static int travelTimeCache[];
   static {
-    travelTimeCache = new int[30];
+    travelTimeCache = new int[60];
     for (int dist=0;dist<travelTimeCache.length;dist++) {
       travelTimeCache[dist] = (int) (1 + Math.round(dist / 3.0));
     }
@@ -80,6 +80,9 @@ public class Simulation {
     for (int depth = 0; depth < AGSolution.DEPTH; depth++) {
       if( state.teams[0].dead || state.teams[1].dead) break;
       applyActions(depth, 0, actions);
+      
+      // TODO What the frack ???? j'ai une autre eval qui evite de passer derriere
+      // bon je la laisse pour pas influer
       for (int s=0;s<state.teams[1].ships.FE;s++) {
         Ship ship = state.teams[1].ships.elements[s];
         if (depth == 0) {
@@ -231,18 +234,9 @@ public class Simulation {
               break;
             case MINE:
               if (ship.mineCooldown == 0) {
-                Coord target = ship.stern().neighbor((ship.orientation + 3) % 6);
-
-                if (target.isInsideMap()) {
-                  boolean cellIsFreeOfShips = true;
-                  for (int i=0;i<state.ships.FE;i++) {
-                    Ship b = state.ships.elements[i];
-                    if (b == ship) continue;
-                    cellIsFreeOfShips = cellIsFreeOfShips && !b.at(target);
-                  }
-                  boolean cellIsFreeOfMinesAndBarrels = state.getEntityAt(target) == null;
-                  
-                  if (cellIsFreeOfMinesAndBarrels && cellIsFreeOfShips ) {
+                if (ship.canDropBomb(state) ) {
+                  Coord target = ship.stern().neighbor((ship.orientation + 3) % 6);
+                  if (ship.canDropBomb(state)) {
                     ship.mineCooldown = Simulation.COOLDOWN_MINE;
                     Mine mine = new Mine(0, target.x, target.y);
                     state.droppedMines++;
@@ -250,7 +244,6 @@ public class Simulation {
                     state.setEntityAt(target, mine);
                   }
                 }
-
               }
               break;
             case FIRE:
@@ -470,6 +463,7 @@ public class Simulation {
           state.clearEntityAt(barrel.position);
           cannonBallExplosions.removeAt(i);
           i--;
+          state.destroyedBarrels++;
         }
       }
     }

@@ -9,17 +9,21 @@ import cotc.ai.ag.Feature;
 import cotc.entities.Action;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
+import cotc.entities.Entity;
+import cotc.entities.EntityType;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
+import cotc.utils.Coord;
 import cotc.utils.FastArray;
 
 public class Player {
   private static boolean debugOutput = false;
   
-  static Random rand = new Random();
+  public static Random rand = new Random(System.currentTimeMillis());
   static GameState state;
   static FastArray<Ship> shipsRoundBackup = new FastArray<>(Ship.class, 6);
+  static Coord[] lastSternPosition = new Coord[6];
   public static long startTime = 0;
   
   
@@ -36,25 +40,24 @@ public class Player {
       shipsRoundBackup.copyFrom(state.ships);
       state.initRound();
       readState(in);
-
+      
+      doMineDetection();
       
       Feature feature= new Feature();
-      feature.calculateFeatures(state);
+      feature.calculateFeaturesFinal(state);
       //feature.debug();
       
       AG ag = new AG();
       ag.setState(state);
-      AGSolution sol = (AGSolution)ag.evolve(startTime+ (round == 1 ? 800 : 44));
-      if (debugOutput) {
-        //sol.debugOutput();
-      }
-      
-      String[] output = sol.output();
+      AGSolution bestSol = (AGSolution)ag.evolve(startTime+ (round == 1 ? 800 : 44));
+      //bestSol.feature.debugFeature(ag.weights);
+
+      String[] output = bestSol.output();
       for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
         Ship ship = state.teams[0].shipsAlive.elements[s];
-        if (sol.actions.elements[0+s*AGSolution.DEPTH].action == Action.FIRE) {
+        if (bestSol.actions.elements[0+s*AGSolution.DEPTH].action == Action.FIRE) {
           ship.cannonCooldown = Simulation.COOLDOWN_CANNON;
-        } else if (sol.actions.elements[0+s*AGSolution.DEPTH].action == Action.MINE) {
+        } else if (bestSol.actions.elements[0+s*AGSolution.DEPTH].action == Action.MINE) {
           ship.mineCooldown = Simulation.COOLDOWN_MINE;
         }
         System.out.println(output[s]);
@@ -62,16 +65,34 @@ public class Player {
     }
   }
 
-  private static void debugRumDomination() {
-    // debug rum domination
-    BarrelDomination barrelDominitation = state.getBarrelDominitation();
-    System.err.println("Rum dom : ");
-    System.err.println("barrel0 : "+barrelDominitation.barrelCount0);
-    System.err.println("barrel1 : "+barrelDominitation.barrelCount1);
-    System.err.println("rum0 : "+barrelDominitation.rumCount0);
-    System.err.println("rum1 : "+barrelDominitation.rumCount1);
+  /**
+   * Be aware of FOG of WAR !!!!!
+   * ships can drop mines that we don't see !!!
+   */
+  private static void doMineDetection() {
+    for (int s=0;s<state.ships.FE;s++) {
+      Ship ship = state.ships.elements[s];
+      if (ship.owner == 1 && ship.mineCooldown > 0) {
+        System.err.println("minecooldonw "+ship.mineCooldown);
+      }
+      Coord coord = lastSternPosition[ship.id];
+      if (coord != null) {
+        Entity entityAtCoord = state.getEntityAt(coord);
+        if (entityAtCoord != null && entityAtCoord.type == EntityType.MINE) {
+          ship.mineCooldown = Simulation.COOLDOWN_MINE-1;
+          ship.b_mineCooldown = Simulation.COOLDOWN_MINE-1; // don't forget to update backup too, state is already saved
+        }
+      }
+      // update for next turn
+      if (ship.mineCooldown == 0 && ship.canDropBomb(state)) {
+        Coord target = ship.stern().neighbor((ship.orientation + 3) % 6);
+        lastSternPosition[ship.id] = target;
+      } else {
+        lastSternPosition[ship.id] = null;
+      }
+    }
   }
-
+  
   private static void readState(Scanner in) {
     // free stuff ?
     state.shipCount = in.nextInt();

@@ -67,7 +67,7 @@ GameState state;
     state.backup();
 
     Feature feature = new Feature();
-    feature.calculateFeatures(state);
+    feature.calculateFeaturesFinal(state);
     
     assertThat(feature.features[Feature.MY_MOBILITY_FEATURE], is(10.0));
     assertThat(feature.features[Feature.HIS_MOBILITY_FEATURE], is(10.0));

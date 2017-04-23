@@ -2,6 +2,7 @@ package cotc.entities;
 
 import java.util.List;
 
+import cotc.GameState;
 import cotc.utils.Coord;
 import cotc.utils.FastArray;
 
@@ -20,7 +21,7 @@ public class Ship extends Entity {
   private int b_speed;
   public int b_health;
   private int b_cannonCooldown;
-  private int b_mineCooldown;
+  public int b_mineCooldown;
 
   // temporary values before collisions / fire ball, ..
   public int newOrientation;
@@ -109,9 +110,7 @@ public class Ship extends Entity {
   }
 
   public boolean at(Coord coord) {
-    Coord stern = stern();
-    Coord bow = bow();
-    return stern == coord || bow == coord || position == coord;
+    return stern() == coord || bow() == coord || position == coord;
   }
 
   public boolean newBowIntersect(Ship other) {
@@ -181,4 +180,20 @@ public class Ship extends Entity {
     return toPlayerString(orientation, speed, health, owner == playerIdx ? 1 : 0);
   }
 
+  public boolean canDropBomb(GameState state) {
+  Coord target = stern().neighbor((orientation + 3) % 6);
+
+  if (target.isInsideMap()) {
+    boolean cellIsFreeOfShips = true;
+    for (int i = 0; i < state.ships.FE; i++) {
+      Ship b = state.ships.elements[i];
+      if (b == this)
+        continue;
+      cellIsFreeOfShips = cellIsFreeOfShips && !b.at(target);
+    }
+    boolean cellIsFreeOfMinesAndBarrels = state.getEntityAt(target) == null;
+    return cellIsFreeOfMinesAndBarrels && cellIsFreeOfShips;
+  }
+  return false;
+}
 }
