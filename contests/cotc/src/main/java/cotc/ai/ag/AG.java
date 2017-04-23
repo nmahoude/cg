@@ -9,6 +9,7 @@ import cotc.ai.AISolution;
 import cotc.entities.Action;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
+import cotc.utils.Coord;
 import cotc.utils.FastArray;
 
 public class AG implements AI {
@@ -17,13 +18,22 @@ public class AG implements AI {
   protected GameState state;
   protected Simulation simulation;
   public FeatureWeight weights = new FeatureWeight();
-
+  public static GameStatus status = GameStatus.STANDARD;
   
   // Possible moves at turns 0 for each ships (the same for all simulations)
   public List<FastArray<Action> > turn0PossibleActions = new ArrayList<>();
-  
+  public static Coord[] possibleTargetsPerShips = new Coord[6];
+  public static double[] possibleTargetsPerShipsPercent = new double[6];
 
+  int positionsFE;
+  Coord possiblePositions[] = new Coord[256];
+  int possiblePositionsValues[] = new int[256];
+
+  
+  
   public AISolution evolve(long stopTime) {
+    status = GameStatus.STANDARD;
+    
     updateChampions();
     int simulations = 0;
     simulation = new Simulation(state);
@@ -31,6 +41,13 @@ public class AG implements AI {
     StateAnalyser analyser = new StateAnalyser();
     analyser.analyse(state);
     
+    resetShipsActions();
+    for (int s=0;s<state.teams[0].ships.FE;s++) {
+      Ship ship = state.teams[0].ships.elements[s];
+      if (ship.cannonCooldown == 0) { 
+        analyseFireTargets(ship);
+      }
+    }
     createPossibleActionsAtTurn0();
     
     updateWeightsForEndGame();
@@ -50,6 +67,75 @@ public class AG implements AI {
     }
     System.err.println("Simulations "+simulations+ " at "+bestGeneration+" with "+best.energy);
     return best;
+  }
+
+  private void resetShipsActions() {
+    for (int s=0;s<state.ships.FE;s++) {
+      Ship ship = state.ships.elements[s];
+      ship.action = Action.WAIT;
+      ship.target = Coord.ZERO;
+    }
+  }
+  
+  
+  private void analyseFireTargets(Ship ship) {
+    possibleTargetsPerShips[ship.id] = null;
+    possibleTargetsPerShipsPercent[ship.id] = 0.0;
+    positionsFE = 0;
+    
+    Action[] actions = new Action[] { Action.WAIT, Action.FASTER, Action.SLOWER, Action.PORT, Action.STARBOARD };
+
+    Ship other = state.getClosestEnnemy(ship);
+
+    System.err.println("For "+ship.id+ " , Analyse target "+other.id+" at "+ship.position.distanceTo(other.position));
+    // only check if close enough TODO 4 is good ?
+    if (ship.position.distanceTo(other.position) < 4) {
+      // I wait and enemy do something -> get where it will be
+      ship.action = Action.WAIT;
+
+      for (Action action : actions) {
+        // eliminate impossible actions
+        if (other.speed == 2 && action == Action.FASTER) continue;
+        if (other.speed == 0 && action == Action.SLOWER) continue;
+        
+        other.action = action;
+        // simulate one turn
+        simulation.playOneTurn();
+        
+        // update the hasmap
+        updatePositionMap(other.position, 2);
+        updatePositionMap(other.bow(), 1);
+        updatePositionMap(other.stern(), 1);
+        state.restore();
+      }
+      System.err.println("End of sim");
+      // get the coord wit maximum chance (number of times)
+      Coord bestCoord = null;
+      int bestCount = 0;
+      int totalCount = 0;
+      for (int i=0;i<positionsFE;i++) {
+        int count = possiblePositionsValues[i];
+        totalCount += count;
+        if (count > bestCount) {
+          bestCoord = possiblePositions[i];
+          bestCount = count;
+        }
+      }
+      // if we fire, it is here
+      possibleTargetsPerShips[ship.id] = bestCoord;
+      possibleTargetsPerShipsPercent[ship.id] = 1.0 * bestCount / totalCount;
+    }
+  }
+
+  private void updatePositionMap(Coord coord, int times) {
+    for (int i=0;i<positionsFE;i++) {
+      if (possiblePositions[i] == coord) {
+        possiblePositionsValues[i] += times;
+        return;
+      }
+    }
+    possiblePositions[positionsFE] = coord;
+    possiblePositionsValues[positionsFE++] = times;
   }
 
   private void updateWeightsForEndGame() {
@@ -81,10 +167,13 @@ public class AG implements AI {
             || (bestHealth == 0 && survivorHealth_0 > survivorHealth_1);
         if (winning) {
           updateWeightsForWinningState();
+          status = GameStatus.ENDGAME_WINNING;
         } else {
           updateWeightsForLosingState();
+          status = GameStatus.ENDGAME_LOSING;
         }
       } else {
+        status = GameStatus.STANDARD;
         updateWeightsForStandardState();
       }
   }
@@ -150,6 +239,14 @@ public class AG implements AI {
     StateAnalyser analyser = new StateAnalyser();
     analyser.analyse(state);
     
+    resetShipsActions();
+    for (int s=0;s<state.teams[0].ships.FE;s++) {
+      Ship ship = state.teams[0].ships.elements[s];
+      if (ship.cannonCooldown == 0) { 
+        analyseFireTargets(ship);
+      }
+    }
+
     AGSolution best = fake;
     for (int i =0;i<iteration;i++) {
       AGSolution sol = new AGSolution(state,weights);

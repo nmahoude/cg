@@ -79,45 +79,17 @@ public class AGSolution implements AISolution{
             }
           }
           if (action == Action.FIRE) {
-            if (rand.nextBoolean()) {
-              // other ships
-              ShipStateAnalysis otherShipAnalysis = analyser.analyse.get(shipAnalysis.closestEnemy);
-              if (shipAnalysis.closestEnemy.position.distanceTo(ship.position) <= 3) {
-                // target the next position of the ship
-                Coord c1 = shipAnalysis.closestEnemy.position.neighborsCache[shipAnalysis.closestEnemy.orientation];
-                Coord c2 = c1.neighborsCache[shipAnalysis.closestEnemy.orientation];
-                if (shipAnalysis.closestEnemy.speed == 2 && c2.isInsideMap()) {
-                  target = c2;
-                } else {
-                  target = c1;
-                }
-                if (otherShipAnalysis.canMove[0] == false) {
-                  target = shipAnalysis.closestEnemy.position;
-                } else {
-                  action = Action.WAIT;
-                }
-              }
-            } else if (state.barrels.FE > 0 && ship.cannonCooldown == 0){
+            target = AG.possibleTargetsPerShips[ship.id];
+            if (target != null && 
+                // don't fire if it's the endgame and we are winning unless there is 40%+ chance to hit
+                (AG.status != GameStatus.ENDGAME_WINNING || AG.possibleTargetsPerShipsPercent[ship.id] > 0.4)) {
+              weights.weights[Feature.CANNONBALL_FIRED_FEATURE] = 5.0;// 1 cannonball equivalent 5 pts de vie ?
+            } else {
               action = Action.WAIT;
-              //              // check for barrels to explode
-//              // 1. find a ship going for a barrel
-//              for (int s2=0;s2<state.teams[1].ships.FE;s2++) {
-//                Ship other = state.teams[1].ships.elements[s2];
-//                Barrel barrel = state.getClosestBarrel(other);
-//                int otherDistToBarrel = other.position.distanceTo(barrel.position);
-//                if (otherDistToBarrel < 10 && otherDistToBarrel < ship.position.distanceTo(barrel.position)) {
-//                  if (other.bow().distanceTo(barrel.position) < otherDistToBarrel) {
-//                    // orientation gets the ship nearest
-//                    if (Simulation.travelTimeCache[ship.bow().distanceTo(barrel.position)] < otherDistToBarrel) {
-//                      action = Action.FIRE;
-//                      target = barrel.position;
-//                      weights.weights[Feature.DESTROYED_BARRELS] = 1.0;
-//                    }
-//                  }
-//                }
-//              }
+              target = Coord.ZERO;
             }
           }
+          
           actions.elements[i + s*DEPTH].action = action;
           actions.elements[i + s*DEPTH].target = target;
         } else {

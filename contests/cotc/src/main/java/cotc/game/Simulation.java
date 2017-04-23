@@ -80,6 +80,9 @@ public class Simulation {
     for (int depth = 0; depth < AGSolution.DEPTH; depth++) {
       if( state.teams[0].dead || state.teams[1].dead) break;
       applyActions(depth, 0, actions);
+      
+      // TODO What the frack ???? j'ai une autre eval qui evite de passer derriere
+      // bon je la laisse pour pas influer
       for (int s=0;s<state.teams[1].ships.FE;s++) {
         Ship ship = state.teams[1].ships.elements[s];
         if (depth == 0) {

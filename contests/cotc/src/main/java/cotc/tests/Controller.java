@@ -33,7 +33,7 @@ public class Controller {
     AI ai2 = new AG();
     List<AI> ais = Arrays.asList(ai1, ai2);
     
-    final int matchPerEvaluation = 50;
+    final int matchPerEvaluation = 500;
     int totalMatches = matchPerEvaluation * factoriel(ais.size()-1);
     int matches = 0;
     
