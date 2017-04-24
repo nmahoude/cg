@@ -14,5 +14,7 @@
 		<module>libraries/trigonometry</module>
 		<module>cache</module>
 		<module>random</module>
+		<module>utils</module>
+		<module>cgcollections</module>
 	</modules>
 </project>
