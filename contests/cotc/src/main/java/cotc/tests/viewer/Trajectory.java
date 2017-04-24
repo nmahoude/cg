@@ -1,12 +1,12 @@
 package cotc.tests.viewer;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import trigonometry.Point;
 
 /** hold the pod trajectory
  * 

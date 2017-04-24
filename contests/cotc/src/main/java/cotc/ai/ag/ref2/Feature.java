@@ -32,8 +32,8 @@ public class Feature {
         
     barrelDomination = state.getBarrelDominitation();
 
-    if (state.barrels.FE > 0) {
-      for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+    if (state.barrels.length > 0) {
+      for (int s=0;s<state.teams[0].shipsAlive.length;s++) {
         Ship ship = state.teams[0].shipsAlive.elements[s];
         if (ship.health < 75) {
           distanceToClosestBarrelFeature += 40-state.getClosestBarrelDistance(ship);
@@ -43,20 +43,20 @@ public class Feature {
     
     updateMobilityFeature(state);
     
-    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+    for (int s=0;s<state.teams[0].shipsAlive.length;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
       myHealtFeature += ship.health;
       speedFeature += ship.speed;
       distanceToCenterFeature += 10-(ship.position.distanceTo(Simulation.MAP_CENTER));
     }
     
-    for (int s=0;s<state.teams[1].shipsAlive.FE;s++) {
+    for (int s=0;s<state.teams[1].shipsAlive.length;s++) {
       Ship ship = state.teams[1].shipsAlive.elements[s];
       hisHealthFeature += ship.health;
     }
     
     // distToBarrel
-    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+    for (int s=0;s<state.teams[0].shipsAlive.length;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
       Barrel barrel = state.getClosestBarrel(ship);
       if (barrel != null) {
@@ -71,7 +71,7 @@ public class Feature {
   // TODO handle cannonBalls
   private void updateMobilityFeature(GameState state) {
     // sale hack sans risque (pun intended).....
-    for (int i=0;i<state.ships.FE;i++) {
+    for (int i=0;i<state.ships.length;i++) {
       Ship ship = state.ships.elements[i];
       if (ship.health<=0) continue;
       state.setEntityAt(ship.position, ship);
@@ -79,7 +79,7 @@ public class Feature {
       state.setEntityAt(ship.stern(), ship);
     }
     
-    for (int i=0;i<state.ships.FE;i++) {
+    for (int i=0;i<state.ships.length;i++) {
       Ship ship = state.ships.elements[i];
       if (ship.health<=0) continue;
 //      Coord nextShipPosition = ship.position;
@@ -121,7 +121,7 @@ public class Feature {
       }
     }
 
-    for (int i=0;i<state.ships.FE;i++) {
+    for (int i=0;i<state.ships.length;i++) {
       Ship ship = state.ships.elements[i];
       if (ship.health<=0) continue;
       state.setEntityAt(ship.position, null);

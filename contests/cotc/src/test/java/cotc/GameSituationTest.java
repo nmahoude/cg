@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
+import cgcollections.arrays.FastArray;
 import cotc.ai.AISolution;
 import cotc.ai.ag.AG;
 import cotc.ai.ag.AGAction;
@@ -19,7 +20,6 @@ import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
 import cotc.utils.Coord;
-import cotc.utils.FastArray;
 
 public class GameSituationTest {
   GameState state;

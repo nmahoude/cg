@@ -3,6 +3,7 @@ package cotc.game;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import cgcollections.arrays.FastArray;
 import cotc.GameState;
 import cotc.Team;
 import cotc.ai.AISolution;
@@ -16,7 +17,6 @@ import cotc.entities.EntityType;
 import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.utils.Coord;
-import cotc.utils.FastArray;
 
 public class Simulation {
   private GameState state;
@@ -83,7 +83,7 @@ public class Simulation {
       
       // TODO What the frack ???? j'ai une autre eval qui evite de passer derriere
       // bon je la laisse pour pas influer
-      for (int s=0;s<state.teams[1].ships.FE;s++) {
+      for (int s=0;s<state.teams[1].ships.length;s++) {
         Ship ship = state.teams[1].ships.elements[s];
         if (depth == 0) {
           ship.action = Action.MINE;
@@ -142,7 +142,7 @@ public class Simulation {
     }
   }
   private void applyActions(int depth, int teamId, FastArray<AGAction> actions) {
-    for (int s=0;s<state.teams[teamId].ships.FE;s++) {
+    for (int s=0;s<state.teams[teamId].ships.length;s++) {
       Ship ship = state.teams[teamId].ships.elements[s];
       ship.action = actions.elements[depth + s*AGSolution.DEPTH].action;
       ship.target = actions.elements[depth + s*AGSolution.DEPTH].target;
@@ -172,7 +172,7 @@ public class Simulation {
     explodeShips();
     explodeMinesAndBarrels();
 
-    for (int i=0;i<state.ships.FE;i++) {
+    for (int i=0;i<state.ships.length;i++) {
       Ship ship = state.ships.elements[i];
 
       if (ship.health <= 0) {
@@ -185,13 +185,13 @@ public class Simulation {
         }
         // remove ships from lists
         state.teams[ship.owner].shipsAlive.remove(ship);
-        state.ships.removeAt(i);
+        state.ships.remove(i);
         i--;
       }
     }
     
-    if (state.teams[0].shipsAlive.FE == 0) state.teams[0].dead = true;
-    if (state.teams[1].shipsAlive.FE == 0) state.teams[1].dead = true;
+    if (state.teams[0].shipsAlive.length == 0) state.teams[0].dead = true;
+    if (state.teams[1].shipsAlive.length == 0) state.teams[1].dead = true;
     state.rounds ++;
     if (state.rounds >= 200) {
       checkEndConditions();
@@ -200,7 +200,7 @@ public class Simulation {
 
   private void applyActions() {
     for (Team team : state.teams) {
-      for (int s=0;s<team.shipsAlive.FE;s++) {
+      for (int s=0;s<team.shipsAlive.length;s++) {
         Ship ship = team.shipsAlive.elements[s];
         if (ship.mineCooldown > 0) {
           ship.mineCooldown--;
@@ -270,10 +270,10 @@ public class Simulation {
 
   private void moveCannonballs() {
     cannonBallExplosions.clear();
-    for (int i=0;i<state.cannonballs.FE;i++) {
+    for (int i=0;i<state.cannonballs.length;i++) {
       CannonBall ball = state.cannonballs.elements[i];
       if (ball.remainingTurns == 0) {
-        state.cannonballs.removeAt(i);
+        state.cannonballs.remove(i);
         i--; // we remove an object, so we have to get back one item
         continue;
       } else if (ball.remainingTurns == 1) {
@@ -286,7 +286,7 @@ public class Simulation {
   }
 
   private void decrementRum() {
-    for (int i=0;i<state.ships.FE;i++) {
+    for (int i=0;i<state.ships.length;i++) {
       Ship ship = state.ships.elements[i];
       ship.damage(1);
     }
@@ -297,7 +297,7 @@ public class Simulation {
     // Go forward
     // ---
     // init new positions
-    for (int s=0;s<state.ships.FE;s++) {
+    for (int s=0;s<state.ships.length;s++) {
       Ship ship = state.ships.elements[s];
       ship.newPosition = ship.position;
       ship.newBowCoordinate = ship.bow();
@@ -305,7 +305,7 @@ public class Simulation {
     }
     
     for (int i = 1; i <= MAX_SHIP_SPEED; i++) {
-      for (int s = 0; s < state.ships.FE; s++) {
+      for (int s = 0; s < state.ships.length; s++) {
         Ship ship = state.ships.elements[s];
         if (ship.health <= 0) continue;
         if (i > ship.speed)   continue;
@@ -328,9 +328,9 @@ public class Simulation {
         collisionDetected = false;
         collisions.clear();
 
-        for (int s=0;s<state.ships.FE;s++) {
+        for (int s=0;s<state.ships.length;s++) {
           Ship ship = state.ships.elements[s];
-          for (int s2=s+1;s2<state.ships.FE;s2++) {
+          for (int s2=s+1;s2<state.ships.length;s2++) {
             if (s == s2) continue;
             Ship other = state.ships.elements[s2];
             
@@ -343,7 +343,7 @@ public class Simulation {
           }
         }
 
-        for (int s=0;s<collisions.FE;s++) {
+        for (int s=0;s<collisions.length;s++) {
           Ship ship = collisions.elements[s];
           // Revert last move
           ship.newPosition = ship.position;
@@ -358,12 +358,12 @@ public class Simulation {
       }
 
       // 1st move all ships, then doCollision
-      for (int s=0;s<state.ships.FE;s++) {
+      for (int s=0;s<state.ships.length;s++) {
         Ship ship = state.ships.elements[s];
         if (ship.health <=0) continue;
         ship.position = ship.newPosition;
       }
-      for (int s=0;s<state.ships.FE;s++) {
+      for (int s=0;s<state.ships.length;s++) {
         Ship ship = state.ships.elements[s];
         if (ship.health <=0) continue;
         doCollisionWithMinesAndBarrels(ship, ship.bow()); // only bow can collide
@@ -372,7 +372,7 @@ public class Simulation {
   }
   private void rotateShips() {
     // Rotate
-    for (int s=0;s<state.ships.FE;s++) {
+    for (int s=0;s<state.ships.length;s++) {
       Ship ship = state.ships.elements[s];
       if (ship.health <=0) continue;
         ship.newPosition = ship.position;
@@ -386,14 +386,14 @@ public class Simulation {
       collisions.clear();
       collisionDetected = false;
 
-      for (int s=0;s<state.ships.FE;s++) {
+      for (int s=0;s<state.ships.length;s++) {
         Ship ship = state.ships.elements[s];
         if (ship.newPositionsIntersect(state.ships)) {
           collisions.add(ship);
         }
       }
 
-      for (int i=0;i<collisions.FE;i++) {
+      for (int i=0;i<collisions.length;i++) {
         Ship ship = collisions.elements[i];
         ship.newOrientation = ship.orientation;
         ship.newBowCoordinate = ship.newBow();
@@ -405,12 +405,12 @@ public class Simulation {
     }
 
     // Apply rotation (1st move to newOrientation, then check collision)
-    for (int s=0;s<state.ships.FE;s++) {
+    for (int s=0;s<state.ships.length;s++) {
       Ship ship = state.ships.elements[s];
       if (ship.health <=0) continue;
         ship.orientation = ship.newOrientation;
     }
-    for (int s=0;s<state.ships.FE;s++) {
+    for (int s=0;s<state.ships.length;s++) {
       Ship ship = state.ships.elements[s];
       if (ship.health <=0) continue;
         doCollisionWithMinesAndBarrels(ship, ship.bow()); 
@@ -419,7 +419,7 @@ public class Simulation {
   }
   
   private void updateInitialRum() {
-    for (int s=0;s<state.ships.FE;s++) {
+    for (int s=0;s<state.ships.length;s++) {
       Ship ship = state.ships.elements[s];
       ship.initialHealth = ship.health;
     }
@@ -427,18 +427,18 @@ public class Simulation {
 
   void explodeShips() {
     
-    for (int i=0;i<cannonBallExplosions.FE; i++) {
+    for (int i=0;i<cannonBallExplosions.length; i++) {
       Coord position = cannonBallExplosions.elements[i];
-      for (int s=0;s<state.ships.FE;s++) {
+      for (int s=0;s<state.ships.length;s++) {
         Ship ship = state.ships.elements[s];
         if (position == ship.bow() || position == ship.stern()) {
           ship.damage(Simulation.LOW_DAMAGE);
-          cannonBallExplosions.removeAt(i);
+          cannonBallExplosions.remove(i);
           i--;
           break;
         } else if (position == ship.position) {
           ship.damage(Simulation.HIGH_DAMAGE);
-          cannonBallExplosions.removeAt(i);
+          cannonBallExplosions.remove(i);
           i--;
           break;
         }
@@ -446,7 +446,7 @@ public class Simulation {
     }
   }
   void explodeMinesAndBarrels() {
-    for (int i=0;i<cannonBallExplosions.FE; i++) {
+    for (int i=0;i<cannonBallExplosions.length; i++) {
       Coord position = cannonBallExplosions.elements[i];
       Entity entityAtPosition = state.getEntityAt(position);
       if (entityAtPosition != null) {
@@ -455,13 +455,13 @@ public class Simulation {
           mine.explode(state.ships, true);
           state.mines.remove(mine);
           state.clearEntityAt(mine.position);
-          cannonBallExplosions.removeAt(i);
+          cannonBallExplosions.remove(i);
           i--;
         } else {
           Barrel barrel = (Barrel)entityAtPosition;
           state.barrels.remove(barrel);
           state.clearEntityAt(barrel.position);
-          cannonBallExplosions.removeAt(i);
+          cannonBallExplosions.remove(i);
           i--;
           state.destroyedBarrels++;
         }

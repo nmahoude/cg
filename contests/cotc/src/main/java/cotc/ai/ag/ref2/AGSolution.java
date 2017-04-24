@@ -5,12 +5,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import cgcollections.arrays.FastArray;
 import cotc.GameState;
 import cotc.ai.AISolution;
 import cotc.ai.ag.AGAction;
 import cotc.entities.Action;
 import cotc.entities.Ship;
-import cotc.utils.FastArray;
 
 public class AGSolution implements AISolution {
   private static final Action[] ACTION_VALUES = Action.values();
@@ -32,7 +32,7 @@ public class AGSolution implements AISolution {
     this.state = state;
     this.shipCount = state.shipCount;
     actions = new HashMap<>();
-    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+    for (int s=0;s<state.teams[0].shipsAlive.length;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
       actions.put(ship, new AGAction[DEPTH]);
     }
@@ -42,7 +42,7 @@ public class AGSolution implements AISolution {
   public String[] output() {
     String[] output = new String[shipCount];
     int i=0;
-    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+    for (int s=0;s<state.teams[0].shipsAlive.length;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
       output[i++] = actions.get(ship)[0].toString();
     }
@@ -50,7 +50,7 @@ public class AGSolution implements AISolution {
   }
 
   public void randomize(GameState state) {
-    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+    for (int s=0;s<state.teams[0].shipsAlive.length;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
       AGAction[] shipActions = actions.get(ship);
       for (int i=0;i<DEPTH;i++) {

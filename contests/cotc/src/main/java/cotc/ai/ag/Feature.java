@@ -67,17 +67,17 @@ public class Feature {
     features[RUM_COUNT1_FEATURE] = barrelDomination.rumCount1;
     features[CANNONBALL_FIRED_FEATURE] = state.firedCannonballs; // hack to know how many cannonballs have been shot during the simulation
     features[MINE_DROPPED_FEATURE] = state.droppedMines; // hack to know how many cannonballs have been shot during the simulation
-    features[BARREL_COUNT_FEATURE] = state.barrels.FE; // Number of barrels
+    features[BARREL_COUNT_FEATURE] = state.barrels.length; // Number of barrels
     features[DESTROYED_BARRELS] = state.destroyedBarrels;
     updateMobilityFeature(state);
     
-    for (int s=0;s<state.teams[1].shipsAlive.FE;s++) {
+    for (int s=0;s<state.teams[1].shipsAlive.length;s++) {
       Ship ship = state.teams[1].shipsAlive.elements[s];
       features[HIS_HEALTH_FEATURE] += ship.health;
       features[HIS_DELTA_HEALTH_FEATURE] = (ship.health - ship.b_health);
     }
     
-    for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+    for (int s=0;s<state.teams[0].shipsAlive.length;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
       if (ship.health < 0) continue;
 
@@ -88,7 +88,7 @@ public class Feature {
       // distances to ships
       int bestDist = Integer.MAX_VALUE;
       Ship closestShip = null;
-      for (int s2=0;s2<state.teams[1].shipsAlive.FE;s2++) {
+      for (int s2=0;s2<state.teams[1].shipsAlive.length;s2++) {
         Ship other = state.teams[1].shipsAlive.elements[s2];
         if (other.health <= 0) continue;
         int distToShip = other.position.distanceTo(ship.position);
@@ -101,7 +101,7 @@ public class Feature {
       features[DISTANCE_TO_CLOSEST_ENEMY_FEATURE] +=bestDist;
       // dist To Barrels
       bestDist = Integer.MAX_VALUE;
-      for (int b = 0; b < state.barrels.FE; b++) {
+      for (int b = 0; b < state.barrels.length; b++) {
         Barrel barrel = state.barrels.elements[b];
         int distToBarrel = barrel.position.distanceTo(ship.position);
         if (distToBarrel < bestDist) bestDist = distToBarrel;
@@ -132,7 +132,7 @@ public class Feature {
   // TODO handle cannonBalls
   private void updateMobilityFeature(GameState state) {
     // sale hack sans risque (pun intended).....
-    for (int i=0;i<state.ships.FE;i++) {
+    for (int i=0;i<state.ships.length;i++) {
       Ship ship = state.ships.elements[i];
       if (ship.health<=0) continue;
       state.setEntityAt(ship.position, ship);
@@ -140,7 +140,7 @@ public class Feature {
       state.setEntityAt(ship.stern(), ship);
     }
     
-    for (int i=0;i<state.ships.FE;i++) {
+    for (int i=0;i<state.ships.length;i++) {
       Ship ship = state.ships.elements[i];
       if (ship.health<=0) continue;
 //      Coord nextShipPosition = ship.position;
@@ -182,7 +182,7 @@ public class Feature {
       }
     }
 
-    for (int i=0;i<state.ships.FE;i++) {
+    for (int i=0;i<state.ships.length;i++) {
       Ship ship = state.ships.elements[i];
       if (ship.health<=0) continue;
       state.setEntityAt(ship.position, null);

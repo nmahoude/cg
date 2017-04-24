@@ -3,6 +3,7 @@ package cotc;
 import java.util.Random;
 import java.util.Scanner;
 
+import cgcollections.arrays.FastArray;
 import cotc.ai.ag.AG;
 import cotc.ai.ag.AGSolution;
 import cotc.ai.ag.Feature;
@@ -15,7 +16,6 @@ import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
 import cotc.utils.Coord;
-import cotc.utils.FastArray;
 
 public class Player {
   private static boolean debugOutput = false;
@@ -53,7 +53,7 @@ public class Player {
       //bestSol.feature.debugFeature(ag.weights);
 
       String[] output = bestSol.output();
-      for (int s=0;s<state.teams[0].shipsAlive.FE;s++) {
+      for (int s=0;s<state.teams[0].shipsAlive.length;s++) {
         Ship ship = state.teams[0].shipsAlive.elements[s];
         if (bestSol.actions.elements[0+s*AGSolution.DEPTH].action == Action.FIRE) {
           ship.cannonCooldown = Simulation.COOLDOWN_CANNON;
@@ -70,7 +70,7 @@ public class Player {
    * ships can drop mines that we don't see !!!
    */
   private static void doMineDetection() {
-    for (int s=0;s<state.ships.FE;s++) {
+    for (int s=0;s<state.ships.length;s++) {
       Ship ship = state.ships.elements[s];
       if (ship.owner == 1 && ship.mineCooldown > 0) {
         System.err.println("minecooldonw "+ship.mineCooldown);

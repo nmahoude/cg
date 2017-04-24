@@ -1,6 +1,6 @@
 package cotc.entities;
 
-import cotc.utils.FastArray;
+import cgcollections.arrays.FastArray;
 
 public class Mine extends Entity {
   private static final int MINE_DAMAGE = 25;
@@ -21,7 +21,7 @@ public class Mine extends Entity {
     Ship victim = null;
     boolean exploded = false;
 
-    for (int i=0;i<ships.FE;i++) {
+    for (int i=0;i<ships.length;i++) {
       Ship ship = ships.elements[i];
       if (position == ship.bow() || position == ship.stern() || position == ship.position) {
         exploded = true;
@@ -35,7 +35,7 @@ public class Mine extends Entity {
         exploded = true;
       }
 
-      for (int i=0;i<ships.FE;i++) {
+      for (int i=0;i<ships.length;i++) {
         Ship ship = ships.elements[i];
         if (ship != victim) {
           boolean impact = false;

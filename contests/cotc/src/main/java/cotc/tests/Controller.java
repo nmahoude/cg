@@ -153,12 +153,12 @@ public class Controller {
     {
       state.ships.clear();
       // Player's ships first
-      for (int s=0;s<referee.state.teams[playerIdx].shipsAlive.FE;s++) {
+      for (int s=0;s<referee.state.teams[playerIdx].shipsAlive.length;s++) {
         Ship ship = referee.state.teams[playerIdx].shipsAlive.elements[s];
         state.ships.add(ship);
       }
       // Opponent's ships
-      for (int s = 0; s < referee.state.teams[(playerIdx + 1) % 2].shipsAlive.FE; s++) {
+      for (int s = 0; s < referee.state.teams[(playerIdx + 1) % 2].shipsAlive.length; s++) {
         Ship ship = referee.state.teams[(playerIdx + 1) % 2].shipsAlive.elements[s];
         state.ships.add(ship);
       }
@@ -166,11 +166,11 @@ public class Controller {
 
     // Visible mines
     state.mines.clear(); //TODO handle fog of war
-    for (int i=0;i<referee.state.mines.FE;i++) {
+    for (int i=0;i<referee.state.mines.length;i++) {
       Mine mine = referee.state.mines.get(i);
         boolean visible = false;
         
-        for (int s=0;s<referee.state.teams[playerIdx].shipsAlive.FE;s++) {
+        for (int s=0;s<referee.state.teams[playerIdx].shipsAlive.length;s++) {
           Ship ship = referee.state.teams[playerIdx].shipsAlive.elements[s];
           if (ship.position.distanceTo(mine.position) <= Simulation.MINE_VISIBILITY_RANGE) {
               visible = true;
@@ -183,12 +183,12 @@ public class Controller {
     }
 
     state.cannonballs.clear();
-    for (int i=0;i<referee.state.cannonballs.FE;i++) {
+    for (int i=0;i<referee.state.cannonballs.length;i++) {
       state.cannonballs.add(referee.state.cannonballs.get(i));
     }
 
     state.barrels.clear();
-    for (int i=0;i<referee.state.barrels.FE;i++) {
+    for (int i=0;i<referee.state.barrels.length;i++) {
       state.barrels.add(referee.state.barrels.get(i));
     }
 

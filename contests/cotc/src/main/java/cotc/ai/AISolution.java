@@ -2,10 +2,10 @@ package cotc.ai;
 
 import java.util.Map;
 
+import cgcollections.arrays.FastArray;
 import cotc.GameState;
 import cotc.ai.ag.AGAction;
 import cotc.entities.Ship;
-import cotc.utils.FastArray;
 
 public interface AISolution {
 
