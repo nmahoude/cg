@@ -2,7 +2,7 @@ package cgcollections.arrays;
 
 import java.util.Iterator;
 
-public class FastArrayIterator<T> implements Iterator<T>{
+public class FastArrayIterator<T> implements Iterator<T> {
 
   FastArray<T> array;
   int current = 0;
@@ -10,12 +10,10 @@ public class FastArrayIterator<T> implements Iterator<T>{
     this.array = array;
   }
 
-  @Override
   public boolean hasNext() {
     return current < array.length;
   }
 
-  @Override
   public T next() {
     return array.elements[current++];
   }
