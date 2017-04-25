@@ -1,0 +1,25 @@
+== POSTMORTEM 
+Coders of the caribbean
+
+=== A faire
+* se baser sur cgstats pour trouver où sont les failles (contre qui je perds de maniere anormale) et où sont les forces (contre qui je gagne de maniere anormale)
+* Outils de visualisation javafx
+* utiliser JMH pour la perf (devnir pro de jmh ) en plus de jvisualvm
+* Savoir lire les dump json de cg pour créer des T.U ...
+
+=== A refaire
+* le controller pour simuler les matchs
+* la gestion via les features, surtout avec le debug meme si au final je m'en suis pas trop servi
+
+ 
+ 
+=== A améliorer
+* la gestion des features, il y a un bout dans AGSolution
+* un AG qui marche ? suivre le conseil et commencer par CVZ ???
+* Un minimax
+* Faire du code générique
+
+=== A ne plus refaire 
+* Ne pas prendre en compte le phénomene de patience / amortissement
+* Ne pas mettre son random en full random dés le début -> mes cas sont reproductibles  (par contre le laisser en déterministe dans l'ide == bloquer le nombre de simulation ? )
+
