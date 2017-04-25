@@ -63,7 +63,7 @@ public class FastArray <T> implements Iterable<T> {
     return new FastArrayIterator<T>(this);
   }
   
-  public void iterate(final FastArrayIterate<T> function) {
+  public final void iterate(final FastArrayIterate<T> function) {
     for (int i=0;i<length;i++) {
       function.apply(elements[i]);
     }

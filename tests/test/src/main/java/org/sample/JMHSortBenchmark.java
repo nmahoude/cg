@@ -45,6 +45,7 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.sample.libs.FastArray;
+import org.sample.libs.FastArrayIterate;
 
 @State(Scope.Thread)
 public class JMHSortBenchmark {
@@ -59,7 +60,7 @@ public class JMHSortBenchmark {
   int asArrayFE = 0;
   
   
-  Integer temp;
+  static Integer temp;
   
   @Setup(Level.Trial)
   public void init() {
@@ -78,12 +79,15 @@ public class JMHSortBenchmark {
     }
   }
 
-  @Benchmark
-  public void arrayList() {
-    for (Integer i : arrayList) {
-      temp = i;
-    }
+  static void set(Integer i ) {
+    temp = i;
   }
+//  @Benchmark
+//  public void arrayList() {
+//    for (Integer i : arrayList) {
+//      set(i);
+//    }
+//  }
 
   @Benchmark
   public void fastarray() {
@@ -92,16 +96,25 @@ public class JMHSortBenchmark {
     }
   }
 
+  final public static class Temp implements FastArrayIterate<Integer> {
+    Integer result;
+    
+    @Override
+    final public void apply(Integer i) {
+      set(i);
+    }
+  }
   @Benchmark
   public void fastarray_directAccess() {
-    flist.iterate(i -> {temp = i;});
+    Temp temp = new Temp();
+    flist.iterate(temp);
   }
 
   @Benchmark
   public void purearray() {
     asArrayFE = 0;
     for (int i=0;i<DEPTH;i++) {
-      temp = asArray[i];
+      set(asArray[i]);
     }
   }
 
