@@ -1,10 +1,7 @@
 package cotc;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import cgcollections.arrays.FastArray;
 import cotc.entities.Ship;
-import cotc.utils.FastArray;
 
 public class Team {
   public final int id;
@@ -36,13 +33,13 @@ public class Team {
   }
 
   public void setDead() {
-    for (int s=0;s<ships.FE;s++)
+    for (int s=0;s<ships.length;s++)
       ships.elements[s].health = 0;
   }
 
   public int getScore() {
     int score = 0;
-    for (int s=0;s<ships.FE;s++) {
+    for (int s=0;s<ships.length;s++) {
       score += ships.elements[s].health;
     }
     return score;

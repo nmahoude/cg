@@ -77,10 +77,10 @@ public class Referee {
 
     }
 
-    for (int s=0;s<state.teams[0].ships.FE;s++) {
+    for (int s=0;s<state.teams[0].ships.length;s++) {
       state.ships.add(state.teams[0].ships.elements[s]);
     }
-    for (int s=0;s<state.teams[1].ships.FE;s++) {
+    for (int s=0;s<state.teams[1].ships.length;s++) {
       state.ships.add(state.teams[1].ships.elements[s]);
     }
 
@@ -126,7 +126,7 @@ public class Referee {
           break;
         }
       }
-      for (int i=0;i<state.mines.FE;i++) {
+      for (int i=0;i<state.mines.length;i++) {
         Mine mine = state.mines.get(i);
         if (mine.position == m.position) {
           valid = false;
@@ -200,7 +200,7 @@ public class Referee {
     List<String> data = new ArrayList<>();
 
     // Player's ships first
-    for (int s=0;s<state.teams[playerIdx].shipsAlive.FE;s++) {
+    for (int s=0;s<state.teams[playerIdx].shipsAlive.length;s++) {
       Ship ship = state.teams[playerIdx].shipsAlive.elements[s];
       data.add(ship.toPlayerString(playerIdx));
     }
@@ -209,16 +209,16 @@ public class Referee {
     data.add(0, String.valueOf(data.size()));
 
     // Opponent's ships
-    for (int s=0;s<state.teams[(playerIdx + 1) % 2].shipsAlive.FE;s++) {
+    for (int s=0;s<state.teams[(playerIdx + 1) % 2].shipsAlive.length;s++) {
       Ship ship = state.teams[playerIdx].shipsAlive.elements[s];
       data.add(ship.toPlayerString(playerIdx));
     }
 
     // Visible mines
-    for (int i=0;i<state.mines.FE;i++) {
+    for (int i=0;i<state.mines.length;i++) {
       Mine mine = state.mines.get(i);
         boolean visible = false;
-        for (int s=0;s<state.teams[playerIdx].shipsAlive.FE;s++) {
+        for (int s=0;s<state.teams[playerIdx].shipsAlive.length;s++) {
           Ship ship = state.teams[playerIdx].shipsAlive.elements[s];
           if (ship.position.distanceTo(mine.position) <= Simulation.MINE_VISIBILITY_RANGE) {
               visible = true;
@@ -230,11 +230,11 @@ public class Referee {
         }
     }
 
-    for (int i=0;i<state.cannonballs.FE;i++) {
+    for (int i=0;i<state.cannonballs.length;i++) {
         data.add(state.cannonballs.get(i).toPlayerString(playerIdx));
     }
 
-    for (int i=0;i<state.barrels.FE;i++) {
+    for (int i=0;i<state.barrels.length;i++) {
       Barrel barrel = state.barrels.get(i);
       data.add(barrel.toPlayerString(playerIdx));
     }

@@ -3,11 +3,11 @@ package cotc.ai;
 import java.util.HashMap;
 import java.util.Map;
 
+import cgcollections.arrays.FastArray;
 import cotc.GameState;
 import cotc.ai.ag.AGAction;
 import cotc.entities.Action;
 import cotc.entities.Ship;
-import cotc.utils.FastArray;
 
 public class DummySolution implements AISolution {
   GameState state;
@@ -26,7 +26,7 @@ public class DummySolution implements AISolution {
   @Override
   public Map<Ship, AGAction[]> getActions() {
     Map<Ship, AGAction[]> actions = new HashMap<>();
-    for (int s = 0; s < state.teams[0].shipsAlive.FE; s++) {
+    for (int s = 0; s < state.teams[0].shipsAlive.length; s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
 
       AGAction[] agActions = new AGAction[1];

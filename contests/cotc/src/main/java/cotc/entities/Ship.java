@@ -2,9 +2,9 @@ package cotc.entities;
 
 import java.util.List;
 
+import cgcollections.arrays.FastArray;
 import cotc.GameState;
 import cotc.utils.Coord;
-import cotc.utils.FastArray;
 
 public class Ship extends Entity {
   public static final int MAX_SHIP_HEALTH = 100;
@@ -150,7 +150,7 @@ public class Ship extends Entity {
   }
 
   public boolean newPositionsIntersect(FastArray<Ship> ships) {
-    for (int i=0;i<ships.FE;i++) {
+    for (int i=0;i<ships.length;i++) {
       Ship other = ships.elements[i];
       if (this != other && newPositionsIntersect(other)) {
         return true;
@@ -185,7 +185,7 @@ public class Ship extends Entity {
 
   if (target.isInsideMap()) {
     boolean cellIsFreeOfShips = true;
-    for (int i = 0; i < state.ships.FE; i++) {
+    for (int i = 0; i < state.ships.length; i++) {
       Ship b = state.ships.elements[i];
       if (b == this)
         continue;

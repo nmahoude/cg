@@ -59,7 +59,7 @@ public class MiniMax {
   private void updateChampions(GameState state) {
     Ship best = null;
     int bestHealth = 0;
-    for (int s=0;s<state.teams[0].ships.FE;s++) {
+    for (int s=0;s<state.teams[0].ships.length;s++) {
       Ship ship = state.teams[0].ships.elements[s];
       ship.champion = false;
       if (ship.health > bestHealth) {

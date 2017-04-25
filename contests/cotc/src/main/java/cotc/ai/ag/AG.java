@@ -3,6 +3,7 @@ package cotc.ai.ag;
 import java.util.ArrayList;
 import java.util.List;
 
+import cgcollections.arrays.FastArray;
 import cotc.GameState;
 import cotc.ai.AI;
 import cotc.ai.AISolution;
@@ -10,7 +11,6 @@ import cotc.entities.Action;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
 import cotc.utils.Coord;
-import cotc.utils.FastArray;
 
 public class AG implements AI {
   private static AGSolution fake = AGSolution.createFake();
@@ -42,7 +42,7 @@ public class AG implements AI {
     analyser.analyse(state);
     
     resetShipsActions();
-    for (int s=0;s<state.teams[0].ships.FE;s++) {
+    for (int s=0;s<state.teams[0].ships.length;s++) {
       Ship ship = state.teams[0].ships.elements[s];
       if (ship.cannonCooldown == 0) { 
         analyseFireTargets(ship);
@@ -70,7 +70,7 @@ public class AG implements AI {
   }
 
   private void resetShipsActions() {
-    for (int s=0;s<state.ships.FE;s++) {
+    for (int s=0;s<state.ships.length;s++) {
       Ship ship = state.ships.elements[s];
       ship.action = Action.WAIT;
       ship.target = Coord.ZERO;
@@ -138,14 +138,14 @@ public class AG implements AI {
 
   private void updateWeightsForEndGame() {
     // end game is when there is no barrels, check the scores & the max ship energy
-      if (state.barrels.FE == 0) {
+      if (state.barrels.length == 0) {
         // win/loss ?
 
         int survivorHealth_0 = 0;
         int survivorHealth_1 = 0;
         int bestHealth = 0;
         int bestTeam = 0;
-        for (int s=0;s<state.ships.FE;s++) {
+        for (int s=0;s<state.ships.length;s++) {
           Ship ship = state.ships.elements[s];
           if (ship.health > 200-state.rounds) {
             if (ship.owner == 0) {
@@ -193,7 +193,7 @@ public class AG implements AI {
 
   private void createPossibleActionsAtTurn0() {
     turn0PossibleActions.clear();
-    for (int s=0;s<state.teams[0].ships.FE;s++) {
+    for (int s=0;s<state.teams[0].ships.length;s++) {
       Ship ship = state.teams[0].ships.elements[s];
       FastArray<Action> actions = new FastArray<Action>(Action.class, 20);
       getPossibleActions(actions, state, ship);
@@ -216,7 +216,7 @@ public class AG implements AI {
   private void updateChampions() {
     Ship best = null;
     int bestHealth = 0;
-    for (int s=0;s<state.teams[0].ships.FE;s++) {
+    for (int s=0;s<state.teams[0].ships.length;s++) {
       Ship ship = state.teams[0].ships.elements[s];
       ship.champion = false;
       if (ship.health > bestHealth) {
@@ -239,7 +239,7 @@ public class AG implements AI {
     analyser.analyse(state);
     
     resetShipsActions();
-    for (int s=0;s<state.teams[0].ships.FE;s++) {
+    for (int s=0;s<state.teams[0].ships.length;s++) {
       Ship ship = state.teams[0].ships.elements[s];
       if (ship.cannonCooldown == 0) { 
         analyseFireTargets(ship);

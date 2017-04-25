@@ -1,7 +1,7 @@
 package cotc.entities;
 
+import cgcollections.arrays.FastArray;
 import cotc.utils.Coord;
-import cotc.utils.FastArray;
 import cotc.utils.Util;
 
 public class Entity {

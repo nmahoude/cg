@@ -2,6 +2,7 @@ package cotc;
 
 import java.util.List;
 
+import cgcollections.arrays.FastArray;
 import cotc.entities.Barrel;
 import cotc.entities.CannonBall;
 import cotc.entities.Entity;
@@ -9,7 +10,6 @@ import cotc.entities.Mine;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
 import cotc.utils.Coord;
-import cotc.utils.FastArray;
 
 public class GameState {
   private static Entity mapEmptyCache[] = new Entity[Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT];
@@ -50,22 +50,22 @@ public class GameState {
     }
 
     b_cannonballs.copyFrom(cannonballs);
-    for (int i=0;i<cannonballs.FE;i++) {
+    for (int i=0;i<cannonballs.length;i++) {
       cannonballs.elements[i].backup();
     }
 
     b_mines.copyFrom(mines);
-    for (int i=0;i<mines.FE;i++) {
+    for (int i=0;i<mines.length;i++) {
       mines.elements[i].backup();
     }
 
     b_barrels.copyFrom(barrels);
-    for (int i=0;i<barrels.FE;i++) {
+    for (int i=0;i<barrels.length;i++) {
       barrels.elements[i].backup();
     }
     
     b_ships.copyFrom(ships);
-    for (int i=0;i<ships.FE;i++) {
+    for (int i=0;i<ships.length;i++) {
       ships.elements[i].backup();
     }
 
@@ -75,11 +75,11 @@ public class GameState {
   }
   private void createMapCache() {
     System.arraycopy(mapEmptyCache, 0, mapCache, 0, Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT);
-    for (int i=0;i<mines.FE;i++) {
+    for (int i=0;i<mines.length;i++) {
       Mine mine = mines.elements[i];
       this.setEntityAt(mine.position, mine);
     }
-    for (int i=0;i<barrels.FE;i++) {
+    for (int i=0;i<barrels.length;i++) {
       Barrel barrel = barrels.elements[i];
       this.setEntityAt(barrel.position, barrel);
     }
@@ -98,22 +98,22 @@ public class GameState {
     }
 
     cannonballs.copyFrom(b_cannonballs);
-    for (int i=0;i<cannonballs.FE;i++) {
+    for (int i=0;i<cannonballs.length;i++) {
       cannonballs.elements[i].restore();
     }
 
     barrels.copyFrom(b_barrels);
-    for (int i=0;i<barrels.FE;i++) {
+    for (int i=0;i<barrels.length;i++) {
       barrels.elements[i].restore();
     }
     
     mines.copyFrom(b_mines);
-    for (int i=0;i<mines.FE;i++) {
+    for (int i=0;i<mines.length;i++) {
       mines.elements[i].restore();
     }
 
     ships.copyFrom(b_ships);
-    for (int i=0;i<ships.FE;i++) {
+    for (int i=0;i<ships.length;i++) {
       ships.elements[i].restore();
     }
     System.arraycopy(b_mapCache, 0, mapCache, 0, Simulation.MAP_WIDTH*Simulation.MAP_HEIGHT);
@@ -147,7 +147,7 @@ public class GameState {
   }
 
   public Ship getShip(FastArray<Ship> fromShips, int entityId) {
-    for (int i=0;i<fromShips.FE;i++) {
+    for (int i=0;i<fromShips.length;i++) {
       Ship ship = fromShips.elements[i];
       if (ship.id == entityId) {
         return ship;
@@ -165,7 +165,7 @@ public class GameState {
   public Barrel getClosestBarrel(Ship ship) {
     int bestDist = Integer.MAX_VALUE;
     Barrel best = null;
-    for (int i=0;i<barrels.FE;i++) {
+    for (int i=0;i<barrels.length;i++) {
       Barrel barrel = barrels.elements[i];
       int dist = Coord.distanceCache[ship.position.x+10 + (ship.position.y+10)*50][barrel.position.x+10 + (barrel.position.y+10)*50];
       if (dist < bestDist) {
@@ -177,7 +177,7 @@ public class GameState {
   }
   public int getClosestBarrelDistance(Ship ship) {
     int bestDist = Integer.MAX_VALUE;
-    for (int i=0;i<barrels.FE;i++) {
+    for (int i=0;i<barrels.length;i++) {
       Barrel barrel = barrels.elements[i];
       int dist = Coord.distanceCache[ship.position.x+10 + (ship.position.y+10)*50][barrel.position.x+10 + (barrel.position.y+10)*50];
       if (dist < bestDist) {
@@ -191,7 +191,7 @@ public class GameState {
   public Ship getClosestEnnemy(Ship me) {
     int bestDist = Integer.MAX_VALUE;
     Ship best = null;
-    for (int i=0;i<ships.FE;i++) {
+    for (int i=0;i<ships.length;i++) {
       Ship other = ships.elements[i];
       if (other.owner == me.owner || other.health <= 0) continue;
       int dist = other.position.distanceTo(me.position);
@@ -205,7 +205,7 @@ public class GameState {
   public BarrelDomination getBarrelDominitation() {
     BarrelDomination bd = new BarrelDomination();
     
-    for (int b=0;b<barrels.FE;b++) {
+    for (int b=0;b<barrels.length;b++) {
       Barrel barrel = barrels.elements[b];
       Ship closest = null;
       int best = Integer.MAX_VALUE;

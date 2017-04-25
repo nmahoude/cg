@@ -5,7 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import cotc.utils.FastArray;
+import cgcollections.arrays.FastArray;
 
 public class MineTest {
 

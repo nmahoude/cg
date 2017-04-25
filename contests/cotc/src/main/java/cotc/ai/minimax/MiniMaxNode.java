@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cgcollections.arrays.FastArray;
 import cotc.GameState;
 import cotc.entities.Action;
 import cotc.entities.Ship;
 import cotc.game.Simulation;
 import cotc.utils.Coord;
-import cotc.utils.FastArray;
 
 public class MiniMaxNode {
   private static Simulation simulation = new Simulation(null);
@@ -83,7 +83,7 @@ public class MiniMaxNode {
     getPossibleActionsFor(player);
     FastArray<Action> actionsForPlayer0 = possibleActions.get(0);
     // get one action
-    action = actionsForPlayer0.elements[MiniMax.rand.nextInt(actionsForPlayer0.FE)];
+    action = actionsForPlayer0.elements[MiniMax.rand.nextInt(actionsForPlayer0.length)];
     hash = action.ordinal();
     
     // get children
@@ -118,7 +118,7 @@ public class MiniMaxNode {
   }
 
   private void getPossibleActionsFor(int player) {
-    for (int s=0;s<state.teams[player].ships.FE;s++) {
+    for (int s=0;s<state.teams[player].ships.length;s++) {
       Ship ship = state.teams[player].ships.elements[s];
       FastArray<Action> actions = new FastArray<Action>(Action.class, 20);
       getPossibleActions(actions, state, ship);

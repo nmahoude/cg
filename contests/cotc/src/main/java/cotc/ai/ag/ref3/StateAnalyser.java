@@ -18,7 +18,7 @@ public class StateAnalyser {
     analyse.clear();
     putShipsOnMap(state);
     
-    for (int s=0;s<state.ships.FE;s++) {
+    for (int s=0;s<state.ships.length;s++) {
       Ship ship = state.ships.elements[s];
       if (ship.health <=0) continue;
       
@@ -49,7 +49,7 @@ public class StateAnalyser {
       int sternOrientation = (ship.orientation + 3) %6;
       Coord preBow = ship.position.neighborsCache[sternOrientation].neighborsCache[sternOrientation];
       if (preBow.isInsideMap()) {
-        for (int s2=0;s2<state.ships.FE;s2++) {
+        for (int s2=0;s2<state.ships.length;s2++) {
           Ship other = state.ships.elements[s2];
           if (other.health<=0 || other.owner == ship.owner) continue;
           Coord frontOfBow = other.bow().neighborsCache[other.orientation];
@@ -67,7 +67,7 @@ public class StateAnalyser {
   }
 
   private void removeShipsFromMap(GameState state) {
-    for (int i=0;i<state.ships.FE;i++) {
+    for (int i=0;i<state.ships.length;i++) {
       Ship ship = state.ships.elements[i];
       if (ship.health<=0) continue;
       state.setEntityAt(ship.position, null);
@@ -77,7 +77,7 @@ public class StateAnalyser {
   }
 
   private void putShipsOnMap(GameState state) {
-    for (int i=0;i<state.ships.FE;i++) {
+    for (int i=0;i<state.ships.length;i++) {
       Ship ship = state.ships.elements[i];
       if (ship.health<=0) continue;
       state.setEntityAt(ship.position, ship);
