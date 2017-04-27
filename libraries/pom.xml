@@ -16,5 +16,6 @@
 		<module>random</module>
 		<module>utils</module>
 		<module>cgcollections</module>
+		<module>cgalgorithms</module>
 	</modules>
 </project>

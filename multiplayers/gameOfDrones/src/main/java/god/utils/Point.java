@@ -8,4 +8,12 @@ public class Point {
       x = xx;
       y = yy;
   }
+
+  public double distance(Point p) {
+    return Math.sqrt((x-p.x)*(x-p.x) + (y-p.y)*(y-p.y));
+  }
+
+  public int dist2(Point p) {
+    return (x-p.x)*(x-p.x) + (y-p.y)*(y-p.y);
+  }
 }
