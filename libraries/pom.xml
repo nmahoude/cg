@@ -11,11 +11,12 @@
 	<artifactId>librairies</artifactId>
 	<packaging>pom</packaging>
 	<modules>
-		<module>libraries/trigonometry</module>
+		<module>trigonometry</module>
 		<module>cache</module>
 		<module>random</module>
 		<module>utils</module>
 		<module>cgcollections</module>
 		<module>cgalgorithms</module>
+		<module>cgutils</module>
 	</modules>
 </project>
