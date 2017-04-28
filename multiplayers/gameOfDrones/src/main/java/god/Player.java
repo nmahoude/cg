@@ -2,8 +2,8 @@ package god;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
+import cgutils.io.InputReader;
 import god.entities.Drone;
 import god.entities.Zone;
 
@@ -11,8 +11,7 @@ public class Player {
   static GameState state = new GameState();
   
   public static void main(String args[]) {
-    Scanner in = new Scanner(System.in);
-
+    InputReader in = new InputReader(System.in);
     state.readInit(in);
     
     // game loop
@@ -21,7 +20,6 @@ public class Player {
 
       List<Zone> otherZones = new ArrayList<>();
       getNotOwnedZones(otherZones);
-      
       
       List<Drone> spareDrones = new ArrayList<>();
       extractSparedDrones(spareDrones);
@@ -41,7 +39,7 @@ public class Player {
       }
       
       
-      // to better choose the zones, we add the distance (drone,zone) for each zone, spareddrones
+      // to better choose the zones, we add the distance (drone,zone) for each zone, sparedDrones
       for (Zone zone : otherZones) {
         zone.value = 0;
         for (Drone drone : spareDrones) {

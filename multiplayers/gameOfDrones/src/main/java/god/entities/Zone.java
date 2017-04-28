@@ -32,7 +32,7 @@ public class Zone extends Entity {
     allDronesInOrder.sort((d1, d2) -> { return Integer.compare(d1.position.dist2(this.position) , d2.position.dist2(this.position));} );
     allDronesInOrder.forEach(drone -> {
       if (drone.inZone != null) return;
-      if (drone.lastPos.dist2(position) < drone.position.dist2(position)) {
+      if (drone.lastPos.dist2(position) > drone.position.dist2(position)) {
         if (drone.position.dist2(position) < 500*500) { //TODO better than that
           incomming_drones[drone.owner] ++;
         }

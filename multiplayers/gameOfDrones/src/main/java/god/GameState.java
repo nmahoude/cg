@@ -1,8 +1,7 @@
 package god;
 
-import java.util.Scanner;
-
 import cgcollections.arrays.FastArray;
+import cgutils.io.InputReader;
 import god.entities.Drone;
 import god.entities.Zone;
 import god.utils.Point;
@@ -22,7 +21,7 @@ public class GameState {
 
   public static int myId;
 
-  public void readInit(Scanner in) {
+  public void readInit(InputReader in) {
     playerCount = in.nextInt();
     myId = in.nextInt();
     droneCount = in.nextInt();
@@ -37,7 +36,7 @@ public class GameState {
     }
   }
   
-  public void readRound(Scanner in) {
+  public void readRound(InputReader in) {
     for (int i = 0; i < zoneCount; i++) {
       int TID = in.nextInt(); 
       Zone zone = zones.elements[i];
