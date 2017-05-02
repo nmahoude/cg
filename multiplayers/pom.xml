@@ -22,5 +22,6 @@
 	<module>codeBusters</module>
 	<module>codersStrikeBackReboot</module>
 	<module>codersStrikeBackReboot2</module>
+	<module>pokerChipRace</module>
   </modules>
 </project>
