@@ -67,7 +67,7 @@ public class FastArray<T> implements Iterable<T> {
       elements[index] = elements[length-1];
     }
     length--;
-    return elements[length+1];
+    return elements[length];
   }
 
   public boolean isEmpty() {
