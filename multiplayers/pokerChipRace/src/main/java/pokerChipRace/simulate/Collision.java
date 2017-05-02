@@ -3,8 +3,8 @@ package pokerChipRace.simulate;
 import pokerChipRace.entities.Entity;
 
 public class Collision {
-  public static final int HORIZONTAL = 0;
-  public static final int VERTICAL = 1;
+  public static final int HORIZONTAL = 1;
+  public static final int VERTICAL = 2;
   
   public Entity a;
   public Entity b;
@@ -17,7 +17,7 @@ public class Collision {
 
   public static Collision buildFake() {
     Collision c = new Collision();
-    c.t = -1;
+    c.t = +99;
     return c;
   }
 
@@ -33,7 +33,7 @@ public class Collision {
   public Collision update(double t, Entity entity, Entity b) {
     this.t = t;
     this.a = entity;
-    this.dir = -1;
+    this.dir = 0;
     this.b = b;
      
     return this;

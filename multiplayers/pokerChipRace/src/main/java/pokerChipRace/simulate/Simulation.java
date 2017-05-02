@@ -2,6 +2,8 @@ package pokerChipRace.simulate;
 
 import pokerChipRace.GameState;
 import pokerChipRace.entities.Entity;
+import trigonometry.Point;
+import trigonometry.Vector;
 
 public class Simulation {
   public static final double EPSILON = 0.01;
@@ -21,6 +23,28 @@ public class Simulation {
     }
   }
 
+  public void playTurn() {
+    applyActions();
+    move();
+  }
+  private void applyActions() {
+    for (int i=0;i<state.allChips.length;i++) {
+      Entity entity = state.allChips.elements[i];
+      if (entity.owner == -1) break; // neutral entities don't have actions
+      if (entity.targetx < 0) continue; // WAIT command
+      if (entity.radius <=0) continue; // dead entity
+      
+      // calculate future radius
+      Point centerPos = new Point(entity.x,entity.y);
+      Point target = new Point(entity.targetx, entity.targety);
+      Vector dir = target.sub(centerPos).normalize();
+      
+      Entity droplet = new Entity(state.allChips.length, -1);
+      entity.eject(droplet, dir);
+      state.allChips.add(droplet);
+    }
+  }
+
   public void move() {
     double t=0;
     Collision collision;
@@ -30,6 +54,7 @@ public class Simulation {
     
     for (int i=0;i<state.allChips.length;i++) {
       Entity entity = state.allChips.elements[i];
+      if (entity.radius <= 0) continue;
       
       collision = collisionsCache[collisionsFE];
       c = entity.collisionOnWall(t, collision);
@@ -42,6 +67,7 @@ public class Simulation {
 
       for (int j=i+1;j<state.allChips.length;j++) {
         Entity other = state.allChips.elements[j];
+        if (other.radius <= 0) continue;
   
         collision = collisionsCache[collisionsFE];
         c = entity.collision(other, t, collision);
@@ -58,6 +84,7 @@ public class Simulation {
       if (next == fake) {
         for (int i=0;i<state.allChips.length;i++) {
           Entity entity = state.allChips.elements[i];
+          if (entity.radius <= 0) continue;
           entity.move(1.0 - t);
         }
         break;
@@ -67,6 +94,7 @@ public class Simulation {
       double delta = next.t - t;
       for (int i=0;i<state.allChips.length;i++) {
         Entity entity = state.allChips.elements[i];
+        if (entity.radius <= 0) continue;
         entity.move(delta);
       }
 
@@ -85,6 +113,7 @@ public class Simulation {
       next = fake;
       for (int i=0;i<state.allChips.length;i++) {
         Entity entity = state.allChips.elements[i];
+        if (entity.radius <= 0) continue;
         
         collision = collisionsCache[collisionsFE];
         c = entity.collisionOnWall(t, collision);
@@ -97,7 +126,8 @@ public class Simulation {
 
         for (int j=i+1;j<state.allChips.length;j++) {
           Entity other = state.allChips.elements[j];
-    
+          if (other.radius <= 0) continue;
+
           collision = collisionsCache[collisionsFE];
           c = entity.collision(other, t, collision);
           if ( c != null) {

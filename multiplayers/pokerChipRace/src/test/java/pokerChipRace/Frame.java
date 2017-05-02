@@ -48,7 +48,7 @@ public class Frame {
         in.nextLine();
       }
       
-      Entity entity = new Entity(owner);
+      Entity entity = new Entity(id, owner);
       entity.update(x, y, radius, 0, 0);
     }
     
@@ -88,11 +88,11 @@ public class Frame {
       float radius = in.nextFloat(); // the radius of this entity
       float x = in.nextFloat(); // the X coordinate (0 to 799)
       float y = in.nextFloat(); // the Y coordinate (0 to 514)
-      //float vx = in.nextFloat(); // the speed of this entity along the X axis
-      //float vy = in.nextFloat(); // the speed of this entity along the Y axis      
       float angle = in.nextFloat(); // ????
       int droplets = in.nextInt();
       if (droplets > 0) {
+        //float vx = in.nextFloat(); // the speed of this entity along the X axis
+        //float vy = in.nextFloat(); // the speed of this entity along the Y axis      
         in.nextLine();
       }
       

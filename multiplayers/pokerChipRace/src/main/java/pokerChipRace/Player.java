@@ -41,8 +41,9 @@ public class Player {
         float vy = in.nextFloat(); // the speed of this entity along the Y axis
         in.nextLine();
 
-        entity = new Entity(owner);
+        entity = new Entity(id, owner);
         entity.update(x, y, radius, vx, vy);
+        entity.debug();
         state.allChips.add(entity);
         if (owner == state.myId) {
           state.myChips.add(entity);
