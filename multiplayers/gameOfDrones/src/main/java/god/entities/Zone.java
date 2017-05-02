@@ -32,17 +32,20 @@ public class Zone extends Entity {
     allDronesInOrder.sort((d1, d2) -> { return Integer.compare(d1.position.dist2(this.position) , d2.position.dist2(this.position));} );
     allDronesInOrder.forEach(drone -> {
       if (drone.inZone != null) return;
-      if (drone.lastPos.dist2(position) > drone.position.dist2(position)) {
-        if (drone.position.dist2(position) < 500*500) { //TODO better than that
-          incomming_drones[drone.owner] ++;
+      if (drone.position.dist2(position) < 300*300) {
+        incomming_drones[drone.owner] ++;
+      } else {
+        if (drone.lastPos.dist2(position) > drone.position.dist2(position)) {
+          if (drone.position.dist2(position) < 1000*1000) { //TODO better than that
+            incomming_drones[drone.owner] ++;
+          }
         }
       }
-      
     });
   }
   
   public void debug(int myId) {
-    System.err.println("Drones in zone "+id+" :");
+    System.err.println("***** Zone "+id+" ***************");
     for (int i=0;i<GameState.playerCount;i++) {
       System.err.print(" p"+i+"=>"+drones[i]);
     }
@@ -57,6 +60,7 @@ public class Zone extends Entity {
     System.err.println("Zone value (previous): "+value);
     System.err.println("Is mine ? "+ (isMine(myId) ? "true" : "false"));
     System.err.println("spared : "+ spareDroneFor(myId) );
+    System.err.println("spared Future : "+ spareDroneFutureFor(myId) );
     
     System.err.print("List : ");
     for (Drone d : allDronesInOrder) {
@@ -89,7 +93,7 @@ public class Zone extends Entity {
     int spare = drones[id] + incomming_drones[id];
     for (int i=0;i<GameState.playerCount;i++) {
       if (i == id) continue;
-      spare = Math.min(spare, (drones[id]+incomming_drones[i]) - (drones[i]-incomming_drones[i]));
+      spare = Math.min(spare, (drones[id]+incomming_drones[id]) - (drones[i]+incomming_drones[i]));
     }
     return spare;
   }
@@ -129,6 +133,10 @@ public class Zone extends Entity {
       }
     }
     return bestDrone;
+  }
+
+  public boolean isNeutral() {
+    return owner == -1;
   }
   
   

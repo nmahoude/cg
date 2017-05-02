@@ -39,15 +39,6 @@ public class Player {
       }
       
       
-      // to better choose the zones, we add the distance (drone,zone) for each zone, sparedDrones
-      for (Zone zone : otherZones) {
-        zone.value = 0;
-        for (Drone drone : spareDrones) {
-          zone.value += 1.0 / drone.position.dist2(zone.position);
-        }
-      }
-      
-      
       // do the knapsack problem with the spared drones
       List<Zone> optimalChoice = new ArrayList<>();
       KnapSack.fillPackage(spareDrones.size(), otherZones, optimalChoice, otherZones.size());
@@ -63,10 +54,13 @@ public class Player {
       for (Drone drone : state.myDrones) {
         if (drone.target == null) {
           Zone zone = state.findClosestZone(drone);
-          drone.target = GameState.CENTER; // TODO better ? barycentre of Zones, my zones, other zones, ...
+          drone.target = zone.position; // TODO better ? barycentre of Zones, my zones, other zones, ...
         }
         System.out.println(String.format("%d %d", drone.target.x, drone.target.y));
       }
+      
+      
+      
     }
   }
 
@@ -116,13 +110,16 @@ public class Player {
           }
         }
       } else {
-        int playersAtMax = 0;
+        int mesDrones = zone.incomming_drones[GameState.myId] + zone.drones[GameState.myId];
+        int max = 0;
         for (int i=0;i<GameState.playerCount;i++) {
-          if (zone.drones[i] > zone.drones[GameState.myId]) {
-            playersAtMax++;
+          if (i == GameState.myId) continue;
+          int sesDrones = zone.incomming_drones[i] + zone.drones[i];
+          if (sesDrones > max) {
+            max = sesDrones;
           }
         }
-        if (playersAtMax > 1) {
+        if (mesDrones < max || (mesDrones == max && !zone.isNeutral())) {
           while (!zone.myDrones.isEmpty()) {
             // find another target
             Drone drone = zone.removeOneDrone();
