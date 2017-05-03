@@ -16,4 +16,8 @@ public class Point {
   public int dist2(Point p) {
     return (x-p.x)*(x-p.x) + (y-p.y)*(y-p.y);
   }
+  @Override
+  public String toString() {
+    return "("+x+","+y+")";
+  }
 }

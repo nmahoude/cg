@@ -15,6 +15,9 @@ public class GameState {
   FastArray<Drone> myDrones = new FastArray<>(Drone.class, 11);
   
   FastArray<Zone> zones = new FastArray<>(Zone.class, 8);
+  int totalPoints[] = new int[4];
+  int turnPoints[];
+  
   public static int zoneCount;
   public static int droneCount;
   public static int playerCount;
@@ -37,11 +40,17 @@ public class GameState {
   }
   
   public void readRound(InputReader in) {
+    turnPoints = new int[4]; // zone in possession for this turn
+    
     for (int i = 0; i < zoneCount; i++) {
       int TID = in.nextInt(); 
       Zone zone = zones.elements[i];
       zone.owner = TID;
       zone.clearDrones();
+      if (zone.owner != -1) {
+        totalPoints[zone.owner]++;
+        turnPoints[zone.owner]++;
+      }
     }
     
     for (int i = 0; i < playerCount; i++) {

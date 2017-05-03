@@ -4,36 +4,61 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cgutils.io.InputReader;
+import god.algorithm.OptimalSubSet;
+import god.algorithm.ZoneInfo;
 import god.entities.Drone;
 import god.entities.Zone;
 
 public class Player {
   static GameState state = new GameState();
-  
+  static int turns = 0;
   public static void main(String args[]) {
     InputReader in = new InputReader(System.in);
     state.readInit(in);
     
     // game loop
     while (true) {
+      turns++;
       state.readRound(in);
 
+      // debug
+//      for (Zone zone : state.zones) {
+//      zone.debug(GameState.myId);
+//      }
+      Zone zoneUnderInvestigation = state.zones.get(2);
+      zoneUnderInvestigation.debug(GameState.myId);
+      Drone droneUnderInvestigation = state.drones.get(3);
+      System.err.println("Info about drone UI: "+droneUnderInvestigation.id);
+      System.err.println("Zone pos:  "+zoneUnderInvestigation.position);
+      System.err.println("Drone pos: "+droneUnderInvestigation.position);
+      System.err.println("dist2Zone : "+droneUnderInvestigation.position.dist2(zoneUnderInvestigation.position));
+      System.err.println("rapprcohement ? " + droneUnderInvestigation.lastPos.dist2(zoneUnderInvestigation.position));
+      
       List<Zone> otherZones = new ArrayList<>();
       getNotOwnedZones(otherZones);
       
       List<Drone> spareDrones = new ArrayList<>();
       extractSparedDrones(spareDrones);
 
+      System.err.println("Spared drones ");
+      for (Drone drone : spareDrones) {
+        System.err.print(""+drone.id+ ", ");
+      }
+      System.err.println();
+      
       // check for zone in danger (zone is ours but incomming is overwhelming)
       for (Zone zone : state.zones) {
         if (!zone.isMine(GameState.myId)) continue;
         int spareDroneFutureFor = zone.spareDroneFutureFor(GameState.myId);
-        if (spareDroneFutureFor < 0) {
+        if (spareDroneFutureFor < 0 && spareDrones.size() >= -spareDroneFutureFor) {
+          int neededDrones = -spareDroneFutureFor;
+          System.err.println("Zone "+zone.id+" in danger");
           // danger, get some spared drones back
-          for (int i=0;i<spareDroneFutureFor && !spareDrones.isEmpty();i++) {
+          for (int i=0;i<neededDrones;i++) {
             Drone drone = zone.getClosest(spareDrones);
             drone.target = zone.position;
             spareDrones.remove(drone);
+            System.err.println(" -->Sending back drone "+drone.id);
           }
         }
       }
@@ -44,13 +69,31 @@ public class Player {
       KnapSack.fillPackage(spareDrones.size(), otherZones, optimalChoice, otherZones.size());
 
       if (optimalChoice.isEmpty()) {
-        // arggg stuck in a checkmate position
-        
+        int maxPoint = 0;
+        int maxId = -1;
+        for (int i=0;i<4;i++) {
+          if (i == state.myId) continue;
+          if (state.turnPoints[i] > maxPoint) {
+            maxPoint = state.turnPoints[i];
+            maxId = i;
+          }
+        }
+        if (GameState.myId != maxId) {
+          spareDrones.clear();
+          for (Drone d : state.myDrones) {
+            if (d.inZone == null || !d.inZone.isMine(GameState.myId)) {
+              spareDrones.add(d);
+            }
+          }
+          KnapSack.fillPackage(spareDrones.size(), otherZones, optimalChoice, otherZones.size());
+        }
+      }
+      if (optimalChoice.isEmpty()) {
+        // ????
       } else {
         // happily affect the drones, no strategy
         affectSparedDronesToZones(spareDrones, optimalChoice);
       }
-      
       for (Drone drone : state.myDrones) {
         if (drone.target == null) {
           Zone zone = state.findClosestZone(drone);
@@ -64,23 +107,31 @@ public class Player {
     }
   }
 
-  private static void affectSparedDronesToZones(List<Drone> spareDrones, List<Zone> optimalChoice) {
-    for (Zone zone : optimalChoice) {
-      int needed = zone.unitsToTake();
-      //TODO find the best reparition of closest drones for each zone!
-      int i=0;
-      while (i<needed) {
-        Drone drone = zone.getClosest(spareDrones);
-        drone.target = zone.position;
-        spareDrones.remove(drone);
-        i++;
+  private static void affectSparedDronesToZones(List<Drone> spareDrones, List<Zone> zones) {
+    OptimalSubSet algo = new OptimalSubSet();
+    List<ZoneInfo> optimize = algo.optimize(zones, spareDrones, 200-turns);
+    for (ZoneInfo info : optimize) {
+      for (Drone drone : info.affectedDrones) {
+        drone.target = info.zone.position;
       }
     }
+
+    // old affectation
+//    for (Zone zone : zones) {
+//      int needed = zone.unitsToTake();
+//      //TODO find the best reparition of closest drones for each zone!
+//      int i=0;
+//      while (i<needed) {
+//        Drone drone = zone.getClosest(spareDrones);
+//        drone.target = zone.position;
+//        spareDrones.remove(drone);
+//        i++;
+//      }
+//    }
   }
 
   private static void getNotOwnedZones(List<Zone> otherZones) {
     for (Zone zone : state.zones) {
-      zone.debug(GameState.myId);
       if ( zone.owner != GameState.myId) {
         otherZones.add(zone);
       }

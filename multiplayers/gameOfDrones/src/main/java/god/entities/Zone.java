@@ -10,7 +10,7 @@ public class Zone extends Entity {
   int radius = 100;
   public int drones[] = new int[4]; // drone count inside for each player
   public int incomming_drones[] = new int[4]; // incomming drones comming to this zone
-  public int owner; // controlled by id
+  public int owner = -1; // controlled by id
   public List<Drone> allDronesInOrder = new ArrayList<>();
   public List<Drone> myDrones = new ArrayList<>();
   public double value;
@@ -90,10 +90,10 @@ public class Zone extends Entity {
   }
 
   public int spareDroneFutureFor(int id) {
-    int spare = drones[id] + incomming_drones[id];
+    int spare = drones[id] ;
     for (int i=0;i<GameState.playerCount;i++) {
       if (i == id) continue;
-      spare = Math.min(spare, (drones[id]+incomming_drones[id]) - (drones[i]+incomming_drones[i]));
+      spare = Math.min(spare, (drones[id]) - (drones[i]+incomming_drones[i]));
     }
     return spare;
   }

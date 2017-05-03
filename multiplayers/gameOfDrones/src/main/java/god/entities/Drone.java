@@ -3,7 +3,7 @@ package god.entities;
 import god.utils.Point;
 
 public class Drone extends Entity {
-  Point lastPos = null;
+  public Point lastPos = null;
   public Drone(int id, int x, int y) {
     super(x, y);
     this.id = id;
