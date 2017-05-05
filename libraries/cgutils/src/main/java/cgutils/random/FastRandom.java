@@ -27,6 +27,11 @@ public class FastRandom extends Random {
       s1 = 163;
     }
   }
+
+  public void setSeed(long s0, long s1) {
+    this.s0 = s0;
+    this.s1 = s1;
+  }
   
   @Override
   public boolean nextBoolean() {
@@ -108,5 +113,9 @@ public class FastRandom extends Random {
   @Override
   protected int next(int bits) {
     return ((int) nextLong()) >>> (32 - bits);
+  }
+
+  public String debugSeed() {
+    return "("+s0+","+s1+")";
   }  
 }
