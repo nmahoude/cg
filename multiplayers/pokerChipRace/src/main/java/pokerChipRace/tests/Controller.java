@@ -16,7 +16,6 @@ public class Controller {
     controller.play();
   }
   
-
   private void play() {
     for (int i=0;i<1_000_000;i++) {
       simulation.playTurn();

@@ -39,7 +39,6 @@ public class AG {
       generation++;
     }
     System.err.println("Generations : "+generation+ ", best energy is "+best.energy+" bestGen = "+bestGeneration);
-    System.err.println("Gene : "+best.angle[0]);
     return best;
   }
   

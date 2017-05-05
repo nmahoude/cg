@@ -66,7 +66,7 @@ public class Player {
       
       for (int i=0;i<state.myChips.length;i++) {
         Entity myChip = state.myChips.elements[i];
-        Vector dir = sol.angleToDir(i);
+        Vector dir = sol.angleToDir(0, i);
         if (dir == null) {
           System.out.println("WAIT");
         } else {

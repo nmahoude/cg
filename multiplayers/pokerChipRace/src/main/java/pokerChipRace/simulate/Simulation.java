@@ -7,19 +7,26 @@ import trigonometry.Vector;
 
 public class Simulation {
   public static final double EPSILON = 0.01;
-  public static int COLLISION_CACHE = 1000;
+  public static int COLLISION_CACHE = 100_000;
   
   private static Collision fake = Collision.buildFake();
   GameState state;
   
   public static Collision[] collisionsCache;
-  public static Collision[] newCollisionsCache;
+  public static Collision[] collisions;
+  public static Collision[] tempCollisions;
+  
+  public static int collisionsCacheFE = 0;
   public static int collisionsFE = 0;
-  public static int newCollisionsFE = 0;
+  public static int tempCollisionsFE = 0;
+  private Collision next;
   
   
   public Simulation() {
     collisionsCache = new Collision[COLLISION_CACHE];
+    collisions = new Collision[COLLISION_CACHE];
+    tempCollisions = new Collision[COLLISION_CACHE];
+    
     for (int i=0;i<COLLISION_CACHE;i++) {
       collisionsCache[i] = new Collision();
     }
@@ -52,19 +59,18 @@ public class Simulation {
 
   public void move() {
     double t=0;
-    Collision collision;
-    Collision c;
-    Collision next = fake;
+    collisionsCacheFE = 0;
     collisionsFE = 0;
-    
+    Entity a, b;
+
+    next = fake;
     for (int i=0;i<state.entityFE;i++) {
       Entity entity = state.chips[i];
-      if (entity.radius <= 0) continue;
-      
-      collision = collisionsCache[collisionsFE];
-      c = entity.collisionOnWall(t, collision);
+      Collision c = collisionsCache[collisionsCacheFE];
+      c = entity.collisionOnWall(t, c);
       if ( c != null) {
-        collisionsFE++;
+        collisions[collisionsFE++] = c;
+        collisionsCacheFE++;
         if( next.t > c.t) {
           next = c;
         }
@@ -72,17 +78,19 @@ public class Simulation {
 
       for (int j=i+1;j<state.entityFE;j++) {
         Entity other = state.chips[j];
-        if (other.radius <= 0) continue;
-  
-        collision = collisionsCache[collisionsFE];
-        c = entity.collision(other, t, collision);
+        if (other.isDead()) continue;
+        if (other == entity ) continue;
+        
+        c = collisionsCache[collisionsCacheFE];
+        c = entity.collision(other, t, c);
         if ( c != null) {
-          collisionsFE++;
+          collisions[collisionsFE++] = c;
+          collisionsCacheFE++;
           if( next.t > c.t) {
             next = c;
           }
         }
-      }
+      }    
     }
     
     while (t < 1.0) {
@@ -106,7 +114,7 @@ public class Simulation {
       double delta = next.t - t;
       for (int i=0;i<state.entityFE;i++) {
         Entity entity = state.chips[i];
-        if (entity.radius <= 0) continue;
+        if (entity.isDead()) continue;
         entity.move(delta);
       }
 
@@ -121,38 +129,78 @@ public class Simulation {
 
       // redo all the collision
       // TODO this is not perfomant
-      newCollisionsFE = 0;
-      collisionsFE = 0;
+      
+      a = next.a;
+      b = next.b;
       next = fake;
-      
-      
-      for (int i=0;i<state.entityFE;i++) {
-        Entity entity = state.chips[i];
-        if (entity.radius <= 0) continue;
-        
-        collision = collisionsCache[collisionsFE];
-        c = entity.collisionOnWall(t, collision);
+
+      // get back all non a or b collisions (still valid)
+      tempCollisionsFE = 0;
+      for (int i=0;i<collisionsFE;i++) {
+        Collision col = collisions[i];
+        if (col.a == a || col.b == b || col.a == b || col.b == a) continue;
+        tempCollisions[tempCollisionsFE++] = col;
+        if (col.t < next.t) {
+          next = col;
+        }
+      }
+      //swap collisions
+      collisions = tempCollisions;
+      collisionsFE = tempCollisionsFE;
+
+      if (!a.isDead()) {
+        Collision c = collisionsCache[collisionsCacheFE];
+        c = a.collisionOnWall(t, c);
         if ( c != null) {
-          collisionsFE++;
+          collisions[collisionsFE++] = c;
+          collisionsCacheFE++;
           if( next.t > c.t) {
             next = c;
           }
         }
 
-        for (int j=i+1;j<state.entityFE;j++) {
+        for (int j=0;j<state.entityFE;j++) {
           Entity other = state.chips[j];
-          if (other.radius <= 0) continue;
-
-          collision = collisionsCache[collisionsFE];
-          c = entity.collision(other, t, collision);
+          if (other.isDead()) continue;
+          if (other == a ) continue;
+          
+          c = collisionsCache[collisionsCacheFE];
+          c = a.collision(other, t, c);
           if ( c != null) {
-            collisionsFE++;
+            collisions[collisionsFE++] = c;
+            collisionsCacheFE++;
             if( next.t > c.t) {
               next = c;
             }
           }
+        }      }
+      if (b != null && !b.isDead()) {
+        Collision c = collisionsCache[collisionsCacheFE];
+        c = b.collisionOnWall(t, c);
+        if ( c != null) {
+          collisions[collisionsFE++] = c;
+          collisionsCacheFE++;
+          if( next.t > c.t) {
+            next = c;
+          }
         }
-      }
+
+        for (int j=0;j<state.entityFE;j++) {
+          Entity other = state.chips[j];
+          if (other.isDead()) continue;
+          if (other == b ) continue;
+          
+          c = collisionsCache[collisionsCacheFE];
+          c = b.collision(other, t, c);
+          if ( c != null) {
+            collisions[collisionsFE++] = c;
+            collisionsCacheFE++;
+            if( next.t > c.t) {
+              next = c;
+            }
+          }
+        }      }
     }
   }
+
 }
