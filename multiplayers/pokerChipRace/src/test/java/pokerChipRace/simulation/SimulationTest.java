@@ -7,7 +7,6 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
-import cgcollections.arrays.FastArray;
 import pokerChipRace.GameState;
 import pokerChipRace.entities.Entity;
 import pokerChipRace.simulate.Simulation;
@@ -19,8 +18,8 @@ public class SimulationTest {
   @Before
   public void setup() {
     state = new GameState();
-    state.allChips = new FastArray<>(Entity.class, 1000);
-    simulation = new Simulation(state);
+    simulation = new Simulation();
+    simulation.setGameState(state);
   }
   
   @Test
@@ -173,10 +172,47 @@ public class SimulationTest {
     checkEntity(10,-1,726.45416f, 82.39598f, 79.79792f, -167.69641f,2.028071f);
   }
   
+  @Test
+  public void doubleAbsorbation() throws Exception {
+    /*7*/readEntity(0,0,440.60834f, 294.19122f, -31.799444f, -28.732042f,18.033712f);
+    /*8*/readEntity(1,0,421.7829f, 219.12282f, -1.207104f, 11.47289f,40.13934f);
+    /*13*/readEntity(2,-1,388.21835f, 264.772f, 0.233053f, 3.517607f,14.197735f);
+
+    applyOrder(0, 0, "WAIT");
+    applyOrder(0, 1, "WAIT");
+    simulation.playTurn();
+
+    checkEntity(1,0,415.75705f, 239.4529f, -5.724866f, 4.607069f,46.23805f);
+    assertThat(state.getChip(0).isDead(), is(true));
+    assertThat(state.getChip(2).isDead(), is(true));
+  }
+  
+  @Test
+  public void backupAndRestore() throws Exception {
+    /*7*/readEntity(0,0,440.60834f, 294.19122f, -31.799444f, -28.732042f,18.033712f);
+    /*8*/readEntity(1,0,421.7829f, 219.12282f, -1.207104f, 11.47289f,40.13934f);
+    /*13*/readEntity(2,-1,388.21835f, 264.772f, 0.233053f, 3.517607f,14.197735f);
+
+    state.backup();
+    
+    applyOrder(0, 0, "WAIT");
+    applyOrder(0, 1, "WAIT");
+    simulation.playTurn();
+
+    checkEntity(1,0,415.75705f, 239.4529f, -5.724866f, 4.607069f,46.23805f);
+    assertThat(state.getChip(0).isDead(), is(true));
+    assertThat(state.getChip(2).isDead(), is(true));
+    
+    state.restore();
+    /*7*/checkEntity(0,0,440.60834f, 294.19122f, -31.799444f, -28.732042f,18.033712f);
+    /*8*/checkEntity(1,0,421.7829f, 219.12282f, -1.207104f, 11.47289f,40.13934f);
+    /*13*/checkEntity(2,-1,388.21835f, 264.772f, 0.233053f, 3.517607f,14.197735f);
+    
+  }
   
   private void applyOrder(int owner, int id, double targetx, double targety) {
-    for (int i=0;i<state.allChips.length;i++ ) {
-      Entity entity = state.allChips.elements[i];
+    for (int i=0;i<state.entityFE;i++ ) {
+      Entity entity = state.getChip(i);
       if (entity.owner == owner && entity.id == id) {
         entity.targetx = targetx;
         entity.targety = targety;
@@ -185,8 +221,8 @@ public class SimulationTest {
   }
 
   private void applyOrder(int owner, int id, String wait) {
-    for (int i=0;i<state.allChips.length;i++ ) {
-      Entity entity = state.allChips.elements[i];
+    for (int i=0;i<state.entityFE;i++ ) {
+      Entity entity = state.getChip(i);
       if (entity.owner == owner && entity.id == id) {
         entity.targetx = -100;
         entity.targety = -100;
@@ -195,13 +231,12 @@ public class SimulationTest {
   }
 
   private void readEntity(int id, int owner, double x, double y, double vx, double vy, double radius) {
-    Entity entity = new Entity(id, owner);
-    entity.update(x,y, radius, vx, vy);
-    state.allChips.add(entity);
+    Entity entity = state.getChip(id);
+    entity.update(owner, x,y, radius, vx, vy);
   }
 
   private void checkEntity(int id, int owner, double x, double y, double vx, double vy, double radius) {
-    Entity entity = state.allChips.elements[id];
+    Entity entity = state.getChip(id);
     assertThat(entity.owner, is(owner));
 
     assertEquals(x , entity.x, 0.001);

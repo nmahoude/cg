@@ -7,31 +7,33 @@ import trigonometry.Vector;
 
 public class Entity {
   public final int id;
-  public final int owner;
-  public double x, y;
-  public double radius;
-  public double vx;
-  public double vy;
+  public int owner;
+  public double x = -100, y=-100;
+  public double radius = -100;
+  public double vx = 0;
+  public double vy = 0;
   public double mass;
-  public int ignore = -1;
+  public int ignoreId = -1;
   
-  public double targetx, targety; // <0 is wait
+  public double targetx =-100, targety = -100; // <0 is wait
   
   public double _x,_y,_radius,_vx,_vy, _mass;
-  public int _ignore;
+  public int _ignoreId;
   
   public Entity(int id, int owner) {
     this.id = id;
     this.owner = owner;
   }
 
-  public void update(double x, double y, double radius, double vx, double vy) {
+  public void update(int owner, double x, double y, double radius, double vx, double vy) {
+    this.owner = owner;
     this.x = x;
     this.y = y;
     this.radius = radius;
     this.vx = vx;
     this.vy = vy;
     this.mass = Math.PI * radius * radius;
+    targetx = targety = -100;
   }
   
   public void backup() {
@@ -41,7 +43,7 @@ public class Entity {
     _vy = vy;
     _radius = radius;
     _mass = mass;
-    _ignore = ignore;
+    _ignoreId = ignoreId;
   }
   public void restore() {
     x = _x;
@@ -50,7 +52,7 @@ public class Entity {
     vy = _vy;
     radius = _radius;
     mass = _mass;
-    ignore = _ignore;
+    ignoreId = _ignoreId;
   }
   
   public Collision collisionOnWall(double from, Collision possibleCollision) {
@@ -95,6 +97,12 @@ public class Entity {
     double vy2 = vy - u.vy;
     double a = vx2*vx2 + vy2*vy2;
 
+    if (u.ignoreId != this.id && this.ignoreId != u.id && x2*x2+y2*y2 - r2*r2 < -Simulation.EPSILON) {
+      // collision at t = 0!
+      return possibleCollision.update(0, this, u);
+    }
+    
+    
     if (a < Simulation.EPSILON) {
       return null;
     }
@@ -123,41 +131,55 @@ public class Entity {
 
   
   public void bounce(Entity u) {
-    if (radius > u.radius && u.ignore != id) {
+    if (radius > u.radius && u.ignoreId != id) {
       eat(u);
-    } else if (radius < u.radius && ignore != u.id) {
+    } else if (radius < u.radius && ignoreId != u.id) {
       u.eat(this);
     } else {
-      // elastic collision
-      double mcoeff = (mass + u.mass) / (mass * u.mass);
+      // collision
+      //       impulse = normalVector*2*(normalVector · relativeVelocity)/(1/entity1mass + 1/entity2mass)
+
+
+      // normal vector
       double nx = x - u.x;
-      double ny = y - u.y; // TODO vector
-      double nxnydeux = nx*nx + ny*ny;
+      double ny = y - u.y;
+
+      double r2 = radius+u.radius;
+      if (nx*nx+ny*ny - r2*r2 < -Simulation.EPSILON) {
+        // move entities to not overlap, possible when entities get the same radius, ie same mass
+        double centerx = x + nx / 2.0;
+        double centery = y + ny / 2.0;
+        double decal = (radius+u.radius) / Math.sqrt(nx*nx+ny*ny);
+        x = centerx-0.5*nx*decal;
+        y = centery-0.5*ny*decal;
+        u.x = centerx+0.5*nx*decal;
+        u.y = centery+0.5*ny*decal;
+
+        nx = x - u.x;
+        ny = y - u.y;
+      }
+
+      
+      // relative velocity
       double dvx = vx - u.vx;
       double dvy = vy - u.vy;
-      double product = (nx*dvx + ny*dvy) / (nxnydeux * mcoeff);
+
+      double mcoeff = (mass + u.mass) / (mass * u.mass);
+      double nxny2 = nx*nx + ny*ny;
+      
+      double product = (nx*dvx + ny*dvy) / (nxny2 * mcoeff);
+      
       double fx = nx * product;
       double fy = ny * product;
+
       double m1c = 1.0 / mass;
       double m2c = 1.0 / u.mass;
-  
-      vx -= fx * m1c;
-      vy -= fy * m1c;
-      u.vx += fx * m2c;
-      u.vy += fy * m2c;
-  
-        // Normalize vector at 100
-      double impulse = Math.sqrt(fx*fx + fy*fy);
-      if (impulse < 100.0) {
-        double min = 100.0 / impulse;
-        fx = fx * min;
-        fy = fy * min;
-      }
-  
-      vx -= fx * m1c;
-      vy -= fy * m1c;
-      u.vx += fx * m2c;
-      u.vy += fy * m2c;
+
+      vx = -fx * m1c;
+      vy = -fy * m1c;
+      u.vx = fx * m2c;
+      u.vy = fy * m2c;
+
     }
   }
 
@@ -172,7 +194,6 @@ public class Entity {
     x = (x*mass + other.x*other.mass) / (mass+other.mass);
     y = (y*mass + other.y*other.mass) / (mass+other.mass);
     
-    
     mass += other.mass;
     radius = Math.sqrt(mass / Math.PI);
 
@@ -186,16 +207,14 @@ public class Entity {
    * Teleport it within boundaries if not
    */
   private void checkEntityBoundaries() {
-    if (x-radius < 0) {
-      x = radius;
-    } else if (x + radius > GameState.WIDTH) {
-      x = GameState.WIDTH-radius;
-    }
-    if (y-radius < 0) {
-      y = radius;
-    } else if (y+radius > GameState.HEIGHT) {
-      y = GameState.HEIGHT-radius;
-    }
+    if (x<radius+1) { x=radius+1;}
+    if (y<radius+1) { y=radius+1;}
+    if (x+radius+1>GameState.WIDTH) { x = GameState.WIDTH-radius-1; }
+    if (y+radius+1>GameState.HEIGHT) { y = GameState.HEIGHT-radius-1; }
+  }
+
+  public boolean isDead() {
+    return radius < 0;
   }
 
   private void setDead() {
@@ -207,7 +226,7 @@ public class Entity {
   }
 
   public void bounce(int dir) {
-    ignore = -1;
+    ignoreId = -1;
     if (dir == Collision.HORIZONTAL) {
       vx = -vx;
     } else {
@@ -227,12 +246,14 @@ public class Entity {
   public void eject(Entity droplet, Vector dir) {
     double dr = radius * 0.25819888974;
     radius = radius * 0.96609178307;
-    
-    droplet.update(x - (radius - dr) * dir.vx, y - (radius - dr) * dir.vy, dr, vx - 200.0*dir.vx, vy - 200.0*dir.vy);
-    droplet.ignore = id;
+    mass = Math.PI * radius * radius;
+
+    droplet.update(-1, x - (radius - dr) * dir.vx, y - (radius - dr) * dir.vy, dr, vx - 200.0*dir.vx, vy - 200.0*dir.vy);
+    droplet.ignoreId = id;
 
     vx += 14.2857142857*dir.vx;
     vy += 14.2857142857*dir.vy;
+    droplet.checkEntityBoundaries();
   }
   
   @Override

@@ -3,11 +3,17 @@ package pokerChipRace;
 import java.util.Scanner;
 
 import cgcollections.arrays.FastArray;
+import cgutils.random.FastRandom;
+import pokerChipRace.ai.AG;
+import pokerChipRace.ai.AGSolution;
 import pokerChipRace.entities.Entity;
+import trigonometry.Vector;
 
 public class Player {
   public static GameState state = new GameState();
-
+  private static long start;
+  public static final FastRandom rand = new FastRandom(17);
+  
   public static void main(String[] args) {
     Player player = new Player();
     Entity entity = null;
@@ -21,12 +27,16 @@ public class Player {
     while (true) {
       round++;
 
+      // reset all entities
+      for (int i=0;i<state.entityFE;i++) {
+        state.getChip(i).radius = -1;
+      }
       int playerChipCount = in.nextInt();
+      start = System.currentTimeMillis();
       in.nextLine();
       state.entityCount = in.nextInt(); // The total number of entities on the
                       
       state.myChips =  new FastArray<>(Entity.class, playerChipCount);
-      state.allChips = new FastArray<>(Entity.class, state.entityCount);
       
       in.nextLine();
 
@@ -41,19 +51,27 @@ public class Player {
         float vy = in.nextFloat(); // the speed of this entity along the Y axis
         in.nextLine();
 
-        entity = new Entity(id, owner);
-        entity.update(x, y, radius, vx, vy);
-        entity.debug();
-        state.allChips.add(entity);
+        entity = state.getChip(id);
+        entity.update(owner, x, y, radius, vx, vy);
+        //entity.debug();
         if (owner == state.myId) {
           state.myChips.add(entity);
         }
-        // update
-        entity.update(x, y, radius, vx, vy);
       }
 
-      for (Entity ent : state.myChips) {
-        System.out.println("WAIT");
+      // AG
+      AG ag = new AG();
+      
+      AGSolution sol = ag.getSolution(state, start+140);
+      
+      for (int i=0;i<state.myChips.length;i++) {
+        Entity myChip = state.myChips.elements[i];
+        Vector dir = sol.angleToDir(i);
+        if (dir == null) {
+          System.out.println("WAIT");
+        } else {
+          System.out.println(""+(int)(myChip.x + dir.vx)+" "+(int)(myChip.y + dir.vy));
+        }
       }
     }
   }

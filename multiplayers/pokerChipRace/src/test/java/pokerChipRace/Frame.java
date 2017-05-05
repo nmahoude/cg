@@ -48,8 +48,8 @@ public class Frame {
         in.nextLine();
       }
       
-      Entity entity = new Entity(id, owner);
-      entity.update(x, y, radius, 0, 0);
+      Entity entity = state.getChip(id);
+      entity.update(owner, x, y, radius, 0, 0);
     }
     
     in.close();

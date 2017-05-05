@@ -15,6 +15,17 @@ public class Collision {
   public Collision() {
   }
 
+  @Override
+  public String toString() {
+    if (b == null) {
+      if (dir == HORIZONTAL) {
+        return ""+a.id+"-> horizontal Wall";
+      } else {
+        return ""+a.id+"-> vertical Wall";
+      }
+    }
+    return ""+a.id +"("+a.radius+") <-> " + b.id +"("+b.radius+") @ "+t;
+  }
   public static Collision buildFake() {
     Collision c = new Collision();
     c.t = +99;
