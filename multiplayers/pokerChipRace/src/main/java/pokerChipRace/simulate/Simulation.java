@@ -35,7 +35,7 @@ public class Simulation {
   }
   private void applyActions() {
     for (int i=0;i<state.entityFE;i++) {
-      Entity entity = state.getChip(i);
+      Entity entity = state.chips[i];
       if (entity.owner == -1) break; // neutral entities don't have actions
       if (entity.targetx < 0) continue; // WAIT command
       if (entity.radius <=0) continue; // dead entity
@@ -58,7 +58,7 @@ public class Simulation {
     collisionsFE = 0;
     
     for (int i=0;i<state.entityFE;i++) {
-      Entity entity = state.getChip(i);
+      Entity entity = state.chips[i];
       if (entity.radius <= 0) continue;
       
       collision = collisionsCache[collisionsFE];
@@ -71,7 +71,7 @@ public class Simulation {
       }
 
       for (int j=i+1;j<state.entityFE;j++) {
-        Entity other = state.getChip(j);
+        Entity other = state.chips[j];
         if (other.radius <= 0) continue;
   
         collision = collisionsCache[collisionsFE];
@@ -88,7 +88,7 @@ public class Simulation {
     while (t < 1.0) {
       if (next == fake) {
         for (int i=0;i<state.entityFE;i++) {
-          Entity entity = state.getChip(i);
+          Entity entity = state.chips[i];
           if (entity.radius <= 0) continue;
           entity.move(1.0 - t);
         }
@@ -105,7 +105,7 @@ public class Simulation {
       // move all entities to the time of collision
       double delta = next.t - t;
       for (int i=0;i<state.entityFE;i++) {
-        Entity entity = state.getChip(i);
+        Entity entity = state.chips[i];
         if (entity.radius <= 0) continue;
         entity.move(delta);
       }
@@ -127,7 +127,7 @@ public class Simulation {
       
       
       for (int i=0;i<state.entityFE;i++) {
-        Entity entity = state.getChip(i);
+        Entity entity = state.chips[i];
         if (entity.radius <= 0) continue;
         
         collision = collisionsCache[collisionsFE];
@@ -140,7 +140,7 @@ public class Simulation {
         }
 
         for (int j=i+1;j<state.entityFE;j++) {
-          Entity other = state.getChip(j);
+          Entity other = state.chips[j];
           if (other.radius <= 0) continue;
 
           collision = collisionsCache[collisionsFE];

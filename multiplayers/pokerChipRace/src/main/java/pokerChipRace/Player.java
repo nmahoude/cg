@@ -29,7 +29,7 @@ public class Player {
 
       // reset all entities
       for (int i=0;i<state.entityFE;i++) {
-        state.getChip(i).radius = -1;
+        state.getInitialChip(i).radius = -1;
       }
       int playerChipCount = in.nextInt();
       start = System.currentTimeMillis();
@@ -51,7 +51,7 @@ public class Player {
         float vy = in.nextFloat(); // the speed of this entity along the Y axis
         in.nextLine();
 
-        entity = state.getChip(id);
+        entity = state.getInitialChip(id);
         entity.update(owner, x, y, radius, vx, vy);
         //entity.debug();
         if (owner == state.myId) {

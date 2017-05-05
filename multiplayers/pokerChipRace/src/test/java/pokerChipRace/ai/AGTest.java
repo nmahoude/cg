@@ -69,7 +69,7 @@ public class AGTest {
   }
   
   private void readEntity(int id, int owner, double x, double y, double vx, double vy, double radius) {
-    Entity entity = state.getChip(id);
+    Entity entity = state.getInitialChip(id);
     entity.update(owner, x,y, radius, vx, vy);
     if (owner == 0) {
       state.myChips.add(entity);

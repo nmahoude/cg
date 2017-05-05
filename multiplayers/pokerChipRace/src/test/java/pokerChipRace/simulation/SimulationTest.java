@@ -183,8 +183,8 @@ public class SimulationTest {
     simulation.playTurn();
 
     checkEntity(1,0,415.75705f, 239.4529f, -5.724866f, 4.607069f,46.23805f);
-    assertThat(state.getChip(0).isDead(), is(true));
-    assertThat(state.getChip(2).isDead(), is(true));
+    assertThat(state.getInitialChip(0).isDead(), is(true));
+    assertThat(state.getInitialChip(2).isDead(), is(true));
   }
   
   @Test
@@ -200,8 +200,8 @@ public class SimulationTest {
     simulation.playTurn();
 
     checkEntity(1,0,415.75705f, 239.4529f, -5.724866f, 4.607069f,46.23805f);
-    assertThat(state.getChip(0).isDead(), is(true));
-    assertThat(state.getChip(2).isDead(), is(true));
+    assertThat(state.getInitialChip(0).isDead(), is(true));
+    assertThat(state.getInitialChip(2).isDead(), is(true));
     
     state.restore();
     /*7*/checkEntity(0,0,440.60834f, 294.19122f, -31.799444f, -28.732042f,18.033712f);
@@ -212,7 +212,7 @@ public class SimulationTest {
   
   private void applyOrder(int owner, int id, double targetx, double targety) {
     for (int i=0;i<state.entityFE;i++ ) {
-      Entity entity = state.getChip(i);
+      Entity entity = state.getInitialChip(i);
       if (entity.owner == owner && entity.id == id) {
         entity.targetx = targetx;
         entity.targety = targety;
@@ -222,7 +222,7 @@ public class SimulationTest {
 
   private void applyOrder(int owner, int id, String wait) {
     for (int i=0;i<state.entityFE;i++ ) {
-      Entity entity = state.getChip(i);
+      Entity entity = state.getInitialChip(i);
       if (entity.owner == owner && entity.id == id) {
         entity.targetx = -100;
         entity.targety = -100;
@@ -231,12 +231,12 @@ public class SimulationTest {
   }
 
   private void readEntity(int id, int owner, double x, double y, double vx, double vy, double radius) {
-    Entity entity = state.getChip(id);
+    Entity entity = state.getInitialChip(id);
     entity.update(owner, x,y, radius, vx, vy);
   }
 
   private void checkEntity(int id, int owner, double x, double y, double vx, double vy, double radius) {
-    Entity entity = state.getChip(id);
+    Entity entity = state.getInitialChip(id);
     assertThat(entity.owner, is(owner));
 
     assertEquals(x , entity.x, 0.001);

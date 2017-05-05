@@ -48,7 +48,7 @@ public class Frame {
         in.nextLine();
       }
       
-      Entity entity = state.getChip(id);
+      Entity entity = state.getInitialChip(id);
       entity.update(owner, x, y, radius, 0, 0);
     }
     

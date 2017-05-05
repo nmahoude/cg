@@ -78,12 +78,12 @@ public class Controller {
   }
   
   private void readEntity(int id, int owner, double x, double y, double vx, double vy, double radius) {
-    Entity entity = state.getChip(id);
+    Entity entity = state.getInitialChip(id);
     entity.update(owner, x,y, radius, vx, vy);
   }
   private void applyOrder(int owner, int id, String wait) {
     for (int i=0;i<state.entityFE;i++ ) {
-      Entity entity = state.getChip(i);
+      Entity entity = state.getInitialChip(i);
       if (entity.owner == owner && entity.id == id) {
         entity.targetx = -100;
         entity.targety = -100;

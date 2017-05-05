@@ -82,7 +82,7 @@ public class AGSolution {
 
   public void calculateSubEnergy(GameState state, int turn) {
     for (int index=0;index<state.entityFE;index++) {
-      Entity entity = state.getChip(index);
+      Entity entity = state.chips[index];
       if (entity.isDead()) continue;
       if (entity.owner == -1) break;
       
@@ -94,7 +94,7 @@ public class AGSolution {
 
   public void calculateFinalEnergy(GameState state) {
     for (int index=0;index<state.entityFE;index++) {
-      Entity entity = state.getChip(index);
+      Entity entity = state.chips[index];
       if (entity.isDead()) continue;
       if (entity.owner == -1) break;
       
