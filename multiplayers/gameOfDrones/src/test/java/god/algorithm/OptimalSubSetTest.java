@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import god.algorithm.OptimalSubSet.ZoneInfo;
 import god.entities.Drone;
 import god.entities.Zone;
 

@@ -12,9 +12,48 @@ import god.entities.Zone;
 public class Player {
   static GameState state = new GameState();
   static int turns = 0;
+  private static List<Zone> bestZonesToCheck;
+  
   public static void main(String args[]) {
     InputReader in = new InputReader(System.in);
     state.readInit(in);
+    
+    bestZonesToCheck = new ArrayList<>();
+    for (Zone zone : state.zones) {
+      bestZonesToCheck.add(zone);
+    }
+//    if (state.playerCount == 2) {
+//    } else {
+//      int zonesToCheck = 0;
+//      if (state.playerCount == 3) {
+//        zonesToCheck = 3;
+//      } else if (state.playerCount == 4) {
+//        zonesToCheck = 3;
+//      }
+//      double bestDist = Double.POSITIVE_INFINITY;
+//      for (Zone z1 : state.zones) {
+//        for (Zone z2 : state.zones) {
+//          if (z1 == z2) continue;
+//          for (Zone z3 : state.zones) {
+//            if (z1 == z3 || z2 == z3) continue;
+//            double dist = z1.position.distance(z2.position) 
+//                + z1.position.distance(z3.position)
+//                + z2.position.distance(z3.position);
+//            if( dist < bestDist) {
+//              bestDist = dist;
+//              bestZonesToCheck = Arrays.asList(z1, z2, z3);
+//            }
+//          }
+//        }
+//      }
+//    }
+    
+    
+    System.err.println("Selection of zones to attack/defend : ");
+    for (Zone zone : bestZonesToCheck) {
+      System.err.print(""+zone.id+" ; ");
+    }
+    System.err.println();
     
     // game loop
     while (true) {
@@ -25,17 +64,20 @@ public class Player {
 //      for (Zone zone : state.zones) {
 //      zone.debug(GameState.myId);
 //      }
-      Zone zoneUnderInvestigation = state.zones.get(2);
-      zoneUnderInvestigation.debug(GameState.myId);
-      Drone droneUnderInvestigation = state.drones.get(3);
-      System.err.println("Info about drone UI: "+droneUnderInvestigation.id);
-      System.err.println("Zone pos:  "+zoneUnderInvestigation.position);
-      System.err.println("Drone pos: "+droneUnderInvestigation.position);
-      System.err.println("dist2Zone : "+droneUnderInvestigation.position.dist2(zoneUnderInvestigation.position));
-      System.err.println("rapprcohement ? " + droneUnderInvestigation.lastPos.dist2(zoneUnderInvestigation.position));
+      // specialized debug
+      //      Zone zoneUnderInvestigation = state.zones.get(2);
+//      zoneUnderInvestigation.debug(GameState.myId);
+//      Drone droneUnderInvestigation = state.drones.get(3);
+//      System.err.println("Info about drone UI: "+droneUnderInvestigation.id);
+//      System.err.println("Zone pos:  "+zoneUnderInvestigation.position);
+//      System.err.println("Drone pos: "+droneUnderInvestigation.position);
+//      System.err.println("dist2Zone : "+droneUnderInvestigation.position.dist2(zoneUnderInvestigation.position));
+//      System.err.println("rapprcohement ? " + droneUnderInvestigation.lastPos.dist2(zoneUnderInvestigation.position));
       
       List<Zone> otherZones = new ArrayList<>();
       getNotOwnedZones(otherZones);
+      
+      
       
       List<Drone> spareDrones = new ArrayList<>();
       extractSparedDrones(spareDrones);
@@ -131,7 +173,7 @@ public class Player {
   }
 
   private static void getNotOwnedZones(List<Zone> otherZones) {
-    for (Zone zone : state.zones) {
+    for (Zone zone : bestZonesToCheck) {
       if ( zone.owner != GameState.myId) {
         otherZones.add(zone);
       }
