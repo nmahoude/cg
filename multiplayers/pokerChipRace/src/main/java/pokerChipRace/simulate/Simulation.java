@@ -46,7 +46,7 @@ public class Simulation {
       if (entity.owner == -1) break; // neutral entities don't have actions
       if (entity.targetx < 0) continue; // WAIT command
       if (entity.radius <=0) continue; // dead entity
-      
+      if (entity.radius < 5) continue; // can't shoot when radius < 5
       // calculate future radius
       Point centerPos = new Point(entity.x,entity.y);
       Point target = new Point(entity.targetx, entity.targety);

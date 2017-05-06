@@ -7,6 +7,7 @@ public class GameState {
   public static final float WIDTH = 800;
   public static final float HEIGHT = 515;
   
+  public int playerCount;
   public int myId ;
   public int entityCount;
   public FastArray<Entity> myChips = new FastArray<>(Entity.class, 6);

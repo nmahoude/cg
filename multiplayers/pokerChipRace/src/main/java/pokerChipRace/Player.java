@@ -53,6 +53,7 @@ public class Player {
 
         entity = state.getInitialChip(id);
         entity.update(owner, x, y, radius, vx, vy);
+        state.playerCount = Math.max(state.playerCount, owner+1);
         //entity.debug();
         if (owner == state.myId) {
           state.myChips.add(entity);

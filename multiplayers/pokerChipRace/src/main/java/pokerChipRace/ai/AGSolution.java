@@ -10,7 +10,7 @@ public class AGSolution {
   public static double patience[] = new double[DEPTH];
   static {
     for (int i=0;i<DEPTH;i++) {
-      patience[i] = Math.pow(0.7, i);
+      patience[i] = Math.pow(0.5, (i+1));
     }
   }
   
@@ -85,7 +85,7 @@ public class AGSolution {
       if (entity.owner == state.myId) {
         energy += patience[turn] * entity.radius;
       } else {
-        energy -= patience[turn] * entity.radius;
+        energy -= (patience[turn] * entity.radius) / (state.playerCount-1);
       }
     }
   }
