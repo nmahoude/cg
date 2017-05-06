@@ -213,7 +213,7 @@ public class Entity {
     if (y+radius+1>GameState.HEIGHT) { y = GameState.HEIGHT-radius-1; }
   }
 
-  public boolean isDead() {
+  public final boolean isDead() {
     return radius < 0;
   }
 

@@ -14,7 +14,7 @@ public class AGSolution {
     }
   }
   
-  double angles[] = new double[6*DEPTH]; // <0 == WAIT, else [0;2*PI]
+  double angles[] = new double[6]; // <0 == WAIT, else [0;2*PI]
   private int chipCount;
   public double energy;
   
@@ -23,15 +23,12 @@ public class AGSolution {
   }
   
   public void randomize() {
-    for (int t=0;t<DEPTH;t++) {
-      for (int i=0;i<chipCount;i++) {
-        angles[i+t*6] = getRandomGene();
-      }
+    for (int i=0;i<chipCount;i++) {
+      angles[i] = getRandomGene();
     }
   }
-  
   private double getRandomGene() {
-    if (Player.rand.nextDouble() < 0.8) {
+    if (Player.rand.nextDouble() < 0.3) {
       return -1; // WAIT
     } else {
       return 2*Math.PI * Player.rand.nextDouble(); // real angle between 0 and 2PI
@@ -57,7 +54,8 @@ public class AGSolution {
   }
   
   public Vector angleToDir(int turn, int index) {
-    double angle = angles[turn*6 + index];
+    if (turn !=0) return null;
+    double angle = angles[index];
     if (angle <0) return null;
     
     return new Vector(10 * Math.cos(angle), 10 * Math.sin(angle));
@@ -67,24 +65,18 @@ public class AGSolution {
     for (int index=0;index<chipCount;index++) {
       Entity entity = state.myChips.elements[index];
 
-      if (turn != 0) {
+      Vector dir = angleToDir(turn, index);
+      if (dir == null || turn != 0) {
         entity.targetx = -100;
         entity.targety = -100;
       } else {
-        Vector dir = angleToDir(turn, index);
-        if (dir == null) {
-          entity.targetx = -100;
-          entity.targety = -100;
-        } else {
-          entity.targetx = entity.x + dir.vx;
-          entity.targety = entity.y + dir.vy;
-        }
+        entity.targetx = entity.x + dir.vx;
+        entity.targety = entity.y + dir.vy;
       }
     }
   }
 
   public void calculateSubEnergy(GameState state, int turn) {
-    double biggerRadius = 0;
     for (int index=0;index<state.entityFE;index++) {
       Entity entity = state.chips[index];
       if (entity.isDead()) continue;
@@ -92,14 +84,10 @@ public class AGSolution {
       
       if (entity.owner == state.myId) {
         energy += patience[turn] * entity.radius;
-        if (entity.radius > biggerRadius) {
-          biggerRadius = entity.radius;
-        }
       } else {
         energy -= patience[turn] * entity.radius;
       }
     }
-    energy += patience[turn] * biggerRadius;
   }
 
   public void calculateFinalEnergy(GameState state) {
@@ -112,27 +100,44 @@ public class AGSolution {
         //energy += entity.radius;
         
         // check distance to biggest entity
-        double good = 0;
-        double bad = 0;
-        int count = 0;
-        for (int otherI=0;otherI<state.entityFE;otherI++) {
-          Entity other = state.chips[otherI];
-          if (other.isDead()) continue;
-          if (other.owner == state.myId) continue;
-          
-          double dist2 = (entity.x-other.x)*(entity.x-other.x) + (entity.y-other.y)*(entity.y-other.y);
-          if (other.radius > entity.radius) {
-            bad += dist2;
-          } else {
-            good += dist2;
-          }
-          count++;
-        }
-        energy += 0.00001*good / count;
-        energy -= 0.00001*bad / count;
+//        double good = 0;
+//        double bad = 0;
+//        int count = 0;
+//        for (int otherI=0;otherI<state.entityFE;otherI++) {
+//          Entity other = state.chips[otherI];
+//          if (other.isDead()) continue;
+//          if (other.owner == state.myId) continue;
+//          
+//          double dist2 = (entity.x-other.x)*(entity.x-other.x) + (entity.y-other.y)*(entity.y-other.y);
+//          if (other.radius > entity.radius) {
+//            bad += dist2;
+//          } else {
+//            good += dist2;
+//          }
+//          count++;
+//        }
+//        if (count != 0) {
+//          energy += 0.00001*good / count;
+//          energy -= 0.00001*bad / count;
+//        }
       } else {
         //energy -= entity.radius;
       }
     }
+  }
+
+  public void init() {
+    energy = 0;
+  }
+
+  public void debug() {
+    System.err.println("Energy is "+energy);
+
+    for (int i=0;i<chipCount;i++) {
+      System.err.print("i: ");
+      System.err.print(""+angles[i]+", "); 
+      System.err.println();
+    }
+    
   }
 }

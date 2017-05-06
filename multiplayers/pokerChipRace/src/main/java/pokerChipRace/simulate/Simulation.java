@@ -78,7 +78,7 @@ public class Simulation {
 
       for (int j=i+1;j<state.entityFE;j++) {
         Entity other = state.chips[j];
-        if (other.isDead()) continue;
+        if (other.radius < 0) continue;
         if (other == entity ) continue;
         
         c = collisionsCache[collisionsCacheFE];
@@ -114,7 +114,7 @@ public class Simulation {
       double delta = next.t - t;
       for (int i=0;i<state.entityFE;i++) {
         Entity entity = state.chips[i];
-        if (entity.isDead()) continue;
+        if (entity.radius < 0) continue;
         entity.move(delta);
       }
 
@@ -148,7 +148,7 @@ public class Simulation {
       collisions = tempCollisions;
       collisionsFE = tempCollisionsFE;
 
-      if (!a.isDead()) {
+      if (a.radius > 0) {
         Collision c = collisionsCache[collisionsCacheFE];
         c = a.collisionOnWall(t, c);
         if ( c != null) {
@@ -161,7 +161,7 @@ public class Simulation {
 
         for (int j=0;j<state.entityFE;j++) {
           Entity other = state.chips[j];
-          if (other.isDead()) continue;
+          if (other.radius < 0) continue;
           if (other == a ) continue;
           
           c = collisionsCache[collisionsCacheFE];
@@ -174,7 +174,7 @@ public class Simulation {
             }
           }
         }      }
-      if (b != null && !b.isDead()) {
+      if (b != null && b.radius > 0) {
         Collision c = collisionsCache[collisionsCacheFE];
         c = b.collisionOnWall(t, c);
         if ( c != null) {
@@ -187,7 +187,7 @@ public class Simulation {
 
         for (int j=0;j<state.entityFE;j++) {
           Entity other = state.chips[j];
-          if (other.isDead()) continue;
+          if (other.radius < 0) continue;
           if (other == b ) continue;
           
           c = collisionsCache[collisionsCacheFE];

@@ -1,5 +1,7 @@
 package pokerChipRace.ai;
 
+import static org.junit.Assert.*;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -67,6 +69,32 @@ public class AGTest {
     long end = System.currentTimeMillis();
     System.err.println("time : "+(end-start));
   }
+  
+  @Test
+  public void entity0shouldNotSendDropletAgainstIncomming() throws Exception {
+    readEntity(0,0,371.1510314941406, 421.6116027832031, 0.0, -26.23961639404297,24.0);
+    readEntity(1,-1,410.09722900390625, 438.6258850097656, -181.78208923339844, -83.39827728271484,6.196774005889893);
+    state.backup();
+    
+    // wait
+    AGSolution sol = new AGSolution(1);
+    for (int i=0;i<sol.angles.length;i++) {
+      sol.angles[i] = -1;
+    }
+    AG ag = new AG();
+    ag.sim = simulation;
+    ag.state = state;
+    
+    ag.play(sol);
+    System.err.println(sol.energy);
+    sol.init();
+    
+    state.restore();
+    sol.angles[0] = 6.20;
+    ag.play(sol);
+    System.err.println(sol.energy);
+  }
+  
   
   private void readEntity(int id, int owner, double x, double y, double vx, double vy, double radius) {
     Entity entity = state.getInitialChip(id);

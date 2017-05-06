@@ -15,7 +15,7 @@ public class AG {
   int bestGeneration = 0;
   AGSolution best = null;
   
-  private GameState state;
+  GameState state;
   
   public AGSolution getSolution(GameState state, long stop) {
     System.err.println("Current seed : "+Player.rand.debugSeed());
@@ -38,7 +38,8 @@ public class AG {
       }
       generation++;
     }
-    System.err.println("Generations : "+generation+ ", best energy is "+best.energy+" bestGen = "+bestGeneration);
+    System.err.println("Generations : "+generation+ ", bestGen = "+bestGeneration);
+    best.debug();
     return best;
   }
   
@@ -52,7 +53,7 @@ public class AG {
     }
   }
 
-  private void play(AGSolution solution) {
+  protected void play(AGSolution solution) {
     for (int turn=0;turn<AGSolution.DEPTH;turn++) {
       solution.applyActions(state, turn);
       sim.playTurn();
