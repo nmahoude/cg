@@ -30,7 +30,6 @@ public class GameState {
     _entityFE = entityFE;
     for (int i=0;i<entityFE;i++) {
       Entity entity = chips[i];
-      if (entity.isDead()) continue;
       entity.backup();
     }
   }
