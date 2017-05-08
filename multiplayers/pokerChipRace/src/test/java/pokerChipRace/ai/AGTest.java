@@ -28,7 +28,7 @@ public class AGTest {
    
     AG ag = new AG();
     long start = System.currentTimeMillis();
-    ag.getSolution(state, start+20);
+    ag.getSolutionRandom(state, start+20);
     
   }
   
@@ -65,7 +65,7 @@ public class AGTest {
     Player.rand.setSeed(9163063626091541570L,-7753284015946618596L);
     AG ag = new AG();
     long start = System.currentTimeMillis();
-    ag.getSolution(state, start+20);
+    ag.getSolutionRandom(state, start+20);
     long end = System.currentTimeMillis();
     System.err.println("time : "+(end-start));
   }
@@ -87,7 +87,7 @@ public class AGTest {
     
     ag.play(sol);
     System.err.println(sol.energy);
-    sol.init();
+    sol.clear();
     
     state.restore();
     sol.angles[0] = 6.20;

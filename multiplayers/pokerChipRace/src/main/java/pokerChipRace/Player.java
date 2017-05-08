@@ -54,7 +54,7 @@ public class Player {
         entity = state.getInitialChip(id);
         entity.update(owner, x, y, radius, vx, vy);
         state.playerCount = Math.max(state.playerCount, owner+1);
-        //entity.debug();
+        entity.debug();
         if (owner == state.myId) {
           state.myChips.add(entity);
         }
@@ -63,7 +63,7 @@ public class Player {
       // AG
       AG ag = new AG();
       
-      AGSolution sol = ag.getSolution(state, start+130);
+      AGSolution sol = ag.getSolutionRandom(state, start+130);
       
       for (int i=0;i<state.myChips.length;i++) {
         Entity myChip = state.myChips.elements[i];

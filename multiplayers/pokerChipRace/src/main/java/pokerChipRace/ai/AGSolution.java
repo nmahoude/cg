@@ -29,6 +29,22 @@ public class AGSolution {
     }
   }
 
+  public void clear() {
+    energy = 0;
+    for (int i=0;i<DEPTH;i++) {
+      features[i].clear();
+    }
+  }
+
+  public void copy(AGSolution copy) {
+    this.energy = copy.energy;
+    this.chipCount = copy.chipCount;
+    
+    for (int i = 0; i < chipCount; i++) {
+      this.angles[i] = copy.angles[i];
+    }
+  }
+  
   public void randomize() {
     for (int i = 0; i < chipCount; i++) {
       angles[i] = getRandomGene();
@@ -56,7 +72,7 @@ public class AGSolution {
 
   public void mutate() {
     for (int i = 0; i < chipCount; i++) {
-      if (Player.rand.nextInt(100) < 10) {
+      if (Player.rand.nextInt(100) < 5) {
         angles[i] = getRandomGene();
       }
     }
@@ -100,10 +116,6 @@ public class AGSolution {
     }
   }
 
-  public void init() {
-    energy = 0;
-  }
-
   public void debug() {
     System.err.println("Energy is " + energy);
 
@@ -119,4 +131,6 @@ public class AGSolution {
     }
 
   }
+
+
 }

@@ -25,6 +25,12 @@ public class Feature {
   private static final double RADIUS_SECUTIRY_MARGIN = 0.9;
   
 
+  public void clear() {
+    for (int i=0;i<LAST;i++) {
+      features[i] = 0;
+    }
+  }
+
   public void calculateIntermadiaryFeatures(GameState state) {
     double biggest = 0.0;
     
@@ -93,4 +99,5 @@ public class Feature {
     }
     return total;
   }
+
 }
