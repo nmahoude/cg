@@ -4,15 +4,17 @@ import pokerChipRace.GameState;
 import pokerChipRace.entities.Entity;
 
 public class Feature {
-  
-  public static final int MY_TOTAL_RADIUS = 0;
-  public static final int ALL_OTHER_TOTAL_RADIUS = 1;
-  public static final int DIST_TO_SMALLER_ENTITIES = 2;
-  public static final int DIST_TO_BIGGER_ENTITIES = 3;
-  public static final int LAST = 4;
+  private static int featuresIndex=0;
+  public static final int MY_BIGGEST_RADIUS = featuresIndex++;
+  public static final int MY_TOTAL_RADIUS = featuresIndex++;
+  public static final int ALL_OTHER_TOTAL_RADIUS = featuresIndex++;
+  public static final int DIST_TO_SMALLER_ENTITIES = featuresIndex++;
+  public static final int DIST_TO_BIGGER_ENTITIES = featuresIndex++;
+  public static final int LAST = featuresIndex;
 
   public double features[] = new double[LAST];
   public static final String[] debugFeatures= {
+      "my biggest rad  ",
       "my radius       ",
       "all other radius",
       "dist2 small e   ",
@@ -24,6 +26,8 @@ public class Feature {
   
 
   public void calculateIntermadiaryFeatures(GameState state) {
+    double biggest = 0.0;
+    
     for (int index = 0; index < state.entityFE; index++) {
       Entity entity = state.chips[index];
       if (entity.isDead())  continue;
@@ -31,9 +35,13 @@ public class Feature {
 
       if (entity.owner == state.myId) {
         features[MY_TOTAL_RADIUS]+= entity.radius;
+        if (entity.radius > biggest) {
+          biggest = entity.radius;
+        }
       } else {
         features[ALL_OTHER_TOTAL_RADIUS] += entity.radius;
       }
+      features[MY_BIGGEST_RADIUS] = biggest;
     }
     
     for (int index = 0; index < state.myChips.length; index++) {
