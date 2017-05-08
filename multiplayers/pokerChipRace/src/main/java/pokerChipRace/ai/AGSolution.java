@@ -10,16 +10,23 @@ public class AGSolution {
   public static double patience[] = new double[DEPTH];
   static {
     for (int i = 0; i < DEPTH; i++) {
-      patience[i] = Math.pow(0.7, i);
+      patience[i] = Math.pow(0.6, i);
     }
   }
 
   double angles[] = new double[6]; // <0 == WAIT, else [0;2*PI]
   private int chipCount;
-  public double energy;
 
+  public Feature features[] = new Feature[DEPTH];
+  public static FeatureWeight weights = new FeatureWeight();
+
+  public double energy;
+  
   public AGSolution(int chipCount) {
     this.chipCount = chipCount;
+    for (int i=0;i<DEPTH;i++) {
+      features[i] = new Feature(); // TODO use a cache
+    }
   }
 
   public void randomize() {
@@ -82,56 +89,14 @@ public class AGSolution {
     }
   }
 
-  public void calculateSubEnergy(GameState state, int turn) {
-    for (int index = 0; index < state.entityFE; index++) {
-      Entity entity = state.chips[index];
-      if (entity.isDead())
-        continue;
-      if (entity.owner == -1)
-        break;
-
-      if (entity.owner == state.myId) {
-        energy += patience[turn] * entity.radius;
-      }
-    }
+  public void calculateIntermediateEnergy(GameState state, int turn) {
+    features[turn].calculateIntermadiaryFeatures(state);
   }
 
   public void calculateFinalEnergy(GameState state) {
-    for (int index = 0; index < state.entityFE; index++) {
-      Entity entity = state.chips[index];
-      if (entity.isDead())
-        continue;
-      if (entity.owner == -1)
-        break;
-
-      if (entity.owner == state.myId) {
-        // energy += entity.radius;
-
-        // check distance to biggest entity
-        // double good = 0;
-        // double bad = 0;
-        // int count = 0;
-        // for (int otherI=0;otherI<state.entityFE;otherI++) {
-        // Entity other = state.chips[otherI];
-        // if (other.isDead()) continue;
-        // if (other.owner == state.myId) continue;
-        //
-        // double dist2 = (entity.x-other.x)*(entity.x-other.x) +
-        // (entity.y-other.y)*(entity.y-other.y);
-        // if (other.radius > entity.radius) {
-        // bad += dist2;
-        // } else {
-        // good += dist2;
-        // }
-        // count++;
-        // }
-        // if (count != 0) {
-        // energy += 0.00001*good / count;
-        // energy -= 0.00001*bad / count;
-        // }
-      } else {
-        // energy -= entity.radius;
-      }
+    energy = 0.0;
+    for (int i=0;i<DEPTH;i++) {
+      energy += patience[i]*features[i].applyWeights(weights);
     }
   }
 
@@ -142,6 +107,11 @@ public class AGSolution {
   public void debug() {
     System.err.println("Energy is " + energy);
 
+    for (int i=0;i<DEPTH;i++) {
+      System.err.println("* turn "+i);
+      features[i].debugFeature(weights);
+    }
+    
     for (int i = 0; i < chipCount; i++) {
       System.err.print("i: ");
       System.err.print("" + angles[i] + ", ");

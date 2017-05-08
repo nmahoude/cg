@@ -38,8 +38,8 @@ public class AG {
       }
       generation++;
     }
-    System.err.println("Generations : "+generation+ ", bestGen = "+bestGeneration);
-    best.debug();
+    System.err.printf("Generations : %d, bestGen = %d\n", generation,bestGeneration);
+    
     return best;
   }
   
@@ -57,7 +57,7 @@ public class AG {
     for (int turn=0;turn<AGSolution.DEPTH;turn++) {
       solution.applyActions(state, turn);
       sim.playTurn();
-      solution.calculateSubEnergy(state, turn);
+      solution.calculateIntermediateEnergy(state, turn);
     }
 
     solution.calculateFinalEnergy(state);

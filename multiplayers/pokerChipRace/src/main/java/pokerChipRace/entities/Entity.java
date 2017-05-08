@@ -217,7 +217,7 @@ public class Entity {
     return radius < 0;
   }
 
-  private void setDead() {
+  public void setDead() {
     radius = -1; // dead entity
     x = -1000;
     y = -1000;

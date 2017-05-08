@@ -1,13 +1,15 @@
 package pokerChipRace.simulation;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.number.IsCloseTo.closeTo;
+import static org.junit.Assert.*;
 
+import org.hamcrest.number.IsCloseTo;
 import org.junit.Before;
 import org.junit.Test;
 
 import pokerChipRace.GameState;
+import pokerChipRace.ai.Feature;
 import pokerChipRace.entities.Entity;
 import pokerChipRace.simulate.Simulation;
 
@@ -110,6 +112,7 @@ public class SimulationTest {
 
   @Test
   public void emission() throws Exception {
+    state.myId = 1;
     readEntity(0,0,734.9815f, 382.14136f, 0.0f, 0.0f,10.0f);
     readEntity(1,1,312.7988f, 74.2455f, 6.138302f, 12.899725f,9.660918f);
     readEntity(2,-1,311.72104f, 310.83975f, -0.0f, 0.0f,18.10879f);
@@ -129,6 +132,7 @@ public class SimulationTest {
   
   @Test
   public void ejectWithBounce() throws Exception {
+    state.myId = 1;
     readEntity(0,0,734.9815f, 382.14136f, 0.0f, 0.0f,10.0f);
     readEntity(1,1,288.2456f, 22.646599f, 0.0f, 0.0f,10.0f);
     readEntity(2,-1,311.72104f, 310.83975f, -0.0f, 0.0f,18.10879f);
@@ -209,6 +213,26 @@ public class SimulationTest {
     /*13*/checkEntity(2,-1,388.21835f, 264.772f, 0.233053f, 3.517607f,14.197735f);
     
   }
+
+  @Test
+  public void radiusOfOppShouldNotDiminish() throws Exception {
+    readEntity(6,0,91.4334945678711, 67.49349212646484, -25.339580535888672, -4.755422115325928,21.643661499023438);
+    readEntity(1,1,447.8151550292969, 317.6604919433594, -11.982721328735352, -5.083907127380371,117.19773864746094);
+    readEntity(112,-1,533.7255249023438, 23.946781158447266, 187.91500854492188, -25.751813888549805,5.784512042999268);
+
+    applyOrder(0, 6, "WAIT");
+    applyOrder(1, 1, "WAIT");
+    simulation.playTurn();
+    simulation.playTurn();
+    
+    assertThat(state.chips[1].radius, closeTo(117.197, 0.001));
+    
+    Feature feature = new Feature();
+    feature.calculateIntermadiaryFeatures(state);
+    assertThat(feature.features[Feature.ALL_OTHER_TOTAL_RADIUS], closeTo(117.197, 0.001));
+    
+  }
+  
   
   private void applyOrder(int owner, int id, double targetx, double targety) {
     for (int i=0;i<state.entityFE;i++ ) {

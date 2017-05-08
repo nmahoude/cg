@@ -29,7 +29,7 @@ public class Player {
 
       // reset all entities
       for (int i=0;i<state.entityFE;i++) {
-        state.getInitialChip(i).radius = -1;
+        state.getInitialChip(i).setDead();
       }
       int playerChipCount = in.nextInt();
       start = System.currentTimeMillis();
@@ -63,7 +63,7 @@ public class Player {
       // AG
       AG ag = new AG();
       
-      AGSolution sol = ag.getSolution(state, start+140);
+      AGSolution sol = ag.getSolution(state, start+130);
       
       for (int i=0;i<state.myChips.length;i++) {
         Entity myChip = state.myChips.elements[i];
