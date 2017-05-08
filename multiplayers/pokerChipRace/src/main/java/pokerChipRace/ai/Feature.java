@@ -10,6 +10,7 @@ public class Feature {
   public static final int ALL_OTHER_TOTAL_RADIUS = featuresIndex++;
   public static final int DIST_TO_SMALLER_ENTITIES = featuresIndex++;
   public static final int DIST_TO_BIGGER_ENTITIES = featuresIndex++;
+  public static final int DIST_BETWEEN_MINE = featuresIndex++;
   public static final int LAST = featuresIndex;
 
   public double features[] = new double[LAST];
@@ -19,6 +20,7 @@ public class Feature {
       "all other radius",
       "dist2 small e   ",
       "dist2 big e     ",
+      "dist btwn mine  ",
       "last            ",
   };
 
@@ -32,8 +34,19 @@ public class Feature {
   }
 
   public void calculateIntermadiaryFeatures(GameState state) {
-    double biggest = 0.0;
     
+    int dist2 = 0;
+    for (int i=0;i<state.myChips.length;i++) {
+      Entity one = state.myChips.elements[i];
+      if (one.isDead()) continue;
+      for (int j=i+1;j<state.myChips.length;j++) {
+        Entity two = state.myChips.elements[j];
+        dist2+= (one.x-two.x)*(one.x-two.x) + (one.y-two.y)*(one.y-two.y);
+      }
+    }
+    features[DIST_BETWEEN_MINE] = dist2;
+    
+    double biggest = 0.0;
     for (int index = 0; index < state.entityFE; index++) {
       Entity entity = state.chips[index];
       if (entity.isDead())  continue;

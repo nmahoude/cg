@@ -12,7 +12,7 @@ import trigonometry.Vector;
 public class Player {
   public static GameState state = new GameState();
   private static long start;
-  public static final FastRandom rand = new FastRandom(17);
+  public static final FastRandom rand = new FastRandom(System.currentTimeMillis());
   
   public static void main(String[] args) {
     Player player = new Player();
@@ -54,7 +54,7 @@ public class Player {
         entity = state.getInitialChip(id);
         entity.update(owner, x, y, radius, vx, vy);
         state.playerCount = Math.max(state.playerCount, owner+1);
-        entity.debug();
+        //entity.debug();
         if (owner == state.myId) {
           state.myChips.add(entity);
         }
@@ -63,11 +63,11 @@ public class Player {
       // AG
       AG ag = new AG();
       
-      AGSolution sol = ag.getSolutionRandom(state, start+130);
+      AGSolution sol = ag.getSolutionAG(state, start+130);
       
       for (int i=0;i<state.myChips.length;i++) {
         Entity myChip = state.myChips.elements[i];
-        Vector dir = sol.angleToDir(i);
+        Vector dir = sol.angleToDir(0, i);
         if (dir == null) {
           System.out.println("WAIT");
         } else {

@@ -16,6 +16,8 @@ public class AG {
   public AGSolution best = new AGSolution(0);
   
   GameState state;
+
+  private long stop;
   
   public void setState(GameState state) {
     this.state = state;
@@ -23,6 +25,7 @@ public class AG {
   }
 
   public AGSolution getSolutionAG(GameState state, long stop) {
+    this.stop = stop;
     System.err.println("Current seed : "+Player.rand.debugSeed());
     
     setState(state);
@@ -46,10 +49,12 @@ public class AG {
   }
 
   public void nextPopulation() {
-    int pop=0;
+    int pop=1;
+    
+    population[0].copy(best);
     
     AGSolution localBest = best;
-    while(pop < POP_SIZE) {
+    while(pop < POP_SIZE && System.currentTimeMillis() < stop) {
       AGSolution solution = population[pop];
       int firstIndex = findIndex(oldPopulation, -1);
       int secondIndex = findIndex(oldPopulation, firstIndex);

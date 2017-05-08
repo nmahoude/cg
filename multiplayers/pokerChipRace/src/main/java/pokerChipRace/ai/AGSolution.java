@@ -6,7 +6,7 @@ import pokerChipRace.entities.Entity;
 import trigonometry.Vector;
 
 public class AGSolution {
-  public static final int DEPTH = 5;
+  public static final int DEPTH = 11;
   public static double patience[] = new double[DEPTH];
   static {
     for (int i = 0; i < DEPTH; i++) {
@@ -14,7 +14,7 @@ public class AGSolution {
     }
   }
 
-  double angles[] = new double[6]; // <0 == WAIT, else [0;2*PI]
+  double angles[] = new double[6*DEPTH]; // <0 == WAIT, else [0;2*PI]
   private int chipCount;
 
   public Feature features[] = new Feature[DEPTH];
@@ -37,17 +37,20 @@ public class AGSolution {
   }
 
   public void copy(AGSolution copy) {
+    clear();
     this.energy = copy.energy;
     this.chipCount = copy.chipCount;
     
-    for (int i = 0; i < chipCount; i++) {
+    for (int i = 0; i < angles.length; i++) {
       this.angles[i] = copy.angles[i];
     }
   }
   
   public void randomize() {
     for (int i = 0; i < chipCount; i++) {
-      angles[i] = getRandomGene();
+      for (int d=0;d<DEPTH;d++) {
+        angles[6*i+d] = getRandomGene();
+      }
     }
   }
 
@@ -63,44 +66,47 @@ public class AGSolution {
   public void crossOver(AGSolution parent1, AGSolution parent2) {
     for (int i = 0; i < chipCount; i++) {
       if (Player.rand.nextBoolean()) {
-        angles[i] = parent1.angles[i];
+        for (int d=0;d<DEPTH;d++) {
+          angles[6*i+d] = parent1.angles[6*i+d];
+        }
       } else {
-        angles[i] = parent2.angles[i];
+        for (int d=0;d<DEPTH;d++) {
+          angles[6*i+d] = parent2.angles[6*i+d];
+        }
       }
     }
   }
 
   public void mutate() {
     for (int i = 0; i < chipCount; i++) {
-      if (Player.rand.nextInt(100) < 5) {
-        angles[i] = getRandomGene();
+      for (int d=0;d<DEPTH;d++) {
+        if (Player.rand.nextInt(100) < 50) {
+          double decal = Player.rand.nextDouble(-0.1, 0.1);
+          angles[6*i+d] += decal;
+          if (angles[6*i+d] <0) angles[i] += 6.28 ;
+        }
       }
     }
   }
 
-  public Vector angleToDir(int index) {
-    if (angles[index] < 0)
+  public Vector angleToDir(int turn, int index) {
+    if (angles[6*index+turn] < 0)
       return null;
 
-    return new Vector(10 * Math.cos(angles[index]), 10 * Math.sin(angles[index]));
+    return new Vector(10 * Math.cos(angles[6*index+turn]), 10 * Math.sin(angles[6*index+turn]));
   }
 
   public void applyActions(GameState state, int turn) {
     for (int index = 0; index < chipCount; index++) {
       Entity entity = state.myChips.elements[index];
 
-      if (turn != 0) {
+      Vector dir = angleToDir(turn,index);
+      if (dir == null) {
         entity.targetx = -100;
         entity.targety = -100;
       } else {
-        Vector dir = angleToDir(index);
-        if (dir == null) {
-          entity.targetx = -100;
-          entity.targety = -100;
-        } else {
-          entity.targetx = entity.x + dir.vx;
-          entity.targety = entity.y + dir.vy;
-        }
+        entity.targetx = entity.x + dir.vx;
+        entity.targety = entity.y + dir.vy;
       }
     }
   }

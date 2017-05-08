@@ -114,7 +114,6 @@ public class Graphs extends Application {
   
 
   private void initState() {
-    
     readEntity(4,1,28.269495010375977, 62.118377685546875, 0.0, 0.0,24.0);
     readEntity(5,1,117.4542236328125, 250.11058044433594, 0.0, 0.0,24.0);
     readEntity(6,1,170.80821228027344, 149.8305206298828, 0.0, 0.0,24.0);
