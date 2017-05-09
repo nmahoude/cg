@@ -26,7 +26,7 @@ public class AG {
 
   public AGSolution getSolutionAG(GameState state, long stop) {
     this.stop = stop;
-    System.err.println("Current seed : "+Player.rand.debugSeed());
+    //System.err.println("Current seed : "+Player.rand.debugSeed());
     
     setState(state);
     
@@ -39,6 +39,8 @@ public class AG {
       nextPopulation();
       swapPopulations();
     }
+    
+    best.debug();
     return best;
   }
 

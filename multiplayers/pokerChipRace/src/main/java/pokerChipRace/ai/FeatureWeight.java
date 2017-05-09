@@ -15,6 +15,8 @@ public class FeatureWeight {
     weights[Feature.DIST_TO_BIGGER_ENTITIES] = -1.0;
     weights[Feature.DIST_TO_SMALLER_ENTITIES] = 1.0;
     weights[Feature.DIST_BETWEEN_MINE] = 0.0;
+    weights[Feature.DIST_CLOSEST_BIGGER] = 0.0;
+    weights[Feature.DIST_CLOSEST_SMALLER] = 0.0;
   }
   
   public void randomize() {

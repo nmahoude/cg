@@ -17,7 +17,7 @@ public class Controller {
   }
   
   private void play() {
-    for (int i=0;i<10_000;i++) {
+    for (int i=0;i<100_000;i++) {
       simulation.playTurn();
     }
   }

@@ -6,7 +6,7 @@ import pokerChipRace.entities.Entity;
 import trigonometry.Vector;
 
 public class AGSolution {
-  public static final int DEPTH = 11;
+  public static final int DEPTH = 7;
   public static double patience[] = new double[DEPTH];
   static {
     for (int i = 0; i < DEPTH; i++) {
@@ -43,6 +43,9 @@ public class AGSolution {
     
     for (int i = 0; i < angles.length; i++) {
       this.angles[i] = copy.angles[i];
+    }
+    for (int i = 0; i< DEPTH;i++) {
+      features[i].copy(copy.features[i]);
     }
   }
   
@@ -83,7 +86,7 @@ public class AGSolution {
         if (Player.rand.nextInt(100) < 50) {
           double decal = Player.rand.nextDouble(-0.1, 0.1);
           angles[6*i+d] += decal;
-          if (angles[6*i+d] <0) angles[i] += 6.28 ;
+          if (angles[6*i+d] <0) angles[6*i+d] += 6.28 ;
         }
       }
     }
@@ -150,7 +153,7 @@ public class AGSolution {
   }
 
   public void debug() {
-    System.err.println("Energy is " + energy);
+    System.err.println("Energy = " + energy);
 
     for (int i=0;i<DEPTH;i++) {
       System.err.println("* turn "+i);
@@ -158,8 +161,10 @@ public class AGSolution {
     }
     
     for (int i = 0; i < chipCount; i++) {
-      System.err.print("i: ");
-      System.err.print("" + angles[i] + ", ");
+      System.err.print("for "+i+ " angles= ");
+      for (int d=0;d<DEPTH;d++) {
+        System.err.printf("%f ,", angles[6*i+d]);
+      }
       System.err.println();
     }
 
