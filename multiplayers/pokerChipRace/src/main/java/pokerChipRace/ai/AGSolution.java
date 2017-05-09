@@ -117,9 +117,36 @@ public class AGSolution {
 
   public void calculateFinalEnergy(GameState state) {
     energy = 0.0;
-    for (int i=0;i<DEPTH;i++) {
-      energy += patience[i]*features[i].applyWeights(weights);
+    // check for finish state
+    if (!isFinishedState(state)) {
+      for (int i=0;i<DEPTH;i++) {
+        energy += patience[i]*features[i].applyWeights(weights);
+      }
     }
+  }
+
+  private boolean isFinishedState(GameState state) {
+    boolean playerHasChips[] = new boolean[4];
+    for (int i=0;i<state.entityFE;i++) {
+      Entity entity = state.chips[i];
+      if (entity.owner == -1) break;
+      if (entity.isDead()) continue;
+      playerHasChips[entity.owner] = true;
+    }
+    
+    int playerWithChips = 0;
+    for (int i=0;i<4;i++) {
+      if (playerHasChips[i]) playerWithChips++;
+    }
+    if (playerWithChips == 1) {
+      if ((playerHasChips[state.myId])) {
+        energy = Double.POSITIVE_INFINITY;
+      } else {
+        energy = Double.NEGATIVE_INFINITY;
+      }
+      return true;
+    }
+    return false;
   }
 
   public void debug() {

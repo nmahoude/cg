@@ -83,7 +83,6 @@ public class Feature {
   }
   
   public void calculateFinalFeatures(GameState state) {
-
   }
 
   public void reset() {

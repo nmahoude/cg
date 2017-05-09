@@ -9,12 +9,12 @@ public class FeatureWeight {
     soundValues();
   }
   public void soundValues() {
-    weights[Feature.MY_BIGGEST_RADIUS] = 5.0;
+    weights[Feature.MY_BIGGEST_RADIUS] = 2.0;
     weights[Feature.MY_TOTAL_RADIUS] = 1.0;
     weights[Feature.ALL_OTHER_TOTAL_RADIUS] = -0.3;
     weights[Feature.DIST_TO_BIGGER_ENTITIES] = -1.0;
     weights[Feature.DIST_TO_SMALLER_ENTITIES] = 1.0;
-    weights[Feature.DIST_BETWEEN_MINE] = 0.000;
+    weights[Feature.DIST_BETWEEN_MINE] = 0.0;
   }
   
   public void randomize() {
