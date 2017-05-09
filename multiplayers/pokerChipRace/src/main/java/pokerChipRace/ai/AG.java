@@ -40,7 +40,6 @@ public class AG {
       swapPopulations();
     }
     
-    best.debug();
     return best;
   }
 
@@ -104,8 +103,7 @@ public class AG {
       }
       generation++;
     }
-    System.err.printf("Generations : %d, bestGen = %d\n", generation,bestGeneration);
-    
+
     return best;
   }
   

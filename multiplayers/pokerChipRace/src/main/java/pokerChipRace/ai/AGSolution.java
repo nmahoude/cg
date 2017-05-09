@@ -129,6 +129,13 @@ public class AGSolution {
   }
 
   private boolean isFinishedState(GameState state) {
+    // NOTE : was a good idea, but bot is considering other won't act and, so, that they will collide with bigger entities
+    //return updateEnergyWithDeadPlayers(state);
+    
+    return false;
+  }
+
+  private boolean updateEnergyWithDeadPlayers(GameState state) {
     boolean playerHasChips[] = new boolean[4];
     for (int i=0;i<state.entityFE;i++) {
       Entity entity = state.chips[i];

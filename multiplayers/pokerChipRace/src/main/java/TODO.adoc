@@ -1,0 +1,7 @@
+= Optimiser liste des entités: 
+=== dans state, garder la liste complete de toutes les entités (à renommer entityCache)
+=== chips redevient un FastArray qui ne contient que les entités vivantes au début du tour
+=== BC : gain de perf
+
+
+   
