@@ -17,6 +17,7 @@ public class FeatureWeight {
     weights[Feature.DIST_BETWEEN_MINE] = 0.0;
     weights[Feature.DIST_CLOSEST_BIGGER] = 0.0;
     weights[Feature.DIST_CLOSEST_SMALLER] = 0.0;
+    weights[Feature.SPEED] = 0.000;
   }
   
   public void randomize() {

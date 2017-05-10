@@ -6,6 +6,7 @@ import pokerChipRace.entities.Entity;
 import trigonometry.Vector;
 
 public class AGSolution {
+  private static final double _2PI = 2*Math.PI;
   public static final int DEPTH = 7;
   public static double patience[] = new double[DEPTH];
   static {
@@ -61,13 +62,32 @@ public class AGSolution {
     if (Player.rand.nextDouble() < 0.8) {
       return -1; // WAIT
     } else {
-      return 2 * Math.PI * Player.rand.nextDouble(); // real angle between 0 and
-                                                     // 2PI
+      return _2PI * Player.rand.nextDouble(); // real angle between 0 and
     }
   }
 
-  
+
   public static void crossOver(AGSolution child1, AGSolution child2, AGSolution parent1, AGSolution parent2) {
+    double beta = Player.rand.nextDouble();
+    
+    for (int i=0;i<parent1.chipCount * DEPTH;i++) {
+      child1.angles[i] = getAcceptableAngle(beta, parent1.angles[i], parent2.angles[i]);
+      child2.angles[i] = getAcceptableAngle(beta, parent2.angles[i], parent1.angles[i]);
+    }
+  }
+  
+  private static double getAcceptableAngle(double beta, double angle1, double angle2) {
+    if (angle1 < 0 || angle2 < 0) {
+      // -1 case
+      return beta < 0.5 ? angle1 : angle2;
+    }
+    double angle = beta * (angle1 - angle2) + angle1;
+    if (angle < 0) angle += _2PI;
+    if (angle > _2PI) angle -= _2PI;
+    return angle;
+  }
+
+  public static void crossOver_OneCut(AGSolution child1, AGSolution child2, AGSolution parent1, AGSolution parent2) {
     // one cut 
     int cut = 1+Player.rand.nextInt(parent1.chipCount * DEPTH-2);
     

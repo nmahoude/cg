@@ -1,5 +1,8 @@
 package pokerChipRace.ai;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import pokerChipRace.GameState;
 import pokerChipRace.Player;
 import pokerChipRace.entities.Entity;
@@ -8,8 +11,9 @@ import pokerChipRace.simulate.Simulation;
 public class AG {
   Simulation sim = new Simulation();
 
-  public static final int POP_SIZE = 25;
-  AGSolution oldPopulation[] = new AGSolution[POP_SIZE];
+  public static final int POP_SIZE = 50;
+  public static final int SURVIVOR_POP_SIZE = 20;
+  
   public AGSolution population[] = new AGSolution[POP_SIZE];
   
   int bestGeneration = 0;
@@ -17,7 +21,7 @@ public class AG {
   
   GameState state;
 
-  private long stop;
+  public long stop;
   
   public void setState(GameState state) {
     this.state = state;
@@ -52,40 +56,33 @@ public class AG {
     setState(state);
     
     state.backup();
-    createPopulations();
+    createPopulation();
 
     initFirstPopulation();
     
     while (System.currentTimeMillis() < stop) {
       nextPopulation();
-      swapPopulations();
     }
     
     return best;
   }
 
-  public void swapPopulations() {
-    AGSolution[] swap = oldPopulation;
-    oldPopulation = population;
-    population = swap;
-  }
-
   public void nextPopulation() {
-    int pop=1;
+    int pop=SURVIVOR_POP_SIZE;
     
-    population[0].copy(best);
+    sortPopulation(population);
     
     AGSolution localBest = best;
     while(pop < POP_SIZE && System.currentTimeMillis() < stop) {
-      int firstIndex = findIndex(oldPopulation, -1);
-      int secondIndex = findIndex(oldPopulation, firstIndex);
+      int firstIndex = findIndex(population, -1);
+      int secondIndex = findIndex(population, firstIndex);
       
       AGSolution solution1 = population[pop++];
       AGSolution solution2 = population[pop++];
       solution1.clear();
       solution2.clear();
       
-      AGSolution.crossOver(solution1, solution2, oldPopulation[firstIndex], oldPopulation[secondIndex]);
+      AGSolution.crossOver(solution1, solution2, population[firstIndex], population[secondIndex]);
       solution1.mutate();
       solution2.mutate();
       play(solution1);
@@ -102,14 +99,23 @@ public class AG {
     }
   }
 
+  static void sortPopulation(AGSolution[] population) {
+    Arrays.sort(population, new Comparator<AGSolution>() {
+      @Override
+      public int compare(AGSolution o2, AGSolution o1) {
+        return Double.compare(o1.energy, o2.energy);
+      }
+    });
+  }
+
   private static int findIndex(AGSolution[] pool, int otherThanIndex) {
     int aIndex, bIndex;
     do {
-      aIndex = Player.rand.nextInt(POP_SIZE);
+      aIndex = Player.rand.nextInt(SURVIVOR_POP_SIZE);
     } while (aIndex == otherThanIndex);
 
     do {
-      bIndex = Player.rand.nextInt(POP_SIZE);
+      bIndex = Player.rand.nextInt(SURVIVOR_POP_SIZE);
     } while (bIndex == aIndex && bIndex != otherThanIndex);
 
     return pool[aIndex].energy > pool[bIndex].energy ? aIndex : bIndex;
@@ -119,10 +125,10 @@ public class AG {
     AGSolution localBest = null;
     
     for (int i=0;i<POP_SIZE;i++) {
-      oldPopulation[i].randomize();
-      play(oldPopulation[i]);
-      if (localBest == null || oldPopulation[i].energy > localBest.energy) {
-        localBest = oldPopulation[i];
+      population[i].randomize();
+      play(population[i]);
+      if (localBest == null || population[i].energy > localBest.energy) {
+        localBest = population[i];
       }
     }
     best.copy(localBest);
@@ -139,9 +145,8 @@ public class AG {
     state.restore();
   }
 
-  public void createPopulations() {
+  public void createPopulation() {
     for (int i=0;i<POP_SIZE;i++) {
-      oldPopulation[i] = new AGSolution(state.myChips.length);
       population[i] = new AGSolution(state.myChips.length);
     }
   }

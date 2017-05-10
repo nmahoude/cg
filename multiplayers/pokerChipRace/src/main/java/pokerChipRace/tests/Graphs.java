@@ -64,13 +64,13 @@ public class Graphs extends Application {
     AG ag = new AG();
     ag.setState(state);
 
-    ag.createPopulations();
+    ag.createPopulation();
 
     ag.initFirstPopulation();
     
+    ag.stop = System.currentTimeMillis() + 5_000_000;
     for (int gen=0;gen<ITERATIONS;gen++) {
       ag.nextPopulation();
-      ag.swapPopulations();
       
       seriesAG1.getData().add(new XYChart.Data(""+gen, ag.best.energy));
       // get the min

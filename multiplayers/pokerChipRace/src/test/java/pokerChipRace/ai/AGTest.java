@@ -1,6 +1,12 @@
 package pokerChipRace.ai;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -127,7 +133,27 @@ public class AGTest {
     //ag.play(sol);
     sol2.debug();
   }
+
   
+  @Test
+  public void sortAGSolutions() throws Exception {
+    AGSolution sol1 = new AGSolution(1);
+    AGSolution sol2 = new AGSolution(1);
+    AGSolution sol3 = new AGSolution(1);
+    
+    sol1.energy = 1.0;
+    sol2.energy = 3.0;
+    sol3.energy = 2.0;
+    
+    AGSolution population[] = new AGSolution[] { sol1, sol2, sol3};
+    
+    AG.sortPopulation(population);
+    
+    assertThat(population[0], is (sol2));
+    assertThat(population[1], is (sol3));
+    assertThat(population[2], is (sol1));
+    
+  }
   
   private void readEntity(int id, int owner, double x, double y, double vx, double vy, double radius) {
     Entity entity = state.getInitialChip(id);

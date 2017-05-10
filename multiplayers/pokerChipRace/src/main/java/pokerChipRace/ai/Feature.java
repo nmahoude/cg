@@ -13,7 +13,7 @@ public class Feature {
   public static final int DIST_BETWEEN_MINE = featuresIndex++;
   public static final int DIST_CLOSEST_SMALLER = featuresIndex++;
   public static final int DIST_CLOSEST_BIGGER = featuresIndex++;
-  
+  public static final int SPEED = featuresIndex++;
   public static final int LAST = featuresIndex;
 
   public double features[] = new double[LAST];
@@ -26,6 +26,7 @@ public class Feature {
       "dist btwn mine  ",
       "mdist 2 smaller ",
       "mdist 2 bigger  ",
+      "speed           ",
       "last            ",
   };
 
@@ -41,10 +42,19 @@ public class Feature {
   public void calculateIntermadiaryFeatures(GameState state) {
     
     distanceBetweenMyChips(state);
-    
     calculateRadix(state);
-    
     calculateDistanceWithOtherChips(state);    
+    calculateSpeed(state);
+  }
+
+  private void calculateSpeed(GameState state) {
+    features[SPEED] = 0;
+
+    for (int index = 0; index < state.myChips.length; index++) {
+      Entity entity = state.myChips.elements[index];
+      if (entity.isDead()) continue;
+      features[SPEED] += entity.vx*entity.vx + entity.vy+entity.vy;
+    }
   }
 
   private void calculateDistanceWithOtherChips(GameState state) {
