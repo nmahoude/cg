@@ -8,7 +8,7 @@ import pokerChipRace.simulate.Simulation;
 public class AG {
   Simulation sim = new Simulation();
 
-  public static final int POP_SIZE = 100;
+  public static final int POP_SIZE = 25;
   AGSolution oldPopulation[] = new AGSolution[POP_SIZE];
   public AGSolution population[] = new AGSolution[POP_SIZE];
   
@@ -22,6 +22,27 @@ public class AG {
   public void setState(GameState state) {
     this.state = state;
     sim.setGameState(state);
+  }
+
+  public AGSolution getSolutionRandom(GameState state, long stop) {
+    System.err.println("Current seed : "+Player.rand.debugSeed());
+    
+    setState(state);
+    
+    state.backup();
+    int generation = 0;
+    while (System.currentTimeMillis() < stop) {
+      AGSolution sol = new AGSolution(state.myChips.length);
+      sol.randomize();
+      play(sol);
+      if (best == null || sol.energy > best.energy) {
+        best = sol;
+        bestGeneration = generation;
+      }
+      generation++;
+    }
+
+    return best;
   }
 
   public AGSolution getSolutionAG(GameState state, long stop) {
@@ -56,17 +77,25 @@ public class AG {
     
     AGSolution localBest = best;
     while(pop < POP_SIZE && System.currentTimeMillis() < stop) {
-      AGSolution solution = population[pop];
       int firstIndex = findIndex(oldPopulation, -1);
       int secondIndex = findIndex(oldPopulation, firstIndex);
-      solution.clear();
-      solution.crossOver(oldPopulation[firstIndex], oldPopulation[secondIndex]);
-      solution.mutate();
-      play(solution);
-      if (solution.energy > localBest.energy) {
-        localBest = solution;
+      
+      AGSolution solution1 = population[pop++];
+      AGSolution solution2 = population[pop++];
+      solution1.clear();
+      solution2.clear();
+      
+      AGSolution.crossOver(solution1, solution2, oldPopulation[firstIndex], oldPopulation[secondIndex]);
+      solution1.mutate();
+      solution2.mutate();
+      play(solution1);
+      if (solution1.energy > localBest.energy) {
+        localBest = solution1;
       }
-      pop++;
+      play(solution2);
+      if (solution2.energy > localBest.energy) {
+        localBest = solution2;
+      }
     }
     if (localBest.energy > best.energy) {
       best.copy(localBest);
@@ -86,27 +115,6 @@ public class AG {
     return pool[aIndex].energy > pool[bIndex].energy ? aIndex : bIndex;
   }
 
-  public AGSolution getSolutionRandom(GameState state, long stop) {
-    System.err.println("Current seed : "+Player.rand.debugSeed());
-    
-    setState(state);
-    
-    state.backup();
-    int generation = 0;
-    while (System.currentTimeMillis() < stop) {
-      AGSolution sol = new AGSolution(state.myChips.length);
-      sol.randomize();
-      play(sol);
-      if (best == null || sol.energy > best.energy) {
-        best = sol;
-        bestGeneration = generation;
-      }
-      generation++;
-    }
-
-    return best;
-  }
-  
   public void initFirstPopulation() {
     AGSolution localBest = null;
     

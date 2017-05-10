@@ -66,7 +66,20 @@ public class AGSolution {
     }
   }
 
-  public void crossOver(AGSolution parent1, AGSolution parent2) {
+  
+  public static void crossOver(AGSolution child1, AGSolution child2, AGSolution parent1, AGSolution parent2) {
+    // one cut 
+    int cut = 1+Player.rand.nextInt(parent1.chipCount * DEPTH-2);
+    
+    System.arraycopy(parent1.angles, 0, child1.angles, 0, cut);
+    System.arraycopy(parent2.angles, cut, child1.angles, cut, parent1.chipCount * DEPTH-cut);
+    
+    System.arraycopy(parent2.angles, 0, child2.angles, 0, cut);
+    System.arraycopy(parent1.angles, cut, child2.angles, cut, parent1.chipCount * DEPTH-cut);
+  }
+
+  
+  public void crossOver_perChips(AGSolution parent1, AGSolution parent2) {
     for (int i = 0; i < chipCount; i++) {
       if (Player.rand.nextBoolean()) {
         for (int d=0;d<DEPTH;d++) {
