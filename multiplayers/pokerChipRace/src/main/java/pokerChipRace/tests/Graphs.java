@@ -60,6 +60,7 @@ public class Graphs extends Application {
 
     fillSeries();
     fillSeriesAG();
+    fillSeriesAG2();
     
     Scene scene = new Scene(lineChart);
     lineChart.getData().addAll(series1, series2, seriesAG1, seriesAG2);
@@ -89,9 +90,27 @@ public class Graphs extends Application {
       }
       //seriesAG2.getData().add(new XYChart.Data(""+gen, min));
     }
+  }
+  
+  private void fillSeriesAG2() {
+    AG.SURVIVOR_POP_SIZE = 6;
+    
+    AG ag = new AG();
+    ag.setState(state);
+
+    ag.createPopulation();
+
+    ag.initFirstPopulation();
+    
+    ag.stop = System.currentTimeMillis() + 5_000_000;
+    for (int gen=0;gen<ITERATIONS;gen++) {
+      ag.nextPopulation();
+      
+      seriesAG2.getData().add(new XYChart.Data(""+gen, ag.best.energy));
+    }
     
   }
-
+  
   private void fillSeries() {
     AG ag = new AG();
     ag.setState(state);

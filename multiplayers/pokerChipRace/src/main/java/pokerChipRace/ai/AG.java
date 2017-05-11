@@ -12,7 +12,7 @@ public class AG {
   Simulation sim = new Simulation();
 
   public static final int POP_SIZE = 50;
-  public static final int SURVIVOR_POP_SIZE = 20;
+  public static int SURVIVOR_POP_SIZE = 20;
   
   public AGSolution population[] = new AGSolution[POP_SIZE];
   
