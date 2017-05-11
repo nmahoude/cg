@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
 import pokerChipRace.GameState;
@@ -15,6 +16,7 @@ import pokerChipRace.entities.Entity;
 public class Graphs extends Application {
   private static final int ITERATIONS = 500;
   private CategoryAxis xAxis;
+  
   private XYChart.Series series1;
   private XYChart.Series series2;
 
@@ -22,6 +24,7 @@ public class Graphs extends Application {
   private XYChart.Series seriesAG2;
 
   private GameState state = new GameState();
+  private NumberAxis yAxis;
   
   @Override
   public void start(Stage stage) throws Exception {
@@ -29,10 +32,14 @@ public class Graphs extends Application {
     
     stage.setTitle("Line Chart Sample");
     xAxis = new CategoryAxis();
-    final NumberAxis yAxis = new NumberAxis();
+    
+    yAxis = new NumberAxis();
+    yAxis.setAutoRanging(false);
+    yAxis.setLowerBound(15000);
+    yAxis.setUpperBound(30000);
     final LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
 
-    lineChart.setTitle("AG, convergence");
+    lineChart.setTitle("Fitness AG vs random");
 
     lineChart.setCreateSymbols(false);
     lineChart.setAlternativeRowFillVisible(false);
@@ -53,7 +60,7 @@ public class Graphs extends Application {
 
     fillSeries();
     fillSeriesAG();
-
+    
     Scene scene = new Scene(lineChart);
     lineChart.getData().addAll(series1, series2, seriesAG1, seriesAG2);
     stage.setScene(scene);
@@ -80,7 +87,7 @@ public class Graphs extends Application {
           min = Math.max(-11, ag.population[i].energy);
         }
       }
-      seriesAG2.getData().add(new XYChart.Data(""+gen, min));
+      //seriesAG2.getData().add(new XYChart.Data(""+gen, min));
     }
     
   }
@@ -104,7 +111,7 @@ public class Graphs extends Application {
         }
       }
       series1.getData().add(new XYChart.Data(""+gen, best));
-      series2.getData().add(new XYChart.Data(""+gen, min));
+      //series2.getData().add(new XYChart.Data(""+gen, min));
     }
   }
 

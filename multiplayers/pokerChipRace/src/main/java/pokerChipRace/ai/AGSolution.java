@@ -68,20 +68,23 @@ public class AGSolution {
 
 
   public static void crossOver(AGSolution child1, AGSolution child2, AGSolution parent1, AGSolution parent2) {
-    double beta = Player.rand.nextDouble();
     
     for (int i=0;i<parent1.chipCount * DEPTH;i++) {
+      double beta = Player.rand.nextDouble();
       child1.angles[i] = getAcceptableAngle(beta, parent1.angles[i], parent2.angles[i]);
       child2.angles[i] = getAcceptableAngle(beta, parent2.angles[i], parent1.angles[i]);
     }
   }
   
-  private static double getAcceptableAngle(double beta, double angle1, double angle2) {
-    if (angle1 < 0 || angle2 < 0) {
+  private static double getAcceptableAngle(double beta, double a, double b) {
+    if (a < 0 || b < 0) {
       // -1 case
-      return beta < 0.5 ? angle1 : angle2;
+      return beta < 0.5 ? a : b;
     }
-    double angle = beta * (angle1 - angle2) + angle1;
+    
+    //double angle = beta * (a - b) + a;
+    double angle = 0.5*(3.0*a-b) + 2 * beta * (b - a);
+    
     if (angle < 0) angle += _2PI;
     if (angle > _2PI) angle -= _2PI;
     return angle;
