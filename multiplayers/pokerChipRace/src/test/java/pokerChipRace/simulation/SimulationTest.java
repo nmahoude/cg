@@ -214,8 +214,7 @@ public class SimulationTest {
     
   }
 
-  @Test
-  public void radiusOfOppShouldNotDiminish() throws Exception {
+  public void massOfOppShouldNotDiminish() throws Exception {
     readEntity(6,0,91.4334945678711, 67.49349212646484, -25.339580535888672, -4.755422115325928,21.643661499023438);
     readEntity(1,1,447.8151550292969, 317.6604919433594, -11.982721328735352, -5.083907127380371,117.19773864746094);
     readEntity(112,-1,533.7255249023438, 23.946781158447266, 187.91500854492188, -25.751813888549805,5.784512042999268);
@@ -229,7 +228,7 @@ public class SimulationTest {
     
     Feature feature = new Feature();
     feature.calculateIntermadiaryFeatures(state);
-    assertThat(feature.features[Feature.ALL_OTHER_TOTAL_RADIUS], closeTo(117.197, 0.001));
+    assertThat(feature.features[Feature.ALL_OTHER_TOTAL_MASS], closeTo(Math.PI * 117.197 * 117.197, 0.001));
     
   }
   

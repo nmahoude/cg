@@ -5,9 +5,9 @@ import pokerChipRace.entities.Entity;
 
 public class Feature {
   private static int featuresIndex=0;
-  public static final int MY_BIGGEST_RADIUS = featuresIndex++;
-  public static final int MY_TOTAL_RADIUS = featuresIndex++;
-  public static final int ALL_OTHER_TOTAL_RADIUS = featuresIndex++;
+  public static final int MY_BIGGEST_MASS = featuresIndex++;
+  public static final int MY_TOTAL_MASS = featuresIndex++;
+  public static final int ALL_OTHER_TOTAL_MASS = featuresIndex++;
   public static final int DIST_TO_SMALLER_ENTITIES = featuresIndex++;
   public static final int DIST_TO_BIGGER_ENTITIES = featuresIndex++;
   public static final int DIST_BETWEEN_MINE = featuresIndex++;
@@ -18,9 +18,9 @@ public class Feature {
 
   public double features[] = new double[LAST];
   public static final String[] debugFeatures= {
-      "my biggest rad  ",
-      "my radius       ",
-      "all other radius",
+      "my biggest mass ",
+      "my total mass   ",
+      "all other mass  ",
       "dist2 small e   ",
       "dist2 big e     ",
       "dist btwn mine  ",
@@ -42,7 +42,7 @@ public class Feature {
   public void calculateIntermadiaryFeatures(GameState state) {
     
     distanceBetweenMyChips(state);
-    calculateRadix(state);
+    calculateMasses(state);
     calculateDistanceWithOtherChips(state);    
     calculateSpeed(state);
   }
@@ -102,7 +102,7 @@ public class Feature {
     }
   }
 
-  private void calculateRadix(GameState state) {
+  private void calculateMasses(GameState state) {
     double biggest = 0.0;
     for (int index = 0; index < state.entityFE; index++) {
       Entity entity = state.chips[index];
@@ -110,14 +110,14 @@ public class Feature {
       if (entity.owner == -1) break;
 
       if (entity.owner == state.myId) {
-        features[MY_TOTAL_RADIUS]+= entity.radius;
-        if (entity.radius > biggest) {
-          biggest = entity.radius;
+        features[MY_TOTAL_MASS]+= entity.mass;
+        if (entity.mass > biggest) {
+          biggest = entity.mass;
         }
       } else {
-        features[ALL_OTHER_TOTAL_RADIUS] += entity.radius;
+        features[ALL_OTHER_TOTAL_MASS] += entity.mass;
       }
-      features[MY_BIGGEST_RADIUS] = biggest;
+      features[MY_BIGGEST_MASS] = biggest;
     }
   }
 
