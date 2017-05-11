@@ -28,7 +28,9 @@ public class Collision {
   }
   public static Collision buildFake() {
     Collision c = new Collision();
-    c.t = +99;
+    c.t = +99999;
+    c.a = null;
+    c.b = null;
     return c;
   }
 
@@ -48,5 +50,12 @@ public class Collision {
     this.b = b;
      
     return this;
+  }
+  
+  public void copy(Collision model) {
+    this.t = model.t;
+    this.a = model.a;
+    this.dir = model.dir;
+    this.b = model.b;
   }
 }

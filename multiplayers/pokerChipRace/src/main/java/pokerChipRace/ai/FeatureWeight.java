@@ -18,6 +18,8 @@ public class FeatureWeight {
     weights[Feature.DIST_CLOSEST_BIGGER] = 0.0;
     weights[Feature.DIST_CLOSEST_SMALLER] = 0.0;
     weights[Feature.SPEED] = 0.000;
+    weights[Feature.BONUS_COLLIDE_SMALLER] = 1.0;
+    weights[Feature.MALUS_COLLIDE_BIGGER] = -1.0;
   }
   
   public void randomize() {

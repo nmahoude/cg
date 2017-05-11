@@ -2,6 +2,7 @@ package pokerChipRace.ai;
 
 import pokerChipRace.GameState;
 import pokerChipRace.entities.Entity;
+import pokerChipRace.simulate.Collision;
 
 public class Feature {
   private static int featuresIndex=0;
@@ -14,6 +15,9 @@ public class Feature {
   public static final int DIST_CLOSEST_SMALLER = featuresIndex++;
   public static final int DIST_CLOSEST_BIGGER = featuresIndex++;
   public static final int SPEED = featuresIndex++;
+  public static final int BONUS_COLLIDE_SMALLER = featuresIndex++;
+  public static final int MALUS_COLLIDE_BIGGER = featuresIndex++;
+  
   public static final int LAST = featuresIndex;
 
   public double features[] = new double[LAST];
@@ -27,6 +31,8 @@ public class Feature {
       "mdist 2 smaller ",
       "mdist 2 bigger  ",
       "speed           ",
+      "bonus coll small",
+      "bonus coll big  ",
       "last            ",
   };
 
@@ -40,11 +46,38 @@ public class Feature {
   }
 
   public void calculateIntermadiaryFeatures(GameState state) {
-    
     distanceBetweenMyChips(state);
     calculateMasses(state);
     calculateDistanceWithOtherChips(state);    
     calculateSpeed(state);
+  }
+
+  public void calculateBonusMalus(GameState state) {
+    Collision col = new Collision();
+    Collision next = Collision.buildFake();
+    Collision result;
+    for (int index = 0; index < state.myChips.length; index++) {
+      Entity entity = state.myChips.elements[index];
+      if (entity.isDead()) continue;
+      for (int i=0;i<state.entityFE;i++) {
+        Entity other = state.chips[i];
+        if (other.isDead()) continue;
+        result = entity.collision(other, 0, col);
+        if (result != null && result.t < next.t) {
+          next.copy(result);
+        }
+      }
+    }
+    if (next.t < 4.0) { // TODO modulate with entity mass/radius
+      if (next.b.owner == next.a.owner) {
+      } else {
+        if (next.b.mass > next.a.mass) {
+          features[MALUS_COLLIDE_BIGGER] += 1000.0;
+        } else {
+          features[BONUS_COLLIDE_SMALLER] += 1000.0;
+        }
+      }
+    }
   }
 
   private void calculateSpeed(GameState state) {

@@ -59,7 +59,7 @@ public class AGSolution {
   }
 
   private double getRandomGene() {
-    if (Player.rand.nextDouble() < 0.8) {
+    if (Player.rand.nextDouble() < 0.3) {
       return -1; // WAIT
     } else {
       return _2PI * Player.rand.nextDouble(); // real angle between 0 and
@@ -119,10 +119,9 @@ public class AGSolution {
   public void mutate() {
     for (int i = 0; i < chipCount; i++) {
       for (int d=0;d<DEPTH;d++) {
-        if (Player.rand.nextInt(100) < 50) {
-          double decal = Player.rand.nextDouble(-0.1, 0.1);
-          angles[6*i+d] += decal;
-          if (angles[6*i+d] <0) angles[6*i+d] += 6.28 ;
+        int rand = Player.rand.nextInt(1000);
+        if (rand < 100) {
+          angles[6*i+d] = getRandomGene();
         }
       }
     }
@@ -156,6 +155,7 @@ public class AGSolution {
 
   public void calculateFinalEnergy(GameState state) {
     energy = 0.0;
+    features[DEPTH-1].calculateBonusMalus(state);
     // check for finish state
     if (!isFinishedState(state)) {
       for (int i=0;i<DEPTH;i++) {
