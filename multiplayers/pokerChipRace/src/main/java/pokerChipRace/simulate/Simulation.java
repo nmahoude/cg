@@ -128,9 +128,6 @@ public class Simulation {
         next.a.bounce(next.b);
       }
 
-      // redo all the collision
-      // TODO this is not perfomant
-      
       a = next.a;
       b = next.b;
       next = fake;
