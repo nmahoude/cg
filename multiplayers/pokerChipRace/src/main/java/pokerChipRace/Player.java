@@ -67,11 +67,7 @@ public class Player {
       // AG
       AG ag = new AG();
       AGSolution best;
-      if (state.myChips.length == 1) {
-        best = ag.getSolutionRandom(state, round == 0 ? start+500 : start+130);
-      } else {
-        best = ag.getSolutionAG(state, round == 0 ? start+500 : start+130);
-      }
+      best = ag.getSolutionAG(state, round == 0 ? start+500 : start+130);
       if (debug) {
         best.debug();
       }
