@@ -11,5 +11,6 @@
     <module>hypersonic_c</module>
     <module>fantasticBits</module>
     <module>cotc</module>
+    <module>c4l</module>
   </modules>
 </project>
