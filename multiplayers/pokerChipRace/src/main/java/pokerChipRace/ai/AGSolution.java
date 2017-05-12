@@ -7,32 +7,33 @@ import trigonometry.Vector;
 
 public class AGSolution {
   private static final double _2PI = 2*Math.PI;
-  public static final int DEPTH = 7;
-  public static double patience[] = new double[DEPTH];
+  public static final int DEPTH_MAX = 21;
+  public static int DEPTH = 7;
+  public static double patience[] = new double[DEPTH_MAX];
   static {
-    for (int i = 0; i < DEPTH; i++) {
+    for (int i = 0; i < DEPTH_MAX; i++) {
       patience[i] = Math.pow(0.6, i);
     }
   }
 
-  double angles[] = new double[6*DEPTH]; // <0 == WAIT, else [0;2*PI]
+  double angles[] = new double[6*DEPTH_MAX]; // <0 == WAIT, else [0;2*PI]
   private int chipCount;
 
-  public Feature features[] = new Feature[DEPTH];
+  public Feature features[] = new Feature[DEPTH_MAX];
   public static FeatureWeight weights = new FeatureWeight();
 
   public double energy;
   
   public AGSolution(int chipCount) {
     this.chipCount = chipCount;
-    for (int i=0;i<DEPTH;i++) {
+    for (int i=0;i<DEPTH_MAX;i++) {
       features[i] = new Feature(); // TODO use a cache
     }
   }
 
   public void clear() {
     energy = 0;
-    for (int i=0;i<DEPTH;i++) {
+    for (int i=0;i<DEPTH_MAX;i++) {
       features[i].clear();
     }
   }
@@ -74,6 +75,19 @@ public class AGSolution {
       child1.angles[i] = getAcceptableAngle(beta, parent1.angles[i], parent2.angles[i]);
       child2.angles[i] = getAcceptableAngle(beta, parent2.angles[i], parent1.angles[i]);
     }
+  }
+  
+  private static double getInBetweenAcceptableAngle(double beta, double a, double b) {
+    if (a < 0 || b < 0) {
+      // -1 case
+      return beta < 0.5 ? a : b;
+    }
+    
+    double angle = beta * (a - b) + a;
+    
+    if (angle < 0) angle += _2PI;
+    if (angle > _2PI) angle -= _2PI;
+    return angle;
   }
   
   private static double getAcceptableAngle(double beta, double a, double b) {
@@ -211,6 +225,10 @@ public class AGSolution {
       System.err.println();
     }
 
+  }
+
+  public void gameLost() {
+    energy = Double.NEGATIVE_INFINITY;
   }
 
 

@@ -46,4 +46,24 @@ public class GameState {
   public Entity getNewChip() {
     return chips[entityFE++];
   }
+  
+  public boolean isGameWin() {
+    for (int i=0;i<entityFE;i++) {
+      Entity e = chips[i];
+      if (e.owner == -1) break;
+      if (e.owner != myId && !e.isDead()) {
+        return false;
+      }
+    }
+    return true;
+  }
+  public boolean isGameLost() {
+    for (int i=0;i<myChips.length;i++) {
+      Entity e = myChips.elements[i];
+      if (!e.isDead()) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

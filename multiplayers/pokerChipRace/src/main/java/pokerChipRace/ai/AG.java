@@ -16,6 +16,7 @@ public class AG {
   
   public AGSolution population[] = new AGSolution[POP_SIZE];
   
+  int simulations = 0;
   int bestGeneration = 0;
   public AGSolution best = new AGSolution(0);
   
@@ -52,7 +53,7 @@ public class AG {
   public AGSolution getSolutionAG(GameState state, long stop) {
     this.stop = stop;
     //System.err.println("Current seed : "+Player.rand.debugSeed());
-    
+
     setState(state);
     
     state.backup();
@@ -64,6 +65,7 @@ public class AG {
       nextPopulation();
     }
     
+    System.err.printf("simulations %d with depth %d\n",simulations,AGSolution.DEPTH);
     return best;
   }
 
@@ -135,13 +137,23 @@ public class AG {
   }
 
   public void play(AGSolution solution) {
+    boolean gameLost = false;
     for (int turn=0;turn<AGSolution.DEPTH;turn++) {
       solution.applyActions(state, turn);
       sim.playTurn();
+      if (state.isGameLost()) {
+        gameLost = true;
+        break;
+      }
       solution.calculateIntermediateEnergy(state, turn);
     }
-
-    solution.calculateFinalEnergy(state);
+    
+    if (!gameLost) {
+      solution.calculateFinalEnergy(state);
+    } else {
+      solution.gameLost();
+    }
+    simulations++;
     state.restore();
   }
 

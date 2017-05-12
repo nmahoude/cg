@@ -65,7 +65,9 @@ public class Player {
       }
 
       // AG
+      calculateAGDepth();
       AG ag = new AG();
+      
       AGSolution best;
       best = ag.getSolutionAG(state, round == 0 ? start+500 : start+130);
       if (debug) {
@@ -81,5 +83,17 @@ public class Player {
         }
       }
     }
+  }
+
+  private static void calculateAGDepth() {
+    int depth = 20;
+    if (state.entityCount > 50) {
+        depth = 10;
+    } else if (state.entityCount > 40) {
+        depth = 12;
+    } else if (state.entityCount > 30) {
+        depth = 16;
+    }
+    AGSolution.DEPTH = depth;
   }
 }
