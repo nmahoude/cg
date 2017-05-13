@@ -26,6 +26,8 @@ public class MoleculeNode implements Node {
   private int freeSlots;
   private int totalDispo = 0;
   Collection<Node> children = null;
+  public int play;
+  public MoleculeNode bestChild;
   
   public MoleculeNode(int freeSlots, int totalDispo, int[] values) {
     this.freeSlots = freeSlots;
@@ -72,6 +74,7 @@ public class MoleculeNode implements Node {
         if (enoughDisposableMolecules(i)) {
           MoleculeNode child = new MoleculeNode(freeSlots, totalDispo, values);
           child.play(i, isMaximizing);
+          children.add(child);
         }
       }
     }
@@ -79,6 +82,7 @@ public class MoleculeNode implements Node {
   }
 
   private void play(int index, boolean isMaximizing) {
+    this.play = index;
     if (isMaximizing) {
       // me
       freeSlots--;
@@ -100,5 +104,9 @@ public class MoleculeNode implements Node {
     return values[DISPO*GameState.MOLECULE_TYPE + i] > 0;
   }
   
+  @Override
+  public void setBestChild(Node node) {
+    bestChild = (MoleculeNode)node;
+  }
   
 }

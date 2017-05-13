@@ -39,11 +39,16 @@ public class Sample {
   }
 
   public void debug() {
-    System.err.print("Sample : "+id+" , costs : ");
+    System.err.print("createSample("+id+", new int[]{");
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      System.err.print(" "+costs[i]);
+      System.err.print(""+costs[i]);
+      if (i != GameState.MOLECULE_TYPE-1) {
+        System.err.print(", ");
+      } else {
+        System.err.print("},");
+      }
     }
-    System.err.println(" h: "+health+" r:"+rank);
+    System.err.println(""+health+");");
   }
 
   public int totalNeededMolecules() {

@@ -62,7 +62,6 @@ public class GameState {
       if (carriedBy != -1) {
         robots[carriedBy].carriedSamples.add(sample);
       } else {
-        sample.debug();
         availableSamples.add(sample);
       }
     }

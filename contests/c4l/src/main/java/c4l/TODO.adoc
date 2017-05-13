@@ -1,0 +1,14 @@
+= Relefexion et trucs à faire
+
+== Optimisation de la priorité des samples
+=== Rules
+	* Prendre les S qui rapportent le + de health
+	* Prendre les S qui rapportent de l'expertise 
+	* Prendre les S qui rapporent l'expertise la + demandée
+
+== Optimisation des molécules
+=== Rules
+	* Remplir le sample dans l'ordre des priorités
+	* prendre les molécules les + demandées par les 3 samples
+	* Prendre les molécules les + demandées par l'opp
+	

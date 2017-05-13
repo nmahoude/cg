@@ -42,6 +42,9 @@ public class MinimaxTest {
       // TODO Auto-generated method stub
       return null;
     }
+    @Override
+    public void setBestChild(Node node) {
+    }
   }
   
   @Test
