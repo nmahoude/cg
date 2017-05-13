@@ -1,1 +1,4 @@
 /target/
+contests/c4l/.gitignore
+contests/c4l/.settings/org.eclipse.jdt.core.prefs
+contests/c4l/.settings/org.eclipse.m2e.core.prefs
