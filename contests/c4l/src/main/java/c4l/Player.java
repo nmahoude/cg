@@ -7,7 +7,9 @@ import c4l.entities.Module;
 import c4l.entities.MoleculeType;
 import c4l.entities.Robot;
 import c4l.entities.Sample;
+import c4l.molecule.minimax.MoleculeNode;
 import cgutils.random.FastRandom;
+import minimax.Minimax;
 
 /**
  * Bring data on patient samples from the diagnosis machine to the laboratory
@@ -132,6 +134,9 @@ public class Player {
       return null;
     }
     
+    // Test a minimax to choose the best molecule
+    doMinimax();
+    
     // TODO Optimized the chosen molecule
     int i=0;
     MoleculeType type = null;
@@ -141,6 +146,42 @@ public class Player {
     }
     System.err.println("Requesting type "+type);
     return type;
+  }
+
+  private static void doMinimax() {
+    Minimax minimax = new Minimax();
+    
+    int totalAvailables = 0;
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      totalAvailables+=state.availables[i];
+    }
+    int[] values = new int[6*GameState.MOLECULE_TYPE];
+    for (int i=0;i<3;i++) {
+      if (me.carriedSamples.size() > i) {
+        Sample sample = me.carriedSamples.get(i);
+        for (int j=0;j<GameState.MOLECULE_TYPE;j++) {
+          values[i*GameState.MOLECULE_TYPE+j] = Math.max(0, sample.costs[j] - me.storage[j] - me.expertise[j]);
+        }
+        
+      } else {
+        for (int j=0;j<GameState.MOLECULE_TYPE;j++) {
+          values[i*GameState.MOLECULE_TYPE+j] = 99;
+        }
+      }
+    }
+    // next 3 lines
+    for (int j=0;j<GameState.MOLECULE_TYPE;j++) {
+      values[3*GameState.MOLECULE_TYPE+j]=0;
+      values[4*GameState.MOLECULE_TYPE+j]=0;
+      for (int i=0;i<3;i++) {
+        /*SUM*/values[3*GameState.MOLECULE_TYPE+j]+= values[i*GameState.MOLECULE_TYPE+j]>0 ? 1 : 0;
+        /*MAX*/values[4*GameState.MOLECULE_TYPE+j]= Math.max(values[4*GameState.MOLECULE_TYPE+j], values[i*GameState.MOLECULE_TYPE+j]);
+      }
+      /*DISPO*/values[5*GameState.MOLECULE_TYPE+j] = state.availables[j];
+    }    
+    
+    MoleculeNode node = new MoleculeNode(10-me.getTotalCarried(), totalAvailables, values);
+    minimax.alphaBetaPositionAware(node, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
   }
 
   private static boolean haveACompleteSample() {
@@ -168,7 +209,7 @@ public class Player {
   private static void getSomeSamples() {
     System.err.println("No samples");
     
-    if (true || me.target == Module.DIAGNOSIS) {
+    if (me.target == Module.DIAGNOSIS) {
       // check if there is an available sample that can fit our molecules
       Sample best = null;
       for (Sample sample : state.availableSamples) {

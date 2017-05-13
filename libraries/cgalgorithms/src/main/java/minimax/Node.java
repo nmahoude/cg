@@ -10,4 +10,6 @@ public interface Node {
 
   Collection<Node> getChildren();
 
+  Collection<Node> getChildren(boolean maximizingScore);
+
 }

@@ -37,6 +37,11 @@ public class MinimaxTest {
     public Collection<Node> getChildren() {
       return childs;
     }
+    @Override
+    public Collection<Node> getChildren(boolean maximizingScore) {
+      // TODO Auto-generated method stub
+      return null;
+    }
   }
   
   @Test
