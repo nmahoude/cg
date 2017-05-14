@@ -25,17 +25,18 @@ public class FSMMolecule extends FSMNode {
       handleCarriedSampleEmpty();
     }
     
+    MoleculeType type = fsm.getBestMoleculeForSamples();
+    if (type != null) {
+      fsm.connect(type.toString());
+      return;
+    }
+
     List<Sample> completableSamples = getCompletableSamples();
     if (!completableSamples.isEmpty()) {
       fsm.goTo(Module.LABORATORY);
       return;
     }
-
-    MoleculeType type = fsm.getBestMoleculeForSamples();
-    if (type != null) {
-      fsm.connect(type.toString());
-    } else {
-      fsm.goTo(Module.DIAGNOSIS);
-    }
+    
+    fsm.goTo(Module.DIAGNOSIS);
   }
 }

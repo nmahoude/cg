@@ -122,7 +122,7 @@ public class FSM {
     root.createStorage(me.storage);
     root.createExpertise(me.expertise);
     root.createAvailable(state.availables);
-    root.freeStorage = Math.min(6, root.freeStorage ); // TODO Timeout at 10
+    root.freeStorage = Math.min(10, root.freeStorage ); // TODO Timeout at 10
     root.start();
     System.err.println("Free storage : "+root.freeStorage);
     System.err.println("Best score : "+root.score);

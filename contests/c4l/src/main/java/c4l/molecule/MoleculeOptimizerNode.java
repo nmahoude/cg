@@ -1,7 +1,9 @@
 package c4l.molecule;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import c4l.GameState;
 import c4l.entities.MoleculeType;
@@ -15,6 +17,10 @@ public class MoleculeOptimizerNode {
   public static final int WIDTH = GameState.MOLECULE_TYPE+1;
   public static final int HEALTH = GameState.MOLECULE_TYPE; 
   
+  private static Map<Integer, Double> memoization = new HashMap<>();
+  private static int memoDecal[] = new int[] { 1, 8, 64, 512, 4096, 32768 };
+  
+  
   public int values[] = new int[WIDTH*LAST];
   public int freeStorage;
   
@@ -23,6 +29,8 @@ public class MoleculeOptimizerNode {
   public double score;
 
   public void start() {
+    memoization.clear();
+    
     if (freeStorage == 0) {
       return;
     }
@@ -37,6 +45,13 @@ public class MoleculeOptimizerNode {
     }
   }
 
+  public Integer encodeState() {
+    int total = 0;
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      total += memoDecal[i] * values[WIDTH*AVAILABLE + i];
+    }
+    return new Integer(total);
+  }
   /**
    * row indicating how many sample need this molecule
    */
@@ -57,9 +72,17 @@ public class MoleculeOptimizerNode {
     values[WIDTH*AVAILABLE + pickedMolecule.index]--;
     freeStorage = from.freeStorage-1;
     
+    Integer key = encodeState();
+    Double value = memoization.get(key);
+    if (value != null) {
+      return value.doubleValue();
+    }
+    
     score = 0;
     if (freeStorage == 0) {
-      return getScore();
+      double endScore = getScore();
+      memoization.put(key, endScore);
+      return endScore;
     } else {
       for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
         if (values[WIDTH*AVAILABLE + i]>0 && values[WIDTH*SUM_NOT_NULL+i] > 0) {
@@ -69,6 +92,7 @@ public class MoleculeOptimizerNode {
         }
       }
     }
+    memoization.put(key, score);
     return score;
   }
 
