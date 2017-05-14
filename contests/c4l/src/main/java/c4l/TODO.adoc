@@ -1,5 +1,8 @@
 = Relefexion et trucs à faire
 
+= POINTS IMPORTANTS
+== Optimiser le fait que le déplacement fait 2 pour, quand eta > 0, calculer des trucs pour le futur ...
+
 == Optimisation de la priorité des samples
 === Rules
 	* Prendre les S qui rapportent le + de health

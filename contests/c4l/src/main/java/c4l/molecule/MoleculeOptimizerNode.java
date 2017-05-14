@@ -23,6 +23,9 @@ public class MoleculeOptimizerNode {
   public double score;
 
   public void start() {
+    if (freeStorage == 0) {
+      return;
+    }
     updateSumNotNull();
     
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
@@ -129,6 +132,18 @@ public class MoleculeOptimizerNode {
       this.values[index*WIDTH + i] = costs[i];
     }
     this.values[index*WIDTH + HEALTH] = health;
+  }
+
+  public MoleculeOptimizerNode getBestChild() {
+    double bestScore = Double.NEGATIVE_INFINITY;
+    MoleculeOptimizerNode best = null;
+    for (MoleculeOptimizerNode node : children) {
+      if (node.score  > bestScore) {
+        bestScore = node.score;
+        best = node;
+      }
+    }
+    return best;
   }
 
 }

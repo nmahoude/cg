@@ -2,11 +2,13 @@ package c4l.molecule;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import c4l.entities.MoleculeType;
 
 public class MoleculeOptimizerNodeTest {
 
@@ -99,6 +101,20 @@ public class MoleculeOptimizerNodeTest {
     root.start();
     
     assertThat(root.children.size(), is(3));
+  }
+  
+  @Test
+  public void getTheA() throws Exception {
+    createSample(0, new int[]{0, 2, 0, 0, 2},1);
+    createSample(2, new int[]{4, 0, 0, 0, 0},10);
+    createStorage(  new int[]{0, 0, 0, 0, 3});
+    createExpertise(new int[]{0, 0, 0, 0, 1});
+    createAvailable(new int[]{0, 2, 6, 6, 3});
+    
+    root.freeStorage = 6;
+    root.start();
+    
+    assertThat(root.getBestChild().pickedMolecule, is(MoleculeType.B));
   }
   @Test
   @Ignore

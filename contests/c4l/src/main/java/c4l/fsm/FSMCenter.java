@@ -12,7 +12,7 @@ public class FSMCenter extends FSMNode {
   public void think() {
     // FIRST ACTION OF THE PLAYER
     // WE CANT GO BACK IN THIS STATE AFTERWARD
-    fsm.moveToState(fsm.sample);
+    fsm.goTo(Module.SAMPLES);
   }
 
   @Override
