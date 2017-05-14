@@ -9,6 +9,7 @@ import c4l.GameState;
 import c4l.entities.MoleculeType;
 
 public class MoleculeOptimizerNode {
+  private static final int SCORE_WHERE_WIN = 100_000;
   public static final int STORAGE = 3;
   public static final int EXPERTISE = 4;
   public static final int AVAILABLE = 5;
@@ -132,6 +133,9 @@ public class MoleculeOptimizerNode {
         }
       }
       score += values[WIDTH*order[i]+HEALTH];
+      if (score >= 170) {
+        score = SCORE_WHERE_WIN;
+      }
     }
     return score;// all the three samples are filled here, pretty good :)
   }

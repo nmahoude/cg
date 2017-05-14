@@ -75,8 +75,19 @@ public class FSMSample extends FSMNode {
       return;
     }
     System.err.println("we are at SAMPLES, get a sample");
-    System.err.println("Always get 2");
-    fsm.connect(2);
+    if (me.totalExpertise < 5) {
+      System.err.println("Always get 2, not enough XP");
+      fsm.connect(2);
+    } else {
+      System.err.println("rank 2 or 3, I don't care");
+      if (Player.rand.nextBoolean()) {
+        fsm.connect(2);
+        return;
+      } else {
+        fsm.connect(3);
+        return;
+      }
+    }
 
 //    if (me.totalExpertise < 0) {
 //      System.err.println("Noob, get a 1");
