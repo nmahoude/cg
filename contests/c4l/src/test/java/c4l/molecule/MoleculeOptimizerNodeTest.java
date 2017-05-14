@@ -2,6 +2,7 @@ package c4l.molecule;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
@@ -52,7 +53,7 @@ public class MoleculeOptimizerNodeTest {
     
     root.start();
     
-    assertThat(root.score, is(30.0));
+    assertThat(root.score, is(closeTo(30.0, 1.0)));// take into account getPercentage
   }
 
   @Test
@@ -69,7 +70,7 @@ public class MoleculeOptimizerNodeTest {
     
     root.start();
     
-    assertThat(root.score, is(40.0));
+    assertThat(root.score, is(closeTo(40.0, 1.0)));// take into account getPercentage
   }
   
   @Test
@@ -86,7 +87,7 @@ public class MoleculeOptimizerNodeTest {
     
     root.start();
     
-    assertThat(root.score, is(40.0));
+    assertThat(root.score, is(closeTo(40.0, 1.0))); // take into account getPercentage
   }
 
   @Test
@@ -128,9 +129,9 @@ public class MoleculeOptimizerNodeTest {
     
     root.start();
     
-    assertThat(root.score, is(30.0));
+    assertThat(root.score, closeTo(30.0, 1.0)); // take percentage complete into account
   }
-  
+
   @Test
   @Ignore
   public void TestDePerf() throws Exception {
@@ -140,12 +141,37 @@ public class MoleculeOptimizerNodeTest {
     createStorage(new int[]{0, 0, 0, 0, 0});
     createExpertise(new int[]{0, 0, 0, 0, 0});
     createAvailable(new int[]{6, 6, 6, 6, 6});
-    root.freeStorage = 10;
     root.start();
     
     assertThat(root.score, is(not(0.0)));
   }
+
+  @Test
+  public void percentCompletionWhenAllComplete() throws Exception {
+    createSample(2, new int[]{0,1,0,0,0},30);
+    createSample(0, new int[]{0,0,1,0,0},20);
+    createSample(4, new int[]{0,0,0,1,0},20);
+    
+    createStorage(  new int[]{0, 1, 0, 1, 0});
+    createExpertise(new int[]{0, 0, 1, 0, 0});
+    createAvailable(new int[]{6, 6, 6, 6, 6});
+    
+    assertThat(root.getPercentCompletion(), is(1.0));
+  }
   
+  @Test
+  public void percentCompletionWhenNoneComplete() throws Exception {
+    createSample(2, new int[]{0,2,0,0,0},30);
+    createSample(0, new int[]{0,0,2,0,0},20);
+    createSample(4, new int[]{0,0,0,2,0},20);
+    
+    createStorage(  new int[]{4, 0, 0, 0, 0});
+    createExpertise(new int[]{0, 0, 0, 0, 2});
+    createAvailable(new int[]{6, 6, 6, 6, 6});
+    
+    assertThat(root.getPercentCompletion(), is(0.0));
+  }
+
   private void createStorage(int[] storage) {
     root.createStorage(storage);
   }

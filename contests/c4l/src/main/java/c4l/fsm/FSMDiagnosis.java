@@ -31,6 +31,8 @@ public class FSMDiagnosis extends FSMNode {
       return;
     }      
     
+    // TODO check if we can exchange a sample to get better result (2 turns taken)
+    
     // check if we can complete a sample from availables molecules
     MoleculeType type = fsm.getBestMoleculeForSamples();
     if (type == null) {

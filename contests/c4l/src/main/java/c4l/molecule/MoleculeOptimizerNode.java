@@ -102,6 +102,19 @@ public class MoleculeOptimizerNode {
     return score;
   }
 
+  double getPercentCompletion() {
+    int total = 0;
+    int filled = 0;
+    for (int  i=0;i<3;i++) {
+      for (int j=0;j<GameState.MOLECULE_TYPE;j++) {
+        total += values[WIDTH*i+j];
+        filled += Math.min(values[WIDTH*i+j], 
+                  (values[WIDTH*EXPERTISE+j] + values[WIDTH*STORAGE + j]));
+      }
+    }
+    return 1.0 * filled / total;
+  }
+
   /** 
    * score the state
    * @return
