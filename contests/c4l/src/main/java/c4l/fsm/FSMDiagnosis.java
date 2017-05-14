@@ -24,6 +24,12 @@ public class FSMDiagnosis extends FSMNode {
       return;
     }
     
+    if (checkIfIHaveEnoughPointsToWin()) {
+      // Afer taking a samples, i may have enough points to win already !
+      fsm.goTo(Module.LABORATORY);
+      return;
+    }
+    
     Sample firstUnDiscoveredSample = getFirstUnDiscoveredSample();
     if (firstUnDiscoveredSample != null) {
       System.err.println("Got an undiscover sample, diag it");

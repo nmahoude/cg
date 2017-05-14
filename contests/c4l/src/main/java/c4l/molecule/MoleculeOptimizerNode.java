@@ -116,10 +116,11 @@ public class MoleculeOptimizerNode {
   }
 
   /** 
-   * score the state
+   * get the best score of the current state
+   * by trying every combination
    * @return
    */
-  private double getScore() {
+  public double getScore() {
     int possibilities[][] = new int[][] {
         {0, 1, 2}, {0, 2, 1}, 
         {1, 0, 2}, {1, 2, 0}, 

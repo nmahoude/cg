@@ -23,6 +23,13 @@ public class FSMMolecule extends FSMNode {
   public void think() {
     if (me.carriedSamples.isEmpty()) {
       handleCarriedSampleEmpty();
+      return;
+    }
+    
+    if (checkIfIHaveEnoughPointsToWin()) {
+      // After taking some molecules, Stop if I have enough points to win
+      fsm.goTo(Module.LABORATORY);
+      return;
     }
     
     MoleculeType type = fsm.getBestMoleculeForSamples();

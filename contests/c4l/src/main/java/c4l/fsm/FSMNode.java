@@ -7,6 +7,7 @@ import c4l.GameState;
 import c4l.entities.Module;
 import c4l.entities.Robot;
 import c4l.entities.Sample;
+import c4l.molecule.MoleculeOptimizerNode;
 
 public abstract class FSMNode {
 
@@ -77,5 +78,25 @@ public abstract class FSMNode {
     }
     return samples;
   }
+  /**
+   * Based on the samples and molecules I have, 
+   * check if I have enough material to win the game
+   * @return
+   */
+  boolean checkIfIHaveEnoughPointsToWin() {
+    MoleculeOptimizerNode node = new MoleculeOptimizerNode();
+    int index = 0;
+    for (Sample sample : me.carriedSamples) {
+      node.createSample(index++, sample.costs, sample.health);
+    }
+    node.createStorage(me.storage);
+    node.createExpertise(me.expertise);
+    node.createAvailable(state.availables);
 
+    double score = node.getScore();
+    if (me.score + score >= 170.0) {
+      return true;
+    }
+    return false;
+  }
 }
