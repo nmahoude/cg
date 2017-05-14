@@ -14,7 +14,7 @@ public class FSMSample extends FSMNode {
     if (fsm.me.carriedSamples.size() < 3) {
       getSomeSamples();
     } else {
-      fsm.goTo(Module.DIAGNOSIS);
+      fsm.goTo(Module.DIAGNOSIS, "Filled the sample to analyse, -> @DIAG");
     }
   }
   
@@ -36,9 +36,9 @@ public class FSMSample extends FSMNode {
         System.err.println("Found a perfect match");
         best.debug();
         if (me.target == Module.DIAGNOSIS) {
-          fsm.connect(best.id);
+          fsm.connect(best.id, " Found a perfect match in DIAG, get it");
         } else {
-          fsm.goTo(Module.DIAGNOSIS);
+          fsm.goTo(Module.DIAGNOSIS, "Found a perfect match in DIAG, go get it");
         }
         return;
       }
@@ -59,9 +59,9 @@ public class FSMSample extends FSMNode {
         System.err.println("Found a plausible match");
         best.debug();
         if (me.target == Module.DIAGNOSIS) {
-          fsm.connect(best.id);
+          fsm.connect(best.id, "Found a plausible match, get it");
         } else {
-          fsm.goTo(Module.DIAGNOSIS);;
+          fsm.goTo(Module.DIAGNOSIS, "Found a plausible match, @DIAG to get it");
         }
         return;
       }
@@ -70,21 +70,23 @@ public class FSMSample extends FSMNode {
 
     // check to go back to SAMPLES
     if (me.target != Module.SAMPLES) {
-      System.err.println("GOTO sample");
-      fsm.goTo(Module.SAMPLES);;
+      fsm.goTo(Module.SAMPLES, "Go back to @SAMPLE");
       return;
     }
     System.err.println("we are at SAMPLES, get a sample");
     if (me.totalExpertise < 5) {
-      System.err.println("Always get 2, not enough XP");
-      fsm.connect(2);
+      fsm.connect(2, "Always get 2, not enough XP");
     } else {
+//      if (state.robots[1].score - me.score >= 20) {
+//        fsm.connect(3, "We are behind, take some risks");
+//        return;
+//      }
       System.err.println("rank 2 or 3, I don't care");
       if (Player.rand.nextBoolean()) {
-        fsm.connect(2);
+        fsm.connect(2, "Rand say take rank 2");
         return;
       } else {
-        fsm.connect(3);
+        fsm.connect(3, "Rand say take rank 3");
         return;
       }
     }

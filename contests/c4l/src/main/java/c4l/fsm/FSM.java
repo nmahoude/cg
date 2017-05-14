@@ -55,7 +55,8 @@ public class FSM {
     if (me.eta > 0 ) {
       // TODO do some thinking here, to prepare next actions ?
       // currentState.preThink();
-      System.out.println("Still moving ( eta="+me.eta+" ) to "+currentState.module()+" ...");
+      explainYourself("Still moving ( eta="+me.eta+" ) to "+currentState.module()+" ...");
+      System.out.println("Thinking about life ...");
       return;
     } 
     System.err.println("I'm at module "+currentState.module());
@@ -63,15 +64,22 @@ public class FSM {
     System.out.println(output);
   }
   
-  public void connect(String action) {
+  private void explainYourself(String explanation) {
+    System.err.println("EXP ----> "+explanation);
+  }
+
+  public void connect(String action, String explanation) {
+    explainYourself(explanation);
     output = "CONNECT "+action;
   }
 
-  public void connect(int action) {
+  public void connect(int action, String explanation) {
+    explainYourself(explanation);
     output = "CONNECT "+action;
   }
 
-  public void goTo(Module module) {
+  public void goTo(Module module, String explanation) {
+    explainYourself(explanation);
     lastState = currentState;
     switch (module) {
       case DIAGNOSIS:

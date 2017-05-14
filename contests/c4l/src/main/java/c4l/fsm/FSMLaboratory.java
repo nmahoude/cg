@@ -17,7 +17,7 @@ public class FSMLaboratory extends FSMNode {
     completableSamples.sort(Sample.orderByHealthDecr);
     
     if (!completableSamples.isEmpty()) {
-      fsm.connect(completableSamples.get(0).id);
+      fsm.connect(completableSamples.get(0).id, "Got a full sample in the bag");
     } else {
       if (me.carriedSamples.isEmpty()) {
         handleCarriedSampleEmpty();
@@ -25,20 +25,18 @@ public class FSMLaboratory extends FSMNode {
       }
       MoleculeType type = fsm.getBestMoleculeForSamples();
       if (type != null) {
-        fsm.goTo(Module.MOLECULES);
+        fsm.goTo(Module.MOLECULES, " go back to MOLECULES, i can pick some");
         return;
       } else if (me.carriedSamples.size() == 3) {
-        fsm.goTo(Module.DIAGNOSIS);
+        fsm.goTo(Module.DIAGNOSIS, "go to diag, I have already 3 samples");
         return;
       } else {
         List<Sample> samples = findDoableSampleInCloud();
         if (samples.isEmpty()) {
-          System.err.println("No doable samples in the cloud, go to SAMPLE");
-          fsm.goTo(Module.SAMPLES);
+          fsm.goTo(Module.SAMPLES, "No doable samples in the cloud, go to SAMPLE");
           return;
         } else {
-          System.err.println("Found samples in the cloud, go get them");
-          fsm.goTo(Module.DIAGNOSIS);
+          fsm.goTo(Module.DIAGNOSIS, "Found samples in the cloud, go get them");
           return;
         }
       }

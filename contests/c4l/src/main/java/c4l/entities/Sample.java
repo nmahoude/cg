@@ -71,4 +71,24 @@ public class Sample {
     }
     return 1.0 * health / needed;
   }
+
+  public static Comparator<Sample> roiASC() {
+    return new Comparator<Sample>() {
+      @Override
+      public int compare(Sample o1, Sample o2) {
+        return Double.compare(o1.roi(), o2.roi());
+      }
+    };
+  }
+
+  /**
+   * return the 'ROI' of a sample
+   * -> health / needed molecules
+   * -> expertise given
+   * 
+   * @return
+   */
+  public double roi() {
+    return health / totalCost;
+  }
 }

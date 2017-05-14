@@ -1,6 +1,5 @@
 package c4l.fsm;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import c4l.entities.Module;
@@ -25,15 +24,13 @@ public class FSMDiagnosis extends FSMNode {
     }
     
     if (checkIfIHaveEnoughPointsToWin()) {
-      // Afer taking a samples, i may have enough points to win already !
-      fsm.goTo(Module.LABORATORY);
+      fsm.goTo(Module.LABORATORY, "Afer taking a samples, i have enough points to win already !");
       return;
     }
     
     Sample firstUnDiscoveredSample = getFirstUnDiscoveredSample();
     if (firstUnDiscoveredSample != null) {
-      System.err.println("Got an undiscover sample, diag it");
-      fsm.connect(firstUnDiscoveredSample.id);
+      fsm.connect(firstUnDiscoveredSample.id, "Got an undiscover sample, diag it");
       return;
     }      
     
@@ -48,26 +45,35 @@ public class FSMDiagnosis extends FSMNode {
         List<Sample> samples = findDoableSampleInCloud();
         
         if (!samples.isEmpty()) {
-          System.err.println("Found a sample in the cloud ! Happy :)");
-          fsm.connect(samples.get(0).id);
+          fsm.connect(samples.get(0).id, "Found a sample in the cloud ! Happy :)");
           return;
         }
       }
       
       if (me.carriedSamples.size() > 0) {
         //TODO score the sample difficulty, health and completion before ditching it
-        System.err.println("Ditch a sample in the hope of getting one that fit");
-        fsm.connect(me.carriedSamples.get(0).id);
+        fsm.connect(me.carriedSamples.get(0).id, "Ditch a sample in the hope of getting one that fit (roi not enough)");
         return;
       } else {
-        System.err.println("Go to Sample to get a new sample");
-        fsm.goTo(Module.SAMPLES);
+        fsm.goTo(Module.SAMPLES, "Go to Sample to get a new sample");
         return;
       }
     }
 
-    System.err.println("Got at least one way to do sample with molecule "+type.toString());
-    fsm.goTo(Module.MOLECULES);
+    // before getting to the MOLECULES, check if we need more samples
+    if (me.carriedSamples.size() < 3 ) {
+      if (me.potentialScore() < 170) {
+        List<Sample> samples = findDoableSampleInCloud();
+        samples.sort(Sample.orderByHealthDecr);
+        // TODO maybe the better health is not the better choice (enough health to win, easier to get ...)
+        // TODO introduce the concept of ROI ?
+        if (!samples.isEmpty()) {
+          fsm.connect(samples.get(0).id, "get another sample while at DIAG");
+          return;
+        }
+      }
+    }
+    fsm.goTo(Module.MOLECULES, "Got at least one way to do sample with molecule "+type.toString());
   }
 
   private Sample getFirstUnDiscoveredSample() {

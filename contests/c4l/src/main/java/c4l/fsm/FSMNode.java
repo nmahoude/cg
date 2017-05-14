@@ -52,19 +52,19 @@ public abstract class FSMNode {
     //TODO check to recycle at diag (cloud)
     List<Sample> samples = findDoableSampleInCloud();
     samples.sort(Sample.orderByHealthDecr);
-    if (!samples.isEmpty() && samples.get(0).health >= 10) {
+    
+    if (!samples.isEmpty() && 
+        (samples.get(0).health >= 10 || samples.get(0).health+me.score >= 170)) {
       System.err.println("Found a doable sample @ DIAG");
       if (fsm.isAt(Module.DIAGNOSIS)) {
-        System.err.println("hey ! we are @DIAG, so get it");
-        fsm.connect(samples.get(0).id);
+        fsm.connect(samples.get(0).id, "hey ! we are @DIAG, so get the sample");
         return;
       } else {
-        System.err.println("Need to go to diag");
-        fsm.goTo(Module.DIAGNOSIS);
+        fsm.goTo(Module.DIAGNOSIS, "Need to go to diag to get a sample");
         return;
       }
     } else {
-      fsm.goTo(Module.SAMPLES);
+      fsm.goTo(Module.SAMPLES, "Nohing in DIAG, go to sample");
       return;
     }
   }
@@ -72,6 +72,9 @@ public abstract class FSMNode {
   List<Sample> findDoableSampleInCloud() {
     List<Sample> samples = new ArrayList<>();
     for (Sample sample : state.availableSamples) {
+      // before checking if sample is doable, filter on sample health points
+      if (sample.health < 10 && me.score + sample.health < 170) continue;
+      
       if (me.isThereEnoughMoleculeForSample(state, sample)) {
         samples.add(sample);
       }

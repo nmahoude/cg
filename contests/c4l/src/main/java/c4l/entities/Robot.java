@@ -84,4 +84,9 @@ public class Robot {
     }
     return true;
   }
+
+  /** return the score + the sum of carried samples */
+  public int potentialScore() {
+    return score + carriedSamples.stream().mapToInt(s -> s.health).sum();
+  }
 }
