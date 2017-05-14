@@ -8,7 +8,7 @@ import c4l.GameState;
 
 public class Robot {
   
-  public static final int MAX_CARRIED = 10;
+  public static final int MAX_MOLECULES = 10;
   public static final int MAX_SAMPLES = 3;
   
   public Module target;

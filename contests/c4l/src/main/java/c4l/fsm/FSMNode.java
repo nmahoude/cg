@@ -52,4 +52,14 @@ public abstract class FSMNode {
     fsm.goTo(Module.SAMPLES);
   }
 
+  List<Sample> findDoableSampleInCloud() {
+    List<Sample> samples = new ArrayList<>();
+    for (Sample sample : state.availableSamples) {
+      if (me.isThereEnoughMoleculeForSample(state, sample)) {
+        samples.add(sample);
+      }
+    }
+    return samples;
+  }
+
 }

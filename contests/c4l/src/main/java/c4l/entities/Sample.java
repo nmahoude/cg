@@ -1,8 +1,17 @@
 package c4l.entities;
 
+import java.util.Comparator;
+
 import c4l.GameState;
 
 public class Sample {
+  public static final Comparator<Sample> orderByHealthDecr = new Comparator<Sample>() {
+      @Override
+      public int compare(Sample o1, Sample o2) {
+        return Integer.compare(o2.health, o1.health);
+      }
+    };
+
   public static int ENTITY_COUNT = 0;
 
   public MoleculeType expertise;

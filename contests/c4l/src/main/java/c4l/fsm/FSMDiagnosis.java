@@ -62,15 +62,6 @@ public class FSMDiagnosis extends FSMNode {
     fsm.goTo(Module.MOLECULES);
   }
 
-  private List<Sample> findDoableSampleInCloud() {
-    List<Sample> samples = new ArrayList<>();
-    for (Sample sample : state.availableSamples) {
-      if (me.isThereEnoughMoleculeForSample(state, sample)) {
-        samples.add(sample);
-      }
-    }
-    return samples;
-  }
   private Sample getFirstUnDiscoveredSample() {
     for(Sample sample : me.carriedSamples) {
       if (!sample.isDiscovered()) {

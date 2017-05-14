@@ -37,6 +37,22 @@ public class FSMMolecule extends FSMNode {
       return;
     }
     
-    fsm.goTo(Module.DIAGNOSIS);
+    System.err.println("Can't complete any sample, need to do something ...");
+    if (me.carriedSamples.size() == Robot.MAX_SAMPLES) {
+      // TODO check if we can wait at the molecule ?
+      fsm.goTo(Module.DIAGNOSIS);
+    } else  {
+      System.err.println("I have room for a new sample, decide DIAG or SAMPLE");
+      List<Sample> samples = findDoableSampleInCloud();
+      if (samples.isEmpty()) {
+        System.err.println("Found nothing in the cloud, go to samples");
+        fsm.goTo(Module.SAMPLES);
+        return;
+      } else {
+        System.err.println("Found something in the cloud, go get it");
+        fsm.goTo(Module.DIAGNOSIS);
+        return;
+      }
+    }
   }
 }
