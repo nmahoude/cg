@@ -3,6 +3,7 @@ package c4l.fsm;
 import java.util.List;
 
 import c4l.entities.Module;
+import c4l.entities.MoleculeType;
 import c4l.entities.Sample;
 
 public class FSMLaboratory extends FSMNode {
@@ -19,7 +20,17 @@ public class FSMLaboratory extends FSMNode {
         handleCarriedSampleEmpty();
         return;
       }
-      fsm.goTo(Module.MOLECULES);
+      MoleculeType type = fsm.getBestMoleculeForSamples();
+      if (type != null) {
+        fsm.goTo(Module.MOLECULES);
+        return;
+      } else if (me.carriedSamples.size() < 3) {
+        fsm.goTo(Module.SAMPLES);
+        return;
+      } else {
+        fsm.goTo(Module.DIAGNOSIS);
+        return;
+      }
     }
   }
   

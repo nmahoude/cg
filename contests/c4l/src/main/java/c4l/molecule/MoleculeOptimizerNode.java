@@ -19,7 +19,12 @@ public class MoleculeOptimizerNode {
   
   private static Map<Integer, Double> memoization = new HashMap<>();
   private static int memoDecal[] = new int[] { 1, 8, 64, 512, 4096, 32768 };
-  
+  private static double patience[] = new double[10];
+  static {
+    for (int i=0;i<patience.length;i++) {
+      patience[i] = Math.pow(0.8, i);
+    }
+  }
   
   public int values[] = new int[WIDTH*LAST];
   public int freeStorage;
@@ -36,10 +41,11 @@ public class MoleculeOptimizerNode {
     }
     updateSumNotNull();
     
+    score = getScore();
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      if (values[WIDTH*AVAILABLE+i]>0 && values[WIDTH*SUM_NOT_NULL+i] > 0) {
+      if (values[WIDTH*AVAILABLE+i]>0) {
         MoleculeOptimizerNode node = new MoleculeOptimizerNode();
-        score = Math.max(score, node.applyTurn(this, MoleculeType.values()[i]));
+        score = Math.max(score, node.applyTurn(0, this, MoleculeType.values()[i]));
         children.add(node);
       }
     }
@@ -64,7 +70,7 @@ public class MoleculeOptimizerNode {
     }
   }
 
-  public double applyTurn(MoleculeOptimizerNode from, MoleculeType type) {
+  public double applyTurn(int depth, MoleculeOptimizerNode from, MoleculeType type) {
     pickedMolecule = type;
     System.arraycopy(from.values, 0, values, 0, values.length);
     
@@ -78,16 +84,15 @@ public class MoleculeOptimizerNode {
       return value.doubleValue();
     }
     
-    score = 0;
+    score = patience[depth] * getScore();
     if (freeStorage == 0) {
-      double endScore = getScore();
-      memoization.put(key, endScore);
-      return endScore;
+      memoization.put(key, score);
+      return score;
     } else {
       for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-        if (values[WIDTH*AVAILABLE + i]>0 && values[WIDTH*SUM_NOT_NULL+i] > 0) {
+        if (values[WIDTH*AVAILABLE + i]>0 ) {
           MoleculeOptimizerNode node = new MoleculeOptimizerNode();
-          score += node.applyTurn(this, MoleculeType.values()[i]);
+          score = Math.max(score, patience[depth] * node.applyTurn(depth+1, this, MoleculeType.values()[i]));
           children.add(node);
         }
       }
@@ -120,7 +125,7 @@ public class MoleculeOptimizerNode {
     double score = 0;
     for (int i=0;i<order.length;i++) {
       for (int j=0;j<GameState.MOLECULE_TYPE;j++) {
-        if (values[WIDTH*order[i]+j] > localStorage[j]) {
+        if (values[WIDTH*order[i]+j] > (values[WIDTH*EXPERTISE+j] + localStorage[j])) {
           return score;
         } else {
           localStorage[j] -= values[WIDTH*order[i]+j];
@@ -133,7 +138,7 @@ public class MoleculeOptimizerNode {
   
   public void createStorage(int[] storage) {
     freeStorage = 10;
-    for (int i=0;i<5;i++) {
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
       this.values[STORAGE*WIDTH + i] = storage[i];
       freeStorage-=storage[i];
     }    

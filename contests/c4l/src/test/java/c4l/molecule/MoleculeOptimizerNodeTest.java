@@ -2,7 +2,7 @@ package c4l.molecule;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -90,7 +90,7 @@ public class MoleculeOptimizerNodeTest {
   }
 
   @Test
-  public void dontSearchNotNeededMolecules() throws Exception {
+  public void searchAllMolecules() throws Exception {
     createSample(0, new int[]{0,0,5,0,0},20);
     createSample(4, new int[]{0,0,0,0,5},20);
     createSample(2, new int[]{0,5,3,0,0},20);
@@ -100,7 +100,7 @@ public class MoleculeOptimizerNodeTest {
     root.freeStorage = 6;
     root.start();
     
-    assertThat(root.children.size(), is(3));
+    assertThat(root.children.size(), is(5));
   }
   
   @Test
@@ -116,6 +116,21 @@ public class MoleculeOptimizerNodeTest {
     
     assertThat(root.getBestChild().pickedMolecule, is(MoleculeType.B));
   }
+  
+  @Test
+  public void noMoleculeNeeded() throws Exception {
+    createSample(7, new int[]{6, 0, 0, 0, 0},30);
+    createSample(16, new int[]{2, 3, 0, 0, 2},10);
+    createSample(17, new int[]{3, 2, 2, 0, 0},10);
+    createStorage(  new int[]{4, 0, 0, 2, 1});
+    createExpertise(new int[]{2, 0, 0, 2, 1});
+    createAvailable(new int[]{0, 3, 4, 3, 3});
+    
+    root.start();
+    
+    assertThat(root.score, is(30.0));
+  }
+  
   @Test
   @Ignore
   public void TestDePerf() throws Exception {

@@ -89,24 +89,14 @@ public class FSM {
   
   MoleculeType getBestMoleculeForSamples() {
     MoleculeType type = null;
-    if (me.target == Module.MOLECULES) {
-      if (root == null) {
-        buildMoleculeChoiceOptimized();
-      }
-      MoleculeOptimizerNode best = root.getBestChild();
-      if (best ==null) {
-        type = null;
-      } else {
-        type = best.pickedMolecule;
-      }
-    } else {
-      // TODO Optimized the chosen molecule
-      System.err.println("Requesting type "+type+" alone TO OPTIMIZE");
-      int i=0;
-      while (i<me.carriedSamples.size() && type == null) {
-        type = me.getMissingMoleculeForSample(state, me.carriedSamples.get(i));
-        i++;
-      }
+    if (root == null) {
+      buildMoleculeChoiceOptimized();
+    }
+    MoleculeOptimizerNode best = root.getBestChild();
+    if (best ==null) {
+      type = null;
+    } else if (best.score > 0.0){
+      type = best.pickedMolecule;
     }
     
     return type;
@@ -122,7 +112,6 @@ public class FSM {
     root.createStorage(me.storage);
     root.createExpertise(me.expertise);
     root.createAvailable(state.availables);
-    root.freeStorage = Math.min(10, root.freeStorage ); // TODO Timeout at 10
     root.start();
     System.err.println("Free storage : "+root.freeStorage);
     System.err.println("Best score : "+root.score);
