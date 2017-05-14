@@ -42,6 +42,12 @@ public class FSM {
   }
 
   public void think() {
+    //TODO find a good combination to win the game early (170 pts reach), 
+    // no need to continue making samples if we win the game ...
+    
+    // TODO block the enemy if score too high
+    
+    // TODO think about expertise
     init();
     
     output = "GOTO "+currentState.module()+" Don't know what to do :(";
@@ -115,5 +121,9 @@ public class FSM {
     root.start();
     System.err.println("Free storage : "+root.freeStorage);
     System.err.println("Best score : "+root.score);
+  }
+
+  public boolean isAt(Module diagnosis) {
+    return me.eta == 0 && currentState.module() == diagnosis;
   }
 }

@@ -47,7 +47,7 @@ public class FSMDiagnosis extends FSMNode {
       }
       
       if (me.carriedSamples.size() > 0) {
-        // ditch the samples
+        //TODO score the sample difficulty, health and completion before ditching it
         System.err.println("Ditch a sample in the hope of getting one that fit");
         fsm.connect(me.carriedSamples.get(0).id);
         return;

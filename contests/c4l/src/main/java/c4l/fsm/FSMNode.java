@@ -48,8 +48,24 @@ public abstract class FSMNode {
    * Common method to handle the case where we don"t have any samples
    */
   void handleCarriedSampleEmpty() {
-    //TODO check to recycle at 
-    fsm.goTo(Module.SAMPLES);
+    //TODO check to recycle at diag (cloud)
+    List<Sample> samples = findDoableSampleInCloud();
+    samples.sort(Sample.orderByHealthDecr);
+    if (!samples.isEmpty() && samples.get(0).health >= 10) {
+      System.err.println("Found a doable sample @ DIAG");
+      if (fsm.isAt(Module.DIAGNOSIS)) {
+        System.err.println("hey ! we are @DIAG, so get it");
+        fsm.connect(samples.get(0).id);
+        return;
+      } else {
+        System.err.println("Need to go to diag");
+        fsm.goTo(Module.DIAGNOSIS);
+        return;
+      }
+    } else {
+      fsm.goTo(Module.SAMPLES);
+      return;
+    }
   }
 
   List<Sample> findDoableSampleInCloud() {

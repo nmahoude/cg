@@ -75,11 +75,14 @@ public class FSMSample extends FSMNode {
       return;
     }
     System.err.println("we are at SAMPLES, get a sample");
-    //TODO test with rank = 1 to levelup quickly ?
+    System.err.println("Always get 2");
     fsm.connect(2);
-    return;
 
-//    if (me.totalExpertise < 4) {
+//    if (me.totalExpertise < 0) {
+//      System.err.println("Noob, get a 1");
+//      fsm.connect(1);
+//      return;
+//    } else if (me.totalExpertise < 4) {
 //      System.err.println("Not enough expertise, get a 2");
 //      fsm.connect(2);
 //      return;

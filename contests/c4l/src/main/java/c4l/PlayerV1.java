@@ -55,7 +55,6 @@ public class PlayerV1 {
       if (me.eta > 0) {
         System.err.println("Still Moving ...");
         System.out.println("Still moving ...");
-        // TODO here we have time for some calculation, maybe optimization of molecules ?
         
         continue;
       }
@@ -111,7 +110,6 @@ public class PlayerV1 {
           continue;
         } else {
           // WAIT
-          // TODO trash worst sample ???
           System.err.println("no more molecule, waiting ....");
           System.out.println("GOTO MOLECULES");
           continue;
@@ -212,7 +210,6 @@ public class PlayerV1 {
       }
       type = best.pickedMolecule;
     } else {
-      // TODO Optimized the chosen molecule
       System.err.println("Requesting type "+type+" alone TO OPTIMIZE");
       int i=0;
       while (i<me.carriedSamples.size() && type == null) {
@@ -233,7 +230,7 @@ public class PlayerV1 {
     root.createStorage(me.storage);
     root.createExpertise(me.expertise);
     root.createAvailable(state.availables);
-    root.freeStorage = Math.min(6, root.freeStorage ); // TODO Timeout at 10
+    root.freeStorage = Math.min(6, root.freeStorage ); 
     root.start();
     
     System.err.println("Best score : "+root.score);
@@ -356,7 +353,6 @@ public class PlayerV1 {
       return;
     }
     System.err.println("we are at SAMPLES, get a sample");
-    //TODO test with rank = 1 to levelup quickly ?
     System.err.println("Debugging, getting a rank 1 ! ");
     System.out.println("CONNECT "+1);
 //    if (me.totalExpertise < 4) {
