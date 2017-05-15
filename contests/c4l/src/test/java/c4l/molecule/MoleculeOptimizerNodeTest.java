@@ -121,7 +121,7 @@ public class MoleculeOptimizerNodeTest {
   }
   
   @Test
-  public void noMoleculeNeeded() throws Exception {
+  public void noMoleculeNeeded_for40points() throws Exception {
     createSample(7, new int[]{6, 0, 0, 0, 0},30);
     createSample(16, new int[]{2, 3, 0, 0, 2},10);
     createSample(17, new int[]{3, 2, 2, 0, 0},10);
@@ -131,7 +131,7 @@ public class MoleculeOptimizerNodeTest {
     
     root.start();
     
-    assertThat(root.score, closeTo(30.0, 1.0)); // take percentage complete into account
+    assertThat(root.score, closeTo(40.0, 1.0)); // take percentage complete into account
   }
 
   
@@ -211,6 +211,21 @@ public class MoleculeOptimizerNodeTest {
     assertThat(combo.infos.size(), is (1));
     assertThat(combo.infos.get(0).getNeededMolecules().size(), is(1));
     assertThat(combo.infos.get(0).getNeededMolecules().indexOf(MoleculeType.C), is(not(-1)));
+  }
+  
+  @Test
+  public void shouldPick_for_2() throws Exception {
+    createSample(8, new int[] {1, 1, 1, 1, 0},1);
+    createSample(10, new int[]{1, 0, 2, 2, 0},1);
+    createStorage(  new int[] {1, 1, 3, 3, 0});
+    createExpertise(new int[] {3, 0, 1, 0, 0});
+    createAvailable(new int[] {3, 2, 2, 0, 4});
+    
+    root.freeStorage = 0;
+    root.start();
+
+    MoleculeComboInfo combo = root.getBestChild().combo;
+    assertThat(combo.infos.size(), is (2));
   }
   
   @Test

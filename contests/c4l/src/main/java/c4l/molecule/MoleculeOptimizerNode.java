@@ -19,8 +19,8 @@ public class MoleculeOptimizerNode {
   public static final int WIDTH = GameState.MOLECULE_TYPE+1; // +1 = health
   public static final int HEALTH = GameState.MOLECULE_TYPE; 
   
-  private static Map<Integer, MoleculeComboInfo> memoization = new HashMap<>();
-  private static int memoDecal[] = new int[] { 1, 8, 64, 512, 4096, 32768 };
+  public static Map<Integer, MoleculeComboInfo> memoization = new HashMap<>();
+  private static int memoDecal[] = new int[] { 10000, 01000, 00100, 00010, 00001 };
   private static double patience[] = new double[10];
   static {
     for (int i=0;i<patience.length;i++) {
@@ -96,7 +96,7 @@ public class MoleculeOptimizerNode {
   public Integer encodeState() {
     int total = 0;
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      total += memoDecal[i] * values[WIDTH*AVAILABLE + i];
+      total += memoDecal[i] * values[WIDTH*PICKED_MOLECULES+ i];
     }
     return new Integer(total);
   }
@@ -183,7 +183,7 @@ public class MoleculeOptimizerNode {
     for (int i=0;i<possibilities.length;i++) {
       MoleculeComboInfo info = getScoreForOnePossibility(possibilities[i]);
       if (info.score > bestScore) {
-        bestScore = score;
+        bestScore = info.score;
         best = info;
       }
     }
@@ -204,7 +204,7 @@ public class MoleculeOptimizerNode {
       moleculeInfo.sampleIndex = order[i];
       moleculeInfo.health = values[order[i]*WIDTH + HEALTH];
       for (int j=0;j<GameState.MOLECULE_TYPE;j++) {
-        int needed = values[WIDTH*order[i]+j]/*cost*/ - values[WIDTH*EXPERTISE+j]/*xp*/;
+        int needed = Math.max(0, values[WIDTH*order[i]+j]/*cost*/ - values[WIDTH*EXPERTISE+j]/*xp*/);
         if ( needed > initialStorage[j]+pickedMolecules[j]) {
           return info; // stop here we can't do the samples
         } else {
