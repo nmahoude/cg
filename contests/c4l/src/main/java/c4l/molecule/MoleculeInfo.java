@@ -10,7 +10,7 @@ import c4l.entities.MoleculeType;
 public class MoleculeInfo {
   int molecules[] = new int [GameState.MOLECULE_TYPE];
   public int sampleIndex;
-  
+  public int health;
   
   @Override
   public String toString() {

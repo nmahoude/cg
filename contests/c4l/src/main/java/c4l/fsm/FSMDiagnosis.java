@@ -37,15 +37,17 @@ public class FSMDiagnosis extends FSMNode {
     
     // TODO check if we can exchange a sample to get better result (2 turns taken)
     
-    // check if we can complete a sample from availables molecules
+    // check if we can complete a sample (that we just get) from availables molecules in the pool
     MoleculeComboInfo combo = fsm.getBestComboForSamples();
-    if (combo.infos.isEmpty()) {
-      System.err.println("no molecule combination for actual samples");
+    
+    if (!combo.canFinishAtLeastOneSample()) {
+      System.err.println("no molecule combination for actual samples, get a new one ?");
      
       if (me.carriedSamples.size() < 3 ) {  
         List<Sample> samples = findDoableSampleInCloud();
         
         if (!samples.isEmpty()) {
+          //TODO don't get the first one ! there is better way to choose (xp, min health to win)
           fsm.connect(samples.get(0).id, "Found a sample in the cloud ! Happy :)");
           return;
         }
@@ -57,7 +59,7 @@ public class FSMDiagnosis extends FSMNode {
         fsm.connect(me.carriedSamples.get(0).id, "Ditch a sample in the hope of getting one that fit (roi not enough)");
         return;
       } else {
-        fsm.goTo(Module.SAMPLES, "Go to Sample to get a new sample");
+        fsm.goTo(Module.SAMPLES, "Go to Sample to get a new sample, no combination possible even in the cloud");
         return;
       }
     }
@@ -76,18 +78,12 @@ public class FSMDiagnosis extends FSMNode {
       }
     }
     
-    boolean needToGetMolecule = combo.infos.isEmpty(); // if combo is empty, don't go to lab
-    for (MoleculeInfo info : combo.infos) {
-      if (info.getNeededMolecules().size()> 0) {
-        needToGetMolecule = true;
-        System.err.println("DEBUG : found needed molecule for "+info.sampleIndex + " " +info.getNeededMolecules());
-        break;
-      }
-    }
-    if (needToGetMolecule) {
-      fsm.goTo(Module.MOLECULES, "Got at least one way to do sample ");
-    } else {
+    if (combo.neededMoleculeToRealiseCombo() == 0) {
       fsm.goTo(Module.LABORATORY, "filled a sample, but no molecule needed and no more sample can be fullfilled");
+      return;
+    } else {
+      fsm.goTo(Module.MOLECULES, "Got at least one way to do sample ");
+      return;
     }
   }
 

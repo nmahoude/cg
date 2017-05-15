@@ -8,6 +8,7 @@ import c4l.entities.Robot;
 import c4l.entities.Sample;
 import c4l.molecule.MoleculeComboInfo;
 import c4l.molecule.MoleculeInfo;
+import c4l.molecule.MoleculeOptimizerNode;
 
 public class FSMMolecule extends FSMNode {
 
@@ -46,14 +47,20 @@ public class FSMMolecule extends FSMNode {
       }
     }
     
-    // TODO here we don't have any combo left, but maybe we can do something to block HIM !!!
-    if (me.getTotalCarried() < 10) {
-      for (MoleculeType type : MoleculeType.values()) {
-        if (state.availables[type.index] > 0) {
-          fsm.connect(type.toString(), "Get the 1st molecule I found, to fill me, I'm so hungry");
-          return;
+    // TODO here we don't have any combo left, but maybe we can do something to block HIM !!! or help us later
+    if (true) {
+      // fill with anything
+      if (me.getTotalCarried() < 10) {
+        for (MoleculeType type : MoleculeType.values()) {
+            if (state.availables[type.index] > 0) {
+                fsm.connect(type.toString(), "Get the 1st molecule I found, to fill me, I'm so hungry");
+                return;
+            }
         }
       }
+    }
+    if (checkToBlockHim()) {
+      return;
     }
 
     List<Sample> completableSamples = getCompletableSamples();
@@ -77,5 +84,26 @@ public class FSMMolecule extends FSMNode {
         return;
       }
     }
+  }
+
+  private boolean checkToBlockHim() {
+    MoleculeOptimizerNode root = new MoleculeOptimizerNode();
+    int index = 0;
+    for (Sample sample : state.robots[1].carriedSamples) {
+      root.createSample(index++, sample.costs, sample.health);
+    }
+    root.createStorage(state.robots[1].storage);
+    root.createExpertise(state.robots[1].expertise);
+    root.createAvailable(state.availables);
+    
+    root.start();
+    // so here I have his best choice
+    MoleculeComboInfo combo = root.getBestChild().combo;
+    if (!combo.canFinishAtLeastOneSample()) {
+      return false; // He can't finish any combo
+    }
+    
+    
+    return false;
   }
 }

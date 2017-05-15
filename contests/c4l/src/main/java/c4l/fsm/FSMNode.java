@@ -96,7 +96,7 @@ public abstract class FSMNode {
     node.createExpertise(me.expertise);
     node.createAvailable(state.availables);
 
-    double score = node.getCombo().score;
+    double score = node.getLocalScore().score;
     if (me.score + score >= 170.0) {
       return true;
     }

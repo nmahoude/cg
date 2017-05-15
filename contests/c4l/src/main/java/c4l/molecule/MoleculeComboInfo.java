@@ -20,4 +20,11 @@ public class MoleculeComboInfo {
   public boolean canFinishAtLeastOneSample() {
     return !infos.isEmpty();
   }
+  public int neededMoleculeToRealiseCombo() {
+    return infos.stream().mapToInt(info -> info.getNeededMolecules().size()).sum();
+  }
+
+  public int scoreRealizedWithoutMolecule() {
+    return infos.stream().mapToInt(info -> info.getNeededMolecules().size() == 0 ? info.health : 0).sum();
+  }
 }

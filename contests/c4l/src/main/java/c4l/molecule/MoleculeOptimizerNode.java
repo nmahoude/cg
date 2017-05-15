@@ -16,7 +16,7 @@ public class MoleculeOptimizerNode {
   public static final int INITIAL_STORAGE = 6;
   public static final int LAST = 7;
   
-  public static final int WIDTH = GameState.MOLECULE_TYPE+1;
+  public static final int WIDTH = GameState.MOLECULE_TYPE+1; // +1 = health
   public static final int HEALTH = GameState.MOLECULE_TYPE; 
   
   private static Map<Integer, MoleculeComboInfo> memoization = new HashMap<>();
@@ -73,7 +73,7 @@ public class MoleculeOptimizerNode {
   public void start() {
     memoization.clear();
     
-    combo = getCombo();
+    combo = getLocalScore();
     score = combo.score;
 
     if (freeStorage == 0) {
@@ -129,7 +129,7 @@ public class MoleculeOptimizerNode {
       return value;
     }
     
-    MoleculeComboInfo best = getCombo();
+    MoleculeComboInfo best = getLocalScore();
     score = patience[depth] * best.score;
     
     if (freeStorage == 0) {
@@ -172,7 +172,7 @@ public class MoleculeOptimizerNode {
    * by trying every combination
    * @return
    */
-  public MoleculeComboInfo getCombo() {
+  public MoleculeComboInfo getLocalScore() {
     int possibilities[][] = new int[][] {
         {0, 1, 2}, {0, 2, 1}, 
         {1, 0, 2}, {1, 2, 0}, 
@@ -202,6 +202,7 @@ public class MoleculeOptimizerNode {
     for (int i=0;i<order.length;i++) {
       MoleculeInfo moleculeInfo = new MoleculeInfo();
       moleculeInfo.sampleIndex = order[i];
+      moleculeInfo.health = values[order[i]*WIDTH + HEALTH];
       for (int j=0;j<GameState.MOLECULE_TYPE;j++) {
         int needed = values[WIDTH*order[i]+j]/*cost*/ - values[WIDTH*EXPERTISE+j]/*xp*/;
         if ( needed > initialStorage[j]+pickedMolecules[j]) {
