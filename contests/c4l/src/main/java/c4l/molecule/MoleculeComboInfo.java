@@ -16,4 +16,8 @@ public class MoleculeComboInfo {
     }
     return output;
   }
+
+  public boolean canFinishAtLeastOneSample() {
+    return !infos.isEmpty();
+  }
 }

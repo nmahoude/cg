@@ -23,7 +23,7 @@ public class FSMLaboratory extends FSMNode {
         return;
       }
       MoleculeComboInfo combo = fsm.getBestComboForSamples();
-      if (combo != null) {
+      if (combo.canFinishAtLeastOneSample()) {
         fsm.goTo(Module.MOLECULES, " go back to MOLECULES, i can pick some");
         return;
       } else if (me.carriedSamples.size() == 3) {

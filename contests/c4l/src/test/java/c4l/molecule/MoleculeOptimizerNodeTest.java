@@ -184,6 +184,19 @@ public class MoleculeOptimizerNodeTest {
     assertThat(root.combo.infos.get(0).getNeededMolecules().indexOf(MoleculeType.D), is(-1));
   }
 
+  @Test
+  public void DontAskFor_A() throws Exception {
+    createSample(1, new int[]{0, 2, 3, 0, 3},20);
+    createSample(3, new int[]{0, 3, 0, 2, 3},10);
+    createStorage(  new int[]{5, 0, 0, 0, 0});
+    createExpertise(new int[]{0, 0, 0, 0, 1});
+    createAvailable(new int[]{1, 6, 6, 6, 6});
+
+    root.start();
+
+    assertThat(root.combo.canFinishAtLeastOneSample(), is(false));
+  }
+  
   
   @Test
   @Ignore
