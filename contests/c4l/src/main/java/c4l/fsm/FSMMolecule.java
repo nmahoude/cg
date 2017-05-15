@@ -1,7 +1,10 @@
 package c4l.fsm;
 
+import java.sql.Blob;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
 
+import c4l.GameState;
 import c4l.entities.Module;
 import c4l.entities.MoleculeType;
 import c4l.entities.Robot;
@@ -34,13 +37,15 @@ public class FSMMolecule extends FSMNode {
     }
     
     MoleculeComboInfo combo = fsm.getBestComboForSamples();
+    System.err.println(combo.toString());
+    
     for (MoleculeInfo info : combo.infos) {
       if (!info.getNeededMolecules().isEmpty()) {
         //TODO here we have the choice of molecule order !
         // take in the order ? default, booouuhh
         // take the famine molecule first (good choice for me)
         // take the one that will block him
-        fsm.connect(info.getNeededMolecules().get(0).toString(), "Get the best molecule");
+        fsm.connect(info.getNeededMolecules().get(0), "Get the best molecule");
         return;
       } else {
         // don't need molecule for this one
@@ -48,12 +53,12 @@ public class FSMMolecule extends FSMNode {
     }
     
     // TODO here we don't have any combo left, but maybe we can do something to block HIM !!! or help us later
-    if (true) {
+    if (false) {
       // fill with anything
       if (me.getTotalCarried() < 10) {
         for (MoleculeType type : MoleculeType.values()) {
             if (state.availables[type.index] > 0) {
-                fsm.connect(type.toString(), "Get the 1st molecule I found, to fill me, I'm so hungry");
+                fsm.connect(type, "Get the 1st molecule I found, to fill me, I'm so hungry");
                 return;
             }
         }
@@ -87,23 +92,31 @@ public class FSMMolecule extends FSMNode {
   }
 
   private boolean checkToBlockHim() {
-    MoleculeOptimizerNode root = new MoleculeOptimizerNode();
-    int index = 0;
+    if (me.getTotalCarried() == 10) {
+      return false;
+    }
+    int moleculeToBlock[] = new int[GameState.MOLECULE_TYPE];
+    state.robots[1].carriedSamples.sort(Sample.roiDESC());
+    
+    // for each sample, calculate what would block the opp
     for (Sample sample : state.robots[1].carriedSamples) {
-      root.createSample(index++, sample.costs, sample.health);
-    }
-    root.createStorage(state.robots[1].storage);
-    root.createExpertise(state.robots[1].expertise);
-    root.createAvailable(state.availables);
-    
-    root.start();
-    // so here I have his best choice
-    MoleculeComboInfo combo = root.getBestChild().combo;
-    if (!combo.canFinishAtLeastOneSample()) {
-      return false; // He can't finish any combo
+      for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+        if (state.availables[i]>0 && state.availables[i] == sample.costs[i] - (state.robots[1].expertise[i]+state.robots[1].storage[i])) {
+          moleculeToBlock[i]++;
+        }
+      }
     }
     
-    
+    int best = 0;
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      if (moleculeToBlock[i] > moleculeToBlock[best]) {
+        best = i;
+      }
+    }
+    if (moleculeToBlock[best] > 0) {
+      fsm.connect(MoleculeType.values()[best], "Ah ah ! I can block him for "+moleculeToBlock[best]+" samples by taking "+MoleculeType.values()[best]+" , so do it");
+      return true;
+    }
     return false;
   }
 }

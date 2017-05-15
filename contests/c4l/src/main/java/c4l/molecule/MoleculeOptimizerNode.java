@@ -70,10 +70,10 @@ public class MoleculeOptimizerNode {
     
     return output;
   }
-  public void start() {
+  public void start () {
     memoization.clear();
     
-    combo = getLocalScore();
+    combo = getLocalCombo();
     score = combo.score;
 
     if (freeStorage == 0) {
@@ -129,7 +129,7 @@ public class MoleculeOptimizerNode {
       return value;
     }
     
-    MoleculeComboInfo best = getLocalScore();
+    MoleculeComboInfo best = getLocalCombo();
     score = patience[depth] * best.score;
     
     if (freeStorage == 0) {
@@ -142,7 +142,7 @@ public class MoleculeOptimizerNode {
           MoleculeOptimizerNode node = new MoleculeOptimizerNode();
           MoleculeComboInfo info = node.applyTurn(depth+1, this, MoleculeType.values()[i]);
           if (info.score > score) {
-            score = patience[depth] * info.score;
+            score = info.score;
             best = info;
           }
           children.add(node);
@@ -172,7 +172,7 @@ public class MoleculeOptimizerNode {
    * by trying every combination
    * @return
    */
-  public MoleculeComboInfo getLocalScore() {
+  public MoleculeComboInfo getLocalCombo() {
     int possibilities[][] = new int[][] {
         {0, 1, 2}, {0, 2, 1}, 
         {1, 0, 2}, {1, 2, 0}, 

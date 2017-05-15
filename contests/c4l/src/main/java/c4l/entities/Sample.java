@@ -80,6 +80,14 @@ public class Sample {
       }
     };
   }
+  public static Comparator<? super Sample> roiDESC() {
+    return new Comparator<Sample>() {
+      @Override
+      public int compare(Sample o1, Sample o2) {
+        return Double.compare(o2.roi(), o1.roi());
+      }
+    };
+  }
 
   /**
    * return the 'ROI' of a sample
@@ -91,4 +99,5 @@ public class Sample {
   public double roi() {
     return health / totalCost;
   }
+
 }

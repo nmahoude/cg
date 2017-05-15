@@ -2,6 +2,7 @@ package c4l.fsm;
 
 import c4l.GameState;
 import c4l.entities.Module;
+import c4l.entities.MoleculeType;
 import c4l.entities.Robot;
 import c4l.entities.Sample;
 import c4l.molecule.MoleculeComboInfo;
@@ -68,14 +69,14 @@ public class FSM {
     System.err.println("EXP ----> "+explanation);
   }
 
-  public void connect(String action, String explanation) {
+  public void connect(int action, String explanation) {
     explainYourself(explanation);
     output = "CONNECT "+action;
   }
 
-  public void connect(int action, String explanation) {
+  public void connect(MoleculeType type, String explanation) {
     explainYourself(explanation);
-    output = "CONNECT "+action;
+    output = "CONNECT "+type.toString();
   }
 
   public void goTo(Module module, String explanation) {

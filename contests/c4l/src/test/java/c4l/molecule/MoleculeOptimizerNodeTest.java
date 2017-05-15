@@ -144,7 +144,6 @@ public class MoleculeOptimizerNodeTest {
     
     root.start();
     
-    System.err.println("Combo : "+root.getBestChild().combo.infos);
     boolean needToGetMolecule = root.getBestChild().combo.infos.isEmpty();
     for (MoleculeInfo info : root.getBestChild().combo.infos) {
       if (info.getNeededMolecules().size()> 0) {
@@ -197,6 +196,22 @@ public class MoleculeOptimizerNodeTest {
     assertThat(root.combo.canFinishAtLeastOneSample(), is(false));
   }
   
+  @Test
+  public void chooseBestCombination() throws Exception {
+    createSample(0, new int[]{0, 0, 3, 2, 2},10);
+    createSample(2, new int[]{0, 0, 5, 0, 0},20);
+    createSample(4, new int[]{0, 0, 0, 5, 3},20);
+    createStorage(  new int[]{0, 0, 0, 0, 0});
+    createExpertise(new int[]{0, 0, 0, 0, 0});
+    createAvailable(new int[]{5, 5, 5, 5, 5});
+    
+    root.start();
+
+    MoleculeComboInfo combo = root.getBestChild().combo;
+    assertThat(combo.infos.size(), is (1));
+    assertThat(combo.infos.get(0).getNeededMolecules().size(), is(1));
+    assertThat(combo.infos.get(0).getNeededMolecules().indexOf(MoleculeType.C), is(not(-1)));
+  }
   
   @Test
   @Ignore
