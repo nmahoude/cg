@@ -68,6 +68,7 @@ public class FSMDiagnosis extends FSMNode {
     if (me.carriedSamples.size() < 3 ) {
       List<Sample> samples = findDoableSampleInCloud();
       samples.sort(Sample.orderByHealthDecr);
+      // TODO check science project here !
       // TODO maybe the better health is not the better choice (enough health to win, easier to get ...)
       // TODO introduce the concept of ROI ?
       if (!samples.isEmpty()) {

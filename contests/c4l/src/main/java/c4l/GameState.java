@@ -34,7 +34,6 @@ public class GameState {
 
   public void initRound() {
     availableSamples.clear();
-    scienceProjects.clear();
     robots[0].clearForRound();
     robots[1].clearForRound();
   }
@@ -64,11 +63,32 @@ public class GameState {
     }
   }
 
+  public void updateScienceProjects() {
+    for (ScienceProject project : scienceProjects) {
+      if (project.doneBy !=-1) continue;
+      for (int p=0;p<2;p++) {
+        boolean good = true;
+        for (int i=0;i<MOLECULE_TYPE;i++) {
+          if (robots[p].expertise[i] < project.expertiseNeeded[i]) good = false;
+        }
+        if (good) {
+          project.doneBy = p;
+        }
+      }
+    }
+  }
   public void readScienceProjects(Scanner in) {
     projectCount = in.nextInt();
     for (int i = 0; i < projectCount; i++) {
       ScienceProject project = new ScienceProject();
       project.read(in);
+      scienceProjects.add(project);
     }    
+  }
+
+  public void debugScienceProjects() {
+    for (ScienceProject project : scienceProjects) {
+      System.err.println(project.toString());
+    }
   }
 }

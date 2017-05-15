@@ -35,8 +35,10 @@ public class Player {
       
       state.readAvailables(in);
       state.readSamples(in);
-  
+      state.updateScienceProjects();
+      
       if (debug) {
+        state.debugScienceProjects();
         me.carriedSamples.forEach(sample -> sample.debug());
         debugStorage(me);
         debugExpertise(me);
