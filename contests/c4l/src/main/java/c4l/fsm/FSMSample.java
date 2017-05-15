@@ -20,63 +20,16 @@ public class FSMSample extends FSMNode {
   
   
   private void getSomeSamples() {
-    System.err.println("Get some samples");
-    
-    if (me.target == Module.DIAGNOSIS) {
-      // check if there is an available sample that can fit our molecules
-      Sample best = null;
-      for (Sample sample : state.availableSamples) {
-        if (me.hasMolecules(sample)) {
-          if (best == null || best.health < sample.health) {
-            best = sample;
-          }
-        }
-      }
-      if (best != null) {
-        System.err.println("Found a perfect match");
-        best.debug();
-        if (me.target == Module.DIAGNOSIS) {
-          fsm.connect(best.id, " Found a perfect match in DIAG, get it");
-        } else {
-          fsm.goTo(Module.DIAGNOSIS, "Found a perfect match in DIAG, go get it");
-        }
-        return;
-      }
 
-      System.err.println("No perfect match, check if there is enough total molecules for the sample ");
-      best = null;
-      double bestScore = Double.NEGATIVE_INFINITY;
-      for (Sample sample : state.availableSamples) {
-        if (me.isThereEnoughMoleculeForSample(state, sample)) {
-          double score = sample.score(me, state);
-          if (bestScore < score) {
-            best = sample;
-            bestScore = score;
-          }
-        }
-      }
-      if (best != null) {
-        System.err.println("Found a plausible match");
-        best.debug();
-        if (me.target == Module.DIAGNOSIS) {
-          fsm.connect(best.id, "Found a plausible match, get it");
-        } else {
-          fsm.goTo(Module.DIAGNOSIS, "Found a plausible match, @DIAG to get it");
-        }
-        return;
-      }
-      System.err.println("Found no match in the DIAG samples, goto SAMPLES now");
-    }
-
-    // check to go back to SAMPLES
-    if (me.target != Module.SAMPLES) {
-      fsm.goTo(Module.SAMPLES, "Go back to @SAMPLE");
+    if (me.totalCarried > 8) {
+      // TODO play on the xp ? maybe rank1 is too absolute
+      fsm.connect(1, "Full molecule, on prend des rank 1 pour debloquer");
       return;
     }
     
-    System.err.println("we are at SAMPLES, get a sample");
     if (me.totalExpertise < 5) {
       fsm.connect(2, "Always get 2, not enough XP");
+      return;
     } else {
 //      if (state.robots[1].score - me.score >= 20) {
 //        fsm.connect(3, "We are behind, take some risks");

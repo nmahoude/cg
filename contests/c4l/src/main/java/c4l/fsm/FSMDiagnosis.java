@@ -66,15 +66,13 @@ public class FSMDiagnosis extends FSMNode {
 
     // before getting to the MOLECULES, check if we need more samples
     if (me.carriedSamples.size() < 3 ) {
-      if (me.potentialScore() < 170) {
-        List<Sample> samples = findDoableSampleInCloud();
-        samples.sort(Sample.orderByHealthDecr);
-        // TODO maybe the better health is not the better choice (enough health to win, easier to get ...)
-        // TODO introduce the concept of ROI ?
-        if (!samples.isEmpty()) {
-          fsm.connect(samples.get(0).id, "get another sample while at DIAG");
-          return;
-        }
+      List<Sample> samples = findDoableSampleInCloud();
+      samples.sort(Sample.orderByHealthDecr);
+      // TODO maybe the better health is not the better choice (enough health to win, easier to get ...)
+      // TODO introduce the concept of ROI ?
+      if (!samples.isEmpty()) {
+        fsm.connect(samples.get(0).id, "get another sample while at DIAG");
+        return;
       }
     }
     

@@ -53,8 +53,8 @@ public abstract class FSMNode {
     List<Sample> samples = findDoableSampleInCloud();
     samples.sort(Sample.orderByHealthDecr);
     
-    if (!samples.isEmpty() && 
-        (samples.get(0).health >= 10 || samples.get(0).health+me.score >= 170)) {
+    // TODO check for sample qualitay before taking it (rank 1 is really interesting ?)
+    if (!samples.isEmpty() ) {
       System.err.println("Found a doable sample @ DIAG");
       if (fsm.isAt(Module.DIAGNOSIS)) {
         fsm.connect(samples.get(0).id, "hey ! we are @DIAG, so get the sample");
@@ -73,8 +73,6 @@ public abstract class FSMNode {
     List<Sample> samples = new ArrayList<>();
     for (Sample sample : state.availableSamples) {
       // before checking if sample is doable, filter on sample health points
-      if (sample.health < 10 && me.score + sample.health < 170) continue;
-      
       if (me.isThereEnoughMoleculeForSample(state, sample)) {
         samples.add(sample);
       }
@@ -87,19 +85,7 @@ public abstract class FSMNode {
    * @return
    */
   boolean checkIfIHaveEnoughPointsToWin() {
-    MoleculeOptimizerNode node = new MoleculeOptimizerNode();
-    int index = 0;
-    for (Sample sample : me.carriedSamples) {
-      node.createSample(index++, sample.costs, sample.health);
-    }
-    node.createStorage(me.storage);
-    node.createExpertise(me.expertise);
-    node.createAvailable(state.availables);
-
-    double score = node.getLocalScore().score;
-    if (me.score + score >= 170.0) {
-      return true;
-    }
+    // TODO redo it we can't win anymore with 170 pts, but there is other way (in the end game)
     return false;
   }
 }

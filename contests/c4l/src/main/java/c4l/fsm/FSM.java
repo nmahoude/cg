@@ -42,7 +42,7 @@ public class FSM {
   }
 
   public void think() {
-    //TODO find a good combination to win the game early (170 pts reach), 
+    //TODO find a good combination if turns are soon ended 200
     // no need to continue making samples if we win the game ...
     
     // TODO block the enemy if score too high

@@ -225,9 +225,6 @@ public class MoleculeOptimizerNode {
       }
       info.infos.add(moleculeInfo);
       info.score += values[WIDTH*order[i]+HEALTH];
-      if (info.score >= 170) {
-        info.score = SCORE_WHERE_WIN;
-      }
     }
     
     return info;// all the three samples are filled here, pretty good :)
