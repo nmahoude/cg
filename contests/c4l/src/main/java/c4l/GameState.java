@@ -91,4 +91,26 @@ public class GameState {
       System.err.println(project.toString());
     }
   }
+
+  /**
+   * Calculate the distance (in xp to gain) to a science project
+   */
+  public int distanceToScienceProjects(Robot me, int[] gain) {
+    int bestDist = Integer.MAX_VALUE;
+    for (ScienceProject project : scienceProjects) {
+      if (project.doneBy !=-1) continue;
+      int dist = 0;
+      for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+        if (me.expertise[i] + gain[i] >= project.expertiseNeeded[i]) {
+          dist +=0;
+        } else {
+          dist += project.expertiseNeeded[i]-(me.expertise[i] + gain[i]);
+        }
+      }
+      if (dist < bestDist) {
+        bestDist = dist;
+      }
+    }
+    return bestDist;
+  }
 }

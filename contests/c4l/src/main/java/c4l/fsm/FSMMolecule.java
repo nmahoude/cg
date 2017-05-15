@@ -27,7 +27,7 @@ public class FSMMolecule extends FSMNode {
   @Override
   public void think() {
     if (me.carriedSamples.isEmpty()) {
-      handleCarriedSampleEmpty();
+      getNewSamples();
       return;
     }
     
@@ -91,6 +91,7 @@ public class FSMMolecule extends FSMNode {
     }
   }
 
+  
   private boolean checkToBlockHim() {
     if (me.getTotalCarried() == 10) {
       return false;

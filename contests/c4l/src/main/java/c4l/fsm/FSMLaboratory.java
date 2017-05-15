@@ -19,7 +19,7 @@ public class FSMLaboratory extends FSMNode {
       fsm.connect(completableSamples.get(0).id, "Got a full sample in the bag");
     } else {
       if (me.carriedSamples.isEmpty()) {
-        handleCarriedSampleEmpty();
+        getNewSamples();
         return;
       }
       MoleculeComboInfo combo = fsm.getBestComboForSamples();

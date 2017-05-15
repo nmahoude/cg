@@ -23,14 +23,19 @@ public class Sample {
   int rank;
   PlayerData discoveredBy;
 
-  public Sample(int[] cost, int life, MoleculeType gain) {
-    this.expertise = gain;
+  public int[] gain = new int[GameState.MOLECULE_TYPE];
+
+  public Sample(int[] cost, int life, MoleculeType moleculeGained) {
+    this.expertise = moleculeGained;
     this.health = life;
     this.costs = cost;
     
     totalCost = 0;
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
       totalCost += costs[i];
+    }
+    if (isDiscovered()) {
+      gain[moleculeGained.index] = 1;
     }
   }
 
@@ -41,10 +46,6 @@ public class Sample {
 
   public Sample clone() {
     return new Sample(costs, health, expertise);
-  }
-
-  public String getGainChar() {
-    return (expertise == null) ? "0" : expertise.name();
   }
 
   public void debug() {
@@ -100,4 +101,21 @@ public class Sample {
     return health / totalCost;
   }
 
+  public static Comparator<? super Sample> moleculeNeededASC(final Robot me) {
+    return new Comparator<Sample>() {
+      @Override
+      public int compare(Sample o1, Sample o2) {
+        return Integer.compare(o1.neededMoleculesFor(me), o2.neededMoleculesFor(me));
+      }
+    };
+  }
+
+  protected int neededMoleculesFor(Robot me) {
+    int total = 0;
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      total += Math.max(0, costs[i]-me.storage[i]-me.expertise[i]);
+    }
+    
+    return total;
+  }
 }

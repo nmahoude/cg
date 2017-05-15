@@ -45,30 +45,6 @@ public abstract class FSMNode {
     return samples;
   }
 
-  /**
-   * Common method to handle the case where we don"t have any samples
-   */
-  void handleCarriedSampleEmpty() {
-    //TODO check to recycle at diag (cloud)
-    List<Sample> samples = findDoableSampleInCloud();
-    samples.sort(Sample.orderByHealthDecr);
-    
-    // TODO check for sample qualitay before taking it (rank 1 is really interesting ?)
-    if (!samples.isEmpty() ) {
-      System.err.println("Found a doable sample @ DIAG");
-      if (fsm.isAt(Module.DIAGNOSIS)) {
-        fsm.connect(samples.get(0).id, "hey ! we are @DIAG, so get the sample");
-        return;
-      } else {
-        fsm.goTo(Module.DIAGNOSIS, "Need to go to diag to get a sample");
-        return;
-      }
-    } else {
-      fsm.goTo(Module.SAMPLES, "Nohing in DIAG, go to sample");
-      return;
-    }
-  }
-
   List<Sample> findDoableSampleInCloud() {
     List<Sample> samples = new ArrayList<>();
     for (Sample sample : state.availableSamples) {
@@ -78,6 +54,24 @@ public abstract class FSMNode {
       }
     }
     return samples;
+  }
+  
+  /**
+   * Get new sample from SAMPLE or DIAG
+   * @return certified an action will be taken (always go somewhere)
+   */
+  boolean getNewSamples() {
+    List<Sample> samples = findDoableSampleInCloud();
+    
+    // TODO check for sample qualitay before taking it (rank 1 is really interesting ?)
+    if (!samples.isEmpty() ) {
+      fsm.goTo(Module.DIAGNOSIS, "Found a doable sample @ DIAG");
+      return true;
+    } else {
+      fsm.goTo(Module.SAMPLES, "Nohing in DIAG, go to sample");
+      return true;
+    }
+    
   }
   /**
    * Based on the samples and molecules I have, 
