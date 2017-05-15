@@ -1,10 +1,7 @@
 package c4l;
 
-import java.rmi.server.ExportException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 import c4l.entities.MoleculeType;

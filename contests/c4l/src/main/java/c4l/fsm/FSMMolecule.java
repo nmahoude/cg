@@ -6,7 +6,8 @@ import c4l.entities.Module;
 import c4l.entities.MoleculeType;
 import c4l.entities.Robot;
 import c4l.entities.Sample;
-import c4l.molecule.MoleculeOptimizerNode;
+import c4l.molecule.MoleculeComboInfo;
+import c4l.molecule.MoleculeInfo;
 
 public class FSMMolecule extends FSMNode {
 
@@ -31,10 +32,28 @@ public class FSMMolecule extends FSMNode {
       return;
     }
     
-    MoleculeType type = fsm.getBestMoleculeForSamples();
-    if (type != null) {
-      fsm.connect(type.toString(), "Get the best molecule");
-      return;
+    MoleculeComboInfo combo = fsm.getBestComboForSamples();
+    for (MoleculeInfo info : combo.infos) {
+      if (!info.getNeededMolecules().isEmpty()) {
+        //TODO here we have the choice of molecule order !
+        // take in the order ? default, booouuhh
+        // take the famine molecule first (good choice for me)
+        // take the one that will block him
+        fsm.connect(info.getNeededMolecules().get(0).toString(), "Get the best molecule");
+        return;
+      } else {
+        // don't need molecule for this one
+      }
+    }
+    
+    // TODO here we don't have any combo left, but maybe we can do something to block HIM !!!
+    if (me.getTotalCarried() < 10) {
+      for (MoleculeType type : MoleculeType.values()) {
+        if (state.availables[type.index] > 0) {
+          fsm.connect(type.toString(), "Get the 1st molecule I found, to fill me, I'm so hungry");
+          return;
+        }
+      }
     }
 
     List<Sample> completableSamples = getCompletableSamples();

@@ -3,8 +3,9 @@ package c4l.fsm;
 import java.util.List;
 
 import c4l.entities.Module;
-import c4l.entities.MoleculeType;
 import c4l.entities.Sample;
+import c4l.molecule.MoleculeComboInfo;
+import c4l.molecule.MoleculeInfo;
 
 public class FSMDiagnosis extends FSMNode {
   FSMDiagnosis(FSM fsm) {
@@ -37,11 +38,11 @@ public class FSMDiagnosis extends FSMNode {
     // TODO check if we can exchange a sample to get better result (2 turns taken)
     
     // check if we can complete a sample from availables molecules
-    MoleculeType type = fsm.getBestMoleculeForSamples();
-    if (type == null) {
+    MoleculeComboInfo combo = fsm.getBestComboForSamples();
+    if (combo.infos.isEmpty()) {
+      System.err.println("no molecule combination for actual samples");
      
       if (me.carriedSamples.size() < 3 ) {  
-        System.err.println("no molecule combination for samples");
         List<Sample> samples = findDoableSampleInCloud();
         
         if (!samples.isEmpty()) {
@@ -52,6 +53,7 @@ public class FSMDiagnosis extends FSMNode {
       
       if (me.carriedSamples.size() > 0) {
         //TODO score the sample difficulty, health and completion before ditching it
+        me.carriedSamples.sort(Sample.roiASC());
         fsm.connect(me.carriedSamples.get(0).id, "Ditch a sample in the hope of getting one that fit (roi not enough)");
         return;
       } else {
@@ -73,7 +75,20 @@ public class FSMDiagnosis extends FSMNode {
         }
       }
     }
-    fsm.goTo(Module.MOLECULES, "Got at least one way to do sample with molecule "+type.toString());
+    
+    boolean needToGetMolecule = combo.infos.isEmpty(); // if combo is empty, don't go to lab
+    for (MoleculeInfo info : combo.infos) {
+      if (info.getNeededMolecules().size()> 0) {
+        needToGetMolecule = true;
+        System.err.println("DEBUG : found needed molecule for "+info.sampleIndex + " " +info.getNeededMolecules());
+        break;
+      }
+    }
+    if (needToGetMolecule) {
+      fsm.goTo(Module.MOLECULES, "Got at least one way to do sample ");
+    } else {
+      fsm.goTo(Module.LABORATORY, "filled a sample, but no molecule needed and no more sample can be fullfilled");
+    }
   }
 
   private Sample getFirstUnDiscoveredSample() {

@@ -10,15 +10,16 @@ import c4l.entities.MoleculeType;
 
 public class MoleculeOptimizerNode {
   private static final int SCORE_WHERE_WIN = 100_000;
-  public static final int STORAGE = 3;
+  public static final int PICKED_MOLECULES = 3;
   public static final int EXPERTISE = 4;
   public static final int AVAILABLE = 5;
-  public static final int SUM_NOT_NULL = 6;
+  public static final int INITIAL_STORAGE = 6;
   public static final int LAST = 7;
+  
   public static final int WIDTH = GameState.MOLECULE_TYPE+1;
   public static final int HEALTH = GameState.MOLECULE_TYPE; 
   
-  private static Map<Integer, Double> memoization = new HashMap<>();
+  private static Map<Integer, MoleculeComboInfo> memoization = new HashMap<>();
   private static int memoDecal[] = new int[] { 1, 8, 64, 512, 4096, 32768 };
   private static double patience[] = new double[10];
   static {
@@ -33,20 +34,60 @@ public class MoleculeOptimizerNode {
   public MoleculeType pickedMolecule;
   public List<MoleculeOptimizerNode> children = new ArrayList<>();
   public double score;
+  public MoleculeComboInfo combo;
 
+  public MoleculeOptimizerNode() {
+    for (int i=0;i<3*WIDTH;i++) {
+      values[i] = 99;// all costs at 99 , so we cannot fullfill absent samples
+    }
+  }
+  
+  @Override
+  public String toString() {
+    String output="";
+    for (int j=0;j<3;j++) {
+      output+="createSample( [";
+      for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+        output+=""+values[WIDTH*j+i]+",";
+      }
+      output+="]);\n\r";
+    }
+    output+="picked([";
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      output+=""+values[WIDTH*PICKED_MOLECULES+i]+",";
+    }
+    output+="]);\n\r";
+    output+="expertise([";
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      output+=""+values[WIDTH*EXPERTISE+i]+",";
+    }
+    output+="]);\n\r";
+    output+="available([";
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      output+=""+values[WIDTH*AVAILABLE+i]+",";
+    }
+    output+="]);\n\r";
+    
+    return output;
+  }
   public void start() {
     memoization.clear();
     
+    combo = getCombo();
+    score = combo.score;
+
     if (freeStorage == 0) {
       return;
     }
-    updateSumNotNull();
     
-    score = getScore();
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
       if (values[WIDTH*AVAILABLE+i]>0) {
         MoleculeOptimizerNode node = new MoleculeOptimizerNode();
-        score = Math.max(score, node.applyTurn(0, this, MoleculeType.values()[i]));
+        MoleculeComboInfo info = node.applyTurn(0, this, MoleculeType.values()[i]);
+        if (info.score > score) {
+          score = info.score;
+          combo = info;
+        }
         children.add(node);
       }
     }
@@ -62,44 +103,55 @@ public class MoleculeOptimizerNode {
   /**
    * row indicating how many sample need this molecule
    */
-  private void updateSumNotNull() {
+  private int[] updateSumNotNull() {
+    int sumNotNull[] = new int[GameState.MOLECULE_TYPE];
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      values[SUM_NOT_NULL*WIDTH+i] = values[0*WIDTH+i] > 0 ? 1 : 0
+      sumNotNull[i] = values[0*WIDTH+i] > 0 ? 1 : 0
                                     + values[1*WIDTH+i] > 0 ? 1 : 0
                                     + values[2*WIDTH+i] > 0 ? 1 : 0;
           ;
     }
+    return sumNotNull;
   }
 
-  public double applyTurn(int depth, MoleculeOptimizerNode from, MoleculeType type) {
+  public MoleculeComboInfo applyTurn(int depth, MoleculeOptimizerNode from, MoleculeType type) {
     pickedMolecule = type;
     System.arraycopy(from.values, 0, values, 0, values.length);
     
-    values[WIDTH*STORAGE + pickedMolecule.index]++;
+    values[WIDTH*PICKED_MOLECULES + pickedMolecule.index]++;
     values[WIDTH*AVAILABLE + pickedMolecule.index]--;
     freeStorage = from.freeStorage-1;
     
     Integer key = encodeState();
-    Double value = memoization.get(key);
+    MoleculeComboInfo value = memoization.get(key);
     if (value != null) {
-      return value.doubleValue();
+      combo = value;
+      return value;
     }
     
-    score = patience[depth] * getScore();
+    MoleculeComboInfo best = getCombo();
+    score = patience[depth] * best.score;
+    
     if (freeStorage == 0) {
-      memoization.put(key, score);
-      return score;
+      memoization.put(key, best);
+      combo = best;
+      return best;
     } else {
       for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
         if (values[WIDTH*AVAILABLE + i]>0 ) {
           MoleculeOptimizerNode node = new MoleculeOptimizerNode();
-          score = Math.max(score, patience[depth] * node.applyTurn(depth+1, this, MoleculeType.values()[i]));
+          MoleculeComboInfo info = node.applyTurn(depth+1, this, MoleculeType.values()[i]);
+          if (info.score > score) {
+            score = patience[depth] * info.score;
+            best = info;
+          }
           children.add(node);
         }
       }
     }
-    memoization.put(key, score);
-    return score;
+    memoization.put(key, best);
+    combo = best;
+    return best;
   }
 
   double getPercentCompletion() {
@@ -109,7 +161,7 @@ public class MoleculeOptimizerNode {
       for (int j=0;j<GameState.MOLECULE_TYPE;j++) {
         total += values[WIDTH*i+j];
         filled += Math.min(values[WIDTH*i+j], 
-                  (values[WIDTH*EXPERTISE+j] + values[WIDTH*STORAGE + j]));
+                  (values[WIDTH*EXPERTISE+j] + values[WIDTH*INITIAL_STORAGE+ j]+values[WIDTH*PICKED_MOLECULES + j]));
       }
     }
     return 1.0 * filled / total;
@@ -120,44 +172,71 @@ public class MoleculeOptimizerNode {
    * by trying every combination
    * @return
    */
-  public double getScore() {
+  public MoleculeComboInfo getCombo() {
     int possibilities[][] = new int[][] {
         {0, 1, 2}, {0, 2, 1}, 
         {1, 0, 2}, {1, 2, 0}, 
         {2, 0, 1}, {2, 1, 0}};
     
-    double score = 0;
+    double bestScore = Double.NEGATIVE_INFINITY;
+    MoleculeComboInfo best = null;
     for (int i=0;i<possibilities.length;i++) {
-      score = Math.max(score, getScoreForOnePossibility(possibilities[i]));
+      MoleculeComboInfo info = getScoreForOnePossibility(possibilities[i]);
+      if (info.score > bestScore) {
+        bestScore = score;
+        best = info;
+      }
     }
-    return score;
+    return best;
   }
 
-  private double getScoreForOnePossibility(int[] order) {
-    int[] localStorage = new int[GameState.MOLECULE_TYPE];
-    System.arraycopy(values, WIDTH*STORAGE, localStorage, 0, GameState.MOLECULE_TYPE);
+  private MoleculeComboInfo getScoreForOnePossibility(int[] order) {
+    MoleculeComboInfo info = new MoleculeComboInfo();
     
-    double score = 0;
+    int[] initialStorage = new int[GameState.MOLECULE_TYPE];
+    int[] pickedMolecules = new int[GameState.MOLECULE_TYPE];
+    
+    System.arraycopy(values, WIDTH*INITIAL_STORAGE, initialStorage, 0, GameState.MOLECULE_TYPE);
+    System.arraycopy(values, WIDTH*PICKED_MOLECULES, pickedMolecules, 0, GameState.MOLECULE_TYPE);
+    
     for (int i=0;i<order.length;i++) {
+      MoleculeInfo moleculeInfo = new MoleculeInfo();
+      moleculeInfo.sampleIndex = order[i];
       for (int j=0;j<GameState.MOLECULE_TYPE;j++) {
-        if (values[WIDTH*order[i]+j] > (values[WIDTH*EXPERTISE+j] + localStorage[j])) {
-          return score;
+        int needed = values[WIDTH*order[i]+j]/*cost*/ - values[WIDTH*EXPERTISE+j]/*xp*/;
+        if ( needed > initialStorage[j]+pickedMolecules[j]) {
+          return info; // stop here we can't do the samples
         } else {
-          localStorage[j] -= values[WIDTH*order[i]+j];
+          if (initialStorage[j] >= needed) {
+            initialStorage[j]-=needed;
+            needed = 0;
+          } else {
+            // need to get some picked
+            needed-= initialStorage[j];
+            initialStorage[j] = 0;
+
+            moleculeInfo.molecules[j] = needed;
+
+            pickedMolecules[j]-=needed;
+            needed = 0;
+          }
         }
       }
-      score += values[WIDTH*order[i]+HEALTH];
-      if (score >= 170) {
-        score = SCORE_WHERE_WIN;
+      info.infos.add(moleculeInfo);
+      info.score += values[WIDTH*order[i]+HEALTH];
+      if (info.score >= 170) {
+        info.score = SCORE_WHERE_WIN;
       }
     }
-    return score;// all the three samples are filled here, pretty good :)
+    
+    return info;// all the three samples are filled here, pretty good :)
   }
   
   public void createStorage(int[] storage) {
     freeStorage = 10;
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      this.values[STORAGE*WIDTH + i] = storage[i];
+      this.values[PICKED_MOLECULES*WIDTH + i] = 0;
+      this.values[INITIAL_STORAGE*WIDTH + i] = storage[i];
       freeStorage-=storage[i];
     }    
   }
@@ -183,7 +262,7 @@ public class MoleculeOptimizerNode {
 
   public MoleculeOptimizerNode getBestChild() {
     double bestScore = Double.NEGATIVE_INFINITY;
-    MoleculeOptimizerNode best = null;
+    MoleculeOptimizerNode best = this;
     for (MoleculeOptimizerNode node : children) {
       if (node.score  > bestScore) {
         bestScore = node.score;

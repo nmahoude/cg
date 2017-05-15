@@ -1,11 +1,10 @@
 package c4l.fsm;
 
-import java.util.Comparator;
 import java.util.List;
 
 import c4l.entities.Module;
-import c4l.entities.MoleculeType;
 import c4l.entities.Sample;
+import c4l.molecule.MoleculeComboInfo;
 
 public class FSMLaboratory extends FSMNode {
   FSMLaboratory(FSM fsm) {
@@ -23,8 +22,8 @@ public class FSMLaboratory extends FSMNode {
         handleCarriedSampleEmpty();
         return;
       }
-      MoleculeType type = fsm.getBestMoleculeForSamples();
-      if (type != null) {
+      MoleculeComboInfo combo = fsm.getBestComboForSamples();
+      if (combo != null) {
         fsm.goTo(Module.MOLECULES, " go back to MOLECULES, i can pick some");
         return;
       } else if (me.carriedSamples.size() == 3) {

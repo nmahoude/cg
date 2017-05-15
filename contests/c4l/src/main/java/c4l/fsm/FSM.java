@@ -2,9 +2,9 @@ package c4l.fsm;
 
 import c4l.GameState;
 import c4l.entities.Module;
-import c4l.entities.MoleculeType;
 import c4l.entities.Robot;
 import c4l.entities.Sample;
+import c4l.molecule.MoleculeComboInfo;
 import c4l.molecule.MoleculeOptimizerNode;
 
 public class FSM {
@@ -101,19 +101,11 @@ public class FSM {
     output = "GOTO "+currentState.module();
   }
   
-  MoleculeType getBestMoleculeForSamples() {
-    MoleculeType type = null;
+  MoleculeComboInfo getBestComboForSamples() {
     if (root == null) {
       buildMoleculeChoiceOptimized();
     }
-    MoleculeOptimizerNode best = root.getBestChild();
-    if (best ==null) {
-      type = null;
-    } else if (best.score > 0.0){
-      type = best.pickedMolecule;
-    }
-    
-    return type;
+    return root.getBestChild().combo;
   }
 
   private void buildMoleculeChoiceOptimized() {
@@ -127,8 +119,6 @@ public class FSM {
     root.createExpertise(me.expertise);
     root.createAvailable(state.availables);
     root.start();
-    System.err.println("Free storage : "+root.freeStorage);
-    System.err.println("Best score : "+root.score);
   }
 
   public boolean isAt(Module diagnosis) {

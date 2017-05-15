@@ -73,6 +73,7 @@ public class FSMSample extends FSMNode {
       fsm.goTo(Module.SAMPLES, "Go back to @SAMPLE");
       return;
     }
+    
     System.err.println("we are at SAMPLES, get a sample");
     if (me.totalExpertise < 5) {
       fsm.connect(2, "Always get 2, not enough XP");
