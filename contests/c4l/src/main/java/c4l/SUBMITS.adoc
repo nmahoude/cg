@@ -1,4 +1,8 @@
 = List ds subits et leur contenu
 
+== SILVER 16/05
+* 01h24 / 12 : correction bug sur l'optimizer ! + tentative d'utiliser les science projects
+
 == SILVER 15/05
-* 23h07 / 49 : blocage si on peut prendre une molecule unique 
+* 23h07 / 49 : blocage si on peut prendre une molecule unique
+ 
