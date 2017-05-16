@@ -17,6 +17,8 @@ public class Player {
   public static final Random rand = new FastRandom(17);//System.currentTimeMillis());
   public static Player player = new Player();
   public static boolean debug = true;
+  private static long start;
+  private static long stop;
   
   public GameState state = new GameState();
   public Robot me = state.robots[0];
@@ -34,6 +36,9 @@ public class Player {
       }
       
       state.readAvailables(in);
+      Player.start = System.currentTimeMillis();
+      Player.stop= Player.start + 45;
+      
       state.readSamples(in);
       state.updateScienceProjects();
       
@@ -46,6 +51,8 @@ public class Player {
       }
       
       fsm.think();
+      long end = System.currentTimeMillis();
+      System.err.println("Perf : "+(end-start));
     }
   }
   
