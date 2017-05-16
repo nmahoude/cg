@@ -109,6 +109,13 @@ public class FSMDiagnosis extends FSMNode {
   /**
    * Find a completable sample in the cloud
    */
+  boolean findANewCompletableSampleAtDiag_new() {
+    return false;
+  }
+  
+  /**
+   * Find a completable sample in the cloud
+   */
   boolean findANewCompletableSampleAtDiag() {
     List<Sample> samples = findDoableSampleInCloud();
     
@@ -130,6 +137,7 @@ public class FSMDiagnosis extends FSMNode {
     if (chooseSampleWithBetterROI(samples)) {
       return true;
     } 
+    
     System.out.println("YOU SHOULD NOT PASS (HERE)");
     return false; // should not come here
   }

@@ -1,6 +1,7 @@
 = List ds subits et leur contenu
 
 == SILVER 16/05
+* 00h00 / 37 : pas de changement
 * 17h30 / 25 : refactoring sans changement
 * 16h00 / 28 : resubmit pour variance
 * 15h45 / 29 : correction du Sample.PointsWON (il faut faire des T.Us !!!)

@@ -20,7 +20,8 @@ public class Sample {
 
   public int[] gain = new int[GameState.MOLECULE_TYPE];
 
-  public Sample(int[] cost, int life, MoleculeType moleculeGained) {
+  public Sample(int id, int[] cost, int life, MoleculeType moleculeGained) {
+    this.id = id;
     this.expertise = moleculeGained;
     this.health = life;
     this.costs = cost;
@@ -40,7 +41,7 @@ public class Sample {
   }
 
   public Sample clone() {
-    return new Sample(costs, health, expertise);
+    return new Sample(id, costs, health, expertise);
   }
 
   public void debug() {
@@ -146,6 +147,23 @@ public class Sample {
 
   @Override
   public String toString() {
-    return "h="+health;
-  }
+    StringBuffer output = new StringBuffer();
+    output.append("createSample("+id+", new int[]{");
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      output.append(""+costs[i]);
+      if (i != GameState.MOLECULE_TYPE-1) {
+        output.append(", ");
+      } else {
+        output.append("}, ");
+      }
+    }
+    output.append(""+health+", ");
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      if (gain[i] > 0) {
+        output.append(""+i+",");
+      }
+    }
+    output.append(");");
+    return output.toString();
+ }
 }

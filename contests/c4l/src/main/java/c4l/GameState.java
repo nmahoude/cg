@@ -55,7 +55,7 @@ public class GameState {
       if (!"-1".equals(expertiseGain) && !"0".equals(expertiseGain)) {
         giveExpertise = MoleculeType.valueOf(expertiseGain);
       }
-      Sample sample = new Sample(costs, health, giveExpertise);
+      Sample sample = new Sample(sampleId, costs, health, giveExpertise);
       sample.id = sampleId;
       
       if (carriedBy != -1) {

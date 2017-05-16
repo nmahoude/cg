@@ -42,10 +42,10 @@ public class FSMDiagnosisTest {
       state.scienceProjects.add(sp);
       
       me.expertise = new int[] {0, 0, 0, 0 ,0};
-      Sample s1 = new Sample(empty, 0 , MoleculeType.A);
-      Sample s2 = new Sample(empty, 0 , MoleculeType.B);
-      Sample s3 = new Sample(empty, 0 , MoleculeType.C);
-      Sample s4 = new Sample(empty, 0 , MoleculeType.D);
+      Sample s1 = new Sample(0, empty, 0 , MoleculeType.A);
+      Sample s2 = new Sample(1, empty, 0 , MoleculeType.B);
+      Sample s3 = new Sample(2, empty, 0 , MoleculeType.C);
+      Sample s4 = new Sample(3, empty, 0 , MoleculeType.D);
       
       List<Sample> result = diag.findSamplesFillingAScienceProject(Arrays.asList(s1, s2, s3, s4));
       
@@ -59,7 +59,7 @@ public class FSMDiagnosisTest {
       state.scienceProjects.add(sp);
       
       me.expertise = new int[] {0, 0, 0, 0 ,0};
-      Sample s5 = new Sample(empty, 0 , MoleculeType.E);
+      Sample s5 = new Sample(0, empty, 0 , MoleculeType.E);
       
       List<Sample> result = diag.findSamplesFillingAScienceProject(Arrays.asList(s5));
       
@@ -73,7 +73,7 @@ public class FSMDiagnosisTest {
       state.scienceProjects.add(sp);
       
       me.expertise = new int[] {0, 0, 0, 0 ,1};
-      Sample s5 = new Sample(empty, 0 , MoleculeType.E);
+      Sample s5 = new Sample(0, empty, 0 , MoleculeType.E);
       
       List<Sample> result = diag.findSamplesFillingAScienceProject(Arrays.asList(s5));
       
@@ -88,7 +88,7 @@ public class FSMDiagnosisTest {
       state.scienceProjects.add(sp);
       
       me.expertise = new int[] {0, 0, 0, 0 ,1};
-      Sample s5 = new Sample(empty, 0 , MoleculeType.E);
+      Sample s5 = new Sample(0, empty, 0 , MoleculeType.E);
       
       List<Sample> result = diag.findSamplesFillingAScienceProject(Arrays.asList(s5));
       
@@ -119,7 +119,7 @@ public class FSMDiagnosisTest {
       state.scienceProjects.add(sp);
       
       me.expertise = new int[] {0, 0, 0, 0 ,1};
-      Sample s5 = new Sample(empty, 0 , MoleculeType.E);
+      Sample s5 = new Sample(0, empty, 0 , MoleculeType.E);
       
       boolean result = diag.chooseSampleToCompleteScienceProject(Arrays.asList(s5));
       
