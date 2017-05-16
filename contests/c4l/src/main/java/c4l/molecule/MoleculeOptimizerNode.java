@@ -216,7 +216,7 @@ public class MoleculeOptimizerNode {
             needed-= initialStorage[j];
             initialStorage[j] = 0;
 
-            moleculeInfo.molecules[j] = needed;
+            moleculeInfo.moleculesNeeded[j] = needed;
 
             pickedMolecules[j]-=needed;
             needed = 0;

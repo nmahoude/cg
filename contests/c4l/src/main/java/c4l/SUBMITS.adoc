@@ -1,6 +1,7 @@
 = List ds subits et leur contenu
 
 == SILVER 16/05
+* 02h37 / 14  : Optimisation de la prise des molecules
 * 01h24 / 12 : correction bug sur l'optimizer ! + tentative d'utiliser les science projects
 
 == SILVER 15/05

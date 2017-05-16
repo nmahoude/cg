@@ -1,8 +1,6 @@
 package c4l.fsm;
 
-import java.sql.Blob;
 import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
 
 import c4l.GameState;
 import c4l.entities.Module;
@@ -11,7 +9,6 @@ import c4l.entities.Robot;
 import c4l.entities.Sample;
 import c4l.molecule.MoleculeComboInfo;
 import c4l.molecule.MoleculeInfo;
-import c4l.molecule.MoleculeOptimizerNode;
 
 public class FSMMolecule extends FSMNode {
 
@@ -37,19 +34,9 @@ public class FSMMolecule extends FSMNode {
     }
     
     MoleculeComboInfo combo = fsm.getBestComboForSamples();
-    System.err.println(combo.toString());
     
-    for (MoleculeInfo info : combo.infos) {
-      if (!info.getNeededMolecules().isEmpty()) {
-        //TODO here we have the choice of molecule order !
-        // take in the order ? default, booouuhh
-        // take the famine molecule first (good choice for me)
-        // take the one that will block him
-        fsm.connect(info.getNeededMolecules().get(0), "Get the best molecule");
-        return;
-      } else {
-        // don't need molecule for this one
-      }
+    if (getANeededMoleculeForCombo(combo)) {
+      return;
     }
     
     // TODO here we don't have any combo left, but maybe we can do something to block HIM !!! or help us later
@@ -91,22 +78,71 @@ public class FSMMolecule extends FSMNode {
     }
   }
 
-  
+  /**
+   * Check if we can get a molecule to complete (partially one of our samples)
+   * @param combo
+   * @return
+   */
+  private boolean getANeededMoleculeForCombo(MoleculeComboInfo combo) {
+    for (MoleculeInfo info : combo.infos) {
+      if (!info.getNeededMolecules().isEmpty()) {
+
+        // Aggressive behavior, try take molecule that can block him first
+        MoleculeType bestType = null;
+        bestType = findTheBestBlockingMoleculeFor(info.getNeededMolecules(), state.robots[1]);
+        if (bestType != null) {
+          fsm.connect(bestType, "Get a needed molecule which blocks him");
+          return true;
+        }
+
+        // hmmm so we couldn't find a molecule that blocks him, find what could block me
+        bestType = findTheBestBlockingMoleculeFor(info.getNeededMolecules(), me);
+        if (bestType != null) {
+          fsm.connect(bestType, "Get a most needed molecule for me");
+          return true;
+        }
+        
+        bestType = null;
+        int diff = Integer.MAX_VALUE;
+        for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+          int delta = state.availables[i] - info.moleculesNeeded[i];
+          if (delta < diff) {
+            diff = delta;
+            bestType= MoleculeType.values()[i];
+          } else if (delta == diff) {
+            // equality -> take the one the closer to 0 availability;
+            if (state.availables[bestType.index] > state.availables[i]) {
+              bestType = MoleculeType.values()[i];
+            }
+          }
+        }
+        fsm.connect(info.getNeededMolecules().get(0), "Get the best molecule");
+        return true;
+      } else {
+        // don't need molecule for this one, try another one
+      }
+    }
+    return false;
+  }
+
+  private MoleculeType findTheBestBlockingMoleculeFor(List<MoleculeType> allowedMolecules, Robot robot) {
+    int potentialBlockedSamples[] = getPotentialBlockedSampleByMolecule(state.availables, state.robots[1].carriedSamples, state.robots[1]); 
+    MoleculeType bestType = null;
+    for (MoleculeType type : allowedMolecules) {
+      if (bestType == null || potentialBlockedSamples[type.index] > potentialBlockedSamples[bestType.index] ) {
+        bestType = type;
+      }
+    }
+    return bestType; 
+  }
+
   private boolean checkToBlockHim() {
     if (me.getTotalCarried() == 10) {
       return false;
     }
-    int moleculeToBlock[] = new int[GameState.MOLECULE_TYPE];
     state.robots[1].carriedSamples.sort(Sample.roiDESC());
     
-    // for each sample, calculate what would block the opp
-    for (Sample sample : state.robots[1].carriedSamples) {
-      for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-        if (state.availables[i]>0 && state.availables[i] == sample.costs[i] - (state.robots[1].expertise[i]+state.robots[1].storage[i])) {
-          moleculeToBlock[i]++;
-        }
-      }
-    }
+    int moleculeToBlock[] = getPotentialBlockedSampleByMolecule(state.availables, state.robots[1].carriedSamples, state.robots[1]);
     
     int best = 0;
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
@@ -119,5 +155,22 @@ public class FSMMolecule extends FSMNode {
       return true;
     }
     return false;
+  }
+  
+  /**
+   * Return an array with how many sample we can block if we take the molecule at each array index
+   */
+  private int[] getPotentialBlockedSampleByMolecule(int[] availables, List<Sample> samples, Robot robot) {
+    int moleculeToBlock[] = new int[GameState.MOLECULE_TYPE];
+
+    // for each sample, calculate what would block the opp
+    for (Sample sample : robot.carriedSamples) {
+      for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+        if (availables[i]>0 && availables[i] == sample.costs[i] - (robot.expertise[i]+robot.storage[i])) {
+          moleculeToBlock[i]++;
+        }
+      }
+    }
+    return moleculeToBlock;
   }
 }

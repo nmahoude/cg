@@ -8,13 +8,13 @@ import c4l.GameState;
 import c4l.entities.MoleculeType;
 
 public class MoleculeInfo {
-  int molecules[] = new int [GameState.MOLECULE_TYPE];
+  public int moleculesNeeded[] = new int [GameState.MOLECULE_TYPE];
   public int sampleIndex;
   public int health;
   
   @Override
   public String toString() {
-    return "sample="+sampleIndex+" "+Arrays.toString(molecules)+"\n\r";
+    return "sample="+sampleIndex+" "+Arrays.toString(moleculesNeeded)+"\n\r";
   }
   /**
    * return the list of needed molcules, without how much we need
@@ -23,7 +23,7 @@ public class MoleculeInfo {
   public List<MoleculeType> getNeededMolecules() {
     List<MoleculeType> types = new ArrayList<>();
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      if (molecules[i]>0) {
+      if (moleculesNeeded[i]>0) {
         types.add(MoleculeType.values()[i]);
       }
     }
