@@ -1,5 +1,9 @@
 = List ds subits et leur contenu
 
+== SILBER 17/05
+
+* 00h32 / 43 : ajout du sampleOptimiser (pour test perf uniquement)
+
 == SILVER 16/05
 * 00h00 / 37 : pas de changement
 * 17h30 / 25 : refactoring sans changement

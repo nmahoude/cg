@@ -39,7 +39,8 @@ public class SampleOptimizerNode {
     memoization.clear();
     
     score = getScore();
-
+    bestChild = this;
+    
     // condition to stop going further
     if (!canGoFurther()) {
       return;
@@ -148,7 +149,9 @@ public class SampleOptimizerNode {
     int semiCompleted = 0;
     
     for (Sample sample : currentSamples) {
-      currentGain[sample.expertise.index]++;
+      if (sample.expertise != null) {
+        currentGain[sample.expertise.index]++;
+      }
 
       if (me.canCompleteSampleAuto(sample)) {
         score += 2; // 2 points for autocomplete

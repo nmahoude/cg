@@ -7,6 +7,7 @@ import c4l.Order;
 import c4l.entities.Module;
 import c4l.entities.Sample;
 import c4l.molecule.MoleculeComboInfo;
+import c4l.sample.SampleOptimizerNode;
 
 public class FSMDiagnosis extends FSMNode {
   FSMDiagnosis(FSM fsm) {
@@ -41,6 +42,8 @@ public class FSMDiagnosis extends FSMNode {
 //        return;
 //      }
 //    }
+    
+    findANewCompletableSampleAtDiag_new(); // perf test
     
     if (me.carriedSamples.isEmpty()) {
       System.err.println("No more sample, handle it");
@@ -110,6 +113,10 @@ public class FSMDiagnosis extends FSMNode {
    * Find a completable sample in the cloud
    */
   boolean findANewCompletableSampleAtDiag_new() {
+    SampleOptimizerNode root = new SampleOptimizerNode();
+    root.start(state, me);
+    System.err.println("Found the best combo : ");
+    System.err.println(root.bestChild.toString());
     return false;
   }
   

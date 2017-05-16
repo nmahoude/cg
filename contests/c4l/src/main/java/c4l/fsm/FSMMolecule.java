@@ -40,22 +40,14 @@ public class FSMMolecule extends FSMNode {
       return;
     }
     
-    // TODO here we don't have any combo left, but maybe we can do something to block HIM !!! or help us later
-    if (false) {
-      // fill with anything
-      if (me.getTotalCarried() < 10) {
-        for (MoleculeType type : MoleculeType.values()) {
-            if (state.availables[type.index] > 0) {
-                fsm.connect(type, "Get the 1st molecule I found, to fill me, I'm so hungry");
-                return;
-            }
-        }
-      }
-    }
+    // here we don't have any combo left, but maybe we can do something to block HIM !!! or help us later
     if (checkToBlockHim()) {
       return;
     }
 
+    // TODO here we may have some sample left (no completed) and wish to get some more molecules
+    
+    
     List<Sample> completableSamples = getCompletableSamples();
     if (!completableSamples.isEmpty()) {
       fsm.goTo(Module.LABORATORY, "Go to laboratory to get new samples, found some I can do");
@@ -92,7 +84,7 @@ public class FSMMolecule extends FSMNode {
         MoleculeType bestType = null;
         bestType = findTheBestBlockingMoleculeFor(info.getNeededMolecules(), state.robots[1]);
         if (bestType != null) {
-          fsm.connect(bestType, "Get a needed molecule which blocks him");
+          fsm.connect(bestType, "BLOCK HIM ! Get a needed molecule which blocks him");
           return true;
         }
 
@@ -127,7 +119,7 @@ public class FSMMolecule extends FSMNode {
   }
 
   private MoleculeType findTheBestBlockingMoleculeFor(List<MoleculeType> allowedMolecules, Robot robot) {
-    int potentialBlockedSamples[] = getPotentialBlockedSampleByMolecule(state.availables, state.robots[1].carriedSamples, state.robots[1]); 
+    int potentialBlockedSamples[] = getPotentialBlockedSampleByMolecule(state.availables, robot.carriedSamples, robot); 
     MoleculeType bestType = null;
     for (MoleculeType type : allowedMolecules) {
       if (bestType == null || potentialBlockedSamples[type.index] > potentialBlockedSamples[bestType.index] ) {
@@ -139,20 +131,12 @@ public class FSMMolecule extends FSMNode {
 
   private boolean checkToBlockHim() {
     if (me.getTotalCarried() == 10) {
-      return false;
+      return false; // won't be able to take a molecule
     }
-    state.robots[1].carriedSamples.sort(Sample.roiSorter(Order.DESC));
     
-    int moleculeToBlock[] = getPotentialBlockedSampleByMolecule(state.availables, state.robots[1].carriedSamples, state.robots[1]);
-    
-    int best = 0;
-    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      if (moleculeToBlock[i] > moleculeToBlock[best]) {
-        best = i;
-      }
-    }
-    if (moleculeToBlock[best] > 0) {
-      fsm.connect(MoleculeType.values()[best], "Ah ah ! I can block him for "+moleculeToBlock[best]+" samples by taking "+MoleculeType.values()[best]+" , so do it");
+    MoleculeType bestType = findTheBestBlockingMoleculeFor(MoleculeType.all, state.robots[1]);
+    if (bestType != null) {
+      fsm.connect(bestType, "BLOCK HIM ! We can block him, take some risks and get the molecule" + bestType);
       return true;
     }
     return false;
