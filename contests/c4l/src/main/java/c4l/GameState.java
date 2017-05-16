@@ -18,6 +18,8 @@ public class GameState {
   public List<Sample> availableSamples = new ArrayList<>();
   private int projectCount;
   public List<ScienceProject> scienceProjects = new ArrayList<>();
+
+  public int ply = 0;
   
   public GameState() {
     robots[0] = new Robot();
@@ -33,6 +35,7 @@ public class GameState {
   }
 
   public void initRound() {
+    ply ++;
     availableSamples.clear();
     robots[0].clearForRound();
     robots[1].clearForRound();

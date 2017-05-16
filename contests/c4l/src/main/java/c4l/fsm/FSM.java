@@ -10,15 +10,14 @@ import c4l.molecule.MoleculeOptimizerNode;
 
 public class FSM {
    
-  private final FSMCenter center = new FSMCenter(this);
-  private final FSMDiagnosis diag = new FSMDiagnosis(this);
-  private final FSMMolecule mole = new FSMMolecule(this);
-  private final FSMSample sample = new FSMSample(this);
-  private final FSMLaboratory lab = new FSMLaboratory(this);
+  private final FSMCenter center;
+  private final FSMDiagnosis diag;
+  private final FSMMolecule mole;
+  private final FSMSample sample;
+  private final FSMLaboratory lab;
   
   
-  private FSMNode lastState = center;
-  private FSMNode currentState = center;
+  private FSMNode currentState;
   GameState state;
   Robot me;
   MoleculeOptimizerNode root;
@@ -30,12 +29,13 @@ public class FSM {
     this.state = state;
     this.me = me;
     
-    // TODO WTF ?
-    center.me = me ; center.state = state;
-    diag.me = me; diag.state = state;
-    mole.me = me; mole.state = state;
-    sample.me = me; sample.state = state;
-    lab.me =me; lab.state = state;
+    center = new FSMCenter(this);
+    diag = new FSMDiagnosis(this);
+    mole = new FSMMolecule(this);
+    sample = new FSMSample(this);
+    lab = new FSMLaboratory(this);
+    
+    currentState = center;
   }
 
   void init() {
@@ -43,12 +43,10 @@ public class FSM {
   }
 
   public void think() {
+    System.err.println("Tour : "+state.ply);
     //TODO find a good combination if turns are soon ended 200
-    // no need to continue making samples if we win the game ...
+    // ==> add a level of urge in the algorithm : when end og game, don't try to build to much plies strategy
     
-    // TODO block the enemy if score too high
-    
-    // TODO think about expertise
     init();
     
     output = "GOTO "+currentState.module()+" Don't know what to do :(";
@@ -81,7 +79,6 @@ public class FSM {
 
   public void goTo(Module module, String explanation) {
     explainYourself(explanation);
-    lastState = currentState;
     switch (module) {
       case DIAGNOSIS:
         currentState = diag;
