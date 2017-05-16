@@ -120,9 +120,11 @@ public class FSMMolecule extends FSMNode {
 
   private MoleculeType findTheBestBlockingMoleculeFor(List<MoleculeType> allowedMolecules, Robot robot) {
     int potentialBlockedSamples[] = getPotentialBlockedSampleByMolecule(state.availables, robot.carriedSamples, robot); 
-    MoleculeType bestType = null;
+    MoleculeType bestType = null; 
+    int bestScore = 0;// 0 is not a good value, so prohibit it by choosing this best value
     for (MoleculeType type : allowedMolecules) {
-      if (bestType == null || potentialBlockedSamples[type.index] > potentialBlockedSamples[bestType.index] ) {
+      if (potentialBlockedSamples[type.index] > bestScore ) {
+        bestScore = potentialBlockedSamples[type.index];
         bestType = type;
       }
     }
