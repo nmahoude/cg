@@ -38,7 +38,7 @@ public abstract class FSMNode {
     List<Sample> samples = new ArrayList<>();
     for (Sample sample : me.carriedSamples) {
       if (!sample.isDiscovered()) continue;
-      if (me.hasMolecules(sample)) {
+      if (me.canCompleteSampleAuto(sample)) {
         samples.add(sample);
       }
     }
@@ -49,7 +49,7 @@ public abstract class FSMNode {
     List<Sample> samples = new ArrayList<>();
     for (Sample sample : state.availableSamples) {
       // before checking if sample is doable, filter on sample health points
-      if (me.isThereEnoughMoleculeForSample(state, sample)) {
+      if (me.canCompleteSampleWithMoleculePool(state, sample)) {
         samples.add(sample);
       }
     }

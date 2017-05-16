@@ -3,12 +3,9 @@ package c4l.fsm;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import c4l.GameState;
 import c4l.entities.Module;
 import c4l.entities.Sample;
-import c4l.entities.ScienceProject;
 import c4l.molecule.MoleculeComboInfo;
-import c4l.molecule.MoleculeInfo;
 
 public class FSMDiagnosis extends FSMNode {
   FSMDiagnosis(FSM fsm) {
@@ -21,6 +18,28 @@ public class FSMDiagnosis extends FSMNode {
 
   @Override
   public void think() {
+    //TODO review the tentative of bootstrapping
+//    if (state.ply < 20) {
+//      Sample firstUnDiscoveredSample = getFirstUnDiscoveredSample();
+//      if (firstUnDiscoveredSample != null) {
+//        fsm.connect(firstUnDiscoveredSample.id, "Bootstrap - discover the sample to know what to do");
+//        return;
+//      }
+//      // remove the health 1 samples !
+//      for (Sample sample : me.carriedSamples) {
+//        if (sample.health<2 && sample.totalNeededMolecules()>3) {
+//          fsm.connect(sample.id, "Bootstrap, sample has not a good ROI");
+//          return;
+//        }
+//      }
+//      if (me.carriedSamples.size() == 0) {
+//        fsm.goTo(Module.SAMPLES, "Bootstrap-Go back to samples");
+//        return;
+//      } else {
+//        fsm.goTo(Module.MOLECULES, "Bootstrap - some samples remains, so go to MOLECULE");
+//        return;
+//      }
+//    }
     
     if (me.carriedSamples.isEmpty()) {
       System.err.println("No more sample, handle it");
@@ -91,6 +110,9 @@ public class FSMDiagnosis extends FSMNode {
    */
   boolean findANewCompletableSampleAtDiag() {
     List<Sample> samples = findDoableSampleInCloud();
+    
+    // TODO why is this better without ???
+    // samples = samples.stream().filter(sample -> sample.health>1).collect(Collectors.toList());
     
     if (samples.isEmpty()) {
       // no completable sample found

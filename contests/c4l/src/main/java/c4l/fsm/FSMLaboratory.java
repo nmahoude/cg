@@ -13,11 +13,8 @@ public class FSMLaboratory extends FSMNode {
   @Override
   public void think() {
     // TODO Maybe don't put all samples in LAB if we block the opponent !
-
-    
-    
     List<Sample> completableSamples = getCompletableSamples();
-    completableSamples.sort(Sample.orderByHealthDecr);
+    completableSamples.sort(Sample.orderByHealthDecr); //TODO what about science project ...
     
     if (!completableSamples.isEmpty()) {
       fsm.connect(completableSamples.get(0).id, "Got a full sample in the bag");

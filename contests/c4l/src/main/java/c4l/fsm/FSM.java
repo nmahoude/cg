@@ -10,11 +10,11 @@ import c4l.molecule.MoleculeOptimizerNode;
 
 public class FSM {
    
-  private final FSMCenter center;
-  private final FSMDiagnosis diag;
-  private final FSMMolecule mole;
-  private final FSMSample sample;
-  private final FSMLaboratory lab;
+  final FSMCenter center;
+  final FSMDiagnosis diag;
+  final FSMMolecule mole;
+  final FSMSample sample;
+  final FSMLaboratory lab;
   
   
   private FSMNode currentState;

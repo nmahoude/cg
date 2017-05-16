@@ -45,15 +45,6 @@ public class Robot {
         && storage[3] == 0 && storage[4] == 0 && storage[5] == 0;
   }
 
-  public boolean hasMolecules(Sample sample) {
-    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      if (expertise[i]+storage[i] < sample.costs[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   public MoleculeType getMissingMoleculeForSample(GameState state, Sample sample) {
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
       if (expertise[i] + storage[i] < sample.costs[i] && state.availables[i] > 0) {
@@ -67,7 +58,27 @@ public class Robot {
     return totalCarried;
   }
 
-  public boolean isThereEnoughMoleculeForSample(GameState state, Sample sample) {
+  /**
+   * Can the robot complete the sample without help of MoleculePool
+   * @param the sample to check
+   * @return true if we have enough
+   */
+  public boolean canCompleteSampleAuto(Sample sample) {
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      if (expertise[i]+storage[i] < sample.costs[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Can the robot complete the sample with the help of the molecule pool (as is)
+   * @param state, the current state
+   * @param sample, the sample to check
+   * @return true if we can complete it
+   */
+  public boolean canCompleteSampleWithMoleculePool(GameState state, Sample sample) {
     int freeStorage = 10 - getTotalCarried();
     
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
@@ -89,4 +100,5 @@ public class Robot {
   public int potentialScore() {
     return score + carriedSamples.stream().mapToInt(s -> s.health).sum();
   }
+
 }
