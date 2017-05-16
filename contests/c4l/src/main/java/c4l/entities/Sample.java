@@ -110,6 +110,23 @@ public class Sample {
     };
   }
 
+  /**
+   * return the real points won by this sample (ie : health + science project)
+   * @param state
+   * @param me
+   * @return
+   */
+  public static Comparator<? super Sample> pointsWonDESC(GameState state, Robot me) {
+    return new Comparator<Sample>() {
+      @Override
+      public int compare(Sample o1, Sample o2) {
+        int score1 = o1.health + (state.distanceToScienceProjects(me, o1.gain) == 0 ? 50 : 0);
+        int score2 = o2.health + (state.distanceToScienceProjects(me, o2.gain) == 0 ? 50 : 0);
+        return Integer.compare(score2, score1);
+      }
+    };
+  }
+
   protected int neededMoleculesFor(Robot me) {
     int total = 0;
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
@@ -117,5 +134,10 @@ public class Sample {
     }
     
     return total;
+  }
+
+  @Override
+  public String toString() {
+    return "h="+health;
   }
 }

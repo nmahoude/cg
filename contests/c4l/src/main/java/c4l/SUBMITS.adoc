@@ -1,7 +1,13 @@
 = List ds subits et leur contenu
 
 == SILVER 16/05
-* 02h37 / 14  : Optimisation de la prise des molecules
+* 16h00 / 28   : resubmit pour variance
+* 15h45 / 29   : correction du Sample.PointsWON (il faut faire des T.Us !!!)
+* 15h20 / 26 : submit avec le code de 02h37 pour voir
+* 14h45 / 33 : idem
+* 14h30 / 42 : ne plus choisir les samples dans l'ordre au LAB, choisir celui rapporte le plus de points en + (à tour == 400, ca peut améliorer le truc)
+* 14h00 / 25 : reword + work on sample Optimizer 
+* 02h37 / 14 : Optimisation de la prise des molecules
 * 01h24 / 12 : correction bug sur l'optimizer ! + tentative d'utiliser les science projects
 
 == SILVER 15/05

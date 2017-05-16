@@ -17,6 +17,7 @@ public class FSMLaboratory extends FSMNode {
     completableSamples.sort(Sample.orderByHealthDecr); //TODO what about science project ...
     
     if (!completableSamples.isEmpty()) {
+      completableSamples.sort(Sample.pointsWonDESC(state, me));
       fsm.connect(completableSamples.get(0).id, "Got a full sample in the bag");
     } else {
       if (me.carriedSamples.isEmpty()) {
