@@ -3,21 +3,16 @@ package c4l.entities;
 import java.util.Comparator;
 
 import c4l.GameState;
+import c4l.Order;
 
 public class Sample {
-  public static final Comparator<Sample> orderByHealthDecr = new Comparator<Sample>() {
-      @Override
-      public int compare(Sample o1, Sample o2) {
-        return Integer.compare(o2.health, o1.health);
-      }
-    };
 
   public static int ENTITY_COUNT = 0;
-
+  
   public MoleculeType expertise;
   public int health;
   public int[] costs;
-  public int totalCost = 0;
+  public int fullCost = 0;
   public int id;
 
   int rank;
@@ -30,9 +25,9 @@ public class Sample {
     this.health = life;
     this.costs = cost;
     
-    totalCost = 0;
+    fullCost = 0;
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      totalCost += costs[i];
+      fullCost += costs[i];
     }
     if (isDiscovered()) {
       gain[moleculeGained.index] = 1;
@@ -58,82 +53,95 @@ public class Sample {
         System.err.print("},");
       }
     }
-    System.err.println(""+health+");");
-  }
-
-  public int totalNeededMolecules() {
-    return totalCost;
-  }
-
-  public double score(Robot me, GameState state) {
-    int needed = 0;
+    System.err.print(""+health+");");
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      needed += Math.max(0, costs[i] - me.storage[i] - me.expertise[i]);
+      if (gain[i] > 0) {
+        System.err.print(""+i+",");
+      }
     }
-    return 1.0 * health / needed;
-  }
-
-  public static Comparator<Sample> roiASC() {
-    return new Comparator<Sample>() {
-      @Override
-      public int compare(Sample o1, Sample o2) {
-        return Double.compare(o1.roi(), o2.roi());
-      }
-    };
-  }
-  public static Comparator<? super Sample> roiDESC() {
-    return new Comparator<Sample>() {
-      @Override
-      public int compare(Sample o1, Sample o2) {
-        return Double.compare(o2.roi(), o1.roi());
-      }
-    };
+    System.err.println(");");
   }
 
   /**
-   * return the 'ROI' of a sample
-   * -> health / needed molecules
-   * -> expertise given
-   * 
+   * return how many molecules are needed with 0 xp & 0 storage
    * @return
    */
-  public double roi() {
-    return health / totalCost;
+  public int fullCost() {
+    return fullCost;
   }
 
-  public static Comparator<? super Sample> moleculeNeededASC(final Robot me) {
-    return new Comparator<Sample>() {
-      @Override
-      public int compare(Sample o1, Sample o2) {
-        return Integer.compare(o1.neededMoleculesFor(me), o2.neededMoleculesFor(me));
-      }
-    };
-  }
-
+  
   /**
-   * return the real points won by this sample (ie : health + science project)
-   * @param state
+   * Return how many molecules are needed to complete the sample 
    * @param me
    * @return
    */
-  public static Comparator<? super Sample> pointsWonDESC(GameState state, Robot me) {
-    return new Comparator<Sample>() {
-      @Override
-      public int compare(Sample o1, Sample o2) {
-        int score1 = o1.health + (state.distanceToScienceProjects(me, o1.gain) == 0 ? 50 : 0);
-        int score2 = o2.health + (state.distanceToScienceProjects(me, o2.gain) == 0 ? 50 : 0);
-        return Integer.compare(score2, score1);
-      }
-    };
-  }
-
-  protected int neededMoleculesFor(Robot me) {
+  protected int relativeCost(Robot me) {
     int total = 0;
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
       total += Math.max(0, costs[i]-me.storage[i]-me.expertise[i]);
     }
     
     return total;
+  }
+  
+  /*
+   * compare on ROI (return on investissment)
+   */
+  public static Comparator<Sample> roiSorter(Order order) {
+    return new Comparator<Sample>() {
+      @Override
+      public int compare(Sample o1, Sample o2) {
+        return (order == Order.DESC ? -1 : 1) * Double.compare(o1.roi(), o2.roi());
+      }
+    };
+  }
+  /**
+   * return the 'ROI' of a sample
+   * -> health / needed molecules
+   * -> expertise given
+   * 
+   */
+  public double roi() {
+    return health / fullCost;
+  }
+
+  /**
+   * Sort by EXTRA (cost- (me.sortage + me.xp)) molecules needed to complete the Sample
+   */
+  public static Comparator<? super Sample> moleculeNeededSorter(final Robot me, Order order) {
+    return new Comparator<Sample>() {
+      @Override
+      public int compare(Sample o1, Sample o2) {
+        return (order == Order.DESC ? -1 : 1) * Integer.compare(o1.relativeCost(me), o2.relativeCost(me));
+      }
+    };
+  }
+
+  /**
+   * return the real points won by this sample (ie : health + science project)
+   */
+  public static Comparator<? super Sample> pointsWonSorter(GameState state, Robot me, Order order) {
+    return new Comparator<Sample>() {
+      @Override
+      public int compare(Sample o1, Sample o2) {
+        int score1 = o1.health + (state.distanceToScienceProjects(me, o1.gain) == 0 ? 50 : 0);
+        int score2 = o2.health + (state.distanceToScienceProjects(me, o2.gain) == 0 ? 50 : 0);
+        return (order == Order.DESC ? -1 : 1) * Integer.compare(score1, score2);
+      }
+    };
+  }
+
+  /**
+   * sorter for only health (direct points)
+   */
+  public static Comparator<? super Sample> healthSorter(GameState state, Robot me, Order order) {
+    return new Comparator<Sample>() {
+      @Override
+      public int compare(Sample o1, Sample o2) {
+        return (order == Order.DESC ? -1 : 1) * Integer.compare(o1.health, o2.health);
+      }
+    };
   }
 
   @Override

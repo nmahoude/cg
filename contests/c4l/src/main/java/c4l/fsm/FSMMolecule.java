@@ -3,6 +3,7 @@ package c4l.fsm;
 import java.util.List;
 
 import c4l.GameState;
+import c4l.Order;
 import c4l.entities.Module;
 import c4l.entities.MoleculeType;
 import c4l.entities.Robot;
@@ -140,7 +141,7 @@ public class FSMMolecule extends FSMNode {
     if (me.getTotalCarried() == 10) {
       return false;
     }
-    state.robots[1].carriedSamples.sort(Sample.roiDESC());
+    state.robots[1].carriedSamples.sort(Sample.roiSorter(Order.DESC));
     
     int moleculeToBlock[] = getPotentialBlockedSampleByMolecule(state.availables, state.robots[1].carriedSamples, state.robots[1]);
     

@@ -3,6 +3,7 @@ package c4l.fsm;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import c4l.Order;
 import c4l.entities.Module;
 import c4l.entities.Sample;
 import c4l.molecule.MoleculeComboInfo;
@@ -79,7 +80,7 @@ public class FSMDiagnosis extends FSMNode {
       // here, we don't have any completable samples so ditch them
       if (me.carriedSamples.size() > 0) {
         //TODO score the sample difficulty, health and completion before ditching it
-        me.carriedSamples.sort(Sample.roiASC());
+        me.carriedSamples.sort(Sample.roiSorter(Order.ASC));
         fsm.connect(me.carriedSamples.get(0).id, "Ditch a sample in the hope of getting one that fit (roi not enough)");
         return;
       } else {
@@ -137,7 +138,7 @@ public class FSMDiagnosis extends FSMNode {
   private boolean chooseSampleWithBetterROI(List<Sample> samples) {
     if (!samples.isEmpty()) {
       //TODO find a better approach than roi ?
-      samples.sort(Sample.roiDESC());
+      samples.sort(Sample.roiSorter(Order.DESC));
       fsm.connect(samples.get(0).id, "Found a sample in the cloud ! Happy :)");
       return true;
     }
@@ -172,7 +173,7 @@ public class FSMDiagnosis extends FSMNode {
   boolean chooseSampleToCompleteScienceProject(List<Sample> samples) {
     List<Sample> fillingScienceProjectSamples = findSamplesFillingAScienceProject(samples);
     if (!fillingScienceProjectSamples.isEmpty()) {
-      samples.sort(Sample.moleculeNeededASC(me));
+      samples.sort(Sample.moleculeNeededSorter(me, Order.ASC));
       fsm.connect(fillingScienceProjectSamples.get(0).id, "WOOT can solve a science project");
       return true;
     }

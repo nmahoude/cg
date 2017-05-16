@@ -2,6 +2,7 @@ package c4l.fsm;
 
 import java.util.List;
 
+import c4l.Order;
 import c4l.entities.Module;
 import c4l.entities.Sample;
 import c4l.molecule.MoleculeComboInfo;
@@ -14,11 +15,11 @@ public class FSMLaboratory extends FSMNode {
   public void think() {
     // TODO Maybe don't put all samples in LAB if we block the opponent !
     List<Sample> completableSamples = getCompletableSamples();
-    completableSamples.sort(Sample.orderByHealthDecr); //TODO what about science project ...
     
     if (!completableSamples.isEmpty()) {
-      completableSamples.sort(Sample.pointsWonDESC(state, me));
+      completableSamples.sort(Sample.pointsWonSorter(state, me, Order.DESC)); // sort by points to take scienceProject into account
       fsm.connect(completableSamples.get(0).id, "Got a full sample in the bag");
+      return;
     } else {
       if (me.carriedSamples.isEmpty()) {
         getNewSamples();

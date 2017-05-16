@@ -1,7 +1,7 @@
 package c4l.fsm;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
@@ -10,7 +10,7 @@ import c4l.molecule.MoleculeOptimizerNode;
 public class FSMTest {
 
   
-  public static class GetBestMolecule {
+  public static class GetBestMoleculeTest {
     @Test
     public void cant_do_any_combination() throws Exception {
       MoleculeOptimizerNode root = new MoleculeOptimizerNode();

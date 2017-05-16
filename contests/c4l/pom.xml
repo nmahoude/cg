@@ -8,39 +8,7 @@
   <artifactId>c4l</artifactId>
   
     <dependencies>
-    <dependency>
-      <groupId>nmahoude.codingame</groupId>
-      <artifactId>cgcollections</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>nmahoude.codingame</groupId>
-      <artifactId>cgcollections</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-      <classifier>sources</classifier>
-    </dependency>
-    <dependency>
-      <groupId>nmahoude.codingame</groupId>
-      <artifactId>cgalgorithms</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>nmahoude.codingame</groupId>
-      <artifactId>cgalgorithms</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-      <classifier>sources</classifier>
-    </dependency>
-    <dependency>
-      <groupId>nmahoude.codingame</groupId>
-      <artifactId>cgutils</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>nmahoude.codingame</groupId>
-      <artifactId>cgutils</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-      <classifier>sources</classifier>
-    </dependency>
+    
     <dependency>
       <groupId>javax</groupId>
       <artifactId>javaee-api</artifactId>

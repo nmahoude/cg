@@ -7,14 +7,13 @@ import java.util.Scanner;
 import c4l.entities.Robot;
 import c4l.fsm.FSM;
 import c4l.molecule.MoleculeOptimizerNode;
-import cgutils.random.FastRandom;
 
 /**
  * Bring data on patient samples from the diagnosis machine to the laboratory
  * with enough molecules to produce medicine!
  **/
 public class Player {
-  public static final Random rand = new FastRandom(17);//System.currentTimeMillis());
+  public static final Random rand = new Random(17);//System.currentTimeMillis());
   public static Player player = new Player();
   public static boolean debug = true;
   private static long start;
@@ -44,9 +43,15 @@ public class Player {
       
       if (debug) {
         state.debugScienceProjects();
+        System.err.println("--------ME------------");
         me.carriedSamples.forEach(sample -> sample.debug());
         debugStorage(me);
         debugExpertise(me);
+        System.err.println("--------HIM-----------");
+        state.robots[1].carriedSamples.forEach(sample -> sample.debug());
+        debugStorage(state.robots[1]);
+        debugExpertise(state.robots[1]);
+        System.err.println("------------------");
         debugAvailables();
       }
       

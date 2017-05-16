@@ -12,15 +12,7 @@ Savoir prendre l'etat complet du jeu
 = POINTS IMPORTANTS
 == Optimiser le fait que le déplacement fait 2 pour, quand eta > 0, calculer des trucs pour le futur ...
 
-== Optimisation de la priorité des samples
-=== Rules
-	* Prendre les S qui rapportent le + de health
-	* Prendre les S qui rapportent de l'expertise 
-	* Prendre les S qui rapporent l'expertise la + demandée
-
-== Optimisation des molécules
-=== Rules
-	* Remplir le sample dans l'ordre des priorités
-	* prendre les molécules les + demandées par les 3 samples
-	* Prendre les molécules les + demandées par l'opp
-	
+== TODOs
+* revoir l'optimisation des samples pour les science project,j'en gagne très peu
+* supprimer le hack pour focuser sur les sciences projects, ca marche pas apparement
+* revoir le fonctionnement de FSMSample, la maniere de prendre les samples est trop basique -> voir des match du top pour comparer

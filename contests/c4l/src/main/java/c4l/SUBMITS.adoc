@@ -1,8 +1,9 @@
 = List ds subits et leur contenu
 
 == SILVER 16/05
-* 16h00 / 28   : resubmit pour variance
-* 15h45 / 29   : correction du Sample.PointsWON (il faut faire des T.Us !!!)
+* 17h30 / 25 : refactoring sans changement
+* 16h00 / 28 : resubmit pour variance
+* 15h45 / 29 : correction du Sample.PointsWON (il faut faire des T.Us !!!)
 * 15h20 / 26 : submit avec le code de 02h37 pour voir
 * 14h45 / 33 : idem
 * 14h30 / 42 : ne plus choisir les samples dans l'ordre au LAB, choisir celui rapporte le plus de points en + (à tour == 400, ca peut améliorer le truc)

@@ -1,16 +1,61 @@
 package c4l.fsm;
 
-import c4l.Player;
 import c4l.entities.Module;
-import c4l.entities.Sample;
 
 public class FSMSample extends FSMNode {
+  public static final int TRANSITION_WAIT           = 0;
+  public static final int TRANSITION_GET_RANK_1     = 1;
+  public static final int TRANSITION_GET_RANK_2     = 2;
+  public static final int TRANSITION_GET_RANK_3     = 3;
+  public static final int TRANSITION_GOTO_DIAG      = 4;
+  public static final int TRANSITION_GOTO_MOLECULE = 5;
+  public static final int TRANSITION_GOTO_LAB       = 6;
+  
+  double proba[] = new double[7];
+  
   FSMSample(FSM fsm) {
     super(fsm);
   }
   
   @Override
   public void think() {
+    // state i can be
+    /**
+     * bagFullfillness       0 -> 3
+     * xpLevel               0 -> 2
+     * diagInterstingSamples 0 -> 3
+     * sampleCompletableAuto 0 -> 3
+     * 
+     */
+    // what i can do :
+    /*
+     * WAIT
+     * GET RANK 1
+     * GET RANK 2
+     * GET RANK 3
+     * GOTO DIAG
+     * GOTO MOLECULE
+     * GOTO LAB
+     */
+    for (int i=0;i<proba.length;i++) {
+      proba[i] = 0.0;
+    }
+    
+    
+    double carriedSamples = fsm.me.carriedSamples.size();
+    
+    
+    proba[TRANSITION_WAIT] = 0.0;
+    proba[TRANSITION_GET_RANK_1] = 0.0;
+    proba[TRANSITION_GET_RANK_2] = 0.0;
+    proba[TRANSITION_GET_RANK_3] = 0.0;
+    proba[TRANSITION_GOTO_DIAG ] = carriedSamples / 3.0 ;
+    proba[TRANSITION_GOTO_MOLECULE] = 0.0;
+    proba[TRANSITION_GOTO_LAB] = 0.0;
+    
+    double wait = 0.0; // never wait at SAMPLE
+    double getRank1 = 0.0;
+    
     if (fsm.me.carriedSamples.size() < 3) {
       getSomeSamples();
     } else {
@@ -21,7 +66,7 @@ public class FSMSample extends FSMNode {
   
   private void getSomeSamples() {
     if (me.totalExpertise< 6) {
-      fsm.connect(1, "go fast at start (copied on Agade strategy");
+      fsm.connect(1, "go fast at start (copied from Agade strategy");
       return;
     }
 
