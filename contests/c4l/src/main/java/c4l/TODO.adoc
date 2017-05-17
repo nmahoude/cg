@@ -13,6 +13,7 @@ Savoir prendre l'etat complet du jeu
 == Optimiser le fait que le déplacement fait 2 pour, quand eta > 0, calculer des trucs pour le futur ...
 
 == TODOs
+* !!! TOP PRIORITE !!!! URGE : en fin de partie, il ne faut plus perde de temps si on peux completer des samples !
 * revoir l'optimisation des samples pour les science project,j'en gagne très peu
 * supprimer le hack pour focuser sur les sciences projects, ca marche pas apparement
-* revoir le fonctionnement de FSMSample, la maniere de prendre les samples est trop basique -> voir des match du top pour comparer
+* revoir le fonctionnement de FSMSample, la maniere de prendre les rank samples est trop basique -> voir des match du top pour comparer

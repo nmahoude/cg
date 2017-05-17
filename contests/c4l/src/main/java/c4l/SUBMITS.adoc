@@ -1,6 +1,7 @@
 = List ds subits et leur contenu
 
 == SILBER 17/05
+* 03h00 / 15 : faire les 2 greedy : dabord sur les futurs sample, puis sur mon manque d'xp
 * 02h45 / 20 : plutot que greedy sur les molecules des samples a venir, greedy sur les molecule ou j'ai moins d'xp
 * 02h30 / 16 : revert du code pour optimiser + prendre plus de molecules
 * 01h30 / 49 : Avec le code pour optimiser les samples au DIAG

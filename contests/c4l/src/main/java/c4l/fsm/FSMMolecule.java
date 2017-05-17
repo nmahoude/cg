@@ -47,6 +47,21 @@ public class FSMMolecule extends FSMNode {
 
     // TODO here we may have some sample left (no completed) and wish to get some more molecules
     if (me.getTotalCarried() < 10) {
+      // TODO greedy to block him ???
+      // Exemple : if i can take enough molecule to block his samples (more than one to be effective, i may do it here
+      // Further thinking : can i mix the 3 type of greedy to get a score :)
+      
+      // get the molecule for next samples (the one i can not complete now
+      for (Sample sample : me.carriedSamples) {
+        if (me.canCompleteSampleAuto(sample))
+          continue;
+        MoleculeType type = me.getMissingMoleculeForSample(state, sample);
+        if (type != null) {
+          fsm.connect(type, "Get a molecule for a future sample");
+          return;
+        }
+      }
+      
       // get the molecule I may need the most (less xp)
       int minXp = Integer.MAX_VALUE;
       MoleculeType type = null;
@@ -60,14 +75,6 @@ public class FSMMolecule extends FSMNode {
         fsm.connect(type, "Get a molecule I may need the more (less XP)");
         return;
       }
-//      for (Sample sample : me.carriedSamples) {
-//        if (me.canCompleteSampleAuto(sample)) continue;
-//        MoleculeType type = me.getMissingMoleculeForSample(state, sample);
-//        if (type != null) {
-//          fsm.connect(type, "Get a molecule for a future sample");
-//          return;
-//        }
-//      }
     }
     
     List<Sample> completableSamples = getCompletableSamples();
