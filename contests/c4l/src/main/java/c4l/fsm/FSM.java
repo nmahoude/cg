@@ -127,7 +127,9 @@ public class FSM {
     MoleculeOptimizerNode root = new MoleculeOptimizerNode();
     int index = 0;
     for (Sample sample : me.carriedSamples) {
-      root.createSample(index++, sample.costs, sample.health);
+      if (sample.expertise != null) {
+        root.createSample(index++, sample.costs, sample.health, sample.expertise.index);
+      }
     }
     root.createStorage(me.storage);
     root.createExpertise(me.expertise);

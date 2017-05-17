@@ -13,7 +13,10 @@ Savoir prendre l'etat complet du jeu
 == Optimiser le fait que le déplacement fait 2 pour, quand eta > 0, calculer des trucs pour le futur ...
 
 == TODOs
+* Priorité 0 : gerer les gains d'xp dans le moleculeOptimizer
 * !!! TOP PRIORITE !!!! URGE : en fin de partie, il ne faut plus perde de temps si on peux completer des samples !
+* Tester avec un greedy pas full à 10 molecule (bloquer à 9 ou 8) --> permettrait d'éviter certaines situations de blocage
 * revoir l'optimisation des samples pour les science project,j'en gagne très peu
 * supprimer le hack pour focuser sur les sciences projects, ca marche pas apparement
+* Calculer le % de recette qui pourrait me bloquer (ou pas) pour etre greedy sur les molecules (class OnCompteLesCartes)
 * revoir le fonctionnement de FSMSample, la maniere de prendre les rank samples est trop basique -> voir des match du top pour comparer

@@ -42,10 +42,10 @@ public class MoleculeOptimizerNodeTest {
   
   @Test
   public void depth0_easyChoice() throws Exception {
-    createSample(0, new int[]{0, 0, 1, 0, 0}, 30);
+    createSample(0, new int[]{0, 0, 1, 0, 0}, 30, -1);
     
-    createSample(1, new int[]{2, 0, 0, 2, 3}, 10);
-    createSample(2, new int[]{0, 3, 0, 2, 3}, 10);
+    createSample(1, new int[]{2, 0, 0, 2, 3}, 10, -1);
+    createSample(2, new int[]{0, 3, 0, 2, 3}, 10, -1);
     
     createStorage(new int[]{0, 0, 0, 0, 0});
     createExpertise(new int[]{0, 0, 0, 0, 0});
@@ -60,9 +60,9 @@ public class MoleculeOptimizerNodeTest {
 
   @Test
   public void depth0_chooseBest_sameCombination() throws Exception {
-    createSample(0, new int[]{0, 0, 1, 0, 0}, 30);
-    createSample(1, new int[]{0, 0, 1, 0, 0}, 40);
-    createSample(2, new int[]{0, 3, 0, 2, 3}, 10);
+    createSample(0, new int[]{0, 0, 1, 0, 0}, 30, -1);
+    createSample(1, new int[]{0, 0, 1, 0, 0}, 40, -1);
+    createSample(2, new int[]{0, 3, 0, 2, 3}, 10, -1);
     
     createStorage(new int[]{0, 0, 0, 0, 0});
     createExpertise(new int[]{0, 0, 0, 0, 0});
@@ -77,9 +77,9 @@ public class MoleculeOptimizerNodeTest {
   
   @Test
   public void depth0_chooseBest_differentCombination() throws Exception {
-    createSample(0, new int[]{0, 0, 1, 0, 0}, 30);
-    createSample(1, new int[]{0, 0, 0, 1, 0}, 40);
-    createSample(2, new int[]{0, 3, 0, 2, 3}, 10);
+    createSample(0, new int[]{0, 0, 1, 0, 0}, 30, -1);
+    createSample(1, new int[]{0, 0, 0, 1, 0}, 40, -1);
+    createSample(2, new int[]{0, 3, 0, 2, 3}, 10, -1);
     
     createStorage(new int[]{0, 0, 0, 0, 0});
     createExpertise(new int[]{0, 0, 0, 0, 0});
@@ -94,9 +94,9 @@ public class MoleculeOptimizerNodeTest {
 
   @Test
   public void searchAllMolecules() throws Exception {
-    createSample(0, new int[]{0,0,5,0,0},20);
-    createSample(4, new int[]{0,0,0,0,5},20);
-    createSample(2, new int[]{0,5,3,0,0},20);
+    createSample(0, new int[]{0,0,5,0,0},20, -1);
+    createSample(4, new int[]{0,0,0,0,5},20, -1);
+    createSample(2, new int[]{0,5,3,0,0},20, -1);
     createStorage(  new int[]{0, 0, 0, 0, 0});
     createExpertise(new int[]{0, 0, 0, 0, 0});
     createAvailable(new int[]{6, 6, 6, 6, 6});
@@ -108,8 +108,8 @@ public class MoleculeOptimizerNodeTest {
   
   @Test
   public void getTheA() throws Exception {
-    createSample(0, new int[]{0, 2, 0, 0, 2},1);
-    createSample(2, new int[]{4, 0, 0, 0, 0},10);
+    createSample(0, new int[]{0, 2, 0, 0, 2},1, -1);
+    createSample(2, new int[]{4, 0, 0, 0, 0},10, -1);
     createStorage(  new int[]{0, 0, 0, 0, 3});
     createExpertise(new int[]{0, 0, 0, 0, 1});
     createAvailable(new int[]{0, 2, 6, 6, 3});
@@ -122,9 +122,9 @@ public class MoleculeOptimizerNodeTest {
   
   @Test
   public void noMoleculeNeeded_for40points() throws Exception {
-    createSample(7, new int[]{6, 0, 0, 0, 0},30);
-    createSample(16, new int[]{2, 3, 0, 0, 2},10);
-    createSample(17, new int[]{3, 2, 2, 0, 0},10);
+    createSample(7, new int[]{6, 0, 0, 0, 0},30, -1);
+    createSample(16, new int[]{2, 3, 0, 0, 2},10, -1);
+    createSample(17, new int[]{3, 2, 2, 0, 0},10, -1);
     createStorage(  new int[]{4, 0, 0, 2, 1});
     createExpertise(new int[]{2, 0, 0, 2, 1});
     createAvailable(new int[]{0, 3, 4, 3, 3});
@@ -137,7 +137,7 @@ public class MoleculeOptimizerNodeTest {
   
   @Test
   public void moleculeNeeded() throws Exception {
-    createSample(19, new int[]{0, 7, 3, 0, 0},50);
+    createSample(19, new int[]{0, 7, 3, 0, 0},50, -1);
     createStorage(  new int[]{3, 5, 0, 2, 0});
     createExpertise(new int[]{1, 1, 1, 1, 1});
     createAvailable(new int[]{3, 1, 6, 4, 6});
@@ -155,9 +155,9 @@ public class MoleculeOptimizerNodeTest {
   }
   @Test
   public void comboIsNotNull() throws Exception {
-    createSample(0, new int[]{6, 0, 0, 0, 0},30);
-    createSample(2, new int[]{0, 0, 3, 2, 2},10);
-    createSample(4, new int[]{1, 4, 2, 0, 0},20);
+    createSample(0, new int[]{6, 0, 0, 0, 0},30, -1);
+    createSample(2, new int[]{0, 0, 3, 2, 2},10, -1);
+    createSample(4, new int[]{1, 4, 2, 0, 0},20, -1);
     createStorage(  new int[]{6, 1, 3, 0, 0});
     createExpertise(new int[]{0, 0, 0, 0, 0});
     createAvailable(new int[]{0, 0, 0, 6, 6});
@@ -171,9 +171,9 @@ public class MoleculeOptimizerNodeTest {
   
   @Test
   public void dontAskFor_D() throws Exception {
-    createSample(11, new int[]{4, 2, 0, 0, 1},20);
-    createSample(0, new int[]{2, 0, 0, 2, 3},10);
-    createSample(3, new int[]{0, 2, 2, 3, 0},10);
+    createSample(11, new int[]{4, 2, 0, 0, 1},20, -1);
+    createSample(0, new int[]{2, 0, 0, 2, 3},10, -1);
+    createSample(3, new int[]{0, 2, 2, 3, 0},10, -1);
     createStorage(  new int[]{1, 0, 0, 5, 0});
     createExpertise(new int[]{0, 0, 0, 0, 0});
     createAvailable(new int[]{5, 6, 6, 0, 6});
@@ -185,8 +185,8 @@ public class MoleculeOptimizerNodeTest {
 
   @Test
   public void DontAskFor_A() throws Exception {
-    createSample(1, new int[]{0, 2, 3, 0, 3},20);
-    createSample(3, new int[]{0, 3, 0, 2, 3},10);
+    createSample(1, new int[]{0, 2, 3, 0, 3},20, -1);
+    createSample(3, new int[]{0, 3, 0, 2, 3},10, -1);
     createStorage(  new int[]{5, 0, 0, 0, 0});
     createExpertise(new int[]{0, 0, 0, 0, 1});
     createAvailable(new int[]{1, 6, 6, 6, 6});
@@ -198,9 +198,9 @@ public class MoleculeOptimizerNodeTest {
   
   @Test
   public void chooseBestCombination() throws Exception {
-    createSample(0, new int[]{0, 0, 3, 2, 2},10);
-    createSample(2, new int[]{0, 0, 5, 0, 0},20);
-    createSample(4, new int[]{0, 0, 0, 5, 3},20);
+    createSample(0, new int[]{0, 0, 3, 2, 2},10, -1);
+    createSample(2, new int[]{0, 0, 5, 0, 0},20, -1);
+    createSample(4, new int[]{0, 0, 0, 5, 3},20, -1);
     createStorage(  new int[]{0, 0, 0, 0, 0});
     createExpertise(new int[]{0, 0, 0, 0, 0});
     createAvailable(new int[]{5, 5, 5, 5, 5});
@@ -215,8 +215,8 @@ public class MoleculeOptimizerNodeTest {
   
   @Test
   public void shouldPick_for_2() throws Exception {
-    createSample(8, new int[] {1, 1, 1, 1, 0},1);
-    createSample(10, new int[]{1, 0, 2, 2, 0},1);
+    createSample(8, new int[] {1, 1, 1, 1, 0},1, -1);
+    createSample(10, new int[]{1, 0, 2, 2, 0},1, -1);
     createStorage(  new int[] {1, 1, 3, 3, 0});
     createExpertise(new int[] {3, 0, 1, 0, 0});
     createAvailable(new int[] {3, 2, 2, 0, 4});
@@ -229,11 +229,41 @@ public class MoleculeOptimizerNodeTest {
   }
   
   @Test
+  public void cant_finish_sample_because_bag_is_full() throws Exception {
+    createSample(25, new int[]{0, 5, 0, 0, 0},20,1);
+    createSample(18, new int[]{0, 0, 0, 0, 6},30,4);
+    createSample(15, new int[]{0, 0, 0, 0, 5},20,4);
+    createStorage(  new int[]{3, 4, 1, 0, 2});
+    createExpertise(new int[]{2, 0, 3, 5, 2});
+
+    createAvailable(new int[]{2, 1, 4, 2, 2});
+    
+    root.start();
+
+    MoleculeComboInfo combo = root.getBestChild().combo;
+    assertThat(combo.infos.size(), is (0));
+  }
+  
+  @Test
+  public void xp_given_by_first_allows_second_sample() throws Exception {
+    createSample(8, new int[] {2, 0, 0, 0 ,0},1, 1);
+    createSample(10, new int[]{0, 1, 0, 0, 0},1, -1);
+    createStorage(  new int[] {2, 0, 0, 0, 0});
+    createExpertise(new int[] {0, 0, 0, 0, 0});
+    createAvailable(new int[] {0, 0, 0, 0, 0});
+    
+    root.start();
+
+    MoleculeComboInfo combo = root.getBestChild().combo;
+    assertThat(combo.infos.size(), is (2));
+  }
+  
+  @Test
   @Ignore
   public void TestDePerf() throws Exception {
-    createSample(2, new int[]{0,6,0,0,0},30);
-    createSample(0, new int[]{0,0,0,5,0},20);
-    createSample(4, new int[]{1,4,2,0,0},20);
+    createSample(2, new int[]{0,6,0,0,0},30, -1);
+    createSample(0, new int[]{0,0,0,5,0},20, -1);
+    createSample(4, new int[]{1,4,2,0,0},20, -1);
     createStorage(new int[]{0, 0, 0, 0, 0});
     createExpertise(new int[]{0, 0, 0, 0, 0});
     createAvailable(new int[]{6, 6, 6, 6, 6});
@@ -244,9 +274,9 @@ public class MoleculeOptimizerNodeTest {
 
   @Test
   public void percentCompletionWhenAllComplete() throws Exception {
-    createSample(2, new int[]{0,1,0,0,0},30);
-    createSample(0, new int[]{0,0,1,0,0},20);
-    createSample(4, new int[]{0,0,0,1,0},20);
+    createSample(2, new int[]{0,1,0,0,0},30, -1);
+    createSample(0, new int[]{0,0,1,0,0},20, -1);
+    createSample(4, new int[]{0,0,0,1,0},20, -1);
     
     createStorage(  new int[]{0, 1, 0, 1, 0});
     createExpertise(new int[]{0, 0, 1, 0, 0});
@@ -257,9 +287,9 @@ public class MoleculeOptimizerNodeTest {
   
   @Test
   public void percentCompletionWhenNoneComplete() throws Exception {
-    createSample(2, new int[]{0,2,0,0,0},30);
-    createSample(0, new int[]{0,0,2,0,0},20);
-    createSample(4, new int[]{0,0,0,2,0},20);
+    createSample(2, new int[]{0,2,0,0,0},30, -1);
+    createSample(0, new int[]{0,0,2,0,0},20, -1);
+    createSample(4, new int[]{0,0,0,2,0},20, -1);
     
     createStorage(  new int[]{4, 0, 0, 0, 0});
     createExpertise(new int[]{0, 0, 0, 0, 2});
@@ -280,8 +310,8 @@ public class MoleculeOptimizerNodeTest {
     root.createAvailable(available);
   }
 
-  private void createSample(int id, int[] costs, int health) {
-    root.createSample(index, costs, health);
+  private void createSample(int id, int[] costs, int health, int xp) {
+    root.createSample(index, costs, health, xp);
     index++;
   }
   

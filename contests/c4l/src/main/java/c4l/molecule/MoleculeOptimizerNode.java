@@ -16,8 +16,10 @@ public class MoleculeOptimizerNode {
   public static final int INITIAL_STORAGE = 6;
   public static final int LAST = 7;
   
-  public static final int WIDTH = GameState.MOLECULE_TYPE+1; // +1 = health
+  public static final int WIDTH = GameState.MOLECULE_TYPE+2; // +1 = health, +1 xp
   public static final int HEALTH = GameState.MOLECULE_TYPE; 
+  public static final int XP = GameState.MOLECULE_TYPE+1; 
+  
   
   public static Map<Integer, MoleculeComboInfo> memoization = new HashMap<>();
   private static int memoDecal[] = new int[] { 10000, 01000, 00100, 00010, 00001 };
@@ -223,8 +225,12 @@ public class MoleculeOptimizerNode {
           }
         }
       }
+      // here, the sample is done
+      
       info.infos.add(moleculeInfo);
       info.score += values[WIDTH*order[i]+HEALTH];
+      int gainIndex = this.values[WIDTH*order[i]+XP];
+      this.values[EXPERTISE*WIDTH + gainIndex]++; // add expertise !
     }
     
     return info;// all the three samples are filled here, pretty good :)
@@ -251,11 +257,12 @@ public class MoleculeOptimizerNode {
     }    
   }
 
-  public void createSample(int index, int[] costs, int health) {
+  public void createSample(int index, int[] costs, int health, int xpIndex) {
     for (int i=0;i<5;i++) {
       this.values[index*WIDTH + i] = costs[i];
     }
     this.values[index*WIDTH + HEALTH] = health;
+    this.values[index*WIDTH + XP]  = xpIndex;
   }
 
   public MoleculeOptimizerNode getBestChild() {
