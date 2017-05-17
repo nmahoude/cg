@@ -46,11 +46,20 @@ public class FSMMolecule extends FSMNode {
     }
 
     // TODO here we may have some sample left (no completed) and wish to get some more molecules
-    
+    if (me.getTotalCarried() < 10) {
+      for (Sample sample : me.carriedSamples) {
+        if (me.canCompleteSampleAuto(sample)) continue;
+        MoleculeType type = me.getMissingMoleculeForSample(state, sample);
+        if (type != null) {
+          fsm.connect(type, "Get a molecule for a future sample");
+          return;
+        }
+      }
+    }
     
     List<Sample> completableSamples = getCompletableSamples();
     if (!completableSamples.isEmpty()) {
-      fsm.goTo(Module.LABORATORY, "Go to laboratory to get new samples, found some I can do");
+      fsm.goTo(Module.LABORATORY, "Go to laboratory to collect points, found some samples I can complete");
       return;
     }
     

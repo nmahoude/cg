@@ -7,6 +7,7 @@ import c4l.entities.Robot;
 import c4l.entities.Sample;
 import c4l.molecule.MoleculeComboInfo;
 import c4l.molecule.MoleculeOptimizerNode;
+import c4l.sample.SampleOptimizerNode;
 
 public class FSM {
    
@@ -20,8 +21,8 @@ public class FSM {
   private FSMNode currentState;
   GameState state;
   Robot me;
-  MoleculeOptimizerNode root;
-
+  MoleculeOptimizerNode moleculeRoot;
+  SampleOptimizerNode sampleRoot;
   
   private String output;
   
@@ -39,7 +40,8 @@ public class FSM {
   }
 
   void init() {
-    root = null;
+    moleculeRoot = null;
+    sampleRoot = null;
   }
 
   public void think() {
@@ -100,15 +102,29 @@ public class FSM {
   }
   
   MoleculeComboInfo getBestComboForSamples() {
-    if (root == null) {
-      buildMoleculeChoiceOptimized();
+    if (moleculeRoot == null) {
+      moleculeRoot = buildMoleculeChoiceOptimized();
     }
-    return root.getBestChild().combo;
+    return moleculeRoot.getBestChild().combo;
+  }
+  
+  SampleOptimizerNode getBestSamplesAtDiag() {
+    if (sampleRoot == null) {
+      sampleRoot = buildSampleChoiceOptimized();
+    }
+    return sampleRoot.bestChild;
   }
 
-  private void buildMoleculeChoiceOptimized() {
+  private SampleOptimizerNode buildSampleChoiceOptimized() {
+    System.err.println("use the optimizer Solo");
+    SampleOptimizerNode root = new SampleOptimizerNode();
+    root.start(state, me);
+    return root;
+  }
+
+  private MoleculeOptimizerNode buildMoleculeChoiceOptimized() {
     System.err.println("use the optimizer Luke");
-    root = new MoleculeOptimizerNode();
+    MoleculeOptimizerNode root = new MoleculeOptimizerNode();
     int index = 0;
     for (Sample sample : me.carriedSamples) {
       root.createSample(index++, sample.costs, sample.health);
@@ -117,6 +133,7 @@ public class FSM {
     root.createExpertise(me.expertise);
     root.createAvailable(state.availables);
     root.start();
+    return root;
   }
 
   public boolean isAt(Module diagnosis) {

@@ -1,5 +1,6 @@
 package c4l.fsm;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ public class FSMDiagnosis extends FSMNode {
 //      }
 //    }
     
-    findANewCompletableSampleAtDiag_new(); // perf test
+    findANewCompletableSampleAtDiag_new(true); // perf test
     
     if (me.carriedSamples.isEmpty()) {
       System.err.println("No more sample, handle it");
@@ -112,11 +113,35 @@ public class FSMDiagnosis extends FSMNode {
   /**
    * Find a completable sample in the cloud
    */
-  boolean findANewCompletableSampleAtDiag_new() {
-    SampleOptimizerNode root = new SampleOptimizerNode();
-    root.start(state, me);
+  boolean findANewCompletableSampleAtDiag_new(boolean acceptAll) {
+    SampleOptimizerNode root = fsm.getBestSamplesAtDiag();
+    
     System.err.println("Found the best combo : ");
     System.err.println(root.bestChild.toString());
+    
+    List<Sample> acceptableSamples = new ArrayList<>();
+    for (Sample sample : root.bestChild.currentSamples) {
+      if (acceptAll || me.canCompleteSampleWithMoleculePool(state, sample)) {
+        acceptableSamples.add(sample);
+      }
+    }
+    if (me.carriedSamples.size() == 3 ) {
+      // check to remove
+      for (Sample sample : me.carriedSamples) {
+        if (acceptableSamples.indexOf(sample) == -1) {
+          fsm.connect(sample.id, "Remove a sample to get a new one later");
+          return true;
+        }
+      }
+    } else {
+      for (Sample sample : acceptableSamples) {
+        if (me.carriedSamples.indexOf(sample) == -1) {
+          fsm.connect(sample.id, "Add a good sample");
+          return true;
+        }
+      }
+    }
+
     return false;
   }
   
