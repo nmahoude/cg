@@ -125,5 +125,37 @@ public class FSMDiagnosisTest {
       
       assertThat(result, is(true));
     }
+    
+    @Test
+    public void dont_go_to_laboratory() throws Exception {
+      Sample s1 = createSample(21, new int[]{2, 0, 0, 1, 4},20,1);
+      Sample s2 = createSample(25, new int[]{0, 0, 0, 0, 6},30,4);
+      Sample s3 = createSample(31, new int[]{6, 0, 0, 0, 0},30,0);
+      createStorage(  new int[]{2, 0, 2, 0, 2});
+      createExpertise(new int[]{2, 1, 4, 3, 1});
+      createAvailable(new int[]{2, 4, 3, 5, 0});
+      
+      diag.think();
+      
+    }
+
+    private void createAvailable(int[] is) {
+      state.availables = is;
+    }
+
+    private void createExpertise(int[] is) {
+      me.expertise = is;
+    }
+
+    private void createStorage(int[] is) {
+      me.storage = is;
+    }
+
+    private Sample createSample(int id, int[] cost, int health, int gainIndex) {
+      Sample sample = new Sample(id, cost, health, MoleculeType.values()[gainIndex]);
+      me.carriedSamples.add(sample);
+      return sample;
+    }
+    
   }
 }

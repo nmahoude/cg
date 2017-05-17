@@ -1,6 +1,7 @@
 = List ds subits et leur contenu
 
 == SILBER 17/05
+* 11h38 / 6  : correction d'un bug d'xp qui faisait qu'on bouclait vers le LAB
 * 09h42 / 6  : moleculeOptimiser : prendre en compte les xp que je vais gagner
 * 03h00 / 15 : faire les 2 greedy : dabord sur les futurs sample, puis sur mon manque d'xp
 * 02h45 / 20 : plutot que greedy sur les molecules des samples a venir, greedy sur les molecule ou j'ai moins d'xp

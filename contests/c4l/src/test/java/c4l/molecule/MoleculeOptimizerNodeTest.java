@@ -12,6 +12,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import c4l.entities.MoleculeType;
+import c4l.entities.Sample;
 
 public class MoleculeOptimizerNodeTest {
 

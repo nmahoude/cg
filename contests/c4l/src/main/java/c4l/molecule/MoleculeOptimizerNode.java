@@ -18,7 +18,7 @@ public class MoleculeOptimizerNode {
   
   public static final int WIDTH = GameState.MOLECULE_TYPE+2; // +1 = health, +1 xp
   public static final int HEALTH = GameState.MOLECULE_TYPE; 
-  public static final int XP = GameState.MOLECULE_TYPE+1; 
+  public static final int XPGAIN = GameState.MOLECULE_TYPE+1; 
   
   
   public static Map<Integer, MoleculeComboInfo> memoization = new HashMap<>();
@@ -197,16 +197,18 @@ public class MoleculeOptimizerNode {
     
     int[] initialStorage = new int[GameState.MOLECULE_TYPE];
     int[] pickedMolecules = new int[GameState.MOLECULE_TYPE];
+    int[] xp = new int[GameState.MOLECULE_TYPE];
     
     System.arraycopy(values, WIDTH*INITIAL_STORAGE, initialStorage, 0, GameState.MOLECULE_TYPE);
     System.arraycopy(values, WIDTH*PICKED_MOLECULES, pickedMolecules, 0, GameState.MOLECULE_TYPE);
+    System.arraycopy(values, WIDTH*EXPERTISE, xp, 0, GameState.MOLECULE_TYPE);
     
     for (int i=0;i<order.length;i++) {
       MoleculeInfo moleculeInfo = new MoleculeInfo();
       moleculeInfo.sampleIndex = order[i];
       moleculeInfo.health = values[order[i]*WIDTH + HEALTH];
       for (int j=0;j<GameState.MOLECULE_TYPE;j++) {
-        int needed = Math.max(0, values[WIDTH*order[i]+j]/*cost*/ - values[WIDTH*EXPERTISE+j]/*xp*/);
+        int needed = Math.max(0, values[WIDTH*order[i]+j]/*cost*/ - xp[j]/*xp*/);
         if ( needed > initialStorage[j]+pickedMolecules[j]) {
           return info; // stop here we can't do the samples
         } else {
@@ -229,8 +231,11 @@ public class MoleculeOptimizerNode {
       
       info.infos.add(moleculeInfo);
       info.score += values[WIDTH*order[i]+HEALTH];
-      int gainIndex = this.values[WIDTH*order[i]+XP];
-      this.values[EXPERTISE*WIDTH + gainIndex]++; // add expertise !
+      int gainIndex = this.values[WIDTH*order[i]+XPGAIN];
+      // TODO this test is only for tests as I want to simulate without gain, that is not good
+      if (gainIndex != -1 ) {
+        xp[gainIndex]++; // add expertise !
+      }
     }
     
     return info;// all the three samples are filled here, pretty good :)
@@ -262,7 +267,7 @@ public class MoleculeOptimizerNode {
       this.values[index*WIDTH + i] = costs[i];
     }
     this.values[index*WIDTH + HEALTH] = health;
-    this.values[index*WIDTH + XP]  = xpIndex;
+    this.values[index*WIDTH + XPGAIN]  = xpIndex;
   }
 
   public MoleculeOptimizerNode getBestChild() {
