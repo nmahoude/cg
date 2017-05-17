@@ -47,14 +47,27 @@ public class FSMMolecule extends FSMNode {
 
     // TODO here we may have some sample left (no completed) and wish to get some more molecules
     if (me.getTotalCarried() < 10) {
-      for (Sample sample : me.carriedSamples) {
-        if (me.canCompleteSampleAuto(sample)) continue;
-        MoleculeType type = me.getMissingMoleculeForSample(state, sample);
-        if (type != null) {
-          fsm.connect(type, "Get a molecule for a future sample");
-          return;
+      // get the molecule I may need the most (less xp)
+      int minXp = Integer.MAX_VALUE;
+      MoleculeType type = null;
+      for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+        if (state.availables[i] > 0 && me.expertise[i] < minXp) {
+          minXp = me.expertise[i];
+          type = MoleculeType.values()[i];
         }
       }
+      if (type != null) {
+        fsm.connect(type, "Get a molecule I may need the more (less XP)");
+        return;
+      }
+//      for (Sample sample : me.carriedSamples) {
+//        if (me.canCompleteSampleAuto(sample)) continue;
+//        MoleculeType type = me.getMissingMoleculeForSample(state, sample);
+//        if (type != null) {
+//          fsm.connect(type, "Get a molecule for a future sample");
+//          return;
+//        }
+//      }
     }
     
     List<Sample> completableSamples = getCompletableSamples();
