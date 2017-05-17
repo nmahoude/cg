@@ -105,7 +105,7 @@ public class FSM {
     if (moleculeRoot == null) {
       moleculeRoot = buildMoleculeChoiceOptimized();
     }
-    return moleculeRoot.getBestChild().combo;
+    return moleculeRoot.getBestChild();
   }
   
   SampleOptimizerNode getBestSamplesAtDiag() {
@@ -134,6 +134,8 @@ public class FSM {
     root.createStorage(me.storage);
     root.createExpertise(me.expertise);
     root.createAvailable(state.availables);
+    
+    root.ply = state.ply;
     root.start();
     return root;
   }

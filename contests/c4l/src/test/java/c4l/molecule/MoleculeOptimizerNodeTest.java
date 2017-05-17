@@ -1,6 +1,7 @@
 package c4l.molecule;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -115,10 +116,9 @@ public class MoleculeOptimizerNodeTest {
     createExpertise(new int[]{0, 0, 0, 0, 1});
     createAvailable(new int[]{0, 2, 6, 6, 3});
     
-    root.freeStorage = 6;
     root.start();
     
-    assertThat(root.getBestChild().pickedMolecule, is(MoleculeType.B));
+    assertThat(root.combo.getNeededMolecules(), hasItems(MoleculeType.B));
   }
   
   @Test
@@ -145,8 +145,8 @@ public class MoleculeOptimizerNodeTest {
     
     root.start();
     
-    boolean needToGetMolecule = root.getBestChild().combo.infos.isEmpty();
-    for (MoleculeInfo info : root.getBestChild().combo.infos) {
+    boolean needToGetMolecule = root.getBestChild().infos.isEmpty();
+    for (MoleculeInfo info : root.getBestChild().infos) {
       if (info.getNeededMolecules().size()> 0) {
         needToGetMolecule = true;
         break;
@@ -166,8 +166,7 @@ public class MoleculeOptimizerNodeTest {
     root.start();
     
     assertThat(root.getBestChild(), is(not(nullValue())));
-    assertThat(root.getBestChild().combo, is(not(nullValue())));
-    assertThat(root.getBestChild().combo.infos, is(not(nullValue())));
+    assertThat(root.getBestChild().infos, is(not(nullValue())));
   }
   
   @Test
@@ -208,7 +207,7 @@ public class MoleculeOptimizerNodeTest {
     
     root.start();
 
-    MoleculeComboInfo combo = root.getBestChild().combo;
+    MoleculeComboInfo combo = root.getBestChild();
     assertThat(combo.infos.size(), is (1));
     assertThat(combo.infos.get(0).getNeededMolecules().size(), is(1));
     assertThat(combo.infos.get(0).getNeededMolecules().indexOf(MoleculeType.C), is(not(-1)));
@@ -225,9 +224,40 @@ public class MoleculeOptimizerNodeTest {
     root.freeStorage = 0;
     root.start();
 
-    MoleculeComboInfo combo = root.getBestChild().combo;
+    MoleculeComboInfo combo = root.getBestChild();
     assertThat(combo.infos.size(), is (2));
   }
+
+  @Test
+  public void shouldPick_for_2_but_no_more_time() throws Exception {
+    createSample(8, new int[] {1, 1, 1, 1, 0},1, -1);
+    createSample(10, new int[]{1, 0, 2, 2, 0},1, -1);
+    createStorage(  new int[] {1, 1, 3, 3, 0});
+    createExpertise(new int[] {3, 0, 1, 0, 0});
+    createAvailable(new int[] {3, 2, 2, 0, 4});
+    
+    root.ply = 199;
+    root.start();
+
+    MoleculeComboInfo combo = root.getBestChild();
+    assertThat(combo.infos.size(), is (0));
+  }
+
+  @Test
+  public void shouldPick_for_2_just_enough_time() throws Exception {
+    createSample(8, new int[] {1, 1, 1, 1, 0},1, -1);
+    createSample(10, new int[]{1, 0, 2, 2, 0},1, -1);
+    createStorage(  new int[] {1, 1, 3, 3, 0});
+    createExpertise(new int[] {3, 0, 1, 0, 0});
+    createAvailable(new int[] {3, 2, 2, 0, 4});
+    
+    root.ply = 195;
+    root.start();
+
+    MoleculeComboInfo combo = root.getBestChild();
+    assertThat(combo.infos.size(), is (2));
+  }
+
   
   @Test
   public void cant_finish_sample_because_bag_is_full() throws Exception {
@@ -241,7 +271,7 @@ public class MoleculeOptimizerNodeTest {
     
     root.start();
 
-    MoleculeComboInfo combo = root.getBestChild().combo;
+    MoleculeComboInfo combo = root.getBestChild();
     assertThat(combo.infos.size(), is (0));
   }
   
@@ -255,7 +285,7 @@ public class MoleculeOptimizerNodeTest {
     
     root.start();
 
-    MoleculeComboInfo combo = root.getBestChild().combo;
+    MoleculeComboInfo combo = root.getBestChild();
     assertThat(combo.infos.size(), is (2));
   }
   

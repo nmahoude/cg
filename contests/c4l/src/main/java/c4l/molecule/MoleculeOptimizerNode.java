@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import c4l.GameState;
+import c4l.entities.Module;
 import c4l.entities.MoleculeType;
 
 public class MoleculeOptimizerNode {
@@ -36,7 +37,9 @@ public class MoleculeOptimizerNode {
   public MoleculeType pickedMolecule;
   public List<MoleculeOptimizerNode> children = new ArrayList<>();
   public double score;
+  
   public MoleculeComboInfo combo;
+  public int ply;
 
   public MoleculeOptimizerNode() {
     for (int i=0;i<3*WIDTH;i++) {
@@ -77,6 +80,10 @@ public class MoleculeOptimizerNode {
     
     combo = getLocalCombo();
     score = combo.score;
+    if (ply + Module.distance(Module.MOLECULES, Module.LABORATORY) + combo.infos.size() > 200) {
+      score = -1;
+      combo = new MoleculeComboInfo();
+    }
 
     if (freeStorage == 0) {
       return;
@@ -117,6 +124,8 @@ public class MoleculeOptimizerNode {
   }
 
   public MoleculeComboInfo applyTurn(int depth, MoleculeOptimizerNode from, MoleculeType type) {
+    ply = from.ply+1;
+    
     pickedMolecule = type;
     System.arraycopy(from.values, 0, values, 0, values.length);
     
@@ -133,8 +142,12 @@ public class MoleculeOptimizerNode {
     
     MoleculeComboInfo best = getLocalCombo();
     score = patience[depth] * best.score;
+    if (ply + Module.distance(Module.MOLECULES, Module.LABORATORY) + best.infos.size() > 200) {
+      score = -1;
+      best = new MoleculeComboInfo();
+    }
     
-    if (freeStorage == 0) {
+    if (freeStorage == 0 || score < 0) {
       memoization.put(key, best);
       combo = best;
       return best;
@@ -270,16 +283,8 @@ public class MoleculeOptimizerNode {
     this.values[index*WIDTH + XPGAIN]  = xpIndex;
   }
 
-  public MoleculeOptimizerNode getBestChild() {
-    double bestScore = Double.NEGATIVE_INFINITY;
-    MoleculeOptimizerNode best = this;
-    for (MoleculeOptimizerNode node : children) {
-      if (node.score  > bestScore) {
-        bestScore = node.score;
-        best = node;
-      }
-    }
-    return best;
+  public MoleculeComboInfo getBestChild() {
+    return combo;
   }
 
 }
