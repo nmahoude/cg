@@ -8,6 +8,7 @@ import java.util.Map;
 import c4l.GameState;
 import c4l.entities.Module;
 import c4l.entities.MoleculeType;
+import c4l.entities.Robot;
 
 public class MoleculeOptimizerNode {
   private static final int SCORE_WHERE_WIN = 100_000;
@@ -75,12 +76,12 @@ public class MoleculeOptimizerNode {
     
     return output;
   }
-  public void start () {
+  public void start (Robot me) {
     memoization.clear();
     
     combo = getLocalCombo();
     score = combo.score;
-    if (ply + Module.distance(Module.MOLECULES, Module.LABORATORY) + combo.infos.size() > 200) {
+    if (ply + Module.distance(me.target, Module.LABORATORY) + combo.infos.size() > 200) {
       score = -1;
       combo = new MoleculeComboInfo();
     }
@@ -92,7 +93,7 @@ public class MoleculeOptimizerNode {
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
       if (values[WIDTH*AVAILABLE+i]>0) {
         MoleculeOptimizerNode node = new MoleculeOptimizerNode();
-        MoleculeComboInfo info = node.applyTurn(0, this, MoleculeType.values()[i]);
+        MoleculeComboInfo info = node.applyTurn(me, 0, this, MoleculeType.values()[i]);
         if (info.score > score) {
           score = info.score;
           combo = info;
@@ -123,7 +124,7 @@ public class MoleculeOptimizerNode {
     return sumNotNull;
   }
 
-  public MoleculeComboInfo applyTurn(int depth, MoleculeOptimizerNode from, MoleculeType type) {
+  public MoleculeComboInfo applyTurn(Robot me, int depth, MoleculeOptimizerNode from, MoleculeType type) {
     ply = from.ply+1;
     
     pickedMolecule = type;
@@ -142,7 +143,7 @@ public class MoleculeOptimizerNode {
     
     MoleculeComboInfo best = getLocalCombo();
     score = patience[depth] * best.score;
-    if (ply + Module.distance(Module.MOLECULES, Module.LABORATORY) + best.infos.size() > 200) {
+    if (ply + Module.distance(me.target, Module.LABORATORY) + best.infos.size() > 200) {
       score = -1;
       best = new MoleculeComboInfo();
     }
@@ -155,7 +156,7 @@ public class MoleculeOptimizerNode {
       for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
         if (values[WIDTH*AVAILABLE + i]>0 ) {
           MoleculeOptimizerNode node = new MoleculeOptimizerNode();
-          MoleculeComboInfo info = node.applyTurn(depth+1, this, MoleculeType.values()[i]);
+          MoleculeComboInfo info = node.applyTurn(me, depth+1, this, MoleculeType.values()[i]);
           if (info.score > score) {
             score = info.score;
             best = info;

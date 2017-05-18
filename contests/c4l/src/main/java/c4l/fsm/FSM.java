@@ -136,7 +136,7 @@ public class FSM {
     root.createAvailable(state.availables);
     
     root.ply = state.ply;
-    root.start();
+    root.start(me);
     return root;
   }
 
