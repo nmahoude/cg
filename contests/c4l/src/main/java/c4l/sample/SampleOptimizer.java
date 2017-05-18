@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import c4l.GameState;
+import c4l.entities.Module;
 import c4l.entities.Robot;
 import c4l.entities.Sample;
 import c4l.entities.ScienceProject;
@@ -59,6 +60,7 @@ public class SampleOptimizer {
     return bestSamples;
   }
 
+  private int totalStorage;
   int storage[] = new int[GameState.MOLECULE_TYPE];
   int pickedMolecules[] = new int[GameState.MOLECULE_TYPE];
   int expertise[] = new int[GameState.MOLECULE_TYPE];
@@ -94,6 +96,9 @@ public class SampleOptimizer {
             pickedMolecules[j]+=needed;
             availables[j]-=needed;
             needed = 0;
+            if (totalMoleculePicked + totalStorage > 10) {
+              return Double.NEGATIVE_INFINITY;
+            }
           }
         }
       }
@@ -104,26 +109,29 @@ public class SampleOptimizer {
     points += getExpertisePoints();
     
     double score = 0.0;
+    int turns = 0;
     if (totalMoleculePicked ==0) {
-      score += 1000;
-      totalMoleculePicked++;
+      turns+= Module.distance(Module.DIAGNOSIS, Module.LABORATORY);
+    } else {
+      turns+= Module.distance(Module.DIAGNOSIS, Module.MOLECULES)
+            + totalMoleculePicked
+            + Module.distance(Module.MOLECULES, Module.LABORATORY);
+          ;
     }
-    int actionToState = 0;
+    
+    // count the number of swap
     for (Sample removed : me.carriedSamples) {
       if (currentSamples.indexOf(removed) == -1) {
-        actionToState++;// action to remove the sample
+        turns++;// action to remove the sample
       }
     }
     for (Sample added : currentSamples) {
       if (me.carriedSamples.indexOf(added) == -1) {
-        actionToState++;
+        turns++;
       }
     }
-    if (actionToState+totalMoleculePicked==0) {
-      return Double.MAX_VALUE;
-    }
     
-    score += 1.0*points / (actionToState + totalMoleculePicked);
+    score += 1.0*points / turns;
     
     return score;
   }
@@ -145,8 +153,10 @@ public class SampleOptimizer {
     return xpPoints;
   }
   private void init() {
+    totalStorage = 0;
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
       storage[i] = me.storage[i];
+      totalStorage+=storage[i];
       expertise[i] = me.expertise[i];
       pickedMolecules[i] = 0;
       availables[i] = state.availables[i];

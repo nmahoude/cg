@@ -125,18 +125,7 @@ public class FSM {
   private MoleculeOptimizerNode buildMoleculeChoiceOptimized() {
     System.err.println("use the optimizer Luke");
     MoleculeOptimizerNode root = new MoleculeOptimizerNode();
-    int index = 0;
-    for (Sample sample : me.carriedSamples) {
-      if (sample.expertise != null) {
-        root.createSample(index++, sample.costs, sample.health, sample.expertise.index);
-      }
-    }
-    root.createStorage(me.storage);
-    root.createExpertise(me.expertise);
-    root.createAvailable(state.availables);
-    
-    root.ply = state.ply;
-    root.start(me);
+    root.start(state.ply, state.availables, me);
     return root;
   }
 

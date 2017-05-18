@@ -30,11 +30,11 @@ public class MoleculeComboInfo {
 
 
   public int scoreRealized() {
-    return infos.stream().mapToInt(info -> info.health ).sum();
+    return infos.stream().mapToInt(info -> info.points ).sum();
   }
 
   public int scoreRealizedWithoutMolecule() {
-    return infos.stream().mapToInt(info -> info.getNeededMolecules().size() == 0 ? info.health : 0).sum();
+    return infos.stream().mapToInt(info -> info.getNeededMolecules().size() == 0 ? info.points : 0).sum();
   }
 
   public int totalMoleculeTaken() {

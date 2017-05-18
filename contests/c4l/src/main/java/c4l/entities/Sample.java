@@ -33,7 +33,7 @@ public class Sample {
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
       fullCost += costs[i];
     }
-    if (isDiscovered()) {
+    if (isDiscovered() && moleculeGained != null) {
       gain[moleculeGained.index] = 1;
     }
   }

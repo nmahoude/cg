@@ -1,12 +1,15 @@
 package c4l.fsm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import c4l.GameState;
 import c4l.entities.Module;
 import c4l.entities.Robot;
 import c4l.entities.Sample;
+import c4l.molecule.MoleculeComboInfo;
+import c4l.molecule.MoleculeInfo;
 import c4l.molecule.MoleculeOptimizerNode;
 
 public abstract class FSMNode {
@@ -34,14 +37,20 @@ public abstract class FSMNode {
    * completing one will remove molecules from storage
    * @return
    */
-  public List<Sample> getCompletableSamples() {
+  public List<Sample> getCompletableSamples(int[] availables) {
     List<Sample> samples = new ArrayList<>();
-    for (Sample sample : me.carriedSamples) {
-      if (!sample.isDiscovered()) continue;
-      if (me.canCompleteSampleAuto(sample)) {
-        samples.add(sample);
+
+    MoleculeOptimizerNode node = new MoleculeOptimizerNode();
+    node.start(state.ply, availables, me);
+    MoleculeComboInfo bestChild = node.getBestChild();
+    for (MoleculeInfo info : bestChild.infos) {
+      for (Sample sample : me.carriedSamples) {
+        if (sample.id == info.sampleId) {
+          samples.add(sample);
+        }
       }
     }
+    
     return samples;
   }
 

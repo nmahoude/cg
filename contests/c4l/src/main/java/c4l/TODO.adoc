@@ -13,6 +13,8 @@ Savoir prendre l'etat complet du jeu
 == Optimiser le fait que le déplacement fait 2 pour, quand eta > 0, calculer des trucs pour le futur ...
 
 == TODOs
+* Remettre l'optimizer pour mettre les samples dans l'ordre au LAB
+
 * Verifier l'ordre dans lequel sort les sample de l'optimiszer!
 
 

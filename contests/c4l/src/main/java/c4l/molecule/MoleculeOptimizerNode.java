@@ -18,9 +18,10 @@ public class MoleculeOptimizerNode {
   public static final int INITIAL_STORAGE = 6;
   public static final int LAST = 7;
   
-  public static final int WIDTH = GameState.MOLECULE_TYPE+2; // +1 = health, +1 xp
+  public static final int WIDTH = GameState.MOLECULE_TYPE+3; // +1 = health, +1 xp
   public static final int HEALTH = GameState.MOLECULE_TYPE; 
   public static final int XPGAIN = GameState.MOLECULE_TYPE+1; 
+  public static final int SAMPLE_ID = GameState.MOLECULE_TYPE+2; 
   
   
   public static Map<Integer, MoleculeComboInfo> memoization = new HashMap<>();
@@ -76,7 +77,9 @@ public class MoleculeOptimizerNode {
     
     return output;
   }
-  public void start (Robot me) {
+  public void start (int turns, int[] availables, Robot me) {
+    init(turns, availables, me);
+    
     memoization.clear();
     
     combo = getLocalCombo();
@@ -101,6 +104,19 @@ public class MoleculeOptimizerNode {
         children.add(node);
       }
     }
+  }
+
+  private void init(int turns, int[] availables, Robot me) {
+    int index = 0;
+    for (Sample sample : me.carriedSamples) {
+      if (sample.expertise != null) {
+        createSample(index++, sample.id, sample.costs, sample.health, sample.expertise.index);
+      }
+    }
+    createStorage(me.storage);
+    createExpertise(me.expertise);
+    createAvailable(availables);
+    ply = turns;
   }
 
   public Integer encodeState() {
@@ -219,8 +235,8 @@ public class MoleculeOptimizerNode {
     
     for (int i=0;i<order.length;i++) {
       MoleculeInfo moleculeInfo = new MoleculeInfo();
-      moleculeInfo.sampleIndex = order[i];
-      moleculeInfo.health = values[order[i]*WIDTH + HEALTH];
+      moleculeInfo.sampleId = values[order[i]*WIDTH + SAMPLE_ID];
+      moleculeInfo.points = values[order[i]*WIDTH + HEALTH];
       for (int j=0;j<GameState.MOLECULE_TYPE;j++) {
         int needed = Math.max(0, values[WIDTH*order[i]+j]/*cost*/ - xp[j]/*xp*/);
         if ( needed > initialStorage[j]+pickedMolecules[j]) {
@@ -250,6 +266,8 @@ public class MoleculeOptimizerNode {
       }
     }
     
+    // TODO scienceProject ?
+    
     return info;// all the three samples are filled here, pretty good :)
   }
   
@@ -274,12 +292,13 @@ public class MoleculeOptimizerNode {
     }    
   }
 
-  public void createSample(int index, int[] costs, int health, int xpIndex) {
+  public void createSample(int index, int id, int[] costs, int health, int xpIndex) {
     for (int i=0;i<5;i++) {
       this.values[index*WIDTH + i] = costs[i];
     }
     this.values[index*WIDTH + HEALTH] = health;
     this.values[index*WIDTH + XPGAIN]  = xpIndex;
+    this.values[index*WIDTH + SAMPLE_ID]  = id;
   }
 
   public MoleculeComboInfo getBestChild() {
@@ -290,7 +309,7 @@ public class MoleculeOptimizerNode {
     int index = 0;
     for (Sample sample : currentSamples) {
       if (sample.expertise != null) {
-        createSample(index++, sample.costs, sample.health, sample.expertise.index);
+        createSample(index++, sample.id, sample.costs, sample.health, sample.expertise.index);
       }
     }
     for (int i=currentSamples.size()*WIDTH;i<3*WIDTH;i++) {

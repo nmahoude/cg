@@ -6,15 +6,16 @@ import java.util.List;
 
 import c4l.GameState;
 import c4l.entities.MoleculeType;
+import c4l.entities.Sample;
 
 public class MoleculeInfo {
   public int moleculesNeeded[] = new int [GameState.MOLECULE_TYPE];
-  public int sampleIndex;
-  public int health;
+  public int sampleId;
+  public int points; // how much points will be scored*/
   
   @Override
   public String toString() {
-    return "sample="+sampleIndex+" "+Arrays.toString(moleculesNeeded)+"\n\r";
+    return "sample="+sampleId+" "+Arrays.toString(moleculesNeeded)+" points : "+points+"\n\r";
   }
   /**
    * return the list of needed molcules, without how much we need

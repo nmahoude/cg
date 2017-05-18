@@ -21,8 +21,17 @@ public class FSMDiagnosis extends FSMNode {
 
   @Override
   public void think() {
-    findANewCompletableSampleAtDiag_new(true); // perf test
+    Sample firstUnDiscoveredSample = getFirstUnDiscoveredSample();
+    if (firstUnDiscoveredSample != null) {
+      fsm.connect(firstUnDiscoveredSample.id, "Got an undiscover sample, diag it");
+      return;
+    }      
+
+    if (findANewCompletableSampleAtDiag_new()) {
+      return;
+    }
     
+    // TODO remove the rest not needed anymore
     if (me.carriedSamples.isEmpty()) {
       System.err.println("No more sample, handle it");
       if (findANewCompletableSampleAtDiag()) {
@@ -32,12 +41,6 @@ public class FSMDiagnosis extends FSMNode {
         return;
       }
     }
-    
-    Sample firstUnDiscoveredSample = getFirstUnDiscoveredSample();
-    if (firstUnDiscoveredSample != null) {
-      fsm.connect(firstUnDiscoveredSample.id, "Got an undiscover sample, diag it");
-      return;
-    }      
     
     // TODO check if we can exchange a sample to get better result (2 turns taken)
     
@@ -85,16 +88,45 @@ public class FSMDiagnosis extends FSMNode {
   /**
    * Find a completable sample in the cloud
    */
-  boolean findANewCompletableSampleAtDiag_new(boolean acceptAll) {
+  boolean findANewCompletableSampleAtDiag_new() {
     SampleOptimizer optimizer = new SampleOptimizer();
     List<Sample> bestSamples = optimizer.optimize(state, me);
     
     System.err.println("Found the best combo : ");
     System.err.println(bestSamples.toString());
     
-    return false;
+    if (bestSamples.size() == 0) {
+      if (me.carriedSamples.size() > 0) {
+        fsm.connect(me.carriedSamples.get(0).id, "Drop sample, there is no best sample");
+        return true;
+      } else {
+        fsm.goTo(Module.SAMPLES, "no best samples, all dropped, go back to SAMPLES");
+        return true;
+      }
+    } else {
+      if (me.carriedSamples.containsAll(bestSamples)) {
+        fsm.goTo(Module.MOLECULES, "Got all from best samples, goto molecule");
+        return true;
+      } else {
+        if (me.carriedSamples.size() == 3) {
+          Sample sample = getOneFromNotInto(me.carriedSamples, bestSamples);
+          fsm.connect(sample.id, "Remove a sample from our list as it is full");
+          return true;
+        } else {
+          Sample sample = getOneFromNotInto(bestSamples, me.carriedSamples);
+          fsm.connect(sample.id, "Get a sample from the best list");
+          return true;
+        }
+      }
+    }
   }
   
+  private Sample getOneFromNotInto(List<Sample> carriedSamples, List<Sample> bestSamples) {
+    for (Sample sample : carriedSamples) {
+      if (bestSamples.indexOf(sample) == -1) return sample;
+    }
+    return null;
+  }
   /**
    * Find a completable sample in the cloud
    */

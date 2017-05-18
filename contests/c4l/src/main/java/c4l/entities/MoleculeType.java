@@ -12,4 +12,9 @@ public enum MoleculeType {
   private MoleculeType(int index) {
     this.index = index;
   }
+
+  public static MoleculeType get(int xp) {
+    if (xp <0) return null;
+    return values()[xp];
+  }
 }

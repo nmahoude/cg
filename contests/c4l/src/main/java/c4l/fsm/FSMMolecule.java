@@ -72,7 +72,7 @@ public class FSMMolecule extends FSMNode {
       }
     }
     
-    List<Sample> completableSamples = getCompletableSamples();
+    List<Sample> completableSamples = getCompletableSamples(state.availables);
     if (!completableSamples.isEmpty()) {
       fsm.goTo(Module.LABORATORY, "Go to laboratory to collect points, found some samples I can complete");
       return;
