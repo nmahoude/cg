@@ -1,6 +1,8 @@
 = List ds subits et leur contenu
 
 == GOLD 19/05
+01h10 /  : utiliser le sample optimiser dans MOLECULE + un peu de refactoring
+00h48 / 17 : amelioration endGame pour la recherche des samples
 00h20 / 13: complete refactoring of the diag State !
 
 == GOLD 18/05

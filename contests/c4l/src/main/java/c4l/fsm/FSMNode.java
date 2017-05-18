@@ -33,22 +33,16 @@ public abstract class FSMNode {
   
   /**
    * Return a list of all completeSamples wr molecules & expertise
-   * Warning : it doesn't mean we can complete all at once, 
-   * completing one will remove molecules from storage
    * @return
    */
-  public List<Sample> getCompletableSamples(int[] availables) {
-    List<Sample> samples = new ArrayList<>();
+  public List<Integer> getCompletableSamples(int[] availables) {
+    List<Integer> samples = new ArrayList<>();
 
     MoleculeOptimizerNode node = new MoleculeOptimizerNode();
     node.start(state.ply, availables, me);
     MoleculeComboInfo bestChild = node.getBestChild();
     for (MoleculeInfo info : bestChild.infos) {
-      for (Sample sample : me.carriedSamples) {
-        if (sample.id == info.sampleId) {
-          samples.add(sample);
-        }
-      }
+      samples.add(info.sampleId);
     }
     
     return samples;

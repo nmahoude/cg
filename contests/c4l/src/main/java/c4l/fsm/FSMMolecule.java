@@ -10,6 +10,7 @@ import c4l.entities.Robot;
 import c4l.entities.Sample;
 import c4l.molecule.MoleculeComboInfo;
 import c4l.molecule.MoleculeInfo;
+import c4l.sample.SampleOptimizer;
 
 public class FSMMolecule extends FSMNode {
 
@@ -72,7 +73,7 @@ public class FSMMolecule extends FSMNode {
       }
     }
     
-    List<Sample> completableSamples = getCompletableSamples(state.availables);
+    List<Integer> completableSamples = getCompletableSamples(new int[] {0, 0, 0, 0, 0});
     if (!completableSamples.isEmpty()) {
       fsm.goTo(Module.LABORATORY, "Go to laboratory to collect points, found some samples I can complete");
       return;
@@ -84,12 +85,13 @@ public class FSMMolecule extends FSMNode {
       fsm.goTo(Module.DIAGNOSIS, "Can't complete sample & max samples -> @DIAG");
     } else  {
       System.err.println("I have room for a new sample, decide DIAG or SAMPLE");
-      List<Sample> samples = findDoableSampleInCloud();
-      if (samples.isEmpty()) {
-        fsm.goTo(Module.SAMPLES, "Found nothing in the cloud, go to samples");
+      SampleOptimizer optimizer = new SampleOptimizer();
+      List<Sample> bestSamples = optimizer.optimize(state, me);
+      if (bestSamples.size() >= 2) {
+        fsm.goTo(Module.DIAGNOSIS, "Found samples in the cloud, go get them");
         return;
       } else {
-        fsm.goTo(Module.DIAGNOSIS, "Found something in the cloud, go get it");
+        fsm.goTo(Module.SAMPLES, "No enough samples in the cloud, go to SAMPLE "+bestSamples.toString());
         return;
       }
     }

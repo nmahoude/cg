@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import c4l.GameState;
+import c4l.entities.Module;
 import c4l.entities.MoleculeType;
 import c4l.entities.Robot;
 import c4l.entities.Sample;
@@ -24,6 +25,7 @@ public class SampleOptimizerTest {
   public void setup() {
     state = new GameState();
     me = state.robots[0];
+    me.target = Module.DIAGNOSIS;
   }
   
   @Test

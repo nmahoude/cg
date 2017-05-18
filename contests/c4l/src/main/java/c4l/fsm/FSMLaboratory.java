@@ -15,10 +15,10 @@ public class FSMLaboratory extends FSMNode {
   @Override
   public void think() {
     // TODO Maybe don't put all samples in LAB if we block the opponent !
-    List<Sample> completableSamples = getCompletableSamples(new int[] {0, 0, 0, 0, 0});
+    List<Integer> completableSamples = getCompletableSamples(new int[] {0, 0, 0, 0, 0});
     
     if (!completableSamples.isEmpty()) {
-      fsm.connect(completableSamples.get(0).id, "Got a full sample in the bag");
+      fsm.connect(completableSamples.get(0), "Got a full sample in the bag");
       return;
     } else {
       MoleculeComboInfo combo = fsm.getBestComboForSamples();
@@ -35,7 +35,7 @@ public class FSMLaboratory extends FSMNode {
           fsm.goTo(Module.DIAGNOSIS, "Found samples in the cloud, go get them");
           return;
         } else {
-          fsm.goTo(Module.SAMPLES, "No doable samples in the cloud, go to SAMPLE");
+          fsm.goTo(Module.SAMPLES, "Not enough samples in the cloud, go to SAMPLE "+bestSamples.toString());
           return;
         }
       }

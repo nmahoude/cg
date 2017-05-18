@@ -111,12 +111,22 @@ public class SampleOptimizer {
     double score = 0.0;
     int turns = 0;
     if (totalMoleculePicked ==0) {
-      turns+= Module.distance(Module.DIAGNOSIS, Module.LABORATORY);
+      turns = 
+             Module.distance(me.target, Module.DIAGNOSIS)
+           + Module.distance(Module.DIAGNOSIS, Module.LABORATORY)
+           + currentSamples.size();
     } else {
-      turns+= Module.distance(Module.DIAGNOSIS, Module.MOLECULES)
+      turns = 
+              Module.distance(me.target, Module.DIAGNOSIS)
+            + Module.distance(Module.DIAGNOSIS, Module.MOLECULES)
             + totalMoleculePicked
-            + Module.distance(Module.MOLECULES, Module.LABORATORY);
+            + Module.distance(Module.MOLECULES, Module.LABORATORY)
+            + currentSamples.size()
           ;
+    }
+    if (state.ply + turns > 200) {
+      //TODO handle a risk here ? if state.ply+turns == 200 we can theorically get all, but it's not sure if opp blocks us
+      return Double.NEGATIVE_INFINITY;
     }
     
     // count the number of swap
