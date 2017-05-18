@@ -57,6 +57,7 @@ public class GameState {
       }
       Sample sample = new Sample(sampleId, costs, health, giveExpertise);
       sample.id = sampleId;
+      sample.carriedBy = carriedBy;
       
       if (carriedBy != -1) {
         robots[carriedBy].carriedSamples.add(sample);

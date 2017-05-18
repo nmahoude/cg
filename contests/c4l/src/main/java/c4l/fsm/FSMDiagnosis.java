@@ -8,7 +8,7 @@ import c4l.Order;
 import c4l.entities.Module;
 import c4l.entities.Sample;
 import c4l.molecule.MoleculeComboInfo;
-import c4l.sample.SampleOptimizerNode;
+import c4l.sample.SampleOptimizer;
 
 public class FSMDiagnosis extends FSMNode {
   FSMDiagnosis(FSM fsm) {
@@ -73,7 +73,7 @@ public class FSMDiagnosis extends FSMNode {
       }
       
       if (combo.neededMoleculeToRealiseCombo() == 0) {
-        fsm.goTo(Module.LABORATORY, "filled a sample, but no molecule needed and no more sample can be fullfilled");
+        fsm.goTo(Module.LABORATORY, "filled samples combo, but no molecule needed and no more sample can be fullfilled");
         return;
       } else {
         fsm.goTo(Module.MOLECULES, "Got at least one way to do sample ");
@@ -86,34 +86,12 @@ public class FSMDiagnosis extends FSMNode {
    * Find a completable sample in the cloud
    */
   boolean findANewCompletableSampleAtDiag_new(boolean acceptAll) {
-    SampleOptimizerNode root = fsm.getBestSamplesAtDiag();
+    SampleOptimizer optimizer = new SampleOptimizer();
+    List<Sample> bestSamples = optimizer.optimize(state, me);
     
     System.err.println("Found the best combo : ");
-    System.err.println(root.bestChild.toString());
+    System.err.println(bestSamples.toString());
     
-    List<Sample> acceptableSamples = new ArrayList<>();
-    for (Sample sample : root.bestChild.currentSamples) {
-      if (acceptAll || me.canCompleteSampleWithMoleculePool(state, sample)) {
-        acceptableSamples.add(sample);
-      }
-    }
-    if (me.carriedSamples.size() == 3 ) {
-      // check to remove
-      for (Sample sample : me.carriedSamples) {
-        if (acceptableSamples.indexOf(sample) == -1) {
-          fsm.connect(sample.id, "Remove a sample to get a new one later");
-          return true;
-        }
-      }
-    } else {
-      for (Sample sample : acceptableSamples) {
-        if (me.carriedSamples.indexOf(sample) == -1) {
-          fsm.connect(sample.id, "Add a good sample");
-          return true;
-        }
-      }
-    }
-
     return false;
   }
   

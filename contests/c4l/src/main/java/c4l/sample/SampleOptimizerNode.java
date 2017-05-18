@@ -9,6 +9,8 @@ import java.util.Map;
 import c4l.GameState;
 import c4l.entities.Robot;
 import c4l.entities.Sample;
+import c4l.molecule.MoleculeComboInfo;
+import c4l.molecule.MoleculeOptimizerNode;
 
 public class SampleOptimizerNode {
 
@@ -24,13 +26,24 @@ public class SampleOptimizerNode {
   public List<SampleOptimizerNode> children = new ArrayList<>();
   public double score;
   public SampleOptimizerNode bestChild;
+  private static MoleculeOptimizerNode node;
 
+
+  
   public SampleOptimizerNode() {
   }
   
   public void start (GameState state, Robot me) {
     SampleOptimizerNode.state = state;
     SampleOptimizerNode.me = me;
+    
+    // prepare the molecule optimizer to calculate score 
+    node = new MoleculeOptimizerNode();
+    node.createStorage(me.storage);
+    node.createExpertise(me.expertise);
+    node.createAvailable(state.availables);
+    node.ply = state.ply;
+    
     
     samplesPool = new ArrayList<>();
     samplesPool.addAll(state.availableSamples);
@@ -140,34 +153,18 @@ public class SampleOptimizerNode {
     return calculateScore();
   }
 
-
-  // TODO check the different score factors 
   private double calculateScore() {
-    double score = 0.0;
-    int currentGain[] = new int[6];
-    int completed = 0;
-    int semiCompleted = 0;
+    if (currentSamples.size() == 0 ) {
+      score = 0.0;
+      return score;
+    }
     
-    for (Sample sample : currentSamples) {
-      if (sample.expertise != null) {
-        currentGain[sample.expertise.index]++;
-      }
+    node.updateSamples(currentSamples);
 
-      if (me.canCompleteSampleAuto(sample)) {
-        score += 2; // 2 points for autocomplete
-        completed++;
-      } else if (me.canCompleteSampleWithMoleculePool(state, sample)) {
-        score += 1; // 1 point for completing the sample
-        semiCompleted++; // TODO get a ratio of completude ?
-      }
-
-      score += sample.roi();
-    }
-
-    if (state.distanceToScienceProjects(me, currentGain) == 0) { 
-      score += 50;
-    }
-
+    MoleculeComboInfo combo = node.getLocalCombo();
+    int moleculeCount = combo.neededMoleculeToRealiseCombo();
+    score = 1.0*combo.scoreRealized() / (moleculeCount+1);
+    
     return score;
   }
 

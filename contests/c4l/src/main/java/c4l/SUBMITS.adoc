@@ -1,6 +1,7 @@
 = List ds subits et leur contenu
 
 == GOLD 18/05
+17h00 / 7 : some refactroring (neutral ?)
 16h30 / : utilisation de la molecule qui est la moins nombreuse
 
 == SILBER 17/05

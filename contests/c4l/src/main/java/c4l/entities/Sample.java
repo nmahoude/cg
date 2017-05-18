@@ -15,7 +15,8 @@ public class Sample {
   public int[] costs;
   public int fullCost = 0;
   public int id;
-
+  public int carriedBy;
+  
   int rank;
   PlayerData discoveredBy;
 
@@ -26,6 +27,7 @@ public class Sample {
     this.expertise = moleculeGained;
     this.health = life;
     this.costs = cost;
+    this.carriedBy = -1; // noody
     
     fullCost = 0;
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {

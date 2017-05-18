@@ -28,6 +28,11 @@ public class MoleculeComboInfo {
     return infos.stream().mapToInt(info -> info.getNeededMolecules().size()).sum();
   }
 
+
+  public int scoreRealized() {
+    return infos.stream().mapToInt(info -> info.health ).sum();
+  }
+
   public int scoreRealizedWithoutMolecule() {
     return infos.stream().mapToInt(info -> info.getNeededMolecules().size() == 0 ? info.health : 0).sum();
   }

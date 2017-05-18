@@ -9,9 +9,9 @@ import c4l.GameState;
 import c4l.entities.Module;
 import c4l.entities.MoleculeType;
 import c4l.entities.Robot;
+import c4l.entities.Sample;
 
 public class MoleculeOptimizerNode {
-  private static final int SCORE_WHERE_WIN = 100_000;
   public static final int PICKED_MOLECULES = 3;
   public static final int EXPERTISE = 4;
   public static final int AVAILABLE = 5;
@@ -243,7 +243,7 @@ public class MoleculeOptimizerNode {
       // here, the sample is done
       info.addComplete(moleculeInfo);
       info.score += values[WIDTH*order[i]+HEALTH];
-      int gainIndex = this.values[WIDTH*order[i]+XPGAIN];
+      int gainIndex = values[WIDTH*order[i]+XPGAIN];
       // TODO this test is only for tests as I want to simulate without gain, that is not good
       if (gainIndex != -1 ) {
         xp[gainIndex]++; // add expertise !
@@ -284,6 +284,18 @@ public class MoleculeOptimizerNode {
 
   public MoleculeComboInfo getBestChild() {
     return combo;
+  }
+
+  public void updateSamples(List<Sample> currentSamples) {
+    int index = 0;
+    for (Sample sample : currentSamples) {
+      if (sample.expertise != null) {
+        createSample(index++, sample.costs, sample.health, sample.expertise.index);
+      }
+    }
+    for (int i=currentSamples.size()*WIDTH;i<3*WIDTH;i++) {
+      values[i] = 99;// all costs at 99 , so we cannot fullfill absent samples
+    }
   }
 
 }
