@@ -21,29 +21,6 @@ public class FSMDiagnosis extends FSMNode {
 
   @Override
   public void think() {
-    //TODO review the tentative of bootstrapping
-//    if (state.ply < 20) {
-//      Sample firstUnDiscoveredSample = getFirstUnDiscoveredSample();
-//      if (firstUnDiscoveredSample != null) {
-//        fsm.connect(firstUnDiscoveredSample.id, "Bootstrap - discover the sample to know what to do");
-//        return;
-//      }
-//      // remove the health 1 samples !
-//      for (Sample sample : me.carriedSamples) {
-//        if (sample.health<2 && sample.totalNeededMolecules()>3) {
-//          fsm.connect(sample.id, "Bootstrap, sample has not a good ROI");
-//          return;
-//        }
-//      }
-//      if (me.carriedSamples.size() == 0) {
-//        fsm.goTo(Module.SAMPLES, "Bootstrap-Go back to samples");
-//        return;
-//      } else {
-//        fsm.goTo(Module.MOLECULES, "Bootstrap - some samples remains, so go to MOLECULE");
-//        return;
-//      }
-//    }
-    
     findANewCompletableSampleAtDiag_new(true); // perf test
     
     if (me.carriedSamples.isEmpty()) {
@@ -54,11 +31,6 @@ public class FSMDiagnosis extends FSMNode {
         fsm.goTo(Module.SAMPLES, "Can't find anything @DIAG, go to sample");
         return;
       }
-    }
-    
-    if (checkIfIHaveEnoughPointsToWin()) {
-      fsm.goTo(Module.LABORATORY, "Afer taking a samples, i have enough points to win already !");
-      return;
     }
     
     Sample firstUnDiscoveredSample = getFirstUnDiscoveredSample();

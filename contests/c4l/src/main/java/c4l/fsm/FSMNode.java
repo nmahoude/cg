@@ -73,13 +73,4 @@ public abstract class FSMNode {
     }
     
   }
-  /**
-   * Based on the samples and molecules I have, 
-   * check if I have enough material to win the game
-   * @return
-   */
-  boolean checkIfIHaveEnoughPointsToWin() {
-    // TODO redo it we can't win anymore with 170 pts, but there is other way (in the end game)
-    return false;
-  }
 }

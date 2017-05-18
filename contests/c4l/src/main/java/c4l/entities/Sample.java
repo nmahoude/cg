@@ -1,5 +1,6 @@
 package c4l.entities;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 import c4l.GameState;
@@ -77,13 +78,16 @@ public class Sample {
    * @param me
    * @return
    */
-  protected int relativeCost(Robot me) {
-    int total = 0;
+  public int relativeCost(Robot me) {
+    return Arrays.stream(relativeCostByMolecule(me)).sum();
+  }
+  
+  public int[] relativeCostByMolecule(Robot me) {
+    int[] result = new int[GameState.MOLECULE_TYPE];
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      total += Math.max(0, costs[i]-me.storage[i]-me.expertise[i]);
+      result[i]= Math.max(0, costs[i]-me.storage[i]-me.expertise[i]);
     }
-    
-    return total;
+    return result;
   }
   
   /*

@@ -3,12 +3,14 @@ package c4l.molecule;
 import java.util.ArrayList;
 import java.util.List;
 
+import c4l.GameState;
 import c4l.entities.MoleculeType;
 
   /** in order, which molecules needed for which sample*/
 public class MoleculeComboInfo {
   public List<MoleculeInfo> infos = new ArrayList<>();
   public double score;
+  public int totalMoleculeNeeded[] = new int[6];
   
   @Override
   public String toString() {
@@ -40,6 +42,13 @@ public class MoleculeComboInfo {
       all.addAll(info.getNeededMolecules());
     }
     return all;
+  }
+
+  public void addComplete(MoleculeInfo moleculeInfo) {
+    infos.add(moleculeInfo);
+    for (int m=0;m<GameState.MOLECULE_TYPE;m++) {
+      totalMoleculeNeeded[m] += moleculeInfo.moleculesNeeded[m];
+    }
   }
   
 }

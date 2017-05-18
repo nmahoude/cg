@@ -29,11 +29,6 @@ public class FSMMolecule extends FSMNode {
       return;
     }
     
-    if (checkIfIHaveEnoughPointsToWin()) {
-      fsm.goTo(Module.LABORATORY, "I have enough points to win, go @LAB");
-      return;
-    }
-    
     MoleculeComboInfo combo = fsm.getBestComboForSamples();
     
     if (getANeededMoleculeForCombo(combo)) {
@@ -188,5 +183,25 @@ public class FSMMolecule extends FSMNode {
       }
     }
     return moleculeToBlock;
+  }
+
+  MoleculeType getSparserMolecule(int[] moleculesNeeded) {
+    MoleculeType moleculeSparse = null;
+    int diff = Integer.MAX_VALUE;
+    for (int i = 0; i < GameState.MOLECULE_TYPE; i++) {
+      if (moleculesNeeded[i] == 0) continue;
+      
+      int delta = Math.max(0, state.availables[i] - moleculesNeeded[i]);
+      if (delta < diff) {
+        diff = delta;
+        moleculeSparse = MoleculeType.values()[i];
+      } else if (delta == diff) {
+        // equality -> take the one the closer to 0 availability;
+        if (state.availables[moleculeSparse.index] > state.availables[i]) {
+          moleculeSparse = MoleculeType.values()[i];
+        }
+      }
+    }
+    return moleculeSparse;
   }
 }

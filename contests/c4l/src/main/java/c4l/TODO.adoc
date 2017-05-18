@@ -13,6 +13,9 @@ Savoir prendre l'etat complet du jeu
 == Optimiser le fait que le déplacement fait 2 pour, quand eta > 0, calculer des trucs pour le futur ...
 
 == TODOs
+* Verifier l'ordre dans lequel sort les sample de l'optimiszer!
+
+
 * Priorité 0 : MoleculeOptimizer : gerer la fin de partie en ne prenant pas plus de molecule qu'il reste de tours
 * Priorité 0 : MoleculeOptimizer : gerer la completion/% des science projects
 * !!! TOP PRIORITE !!!! URGE : en fin de partie, il ne faut plus perde de temps si on peux completer des samples !

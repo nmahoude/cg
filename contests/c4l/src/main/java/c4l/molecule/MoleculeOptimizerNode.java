@@ -235,15 +235,13 @@ public class MoleculeOptimizerNode {
             initialStorage[j] = 0;
 
             moleculeInfo.moleculesNeeded[j] = needed;
-
             pickedMolecules[j]-=needed;
             needed = 0;
           }
         }
       }
       // here, the sample is done
-      
-      info.infos.add(moleculeInfo);
+      info.addComplete(moleculeInfo);
       info.score += values[WIDTH*order[i]+HEALTH];
       int gainIndex = this.values[WIDTH*order[i]+XPGAIN];
       // TODO this test is only for tests as I want to simulate without gain, that is not good

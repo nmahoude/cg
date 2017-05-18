@@ -1,5 +1,8 @@
 = List ds subits et leur contenu
 
+== GOLD 18/05
+16h30 / : utilisation de la molecule qui est la moins nombreuse
+
 == SILBER 17/05
 * 14h47 / 4  : gerer la fin de partie dans le moleculeOptimizer 
 * 11h38 / 6  : correction d'un bug d'xp qui faisait qu'on bouclait vers le LAB
