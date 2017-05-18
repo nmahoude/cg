@@ -57,7 +57,7 @@ public class FSM {
       // TODO do some thinking here, to prepare next actions ?
       // currentState.preThink();
       explainYourself("Still moving ( eta="+me.eta+" ) to "+currentState.module()+" ...");
-      System.out.println("Thinking about life ...");
+      System.out.println("So long ....");
       return;
     } 
     System.err.println("I'm at module "+currentState.module());

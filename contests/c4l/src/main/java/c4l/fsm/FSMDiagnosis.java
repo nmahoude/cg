@@ -105,8 +105,15 @@ public class FSMDiagnosis extends FSMNode {
       }
     } else {
       if (me.carriedSamples.containsAll(bestSamples)) {
-        fsm.goTo(Module.MOLECULES, "Got all from best samples, goto molecule");
-        return true;
+        // check if we have to go to molecule ...
+        MoleculeComboInfo combo = fsm.getBestComboForSamples();
+        if (combo.neededMoleculeToRealiseCombo() > 0) {
+          fsm.goTo(Module.MOLECULES, "Got all from best samples and need some molecules, goto molecule");
+          return true;
+        } else {
+          fsm.goTo(Module.LABORATORY, "Go directly to lab, can't get nothing from MOLECULE");
+          return true;
+        }
       } else {
         if (me.carriedSamples.size() == 3) {
           Sample sample = getOneFromNotInto(me.carriedSamples, bestSamples);

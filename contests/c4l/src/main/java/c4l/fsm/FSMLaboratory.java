@@ -2,8 +2,8 @@ package c4l.fsm;
 
 import java.util.List;
 
-import c4l.Order;
 import c4l.entities.Module;
+import c4l.entities.Robot;
 import c4l.entities.Sample;
 import c4l.molecule.MoleculeComboInfo;
 import c4l.sample.SampleOptimizer;
@@ -15,8 +15,13 @@ public class FSMLaboratory extends FSMNode {
   @Override
   public void think() {
     // TODO Maybe don't put all samples in LAB if we block the opponent !
-    List<Integer> completableSamples = getCompletableSamples(new int[] {0, 0, 0, 0, 0});
-    
+     MoleculeComboInfo completableSamplesInfo = getCompletableSamples(new int[] {0, 0, 0, 0, 0});
+     List<Integer> completableSamples = getCompletableSampleIds(completableSamplesInfo);
+     
+     if (checkIfHeHisBlockedIfIDontCompleteSamples(completableSamplesInfo)) {
+       return;
+     }
+     
     if (!completableSamples.isEmpty()) {
       fsm.connect(completableSamples.get(0), "Got a full sample in the bag");
       return;
@@ -40,6 +45,33 @@ public class FSMLaboratory extends FSMNode {
         }
       }
     }
+  }
+  
+  /**
+   *  Maybe don't put all samples in LAB if we block the opponent !
+   *  And our score +anticipation is better
+   * @return
+   */
+  private boolean checkIfHeHisBlockedIfIDontCompleteSamples(MoleculeComboInfo completableSamplesInfo) {
+    Robot him = state.robots[1];
+
+    if (him.target != Module.MOLECULES) return false;
+    if (completableSamplesInfo.infos.isEmpty()) return false;
+    
+    for (Sample sample : him.carriedSamples) {
+      if (him.canCompleteSampleWithMoleculePool(state, sample)) return false;
+    }
+    // ok we blocked him, now is it interesting ??
+    int potentialScore = 0;
+    for (int i=0;i<completableSamplesInfo.infos.size();i++) {
+      if (state.ply + (i+1) > 200) continue; // no time to complete
+      potentialScore += completableSamplesInfo.infos.get(i).points;
+    }
+    if (me.score +potentialScore < him.score) return false; // don't block if we will be behind
+    
+    fsm.goTo(Module.LABORATORY, "Stay at LAB, blocking him");
+    // DEBUG sauvage:) System.out.println("CAS DE BLOCAGE ! ");
+    return true;
   }
   
   @Override

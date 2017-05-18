@@ -35,19 +35,23 @@ public abstract class FSMNode {
    * Return a list of all completeSamples wr molecules & expertise
    * @return
    */
-  public List<Integer> getCompletableSamples(int[] availables) {
-    List<Integer> samples = new ArrayList<>();
+  public MoleculeComboInfo getCompletableSamples(int[] availables) {
 
     MoleculeOptimizerNode node = new MoleculeOptimizerNode();
     node.start(state.ply, availables, me);
     MoleculeComboInfo bestChild = node.getBestChild();
+    return bestChild;
+  }
+
+  public List<Integer> getCompletableSampleIds(MoleculeComboInfo bestChild) {
+    List<Integer> samples = new ArrayList<>();
     for (MoleculeInfo info : bestChild.infos) {
       samples.add(info.sampleId);
     }
     
     return samples;
   }
-
+  
   List<Sample> findDoableSampleInCloud() {
     List<Sample> samples = new ArrayList<>();
     for (Sample sample : state.availableSamples) {
