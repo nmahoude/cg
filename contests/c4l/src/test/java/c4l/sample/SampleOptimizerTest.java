@@ -2,7 +2,7 @@ package c4l.sample;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -100,7 +100,7 @@ public class SampleOptimizerTest {
     assertThat(samples, hasItem(s2));
     assertThat(samples, hasItem(s4));
   }
-
+  
   @Test
   public void fourSampleInThePool_noCarried_choiceToMake() throws Exception {
     state.availables = new int[] {5, 5, 5, 5, 5};

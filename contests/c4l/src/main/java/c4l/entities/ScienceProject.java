@@ -23,8 +23,16 @@ public class ScienceProject {
     }
   }
 
-  @Override
   public String toString() {
-    return "Science project : ("+doneBy+")"+Arrays.toString(expertiseNeeded);
+    String output = "createSP("+doneBy+",new int[]{";
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      output += (""+expertiseNeeded[i]);
+      if (i != GameState.MOLECULE_TYPE-1) {
+        output += (",");
+      } else {
+        output += ("});");
+      }
+    }
+    return output;
   }
 }

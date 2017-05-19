@@ -19,7 +19,7 @@ public class FSMTest {
     
     @Before
     public void setup() {
-      me = new Robot();
+      me = new Robot(0);
       me.target = Module.MOLECULES;
     }
   }

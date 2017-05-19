@@ -47,25 +47,6 @@ public class Sample {
     return new Sample(id, costs, health, expertise);
   }
 
-  public void debug() {
-    System.err.print("createSample("+id+", new int[]{");
-    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      System.err.print(""+costs[i]);
-      if (i != GameState.MOLECULE_TYPE-1) {
-        System.err.print(", ");
-      } else {
-        System.err.print("},");
-      }
-    }
-    System.err.print(""+health+");");
-    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      if (gain[i] > 0) {
-        System.err.print(""+i+",");
-      }
-    }
-    System.err.println(");");
-  }
-
   /**
    * return how many molecules are needed with 0 xp & 0 storage
    * @return
@@ -153,23 +134,24 @@ public class Sample {
 
   @Override
   public String toString() {
-    StringBuffer output = new StringBuffer();
-    output.append("createSample("+id+", new int[]{");
+    String output = ("createSample("+id+","+carriedBy+", new int[]{");
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      output.append(""+costs[i]);
+      output += (""+costs[i]);
       if (i != GameState.MOLECULE_TYPE-1) {
-        output.append(", ");
+        output += (",");
       } else {
-        output.append("}, ");
+        output += ("},");
       }
     }
-    output.append(""+health+", ");
+    output +=(""+health+",");
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
       if (gain[i] > 0) {
-        output.append(""+i+",");
+        output += ("MoleculeType."+(char)('A'+i));
       }
     }
-    output.append(");");
-    return output.toString();
- }
+    output += (");");
+    return output;
+  }
+
+
 }

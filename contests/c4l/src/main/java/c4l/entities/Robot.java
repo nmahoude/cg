@@ -11,6 +11,7 @@ public class Robot {
   public static final int MAX_MOLECULES = 10;
   public static final int MAX_SAMPLES = 3;
   
+  public final int id;
   public Module target;
   public int eta;
   public int score;
@@ -20,6 +21,10 @@ public class Robot {
   public int expertise[] = new int[5];
   public List<Sample> carriedSamples = new ArrayList<>();
   
+  public Robot(int id) {
+    this.id = id;
+    target = Module.START_POS;
+  }
   public void read(Scanner in) {
     target = Module.valueOf(in.next());
     eta = in.nextInt();
@@ -100,5 +105,21 @@ public class Robot {
   public int potentialScore() {
     return score + carriedSamples.stream().mapToInt(s -> s.health).sum();
   }
+
+  public String toString() {
+    String output = "createRobot("+id+","+target.ordinal()+","+eta+","+score+", new int[]{";
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      output+=""+storage[i];
+      if (i < GameState.MOLECULE_TYPE-1) output+=", ";
+    }
+    output+="}, new int[]{";
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      output+=""+expertise[i];
+      if (i < GameState.MOLECULE_TYPE-1) output+=", ";
+    }
+    output+="});";
+    return output;
+  }
+  
 
 }

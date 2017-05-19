@@ -1,8 +1,9 @@
 = List ds subits et leur contenu
 
 == GOLD 19/05
-09h59 / : moins de poids pour le xpGain
-09h46 /  : poids (enorme) sur le xpGain
+11h00 / 21 : meme repush
+09h59 / 22 : moins de poids pour le xpGain
+09h46 /  33 : poids (enorme) sur le xpGain
 09h35 / 21 : modification de la prise de samples
 09h20 / 17: greedy à 8 dans les molecule
 08h03 / ; suppression xp bnous

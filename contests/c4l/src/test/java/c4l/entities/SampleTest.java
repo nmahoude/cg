@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import c4l.GameState;
@@ -13,9 +14,15 @@ import c4l.Order;
 
 public class SampleTest {
 
+  private Robot me;
+
+  @Before
+  public void setup() {
+    me = new Robot(0);
+  }
+
   @Test
   public void relativeCost_noExpertise() throws Exception {
-    Robot me = new Robot();
     me.storage = new int[] { 0, 1, 2, 3, 4 };
     me.expertise = new int[] {0, 0, 0, 0, 0};
     
@@ -26,7 +33,6 @@ public class SampleTest {
 
   @Test
   public void relativeCost_expertiseOnly() throws Exception {
-    Robot me = new Robot();
     me.storage= new int[] {0, 0, 0, 0, 0};
     me.expertise = new int[] { 4, 3, 2, 1 ,0 };
     
@@ -37,7 +43,6 @@ public class SampleTest {
 
   @Test
   public void relativeCost_mix() throws Exception {
-    Robot me = new Robot();
     me.storage= new int[] {0, 3, 0, 1, 0};
     me.expertise = new int[] { 4, 0, 2, 0 ,0 };
     
@@ -48,7 +53,6 @@ public class SampleTest {
   
   @Test
   public void relativeCost_moreThanNeeded() throws Exception {
-    Robot me = new Robot();
     me.storage= new int[] {0, 1, 2, 3, 4 };
     me.expertise = new int[] { 4, 3, 2, 1 ,0 };
     

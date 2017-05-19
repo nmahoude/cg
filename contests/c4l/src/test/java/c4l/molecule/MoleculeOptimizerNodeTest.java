@@ -28,7 +28,7 @@ public class MoleculeOptimizerNodeTest {
   
   @Before
   public void setup() {
-    me = new Robot();
+    me = new Robot(0);
     me.target = Module.MOLECULES;
     
     root = new MoleculeOptimizerNode();

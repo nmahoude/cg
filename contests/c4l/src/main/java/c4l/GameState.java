@@ -22,8 +22,8 @@ public class GameState {
   public int ply = 0;
   
   public GameState() {
-    robots[0] = new Robot();
-    robots[1] = new Robot();
+    robots[0] = new Robot(0);
+    robots[1] = new Robot(1);
   }
 
   public void readAvailables(Scanner in) {
@@ -93,7 +93,7 @@ public class GameState {
 
   public void debugScienceProjects() {
     for (ScienceProject project : scienceProjects) {
-      System.err.println(project.toString());
+      System.err.println(project);
     }
   }
 

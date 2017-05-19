@@ -43,12 +43,16 @@ public class Player {
       
       if (debug) {
         state.debugScienceProjects();
-        System.err.println("--------ME------------");
-        me.carriedSamples.forEach(sample -> sample.debug());
+        System.err.println("//--------POOL------------");
+        state.availableSamples.forEach(sample -> System.err.println(sample));
+        System.err.println("//--------ME------------");
+        System.err.println(me);
+        me.carriedSamples.forEach(sample -> System.err.println(sample));
         debugStorage(me);
         debugExpertise(me);
-        System.err.println("--------HIM-----------");
-        state.robots[1].carriedSamples.forEach(sample -> sample.debug());
+        System.err.println("//--------HIM-----------");
+        System.err.println(state.robots[1]);
+        state.robots[1].carriedSamples.forEach(sample -> System.err.println(sample));
         debugStorage(state.robots[1]);
         debugExpertise(state.robots[1]);
         System.err.println("------------------");
@@ -75,7 +79,7 @@ public class Player {
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
       System.err.print(state.availables[i]);
       if (i != GameState.MOLECULE_TYPE-1) {
-        System.err.print(", ");
+        System.err.print(",");
       } else {
         System.err.print("});");
       }
@@ -84,11 +88,11 @@ public class Player {
   }
 
   private void debugExpertise(Robot me) {
-    System.err.print("createExpertise(new int[]{");
+    System.err.print("createExpertise("+me.id+",new int[]{");
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
       System.err.print(me.expertise[i]);
       if (i != GameState.MOLECULE_TYPE-1) {
-        System.err.print(", ");
+        System.err.print(",");
       } else {
         System.err.print("});");
       }
@@ -97,11 +101,11 @@ public class Player {
   }
 
   private void debugStorage(Robot me) {
-    System.err.print("createStorage(  new int[]{");
+    System.err.print("createStorage("+me.id+",  new int[]{");
     for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
       System.err.print(me.storage[i]);
       if (i != GameState.MOLECULE_TYPE-1) {
-        System.err.print(", ");
+        System.err.print(",");
       } else {
         System.err.print("});");
       }
