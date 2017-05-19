@@ -36,9 +36,9 @@ public class SampleOptimizerTest {
     Sample s3 = new Sample(2, new int[] {0, 0, 0, 0, 0}, 10, MoleculeType.A);
     state.availableSamples.addAll(Arrays.asList(s1, s2, s3));
 
-    List<Sample> samples = optimizer.optimize(state, me);
+    SampleInfo info= optimizer.optimize(state, me);
     
-    assertThat(samples.size(), is(3));
+    assertThat(info.samples.size(), is(3));
   }
 
   @Test
@@ -51,9 +51,9 @@ public class SampleOptimizerTest {
     state.availables = new int[] { 10, 10 ,10, 10, 10};
     me.storage = new int[] {10, 0, 0, 0, 0};
     
-    List<Sample> samples = optimizer.optimize(state, me);
+    SampleInfo info= optimizer.optimize(state, me);
     
-    assertThat(samples.size(), is(0));
+    assertThat(info.samples.size(), is(0));
   }
 
   @Test
@@ -63,9 +63,9 @@ public class SampleOptimizerTest {
     state.availableSamples.addAll(Arrays.asList(s1));
 
     SampleOptimizer optimizer = new SampleOptimizer();
-    List<Sample> samples = optimizer.optimize(state, me);
+    SampleInfo info= optimizer.optimize(state, me);
     
-    assertThat(samples, hasItem(s1));
+    assertThat(info.samples, hasItem(s1));
   }
 
   @Test
@@ -77,10 +77,10 @@ public class SampleOptimizerTest {
     state.availableSamples.addAll(Arrays.asList(s1, s2, s3));
 
     SampleOptimizer optimizer = new SampleOptimizer();
-    List<Sample> samples = optimizer.optimize(state, me);
+    SampleInfo info= optimizer.optimize(state, me);
     
-    assertThat(samples, hasItem(s2));
-    assertThat(samples, hasItem(s3));
+    assertThat(info.samples, hasItem(s2));
+    assertThat(info.samples, hasItem(s3));
   }
 
   @Test
@@ -94,11 +94,11 @@ public class SampleOptimizerTest {
 
     state.scienceProjects.add(new ScienceProject(new int[] { 5, 5, 0, 5, 0}));
     SampleOptimizer optimizer = new SampleOptimizer();
-    List<Sample> samples = optimizer.optimize(state, me);
+    SampleInfo info= optimizer.optimize(state, me);
     
-    assertThat(samples, hasItem(s1));
-    assertThat(samples, hasItem(s2));
-    assertThat(samples, hasItem(s4));
+    assertThat(info.samples, hasItem(s1));
+    assertThat(info.samples, hasItem(s2));
+    assertThat(info.samples, hasItem(s4));
   }
   
   @Test
@@ -112,11 +112,11 @@ public class SampleOptimizerTest {
 
     SampleOptimizer optimizer = new SampleOptimizer();
 
-    List<Sample> samples = optimizer.optimize(state, me);
+    SampleInfo info=optimizer.optimize(state, me);
     
-    assertThat(samples, hasItem(s0));
-    assertThat(samples, hasItem(s2));
-    assertThat(samples, hasItem(s3));
+    assertThat(info.samples, hasItem(s0));
+    assertThat(info.samples, hasItem(s2));
+    assertThat(info.samples, hasItem(s3));
   }
 
   @Test
@@ -139,11 +139,11 @@ public class SampleOptimizerTest {
     optimizer.samples.addAll(state.availableSamples);
     optimizer.samples.addAll(me.carriedSamples);
 
-    List<Sample> samples = optimizer.optimize(state, me);
+    SampleInfo info= optimizer.optimize(state, me);
     
-    assertThat(samples, hasItem(s0));
-    assertThat(samples, hasItem(s2));
-    assertThat(samples, hasItem(s3));
+    assertThat(info.samples, hasItem(s0));
+    assertThat(info.samples, hasItem(s2));
+    assertThat(info.samples, hasItem(s3));
   }
   
   @Test
@@ -166,11 +166,11 @@ public class SampleOptimizerTest {
     optimizer.samples.addAll(state.availableSamples);
     optimizer.samples.addAll(me.carriedSamples);
 
-    List<Sample> samples = optimizer.optimize(state, me);
+    SampleInfo info= optimizer.optimize(state, me);
     
-    assertThat(samples, hasItem(c0));
-    assertThat(samples, hasItem(c1));
-    assertThat(samples, hasItem(c2));
+    assertThat(info.samples, hasItem(c0));
+    assertThat(info.samples, hasItem(c1));
+    assertThat(info.samples, hasItem(c2));
   }
   
   @Test
@@ -190,9 +190,9 @@ public class SampleOptimizerTest {
     
     SampleOptimizer optimizer = new SampleOptimizer();
 
-    List<Sample> samples = optimizer.optimize(state, me);
+    SampleInfo info= optimizer.optimize(state, me);
     
     // optimiser should say to take s1 (to complete the project)
-    assertThat(samples, hasItem(s1));
+    assertThat(info.samples, hasItem(s1));
   }
 }

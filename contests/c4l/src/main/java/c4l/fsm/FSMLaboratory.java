@@ -6,6 +6,7 @@ import c4l.entities.Module;
 import c4l.entities.Robot;
 import c4l.entities.Sample;
 import c4l.molecule.MoleculeComboInfo;
+import c4l.sample.SampleInfo;
 import c4l.sample.SampleOptimizer;
 
 public class FSMLaboratory extends FSMNode {
@@ -35,12 +36,12 @@ public class FSMLaboratory extends FSMNode {
         return;
       } else {
         SampleOptimizer optimizer = new SampleOptimizer();
-        List<Sample> bestSamples = optimizer.optimize(state, me);
-        if (bestSamples.size() >= 2) {
+        SampleInfo info=  optimizer.optimize(state, me);
+        if (info.samples.size() >= 2) {
           fsm.goTo(Module.DIAGNOSIS, "Found samples in the cloud, go get them");
           return;
         } else {
-          fsm.goTo(Module.SAMPLES, "Not enough samples in the cloud, go to SAMPLE "+bestSamples.toString());
+          fsm.goTo(Module.SAMPLES, "Not enough samples in the cloud, go to SAMPLE "+info.samples.toString());
           return;
         }
       }

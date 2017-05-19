@@ -8,6 +8,7 @@ import c4l.Order;
 import c4l.entities.Module;
 import c4l.entities.Sample;
 import c4l.molecule.MoleculeComboInfo;
+import c4l.sample.SampleInfo;
 import c4l.sample.SampleOptimizer;
 
 public class FSMDiagnosis extends FSMNode {
@@ -90,12 +91,12 @@ public class FSMDiagnosis extends FSMNode {
    */
   boolean findANewCompletableSampleAtDiag_new() {
     SampleOptimizer optimizer = new SampleOptimizer();
-    List<Sample> bestSamples = optimizer.optimize(state, me);
+    SampleInfo info = optimizer.optimize(state, me);
     
     System.err.println("Found the best combo : ");
-    System.err.println(bestSamples.toString());
+    System.err.println(info.samples.toString());
     
-    if (bestSamples.size() == 0) {
+    if (info.samples.size() == 0) {
       if (me.carriedSamples.size() > 0) {
         fsm.connect(me.carriedSamples.get(0).id, "Drop sample, there is no best sample");
         return true;
@@ -104,7 +105,7 @@ public class FSMDiagnosis extends FSMNode {
         return true;
       }
     } else {
-      if (me.carriedSamples.containsAll(bestSamples)) {
+      if (me.carriedSamples.containsAll(info.samples)) {
         // check if we have to go to molecule ...
         MoleculeComboInfo combo = fsm.getBestComboForSamples();
         if (combo.neededMoleculeToRealiseCombo() > 0) {
@@ -116,11 +117,11 @@ public class FSMDiagnosis extends FSMNode {
         }
       } else {
         if (me.carriedSamples.size() == 3) {
-          Sample sample = getOneFromNotInto(me.carriedSamples, bestSamples);
+          Sample sample = getOneFromNotInto(me.carriedSamples, info.samples);
           fsm.connect(sample.id, "Remove a sample from our list as it is full");
           return true;
         } else {
-          Sample sample = getOneFromNotInto(bestSamples, me.carriedSamples);
+          Sample sample = getOneFromNotInto(info.samples, me.carriedSamples);
           fsm.connect(sample.id, "Get a sample from the best list");
           return true;
         }
