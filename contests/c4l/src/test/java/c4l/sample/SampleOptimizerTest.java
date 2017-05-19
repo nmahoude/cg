@@ -84,6 +84,24 @@ public class SampleOptimizerTest {
   }
 
   @Test
+  public void fourSampleInThePool_3forScience() throws Exception {
+    state.availables = new int[] {5, 5, 5, 5, 5};
+    Sample s1 = new Sample(0, new int[] {1, 0, 0, 0, 0}, 10, MoleculeType.A);
+    Sample s2 = new Sample(1, new int[] {1, 0, 0, 0, 0}, 10, MoleculeType.B);
+    Sample s3 = new Sample(2, new int[] {1, 0, 0, 0, 0}, 10, MoleculeType.C);
+    Sample s4 = new Sample(3, new int[] {1, 0, 0, 0, 0}, 10, MoleculeType.D);
+    state.availableSamples.addAll(Arrays.asList(s1, s2, s3, s4));
+
+    state.scienceProjects.add(new ScienceProject(new int[] { 5, 5, 0, 5, 0}));
+    SampleOptimizer optimizer = new SampleOptimizer();
+    List<Sample> samples = optimizer.optimize(state, me);
+    
+    assertThat(samples, hasItem(s1));
+    assertThat(samples, hasItem(s2));
+    assertThat(samples, hasItem(s4));
+  }
+
+  @Test
   public void fourSampleInThePool_noCarried_choiceToMake() throws Exception {
     state.availables = new int[] {5, 5, 5, 5, 5};
     Sample s0 = new Sample(0, new int[] {1, 0, 0,0, 0}, 10, MoleculeType.A);

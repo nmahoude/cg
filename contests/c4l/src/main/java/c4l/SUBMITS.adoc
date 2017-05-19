@@ -1,6 +1,15 @@
 = List ds subits et leur contenu
 
 == GOLD 19/05
+09h59 / : moins de poids pour le xpGain
+09h46 /  : poids (enorme) sur le xpGain
+09h35 / 21 : modification de la prise de samples
+09h20 / 17: greedy à 8 dans les molecule
+08h03 / ; suppression xp bnous
+07h17 / 28: dimibutaion reward xpBonus, a supprimer si pas mieux
+03h15 / 22 : revert sur le SAMPLE complet
+03h04  / 13 : revert sur FSMSAMple, mais modification du 8 en 7. un peu + aggressif sur les points xpBonus
+NO GOOD 02h52    : petit bonus si on fill les xp à 0 + essayer de faire ressembler le SAMPLE a celui d'Agade 
 01h44    : ne pas aller au module molecule si je n'ai rien a y trouver
 00h48 / 17 : amelioration endGame pour la recherche des samples
 00h20 / 13: complete refactoring of the diag State !

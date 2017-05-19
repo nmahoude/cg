@@ -1,6 +1,7 @@
 package c4l.sample;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import c4l.GameState;
@@ -18,6 +19,7 @@ public class SampleOptimizer {
   GameState state;
   Robot me;
   public List<Sample> samples = new ArrayList<>();
+  double xpGainWeights[] = new double[GameState.MOLECULE_TYPE];
   
   public List<Sample> optimize(GameState state, Robot me) {
     this.state = state;
@@ -31,6 +33,8 @@ public class SampleOptimizer {
       if (!sample.isDiscovered()) continue;
       samples.add(sample);
     }
+  
+    updateXPGainWeights();
     
     List<Sample> bestSamples = new ArrayList<>();
     double bestScore = Double.NEGATIVE_INFINITY;
@@ -60,6 +64,25 @@ public class SampleOptimizer {
     return bestSamples;
   }
 
+  private void updateXPGainWeights() {
+    int total = 0;
+    int perMolecule[] = new int[GameState.MOLECULE_TYPE];
+    for (ScienceProject scienceProject : state.scienceProjects) {
+      if (scienceProject.doneBy != -1) continue;
+      for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+        total += scienceProject.expertiseNeeded[i];
+        perMolecule[i] += scienceProject.expertiseNeeded[i];
+      }
+    }
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      if (total > 0) {
+        xpGainWeights[i] = 1.0 * perMolecule[i] / total;
+      } else {
+        xpGainWeights[i] = 0;
+      }
+    }
+  }
+
   private int totalStorage;
   int storage[] = new int[GameState.MOLECULE_TYPE];
   int pickedMolecules[] = new int[GameState.MOLECULE_TYPE];
@@ -71,6 +94,7 @@ public class SampleOptimizer {
     int points = 0;
     int totalMoleculePicked = 0;
     
+    double xpBonus = 0.0;
     for (Sample sample : currentSamples) {
       for (int j=0;j<GameState.MOLECULE_TYPE;j++) {
         int needed = sample.costs[j];
@@ -102,13 +126,16 @@ public class SampleOptimizer {
           }
         }
       }
+      
+      xpBonus += 1.0*xpGainWeights[sample.expertise.index];
       expertise[sample.expertise.index]++;
       points+=sample.health;
+      // bonus to fill our XP
     }
     
     points += getExpertisePoints();
     
-    double score = 0.0;
+    double score = 0.0 + xpBonus;
     int turns = 0;
     if (totalMoleculePicked ==0) {
       turns = 
