@@ -10,8 +10,10 @@ import c4l.entities.Module;
 import c4l.entities.MoleculeType;
 import c4l.entities.Robot;
 import c4l.entities.Sample;
+import c4l.entities.ScienceProject;
 
 public class MoleculeOptimizerNode {
+  private static final int NOTHING = 99;
   public static final int PICKED_MOLECULES = 3;
   public static final int EXPERTISE = 4;
   public static final int AVAILABLE = 5;
@@ -42,42 +44,17 @@ public class MoleculeOptimizerNode {
   
   public MoleculeComboInfo combo;
   public int ply;
+  private static List<ScienceProject> scienceProjects = new ArrayList<>();
 
   public MoleculeOptimizerNode() {
     for (int i=0;i<3*WIDTH;i++) {
-      values[i] = 99;// all costs at 99 , so we cannot fullfill absent samples
+      values[i] = NOTHING;// all costs at 99 , so we cannot fullfill absent samples
     }
   }
   
-  @Override
-  public String toString() {
-    String output="";
-    for (int j=0;j<3;j++) {
-      output+="createSample( [";
-      for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-        output+=""+values[WIDTH*j+i]+",";
-      }
-      output+="]);\n\r";
-    }
-    output+="picked([";
-    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      output+=""+values[WIDTH*PICKED_MOLECULES+i]+",";
-    }
-    output+="]);\n\r";
-    output+="expertise([";
-    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      output+=""+values[WIDTH*EXPERTISE+i]+",";
-    }
-    output+="]);\n\r";
-    output+="available([";
-    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
-      output+=""+values[WIDTH*AVAILABLE+i]+",";
-    }
-    output+="]);\n\r";
-    
-    return output;
-  }
-  public void start (int turns, int[] availables, Robot me) {
+  
+  public void start (int turns, int[] availables, List<ScienceProject> scienceProjects, Robot me) {
+    MoleculeOptimizerNode.scienceProjects = scienceProjects;
     init(turns, availables, me);
     
     memoization.clear();
@@ -234,13 +211,17 @@ public class MoleculeOptimizerNode {
     System.arraycopy(values, WIDTH*EXPERTISE, xp, 0, GameState.MOLECULE_TYPE);
     
     for (int i=0;i<order.length;i++) {
+      if (values[WIDTH*order[i]+0] == NOTHING) continue; // don't test missing samples
+
       MoleculeInfo moleculeInfo = new MoleculeInfo();
       moleculeInfo.sampleId = values[order[i]*WIDTH + SAMPLE_ID];
       moleculeInfo.points = values[order[i]*WIDTH + HEALTH];
+      boolean done = true;
       for (int j=0;j<GameState.MOLECULE_TYPE;j++) {
         int needed = Math.max(0, values[WIDTH*order[i]+j]/*cost*/ - xp[j]/*xp*/);
         if ( needed > initialStorage[j]+pickedMolecules[j]) {
-          return info; // stop here we can't do the samples
+          done = false;
+          break; // stop here we can't do the samples
         } else {
           if (initialStorage[j] >= needed) {
             initialStorage[j]-=needed;
@@ -256,19 +237,36 @@ public class MoleculeOptimizerNode {
           }
         }
       }
-      // here, the sample is done
-      info.addComplete(moleculeInfo);
-      info.score += values[WIDTH*order[i]+HEALTH];
-      int gainIndex = values[WIDTH*order[i]+XPGAIN];
-      // TODO this test is only for tests as I want to simulate without gain, that is not good
-      if (gainIndex != -1 ) {
+      if (done) {
+        // here, the sample is done
+        info.addComplete(moleculeInfo);
+        info.score += values[WIDTH*order[i]+HEALTH];
+        int gainIndex = values[WIDTH*order[i]+XPGAIN];
         xp[gainIndex]++; // add expertise !
       }
     }
     
-    // TODO scienceProject ?
-    
-    return info;// all the three samples are filled here, pretty good :)
+    info.score += getExpertisePoints(xp);
+
+    return info;// all the samples are filled here, pretty good :)
+  }
+  
+  private int getExpertisePoints(int xp[]) {
+    int xpPoints = 0;
+    for (ScienceProject sp : scienceProjects) {
+      if (sp.doneBy != -1) continue;
+      boolean good = true;
+      for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+        if (xp[i]<sp.expertiseNeeded[i]) {
+          good = false;
+          break;
+        }
+      }
+      if (good)  {
+        xpPoints+=50;
+      }
+    }
+    return xpPoints;
   }
   
   public void createStorage(int[] storage) {
@@ -313,8 +311,37 @@ public class MoleculeOptimizerNode {
       }
     }
     for (int i=currentSamples.size()*WIDTH;i<3*WIDTH;i++) {
-      values[i] = 99;// all costs at 99 , so we cannot fullfill absent samples
+      values[i] = NOTHING;// all costs at 99 , so we cannot fullfill absent samples
     }
+  }
+
+  @Override
+  public String toString() {
+    String output="";
+    for (int j=0;j<3;j++) {
+      output+="createSample( [";
+      for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+        output+=""+values[WIDTH*j+i]+",";
+      }
+      output+="]);\n\r";
+    }
+    output+="picked([";
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      output+=""+values[WIDTH*PICKED_MOLECULES+i]+",";
+    }
+    output+="]);\n\r";
+    output+="expertise([";
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      output+=""+values[WIDTH*EXPERTISE+i]+",";
+    }
+    output+="]);\n\r";
+    output+="available([";
+    for (int i=0;i<GameState.MOLECULE_TYPE;i++) {
+      output+=""+values[WIDTH*AVAILABLE+i]+",";
+    }
+    output+="]);\n\r";
+    
+    return output;
   }
 
 }

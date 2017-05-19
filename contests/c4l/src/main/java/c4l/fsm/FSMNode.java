@@ -38,7 +38,7 @@ public abstract class FSMNode {
   public MoleculeComboInfo getCompletableSamples(int[] availables) {
 
     MoleculeOptimizerNode node = new MoleculeOptimizerNode();
-    node.start(state.ply, availables, me);
+    node.start(state.ply, availables, state.scienceProjects, me);
     MoleculeComboInfo bestChild = node.getBestChild();
     return bestChild;
   }

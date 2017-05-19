@@ -81,6 +81,7 @@ public class GameState {
       }
     }
   }
+  
   public void readScienceProjects(Scanner in) {
     projectCount = in.nextInt();
     for (int i = 0; i < projectCount; i++) {

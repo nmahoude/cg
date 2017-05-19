@@ -5,7 +5,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.number.IsCloseTo.closeTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -15,6 +18,7 @@ import c4l.entities.Module;
 import c4l.entities.MoleculeType;
 import c4l.entities.Robot;
 import c4l.entities.Sample;
+import c4l.entities.ScienceProject;
 
 public class MoleculeOptimizerNodeTest {
 
@@ -59,7 +63,7 @@ public class MoleculeOptimizerNodeTest {
     
     root.freeStorage = 1;
     
-    root.start(0, new int[]{0, 0, 1, 0, 0}, me);
+    root.start(0, new int[]{0, 0, 1, 0, 0}, new ArrayList<>(), me);
     
     assertThat(root.score, is(closeTo(30.0, 1.0)));// take into account getPercentage
   }
@@ -75,7 +79,7 @@ public class MoleculeOptimizerNodeTest {
     
     root.freeStorage = 1;
     
-    root.start(0, new int[]{0, 0, 1, 0, 0}, me);
+    root.start(0, new int[]{0, 0, 1, 0, 0}, new ArrayList<>(), me);
     
     assertThat(root.score, is(closeTo(40.0, 1.0)));// take into account getPercentage
   }
@@ -90,7 +94,7 @@ public class MoleculeOptimizerNodeTest {
     createExpertise(new int[]{0, 0, 0, 0, 0});
     
     
-    root.start(0, new int[]{0, 0, 1, 1, 0}, me);
+    root.start(0, new int[]{0, 0, 1, 1, 0}, new ArrayList<>(), me);
     
     assertThat(root.score, is(closeTo(40.0, 1.0))); // take into account getPercentage
   }
@@ -104,7 +108,7 @@ public class MoleculeOptimizerNodeTest {
     createExpertise(new int[]{0, 0, 0, 0, 0});
     root.freeStorage = 6;
     
-    root.start(0, new int[]{6, 6, 6, 6, 6}, me);
+    root.start(0, new int[]{6, 6, 6, 6, 6}, new ArrayList<>(), me);
     
     assertThat(root.children.size(), is(5));
   }
@@ -116,7 +120,7 @@ public class MoleculeOptimizerNodeTest {
     createStorage(  new int[]{0, 0, 0, 0, 3});
     createExpertise(new int[]{0, 0, 0, 0, 1});
     
-    root.start(0, new int[]{0, 2, 6, 6, 3}, me);
+    root.start(0, new int[]{0, 2, 6, 6, 3}, new ArrayList<>(), me);
     
     assertThat(root.combo.getNeededMolecules(), hasItems(MoleculeType.B));
   }
@@ -129,7 +133,7 @@ public class MoleculeOptimizerNodeTest {
     createStorage(  new int[]{4, 0, 0, 2, 1});
     createExpertise(new int[]{2, 0, 0, 2, 1});
     
-    root.start(0, new int[]{0, 3, 4, 3, 3}, me);
+    root.start(0, new int[]{0, 3, 4, 3, 3}, new ArrayList<>(), me);
     
     assertThat(root.score, closeTo(40.0, 1.0)); // take percentage complete into account
   }
@@ -141,7 +145,7 @@ public class MoleculeOptimizerNodeTest {
     createStorage(  new int[]{3, 5, 0, 2, 0});
     createExpertise(new int[]{1, 1, 1, 1, 1});
     
-    root.start(0, new int[]{3, 1, 6, 4, 6}, me);
+    root.start(0, new int[]{3, 1, 6, 4, 6}, new ArrayList<>(), me);
     
     boolean needToGetMolecule = root.getBestChild().infos.isEmpty();
     for (MoleculeInfo info : root.getBestChild().infos) {
@@ -160,7 +164,7 @@ public class MoleculeOptimizerNodeTest {
     createStorage(  new int[]{6, 1, 3, 0, 0});
     createExpertise(new int[]{0, 0, 0, 0, 0});
 
-    root.start(0, new int[]{0, 0, 0, 6, 6}, me);
+    root.start(0, new int[]{0, 0, 0, 6, 6}, new ArrayList<>(), me);
     
     assertThat(root.getBestChild(), is(not(nullValue())));
     assertThat(root.getBestChild().infos, is(not(nullValue())));
@@ -174,7 +178,7 @@ public class MoleculeOptimizerNodeTest {
     createStorage(  new int[]{1, 0, 0, 5, 0});
     createExpertise(new int[]{0, 0, 0, 0, 0});
     
-    root.start(0,new int[]{5, 6, 6, 0, 6}, me);
+    root.start(0,new int[]{5, 6, 6, 0, 6}, new ArrayList<>(), me);
 
     assertThat(root.combo.infos.get(0).getNeededMolecules().indexOf(MoleculeType.D), is(-1));
   }
@@ -186,7 +190,7 @@ public class MoleculeOptimizerNodeTest {
     createStorage(  new int[]{5, 0, 0, 0, 0});
     createExpertise(new int[]{0, 0, 0, 0, 1});
 
-    root.start(0,new int[]{1, 6, 6, 6, 6}, me);
+    root.start(0,new int[]{1, 6, 6, 6, 6}, new ArrayList<>(), me);
 
     assertThat(root.combo.canFinishAtLeastOneSample(), is(false));
   }
@@ -199,7 +203,7 @@ public class MoleculeOptimizerNodeTest {
     createStorage(  new int[]{0, 0, 0, 0, 0});
     createExpertise(new int[]{0, 0, 0, 0, 0});
     
-    root.start(0, new int[]{5, 5, 5, 5, 5}, me);
+    root.start(0, new int[]{5, 5, 5, 5, 5}, new ArrayList<>(), me);
 
     MoleculeComboInfo combo = root.getBestChild();
     assertThat(combo.infos.size(), is (1));
@@ -215,7 +219,7 @@ public class MoleculeOptimizerNodeTest {
     createExpertise(new int[] {3, 0, 1, 0, 0});
     
     root.freeStorage = 0;
-    root.start(0, new int[] {3, 2, 2, 0, 4}, me);
+    root.start(0, new int[] {3, 2, 2, 0, 4}, new ArrayList<>(), me);
 
     MoleculeComboInfo combo = root.getBestChild();
     assertThat(combo.infos.size(), is (2));
@@ -228,7 +232,7 @@ public class MoleculeOptimizerNodeTest {
     createStorage(  new int[] {1, 1, 3, 3, 0});
     createExpertise(new int[] {3, 0, 1, 0, 0});
     
-    root.start(199, new int[] {3, 2, 2, 0, 4}, me);
+    root.start(199, new int[] {3, 2, 2, 0, 4}, new ArrayList<>(), me);
 
     MoleculeComboInfo combo = root.getBestChild();
     assertThat(combo.infos.size(), is (0));
@@ -241,7 +245,7 @@ public class MoleculeOptimizerNodeTest {
     createStorage(  new int[] {1, 1, 3, 3, 0});
     createExpertise(new int[] {3, 0, 1, 0, 0});
     
-    root.start(195, new int[] {3, 2, 2, 0, 4}, me);
+    root.start(195, new int[] {3, 2, 2, 0, 4}, new ArrayList<>(), me);
 
     MoleculeComboInfo combo = root.getBestChild();
     assertThat(combo.infos.size(), is (2));
@@ -257,12 +261,60 @@ public class MoleculeOptimizerNodeTest {
     createExpertise(new int[]{2, 0, 3, 5, 2});
 
     
-    root.start(0, new int[]{2, 1, 4, 2, 2}, me);
+    root.start(0, new int[]{2, 1, 4, 2, 2}, new ArrayList<>(), me);
 
     MoleculeComboInfo combo = root.getBestChild();
     assertThat(combo.infos.size(), is (0));
   }
+
+  @Test
+  public void doScience() throws Exception {
+    createSample(16, new int[]{0, 7, 0, 0, 0},20,MoleculeType.B);
+    createStorage(  new int[]{0, 0, 0, 0, 0});
+    createExpertise(new int[]{0, 0, 0, 0, 0});
+
+    ScienceProject sp= new ScienceProject(new int[] { 0, 1, 0, 0, 0});
+
+    root.start(0, new int[]{10, 10, 10, 10 ,10}, Arrays.asList(sp), me);
+
+    MoleculeComboInfo combo = root.getBestChild();
+    assertThat(combo.infos.size(), is (1));
+    assertThat(combo.infos.get(0).sampleId, is(16));
+  }
   
+  @Test
+  public void preferTheScienceProject() throws Exception {
+    createSample(15, new int[]{0, 2, 0, 0, 0},30,MoleculeType.E);
+    createSample(16, new int[]{0, 2, 0, 0, 0},20,MoleculeType.B);
+    createSample(18, new int[]{0, 2, 0, 0, 0},30,MoleculeType.E);
+    createStorage(  new int[]{2, 2, 2, 2, 2});
+    createExpertise(new int[]{0, 0, 0, 0, 0});
+
+    ScienceProject sp= new ScienceProject(new int[] { 0, 1, 0, 0, 0});
+
+    root.start(0, new int[]{0, 1, 0, 0 , 0}, Arrays.asList(sp), me);
+
+    MoleculeComboInfo combo = root.getBestChild();
+    assertThat(combo.infos.size(), is (1));
+    assertThat(combo.infos.get(0).sampleId, is(16));
+  }
+
+  @Test
+  public void preferTheScienceProject_with_2_samples() throws Exception {
+    createSample(15, new int[]{0, 2, 0, 0, 0},30,MoleculeType.E);
+    createSample(16, new int[]{0, 2, 0, 0, 0},20,MoleculeType.B);
+    createStorage(  new int[]{2, 2, 2, 2, 2});
+    createExpertise(new int[]{0, 0, 0, 0, 0});
+
+    ScienceProject sp= new ScienceProject(new int[] { 0, 1, 0, 0, 0});
+
+    root.start(0, new int[]{0, 1, 0, 0 , 0}, Arrays.asList(sp), me);
+
+    MoleculeComboInfo combo = root.getBestChild();
+    assertThat(combo.infos.size(), is (1));
+    assertThat(combo.infos.get(0).sampleId, is(16));
+  }
+
   @Test
   public void doNotBeleiveTheOneYouGot() throws Exception {
       createSample(29, new int[]{0, 0, 7, 0, 0},40,MoleculeType.D);
@@ -271,7 +323,7 @@ public class MoleculeOptimizerNodeTest {
       createStorage(  new int[]{5, 3, 0, 1, 1});
       createExpertise(new int[]{2, 4, 2, 4, 2});
 
-      root.start(0, new int[]{0, 0, 0, 0, 0}, me);
+      root.start(0, new int[]{0, 0, 0, 0, 0}, new ArrayList<>(), me);
 
       MoleculeComboInfo combo = root.getBestChild();
       assertThat(combo.infos.size(), is (2));
@@ -287,7 +339,7 @@ public class MoleculeOptimizerNodeTest {
     createStorage(  new int[] {2, 0, 0, 0, 0});
     createExpertise(new int[] {0, 0, 0, 0, 0});
     
-    root.start(0, new int[] {0, 0, 0, 0, 0}, me);
+    root.start(0, new int[] {0, 0, 0, 0, 0}, new ArrayList<>(), me);
 
     MoleculeComboInfo combo = root.getBestChild();
     assertThat(combo.infos.size(), is (2));
@@ -301,7 +353,7 @@ public class MoleculeOptimizerNodeTest {
       createStorage(  new int[]{4, 1, 3, 1, 1});
       createExpertise(new int[]{3, 1, 0, 0, 1});
 
-      root.start(0, new int[]{1, 3, 2, 1, 4}, me);
+      root.start(0, new int[]{1, 3, 2, 1, 4}, new ArrayList<>(), me);
       MoleculeComboInfo combo = root.getBestChild();
 
       assertThat(combo.infos.size(), is (0));

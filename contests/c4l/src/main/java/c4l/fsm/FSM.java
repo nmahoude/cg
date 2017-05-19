@@ -125,7 +125,7 @@ public class FSM {
   private MoleculeOptimizerNode buildMoleculeChoiceOptimized() {
     System.err.println("use the optimizer Luke");
     MoleculeOptimizerNode root = new MoleculeOptimizerNode();
-    root.start(state.ply, state.availables, me);
+    root.start(state.ply, state.availables, state.scienceProjects, me);
     return root;
   }
 

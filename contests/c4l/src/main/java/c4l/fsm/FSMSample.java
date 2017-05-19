@@ -73,7 +73,7 @@ public class FSMSample extends FSMNode {
     // TODO check in the cloud, if there is a lot of rank2 and we can't do them it means something
     if (me.totalCarried > 8) {
       // TODO play on the xp ? maybe rank1 is too absolute
-      if (me.totalExpertise < 12) {
+      if (me.totalExpertise < 6) {
         fsm.connect(1, "Full molecule, on prend des rank 1 pour debloquer");
         return;
       } else {
