@@ -3,7 +3,6 @@ package c4l.fsm;
 import java.util.List;
 
 import c4l.GameState;
-import c4l.Order;
 import c4l.entities.Module;
 import c4l.entities.MoleculeType;
 import c4l.entities.Robot;

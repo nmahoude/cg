@@ -1,6 +1,5 @@
 package c4l.fsm;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,8 +92,7 @@ public class FSMDiagnosis extends FSMNode {
     SampleOptimizer optimizer = new SampleOptimizer();
     SampleInfo info = optimizer.optimize(state, me);
     
-    System.err.println("Found the best combo : ");
-    System.err.println(info.samples.toString());
+    System.err.println("Samples combo : "+info);
     
     if (info.samples.size() == 0) {
       if (me.carriedSamples.size() > 0) {
@@ -106,6 +104,10 @@ public class FSMDiagnosis extends FSMNode {
       }
     } else {
       if (me.carriedSamples.containsAll(info.samples)) {
+        // need to go to SAMPLES to get more ?
+        if (needToGoToSamples(info)) {
+          return true;
+        }
         // check if we have to go to molecule ...
         MoleculeComboInfo combo = fsm.getBestComboForSamples();
         if (combo.neededMoleculeToRealiseCombo() > 0) {
@@ -128,7 +130,37 @@ public class FSMDiagnosis extends FSMNode {
       }
     }
   }
-  
+
+  /**
+   * Check if, based on our carried samples, we need to go to samples to get more (ROI anyone ?)
+   * @return
+   */
+  private boolean needToGoToSamples(SampleInfo info) {
+    
+    if (me.carriedSamples.size() == 3) {
+      return false; // can't get any more samples
+    }
+    for (int i=0;i<3-me.carriedSamples.size();i++) {
+      int points = info.points;
+      int turns = 
+            Module.distance(Module.DIAGNOSIS, Module.SAMPLES)
+          + (3-i)  // pick
+          + Module.distance(Module.SAMPLES, Module.DIAGNOSIS)
+          + (3-i)  ;//analyse
+      
+      int expected[] = fsm.sample.getCurrentPointExpectation();
+      turns += (3-i) * expected[0];
+      points +=(3-i) * expected[1];
+      
+      if (1.0 * points / turns > info.score) {
+        // ROI is positive, go get some !
+        fsm.goTo(Module.SAMPLES, "ROI is positive, go get some samples");
+        return true;
+      }
+    }
+    
+    return false;
+  }
   private Sample getOneFromNotInto(List<Sample> carriedSamples, List<Sample> bestSamples) {
     for (Sample sample : carriedSamples) {
       if (bestSamples.indexOf(sample) == -1) return sample;

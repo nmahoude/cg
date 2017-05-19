@@ -97,4 +97,22 @@ public class FSMSample extends FSMNode {
     return Module.SAMPLES;
   }
 
+  /**
+   * Rank 1 : 5 -> 4.0
+     Rank 2 : 6 -> 18.620689655172413
+     Rank 3 : 10 -> 40.0
+   * 
+   * Warning, take expertise into account for molecule cost
+   * @return { moleculeCost, points}
+   */
+  public int[] getCurrentPointExpectation() {
+    if (me.totalExpertise < 6) {
+      return new int[] { 5- me.totalExpertise/5,  4 };
+    } else if (me.totalExpertise < 12) {
+      return new int[] { 6- me.totalExpertise/5, 18 };
+    } else {
+      return new int[] { 10 - me.totalExpertise/5, 40};
+    }
+  }
+
 }
