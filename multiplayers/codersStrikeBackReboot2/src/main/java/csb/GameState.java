@@ -19,7 +19,7 @@ public class GameState {
   public Pod hisRunner = pods[2];
   public Pod hisBlocker = pods[3];
 
-  double lapLength;
+  public double lapLength;
   double cpLengths[];
   
   public GameState() {

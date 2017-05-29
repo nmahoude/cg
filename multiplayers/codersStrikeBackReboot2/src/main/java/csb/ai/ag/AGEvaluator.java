@@ -22,10 +22,10 @@ public class AGEvaluator {
   }
 
   public void evaluate(AGSolution sol, int depth) {
+    double myRunnerDist = 3*state.lapLength - state.distToFinishLine(state.myRunner);
     double energy = 0.0
         // runner
-        + 5000.0*checkPointPassedFeature(state.myRunner)
-        + 5.0*distanceToCheckPointFeature(state.checkPoints[state.myRunner.nextCheckPointId], state.myRunner)
+        + 5000*myRunnerDist
         + 0.5*exitSpeedFeature(state.myRunner)
         
         // chaser
@@ -35,6 +35,9 @@ public class AGEvaluator {
         + 0.5*distanceToCheckPointFeature(state.checkPoints[state.hisRunner.nextCheckPointId], state.hisRunner)
         ;
     
+    if (state.myRunner.lap >=3) {
+      energy = Double.POSITIVE_INFINITY;
+    }
     sol.energy += patience [depth] * energy;
   }
 

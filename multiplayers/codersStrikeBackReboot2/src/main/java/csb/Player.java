@@ -31,6 +31,8 @@ public class Player {
         int vy = in.nextInt(); // y speed of your pod
         int angle = in.nextInt(); // angle of your pod
         int nextCheckPointId = in.nextInt(); // next check point id of your pod
+        if (nextCheckPointId == -1) nextCheckPointId = 1;
+        
         if (round == 1) {
           // get the angle as it pleases us, it's first turn
           Vector dir = new Vector(state.checkPoints[1].x - x, state.checkPoints[1].y - y).normalize();
