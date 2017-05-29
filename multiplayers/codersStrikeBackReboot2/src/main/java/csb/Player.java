@@ -1,5 +1,6 @@
 package csb;
 
+import java.util.Random;
 import java.util.Scanner;
 
 import csb.ai.AISolution;
@@ -8,6 +9,7 @@ import trigonometry.Vector;
 
 public class Player {
   private static final Vector DIR_X = new Vector(1,0);
+  public static final Random rand = new Random();
   
   public static GameState state = new GameState();
   public static int totalLaps;
@@ -36,6 +38,7 @@ public class Player {
         }
         state.pods[i].readInput(x, y, vx, vy, angle, nextCheckPointId);
       }
+      long start = System.currentTimeMillis();
       state.backup();
 
       if (round== 1) {
@@ -43,8 +46,7 @@ public class Player {
         System.out.println(""+(int)state.checkPoints[1].x+" "+(int)state.checkPoints[1].y+" BOOST");
         continue;
       }
-      long start = System.currentTimeMillis();
-      AGAI ag = new AGAI();
+      AGAI ag = new AGAI(start+145);
       ag.setState(state);
       
       AISolution best = ag.evolve();

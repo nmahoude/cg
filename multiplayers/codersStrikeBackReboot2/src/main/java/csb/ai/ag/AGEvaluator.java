@@ -6,24 +6,36 @@ import csb.entities.Pod;
 import lib.trigo.VectorLib;
 
 public class AGEvaluator {
+  private static double PATIENCE_COEFF = 0.9;
+  private static double[] patience = new double[AGSolution.DEPTH];
+  static {
+    for (int i=0;i<patience.length;i++) {
+      patience[i] = Math.pow(PATIENCE_COEFF, i);
+    }
+  }
+  
   GameState state;
+  
   
   AGEvaluator(GameState state) {
     this.state = state;
   }
 
-  public void evaluate(AGSolution sol) {
-    sol.energy = 0.0
-        + 10.0*checkPointPassedFeature(state.myRunner)
+  public void evaluate(AGSolution sol, int depth) {
+    double energy = 0.0
+        // runner
+        + 5000.0*checkPointPassedFeature(state.myRunner)
         + 5.0*distanceToCheckPointFeature(state.checkPoints[state.myRunner.nextCheckPointId], state.myRunner)
         + 0.5*exitSpeedFeature(state.myRunner)
         
+        // chaser
         + 3.0 * distanceToCheckPointFeature(state.checkPoints[state.hisRunner.nextCheckPointId], state.myBlocker)
         + 1.0 * distance2ToPodFeature(state.myBlocker, state.hisRunner)
         - 1.0 * checkPointPassedFeature(state.hisRunner)
         + 0.5*distanceToCheckPointFeature(state.checkPoints[state.hisRunner.nextCheckPointId], state.hisRunner)
-        
         ;
+    
+    sol.energy += patience [depth] * energy;
   }
 
   private double distance2ToPodFeature(Pod pod, Pod target) {
@@ -56,5 +68,9 @@ public class AGEvaluator {
     final int MAX_DIST = 16000*16000+9000*9000;
     double dist2 = VectorLib.distance2(pod.x-nextCheckPoint.x, pod.y-nextCheckPoint.y) - CheckPoint.RADIUS*CheckPoint.RADIUS;
     return (MAX_DIST - Math.min(MAX_DIST, dist2)) / MAX_DIST;
+  }
+
+  public void clear() {
+    
   }
 }

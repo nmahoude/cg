@@ -23,7 +23,7 @@ public class Controller {
   public static void main(String[] args) throws Exception {
     Random rand = new Random(System.currentTimeMillis());
 
-    AI ai1 = new AGAI();
+    AI ai1 = new AGAI(System.currentTimeMillis()+100);
     AI ai2 = new DummyAI();
     List<AI> ais = Arrays.asList(ai1, ai2);
     

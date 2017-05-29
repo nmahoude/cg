@@ -19,8 +19,8 @@ public class GameState {
   public Pod hisRunner = pods[2];
   public Pod hisBlocker = pods[3];
 
-  private int lapLength;
-  private double cpLengths[];
+  double lapLength;
+  double cpLengths[];
   
   public GameState() {
     teams[0] = new Team();
@@ -38,7 +38,7 @@ public class GameState {
     for (int i = 0; i < checkpointCount; i++) {
       int checkpointX = in.nextInt();
       int checkpointY = in.nextInt();
-      checkPoints[i] = new CheckPoint(4+i, checkpointX, checkpointY);
+      checkPoints[i] = new CheckPoint(i, checkpointX, checkpointY);
     }
   
     calculateLapLength();
@@ -58,39 +58,36 @@ public class GameState {
   }
 
   private void updateRunnersBlockers() {
-  myRunner = pods[0];
-  myBlocker = pods[1];
-  hisRunner = pods[2];
-  hisBlocker = pods[3];
+    double distPod0 = distToFinishLine(pods[0]);
+    double distPod1 = distToFinishLine(pods[1]);
+    if (distPod0 < distPod1) {
+      myRunner = pods[0];
+      myBlocker = pods[1];
+    } else {
+      myRunner = pods[1];
+      myBlocker = pods[0];
+    }
     
-//    double l1 = distToEndOfRace(pods[0]);
-//    double l2 = distToEndOfRace(pods[1]);
-//    if (l1 < l2) {
-//      myRunner = pods[0];
-//      myBlocker = pods[1];
-//    } else {
-//      myRunner = pods[1];
-//      myBlocker = pods[0];
-//    }
-//    
-//    double l3 = distToEndOfRace(pods[2]);
-//    double l4 = distToEndOfRace(pods[3]);
-//    if (l3 < l4) {
-//      hisRunner = pods[2];
-//      hisBlocker = pods[3];
-//    } else {
-//      hisRunner = pods[3];
-//      hisBlocker = pods[2];
-//    }
+    double distPod2 = distToFinishLine(pods[2]);
+    double distPod3 = distToFinishLine(pods[3]);
+    if (distPod2 < distPod3) {
+      hisRunner = pods[2];
+      hisBlocker = pods[3];
+    } else {
+      hisRunner = pods[3];
+      hisBlocker = pods[2];
+    }
   }
   
-  private double distToEndOfRace(Pod pod) {
-    double l = (3 - pod.lap) * lapLength;  
+  public double distToFinishLine(Pod pod) {
+    double l = Math.max(0, (2 - pod.lap) * lapLength);
+    
     l += VectorLib.length(pod.x-checkPoints[pod.nextCheckPointId].x, pod.y-checkPoints[pod.nextCheckPointId].y);
-    for (int i=pod.nextCheckPointId;i<checkPoints.length;i++) {
-      l+= cpLengths[i];
+    if (pod.nextCheckPointId != 0) {
+      for (int i=pod.nextCheckPointId;i<checkPoints.length;i++) {
+        l+= cpLengths[i];
+      }
     }
-    System.err.println("dist to end for pod "+pod.id+" : "+l);
     return l;
   }
 

@@ -1,21 +1,22 @@
 package csb.ai.ag;
 
-import java.util.Random;
-
 import csb.GameState;
+import csb.Player;
 import csb.ai.AISolution;
 import trigonometry.Point;
 import trigonometry.Vector;
 
 public class AGSolution implements AISolution {
-  public static final int DEPTH = 2*6;
-  public static final Random rand = new Random();
+  
+  public static final int DEPTH = 6;
+  public static final int WIDTH = 2*DEPTH;
+  
   private static final int INV_MUTATION_RATE = 100;
   
   GameState state;
   
-  public double angles[] = new double[DEPTH];
-  public double thrusts[] = new double[DEPTH];
+  public double angles[] = new double[WIDTH];
+  public double thrusts[] = new double[WIDTH];
   public double energy = 0;
 
   String output[] = new String[2];
@@ -26,42 +27,64 @@ public class AGSolution implements AISolution {
     this.state = state;
   }
   
+  public void clear() {
+    energy = 0;
+  }
+  
   public void copyFrom(AGSolution sol) {
-    for (int i=0;i<DEPTH;i++) {
+    energy = sol.energy;
+    for (int i=0;i<WIDTH;i++) {
       angles[i] = sol.angles[i];
       thrusts[i] = sol.thrusts[i];
     }
   }
   
   public void copyFromPreviousBest(AGSolution sol) {
-    for (int i=0;i<DEPTH-1;i++) {
+    for (int i=0;i<WIDTH-1;i++) {
       angles[i] = sol.angles[i+1];
       thrusts[i] = sol.thrusts[i+1];
     }
-    randomize(DEPTH-1);
+    randomize(WIDTH-1);
   }
   
   public void randomize() {
-    for (int i=0;i<DEPTH;i++) {
+    for (int i=0;i<WIDTH;i++) {
       randomize(i);
     }
   }
 
   private void randomize(int depth) {
-    angles[depth] = rand.nextDouble();                 // 0->1 linear
-    thrusts[depth] = 0.5+0.5*rand.nextDouble(); // 0-> linear 
+    angles[depth] = Player.rand.nextDouble();                 // 0->1 linear
+    thrusts[depth] = Player.rand.nextDouble(); // 0->1  linear 
   }
   
-  public void cross(AGSolution parent1, AGSolution parent2) {
-    for (int i=0;i<DEPTH;i++) {
-      angles[i] = rand.nextBoolean() ? parent1.angles[i] : parent2.angles[i];
-      thrusts[i] = rand.nextBoolean() ? parent1.thrusts[i] : parent2.thrusts[i];
+  public static void crossOver(AGSolution child1, AGSolution child2, AGSolution parent1, AGSolution parent2) {
+    double beta = Player.rand.nextDouble();
+    for (int i=0;i<WIDTH;i++) {
+      child1.angles[i] = getAcceptableAngle(beta, parent1.angles[i], parent2.angles[i]);
+      child1.thrusts[i] = getAcceptableThrust(beta, parent1.thrusts[i], parent2.thrusts[i]);
+
+      child2.angles[i] = getAcceptableAngle(1.0-beta, parent1.angles[i], parent2.angles[i]);
+      child2.thrusts[i] = getAcceptableThrust(1.0-beta, parent1.thrusts[i], parent2.thrusts[i]);
     }
+  }
+
+  private static double getAcceptableThrust(double beta, double d, double e) {
+    return beta * (d-e) + e;
+  }
+
+  private static double getAcceptableAngle(double beta, double a, double b) {
+    // TODO don't limit to the inner angles
+    double angle = beta * (b-a) + a;
+    
+    if (angle < 0) angle += 1.0;
+    if (angle > 1) angle -= 1.0;
+    return angle;
   }
   
   public void mutate() {
-    for (int i=0;i<DEPTH;i++) {
-      if (rand.nextInt(INV_MUTATION_RATE) == 0) {
+    for (int i=0;i<WIDTH;i++) {
+      if (Player.rand.nextInt(INV_MUTATION_RATE) == 0) {
         randomize(i);
       }
     }    
@@ -84,10 +107,10 @@ public class AGSolution implements AISolution {
               +" "+(int)(state.pods[0].y+dot1.vy)
               +" "+(int)getThrust(0);
 
-    Vector dot2 = state.pods[1].direction.rotate(getAngle(DEPTH/2+0)).dot(1000.0);
+    Vector dot2 = state.pods[1].direction.rotate(getAngle(WIDTH/2+0)).dot(1000.0);
     output[1] = ""+(int)(state.pods[1].x+dot2.vx)
         +" "+(int)(state.pods[1].y+dot2.vy)
-        +" "+(int)getThrust(DEPTH/2+0);
+        +" "+(int)getThrust(WIDTH/2+0);
     
     return output;
   }

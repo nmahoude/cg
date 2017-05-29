@@ -32,7 +32,7 @@ public class AGAIRepresentation extends Group{
 
   public void update(AGAI ag) {
     for (int i=0;i<rectangles.length;i++) {
-      AGSolution solution = ag.pool[i];
+      AGSolution solution = ag.population[i];
       if (solution != null) {
         rectangles[i].setX(solution.finalPosition0.x / Gui.ratio);
         rectangles[i].setY(solution.finalPosition0.y / Gui.ratio);
