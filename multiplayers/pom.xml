@@ -23,5 +23,6 @@
 	<module>codersStrikeBackReboot</module>
 	<module>codersStrikeBackReboot2</module>
 	<module>pokerChipRace</module>
+	<module>cotc</module>
   </modules>
 </project>

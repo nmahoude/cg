@@ -19,6 +19,7 @@ public class FSMLaboratory extends FSMNode {
      MoleculeComboInfo completableSamplesInfo = getCompletableSamples(new int[] {0, 0, 0, 0, 0});
      List<Integer> completableSamples = getCompletableSampleIds(completableSamplesInfo);
      
+     //TODO ca marche ?
      if (checkIfHeHisBlockedIfIDontCompleteSamples(completableSamplesInfo)) {
        return;
      }
@@ -28,7 +29,9 @@ public class FSMLaboratory extends FSMNode {
       return;
     } else {
       MoleculeComboInfo combo = fsm.getBestComboForSamples();
-      if (combo.canFinishAtLeastOneSample()) {
+      
+      boolean result = goingToMoleculeHasBetterROI(combo);
+      if (result && combo.canFinishAtLeastOneSample()) {
         fsm.goTo(Module.MOLECULES, " go back to MOLECULES, i can pick some");
         return;
       } else if (me.carriedSamples.size() == 3) {
@@ -48,6 +51,34 @@ public class FSMLaboratory extends FSMNode {
     }
   }
   
+  /**
+   * calculate the ROI to go back to MOLECULE
+   * @param combo 
+   * @return
+   */
+  private boolean goingToMoleculeHasBetterROI(MoleculeComboInfo combo) {
+    int[] currentSampleTakenROI = fsm.sample.getCurrentSampleTakenROI();
+
+    // ROI when go back to molecule
+    int turnsMole = 3+ combo.totalMoleculeTaken() + 3 + combo.infos.size();
+    // + tour complet
+    turnsMole += 21 +  3 * currentSampleTakenROI[0];
+    int pointsMole = 3 * currentSampleTakenROI[1] + combo.scoreRealized();
+    double roiMole = 1.0 * pointsMole / turnsMole;
+    
+    // ROI si on continue
+    int freeslots = 3-combo.infos.size();
+    int turns = 15 + 2 * freeslots 
+              + freeslots * currentSampleTakenROI[0]
+              + combo.totalMoleculeTaken();
+    
+    int points = freeslots * currentSampleTakenROI[0] + combo.scoreRealized();
+    double roi = 1.0 * points / turns;
+    
+    System.err.println("ROI Molecule : "+roiMole);
+    System.err.println("ROI Sample : "+roi);
+    return roiMole > roi;
+  }
   /**
    *  Maybe don't put all samples in LAB if we block the opponent !
    *  And our score +anticipation is better

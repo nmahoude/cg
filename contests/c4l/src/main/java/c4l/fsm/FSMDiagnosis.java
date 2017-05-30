@@ -148,7 +148,7 @@ public class FSMDiagnosis extends FSMNode {
           + Module.distance(Module.SAMPLES, Module.DIAGNOSIS)
           + (3-i)  ;//analyse
       
-      int expected[] = fsm.sample.getCurrentPointExpectation();
+      int expected[] = fsm.sample.getCurrentSampleTakenROI();
       turns += (3-i) * expected[0];
       points +=(3-i) * expected[1];
       

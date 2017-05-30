@@ -105,7 +105,8 @@ public class FSMSample extends FSMNode {
    * Warning, take expertise into account for molecule cost
    * @return { moleculeCost, points}
    */
-  public int[] getCurrentPointExpectation() {
+  // TODO review the calcul of moleculeTaken + how it is handled
+  public int[] getCurrentSampleTakenROI() {
     if (me.totalExpertise < 6) {
       return new int[] { 5- me.totalExpertise/5,  4 };
     } else if (me.totalExpertise < 12) {
