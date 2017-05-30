@@ -76,8 +76,8 @@ public class AG {
     
     AGSolution localBest = best;
     while(pop < POP_SIZE && System.currentTimeMillis() < stop) {
-      int firstIndex = findIndex(population, -1);
-      int secondIndex = findIndex(population, firstIndex);
+      int firstIndex = findIndex(population, SURVIVOR_POP_SIZE, -1);
+      int secondIndex = findIndex(population, SURVIVOR_POP_SIZE, firstIndex);
       
       AGSolution solution1 = population[pop++];
       AGSolution solution2 = population[pop++];
@@ -110,14 +110,14 @@ public class AG {
     });
   }
 
-  private static int findIndex(AGSolution[] pool, int otherThanIndex) {
+  private static int findIndex(AGSolution[] pool, int max, int otherThanIndex) {
     int aIndex, bIndex;
     do {
-      aIndex = Player.rand.nextInt(SURVIVOR_POP_SIZE);
+      aIndex = Player.rand.nextInt(max);
     } while (aIndex == otherThanIndex);
 
     do {
-      bIndex = Player.rand.nextInt(SURVIVOR_POP_SIZE);
+      bIndex = Player.rand.nextInt(max);
     } while (bIndex == aIndex && bIndex != otherThanIndex);
 
     return pool[aIndex].energy > pool[bIndex].energy ? aIndex : bIndex;
