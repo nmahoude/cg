@@ -97,7 +97,7 @@ public class AGSolution implements AISolution {
   public double getThrust(int depth) {
     // TODO handle shield and BOOST
     double thrust = thrusts[depth];
-    return thrust * 100;
+    return thrust * 200;
   }
 
   @Override
