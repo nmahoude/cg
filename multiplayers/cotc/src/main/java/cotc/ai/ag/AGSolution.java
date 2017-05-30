@@ -12,6 +12,8 @@ import cotc.entities.Ship;
 import cotc.utils.Coord;
 
 public class AGSolution implements AISolution{
+  private static final int MUTATION_RATE = 5;
+
   public final static int AGACTION_SIZE = 1000;
   private static final Action[] ACTION_VALUES = Action.values();
   public static int DEPTH = 5;
@@ -29,6 +31,9 @@ public class AGSolution implements AISolution{
  
 
   protected AGSolution() {
+    for (int i=0;i<3*DEPTH;i++) {
+      actions.add(new AGAction());
+    }
   }
   
   public AGSolution(GameState state, FeatureWeight weights) {
@@ -39,7 +44,22 @@ public class AGSolution implements AISolution{
       actions.add(new AGAction());
     }
   }
-  
+
+  public void copyFrom(AGSolution from) {
+    this.state = from.state;
+    this.shipCount = from.shipCount;
+    
+    this.energy = from.energy;
+    for (int i=0;i<3*DEPTH;i++) {
+      this.actions.elements[i].copyFrom(from.actions.elements[i]);
+    }
+  }
+
+  public void clear() {
+    energy = 0;
+    actions.clear();
+  }
+
   @Override
   public String[] output() {
     String[] output = new String[shipCount];
@@ -47,6 +67,32 @@ public class AGSolution implements AISolution{
       output[s] = actions.elements[0 + s*DEPTH].toString();
     }
     return output;
+  }
+
+  public static void crossOver(AGSolution solution1, AGSolution solution2, AGSolution parent1, AGSolution parent2) {
+    int cut = Player.rand.nextInt(parent1.shipCount * DEPTH);
+    for (int i=0;i<3 * DEPTH;i++) {
+      if (i<cut) {
+        solution1.actions.elements[i].copyFrom(parent1.actions.elements[i]);
+        solution2.actions.elements[i].copyFrom(parent2.actions.elements[i]);
+      } else {
+        solution1.actions.elements[i].copyFrom(parent2.actions.elements[i]);
+        solution2.actions.elements[i].copyFrom(parent1.actions.elements[i]);
+      }
+    }
+  }
+
+  public void mutate() {
+    if (Player.rand.nextInt(100) < MUTATION_RATE) {
+      int mutateIndex = Player.rand.nextInt(shipCount*DEPTH);
+      Action action = ACTION_VALUES[Player.rand.nextInt(ACTION_VALUES.length)];
+      if (action == Action.FIRE) {
+        action = Action.WAIT;
+      }
+      actions.elements[mutateIndex].action = action;
+      actions.elements[mutateIndex].target = Coord.ZERO;
+      
+    }
   }
 
   public void randomize(GameState state, StateAnalyser analyser, List<FastArray<Action>> turn0PossibleActions) {
@@ -167,4 +213,5 @@ public class AGSolution implements AISolution{
     // TODO Auto-generated method stub
     return null;
   }
+
 }

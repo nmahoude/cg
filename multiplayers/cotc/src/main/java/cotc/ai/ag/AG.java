@@ -1,10 +1,13 @@
 package cotc.ai.ag;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import cgcollections.arrays.FastArray;
 import cotc.GameState;
+import cotc.Player;
 import cotc.ai.AI;
 import cotc.ai.AISolution;
 import cotc.entities.Action;
@@ -16,7 +19,7 @@ public class AG implements AI {
   private static AGSolution fake = AGSolution.createFake();
 
   protected GameState state;
-  protected Simulation simulation;
+  protected Simulation simulator;
   public FeatureWeight weights = new FeatureWeight();
   public static GameStatus status = GameStatus.STANDARD;
   
@@ -29,14 +32,17 @@ public class AG implements AI {
   Coord possiblePositions[] = new Coord[256];
   int possiblePositionsValues[] = new int[256];
 
-  
+  public static final int POPULATION = 50;
+  public static final int SURVIVOR_POPULATION = 10;
+  private AGSolution[] population;
   
   public AISolution evolve(long stopTime) {
     status = GameStatus.STANDARD;
     
     updateChampions();
     int simulations = 0;
-    simulation = new Simulation(state);
+    simulator = new Simulation(state);
+    
     // Pre analyse
     StateAnalyser analyser = new StateAnalyser();
     analyser.analyse(state);
@@ -52,21 +58,70 @@ public class AG implements AI {
     
     updateWeightsForEndGame();
     
-    AGSolution best = fake;
+    initGeneration0(analyser);
+    
     int bestGeneration = 0;
     while (System.currentTimeMillis() < stopTime) {
-      AGSolution sol = new AGSolution(state, weights);
-      sol.randomize(state, analyser, turn0PossibleActions);
-      
-      simulation.simulateNew(sol);
-      simulations++;
-      if (sol.energy > best.energy) {
-        best = sol;
-        bestGeneration = simulations;
+      Arrays.sort(population, new Comparator<AGSolution>() {
+        @Override
+        public int compare(AGSolution o2, AGSolution o1) {
+          return Double.compare(o1.energy, o2.energy);
+        }
+      });
+
+      int pop=SURVIVOR_POPULATION;
+      AGSolution bestLocal = fake;
+      while (pop<POPULATION) {
+        int firstIndex = findIndex(population, SURVIVOR_POPULATION, -1);
+        int secondIndex = findIndex(population, SURVIVOR_POPULATION, firstIndex);
+        
+        AGSolution solution1 = population[pop++];
+        AGSolution solution2 = population[pop++];
+        solution1.clear();
+        solution2.clear();
+        
+        AGSolution.crossOver(solution1, solution2, population[firstIndex], population[secondIndex]);
+        solution1.mutate();
+        solution2.mutate();
+
+        simulator.simulateNew(solution1);
+        simulations++;
+        simulator.simulateNew(solution2);
+        simulations++;
+      }
+    }
+    AGSolution best = fake;
+    for (int i=0;i<POPULATION;i++) {
+      if (population[i].energy > best.energy) {
+        best = population[i];
       }
     }
     System.err.println("Simulations "+simulations+ " at "+bestGeneration+" with "+best.energy);
     return best;
+  }
+
+  private static int findIndex(AGSolution[] pool, int max, int otherThanIndex) {
+    int aIndex, bIndex;
+    do {
+      aIndex = Player.rand.nextInt(max);
+    } while (aIndex == otherThanIndex);
+
+    do {
+      bIndex = Player.rand.nextInt(max);
+    } while (bIndex == aIndex && bIndex != otherThanIndex);
+
+    return pool[aIndex].energy > pool[bIndex].energy ? aIndex : bIndex;
+  }
+  
+  private void initGeneration0(StateAnalyser analyser) {
+    population = new AGSolution[POPULATION];
+    for (int i=0;i<POPULATION;i++) {
+      AGSolution sol = new AGSolution(state, weights);
+      population[i] = sol;
+      sol.randomize(state, analyser, turn0PossibleActions);
+      
+      simulator.simulateNew(sol);
+    }
   }
 
   private void resetShipsActions() {
@@ -99,7 +154,7 @@ public class AG implements AI {
         
         other.action = action;
         // simulate one turn
-        simulation.playOneTurn();
+        simulator.playOneTurn();
         
         // update the hasmap
         updatePositionMap(other.position, 2);
@@ -233,7 +288,7 @@ public class AG implements AI {
   }
 
   public AISolution evolve(int iteration) {
-    simulation = new Simulation(state);
+    simulator = new Simulation(state);
     // Pre analyse
     StateAnalyser analyser = new StateAnalyser();
     analyser.analyse(state);
@@ -253,7 +308,7 @@ public class AG implements AI {
 
       sol.randomize(state, analyser, turn0PossibleActions);
 
-      simulation.simulateNew(sol);
+      simulator.simulateNew(sol);
       if (sol.energy > best.energy) {
         best = sol;
       }
