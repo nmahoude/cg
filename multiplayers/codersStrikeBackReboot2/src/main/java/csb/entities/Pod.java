@@ -48,7 +48,7 @@ public class Pod extends Entity {
   public void apply(Vector newDirection, double thrust) {
     direction = newDirection;
     
-    if (thrust < -0.5) {
+    if (thrust < 0) {
       shield = 4;
     }
     if (shield == 0) {
@@ -116,6 +116,7 @@ public class Pod extends Entity {
     this.vy = vy;
     this.direction = new Vector(Math.cos(angle * Math.PI / 180.0), Math.sin(angle * Math.PI / 180.0));
     this.nextCheckPointId = nextCheckPointId;
+    if (shield > 0) shield--;
   }
 
 }

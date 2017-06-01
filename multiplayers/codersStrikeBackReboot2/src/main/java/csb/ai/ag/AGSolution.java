@@ -54,8 +54,12 @@ public class AGSolution implements AISolution {
   }
 
   private void randomize(int depth) {
-    angles[depth] = Player.rand.nextDouble();                 // 0->1 linear
-    thrusts[depth] = Player.rand.nextDouble(); // 0->1  linear 
+    angles[depth] = Player.rand.nextDouble();  // 0->1 linear
+    if (Player.rand.nextDouble() < 0.05) {
+      thrusts[depth] = -1; // shield 
+    } else {
+      thrusts[depth] = Player.rand.nextDouble(); // 0->1  linear
+    }
   }
   
   public static void crossOver(AGSolution child1, AGSolution child2, AGSolution parent1, AGSolution parent2) {
@@ -70,11 +74,13 @@ public class AGSolution implements AISolution {
   }
 
   private static double getAcceptableThrust(double beta, double d, double e) {
+    if (d < 0 || e < 0) {
+      return -1; // shield
+    }
     return beta * (d-e) + e;
   }
 
   private static double getAcceptableAngle(double beta, double a, double b) {
-    // TODO don't limit to the inner angles
     double angle = beta * (b-a) + a;
     
     if (angle < 0) angle += 1.0;
@@ -97,21 +103,38 @@ public class AGSolution implements AISolution {
   public double getThrust(int depth) {
     // TODO handle shield and BOOST
     double thrust = thrusts[depth];
-    return thrust * 200;
+    if (thrust < 0) {
+      return -1;
+    } else {
+      return thrust * 200;
+    }
   }
 
   @Override
   public String[] output() {
     Vector dot1 = state.pods[0].direction.rotate(getAngle(0)).dot(1000.0);
-    output[0] = ""+(int)(state.pods[0].x+dot1.vx)
+    if (getThrust(0) < 0) {
+      output[0] = ""+(int)(state.pods[0].x+dot1.vx)
+          +" "+(int)(state.pods[0].y+dot1.vy)
+          +" SHIELD";
+      state.pods[0].shield = 3;
+    } else {
+      output[0] = ""+(int)(state.pods[0].x+dot1.vx)
               +" "+(int)(state.pods[0].y+dot1.vy)
               +" "+(int)getThrust(0);
-
+    }
+    
     Vector dot2 = state.pods[1].direction.rotate(getAngle(WIDTH/2+0)).dot(1000.0);
-    output[1] = ""+(int)(state.pods[1].x+dot2.vx)
+    if (getThrust(WIDTH/2+0) < 0) {
+      output[1] = ""+(int)(state.pods[1].x+dot2.vx)
+          +" "+(int)(state.pods[1].y+dot2.vy)
+          +" SHIELD";
+      state.pods[1].shield = 3;
+    } else {
+      output[1] = ""+(int)(state.pods[1].x+dot2.vx)
         +" "+(int)(state.pods[1].y+dot2.vy)
         +" "+(int)getThrust(WIDTH/2+0);
-    
+    }    
     return output;
   }
 }

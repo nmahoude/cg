@@ -27,12 +27,15 @@ public class AGEvaluator {
         // runner
         + 5000*myRunnerDist
         + 0.5*exitSpeedFeature(state.myRunner)
+        - 100*(state.myRunner.shield > 0 ? 1.0 : 0.0)
         
-        // chaser
+        // blocker
+        - 100*(state.myBlocker.shield > 0 ? 1.0 : 0.0)
         + 3.0 * distanceToCheckPointFeature(state.checkPoints[state.hisRunner.nextCheckPointId], state.myBlocker)
         + 1.0 * distance2ToPodFeature(state.myBlocker, state.hisRunner)
         - 1.0 * checkPointPassedFeature(state.hisRunner)
         + 0.5*distanceToCheckPointFeature(state.checkPoints[state.hisRunner.nextCheckPointId], state.hisRunner)
+        + 3.0*distance2ToPodFeature(state.myRunner, state.hisBlocker)
         ;
     
     if (state.myRunner.lap >=3) {
