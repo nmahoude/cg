@@ -4,6 +4,10 @@ import cotc.GameState;
 import cotc.Team;
 import cotc.ai.ag.Feature;
 import cotc.ai.ag.FeatureWeight;
+import cotc.tests.analyser.reader.BattlesReader;
+import cotc.tests.analyser.reader.Frame;
+import cotc.tests.analyser.reader.Game;
+import cotc.utils.Coord;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
@@ -11,18 +15,18 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
 
-public class Reader2 extends Application {
+public class FitnessDisplayer extends Application {
   
+  private static final int NUM_PLAYERS = 2;
   private static Game game;
   
   public static void main(String[] args) {
-//    GameReader1 battleReader = new GameReader1();
-//    battleReader.read("findById.json");
-//    game = battleReader.game;
+    // init cache
+    Coord.get(0, 0);
     
     BattlesReader br = new BattlesReader();
     game = br.game;
-    br.readOneBattle("212955176");
+    br.readOneBattle("230481736");
     
     launch(args);
   }
@@ -30,7 +34,6 @@ public class Reader2 extends Application {
   @Override
   public void start(Stage stage) throws Exception {
     FeatureWeight weights = new FeatureWeight();
-    
     
     stage.setTitle("Battle viewer");
     //defining the axes
@@ -54,7 +57,9 @@ public class Reader2 extends Application {
     int turn = 0;
     for (int i=0;i<game.frames.size();i++) {
       Frame frame = game.frames.get(i);
+
       GameState state = frame.frameToState();
+
       Feature feature= new Feature();
       feature.calculateFeaturesFinal(state);
       double score = feature.applyWeights(weights);
@@ -62,14 +67,15 @@ public class Reader2 extends Application {
       Team swap = state.teams[0];
       state.teams[0] = state.teams[1];
       state.teams[1] = swap;
+      
       Feature feature2= new Feature();
       feature2.calculateFeaturesFinal(state);
       double score2 = feature2.applyWeights(weights);
       
-      myScore.getData().add(new XYChart.Data(turn, (int)(score)));
-      hisScore.getData().add(new XYChart.Data(turn, (int)(score2)));
-      combinedScore.getData().add(new XYChart.Data(turn, (int)(score-score2)));
-      turn++;
+      myScore.getData().add(new XYChart.Data<Integer, Integer>(turn, (int)(score)));
+      hisScore.getData().add(new XYChart.Data<Integer, Integer>(turn, (int)(score2)));
+      combinedScore.getData().add(new XYChart.Data<Integer, Integer>(turn, (int)(score-score2)));
+      turn+=NUM_PLAYERS;
     }
     
     Scene scene  = new Scene(lineChart,800,600);

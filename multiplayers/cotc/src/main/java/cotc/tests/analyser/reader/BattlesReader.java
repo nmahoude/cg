@@ -1,4 +1,4 @@
-package cotc.tests.analyser;
+package cotc.tests.analyser.reader;
 
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -42,9 +42,9 @@ public class BattlesReader {
     WebTarget target = client.target(SINGLE_BATTLE_URL);
     
     Response response = target.request()
-        .cookie("JSESSIONID","487C3D7182C33D9F543DD11865712BA9")
-        .cookie("AWSELB", "43AD292116245448CF7264593C17D198824F648E2931D95E0E9D495978F5CE53423E78B1A05DF11190548DA1886E0174871868268818AE4BC1172FEF56EE628F8CEE80E7E6")
-        .post(Entity.text("["+battleId+", 335954]"));
+//        .cookie("JSESSIONID","AEC356A40048DCB722D4597248D94E3E")
+//        .cookie("AWSELB", "43AD292116245448CF7264593C17D198824F648E2931D95E0E9D495978F5CE53423E78B1A038B3DDC7D061E8D5673A1EF5F11C9F7454388DAF5221430C435960E1BE995800")
+        .post(Entity.text("["+battleId+", null]"));
 
     JsonObject battle = response.readEntity(JsonObject.class);
     
@@ -55,27 +55,37 @@ public class BattlesReader {
     Pattern pattern = Pattern.compile("\"view\":\" (.*?)\",");
     Matcher matcher = pattern.matcher(viewerLine);
     while (matcher.find()) {
-      String data = matcher.group(1);
-      System.out.println(data);
-      String[] inputs = data.split("\\\\n");
-      if (inputs.length > 1) {
+      String[] inputs = matcher.group(1).split("\\\\n");
+      if (isKeyFrame(inputs)) {
         Frame frame = new Frame(game);
-        if ("0".equals(inputs[0])) {
-          Scanner in = new Scanner(inputs[3]);
-          in.nextInt();
-          in.nextInt();
-          game.shipCount = in.nextInt();
-          in.nextInt();
+        if (isInitFrame(inputs)) {
+          readInitFrame(inputs);
           
-          in.close();
-          
-          frame.readInputsFrom(inputs, 4);
+          frame.readInputsFrom(inputs, 1+3);
         } else {
           frame.readInputsFrom(inputs, 1);
         }
         game.frames.add(frame);
       }
     }
+  }
+
+  private void readInitFrame(String[] inputs) {
+    Scanner in = new Scanner(inputs[3]);
+    in.nextInt();  // barrels count
+    in.nextInt();  // mines count
+    game.shipCount = in.nextInt(); // ships per player count
+    in.nextInt(); // ?
+    
+    in.close();
+  }
+
+  private boolean isInitFrame(String[] inputs) {
+    return "0".equals(inputs[0]);
+  }
+
+  private boolean isKeyFrame(String[] inputs) {
+    return inputs.length > 1;
   }
 
 }

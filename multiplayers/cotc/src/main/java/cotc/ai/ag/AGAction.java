@@ -24,4 +24,9 @@ public class AGAction {
     }
     return action.toString();
   }
+
+  public void copyFrom(AGAction from) {
+    this.action = from.action;
+    this.target = from.target;
+  }
 }

@@ -1,11 +1,11 @@
-package cotc.tests.analyser;
+package cotc.tests.analyser.reader;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Game {
-  List<Frame > frames = new ArrayList<>();
+  public List<Frame > frames = new ArrayList<>();
   
   String gameName;
   int playerCount;
