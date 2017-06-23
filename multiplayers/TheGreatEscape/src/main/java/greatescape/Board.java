@@ -29,6 +29,38 @@ public class Board {
     }
   }
 
+  public void removeWall(int x, int y, WallOrientation wallOrientation) {
+    if (wallOrientation == WallOrientation.V) {
+      // check if a horizontal wall does not exists
+      if (x-1 >= 0) {
+        cells[x-1][y].wallRight = 0;
+      }
+      if (x-1 >= 0 && y+1 < 9) {
+        cells[x-1][y+1].wallRight = 0;
+      }
+      if (x < 9) {
+        cells[x][y].wallLeft = 0;
+        if (y+1 < 9) {
+          cells[x][y+1].wallLeft = 0;
+        }
+      }
+    } else {
+      // Horizontal
+      if (y-1>=0) {
+        cells[x][y-1].wallDown = 0;
+        if (x+1 < 9) {
+          cells[x+1][y-1].wallDown = 0;
+        }
+      }
+      if (y < 9) {
+        cells[x][y].wallUp = 0;
+        if (x+1 < 9) {
+          cells[x+1][y].wallUp= 0;
+        }
+      }
+    }
+  }
+  
   public boolean addWall(int wallId, int x, int y, WallOrientation wallOrientation) {
     if (wallOrientation == WallOrientation.V) {
       // check if a horizontal wall does not exists
@@ -84,7 +116,7 @@ public class Board {
     return true;
   }
 
-  public void backupCells() {
+  public void backup() {
     for (int x=0;x<9;x++) {
       for (int y=0;y<9;y++) {
         cells[x][y].backup();
@@ -98,5 +130,9 @@ public class Board {
         cells[x][y].restore();
       }
     }
+  }
+
+  public Cell getCell(Point coords) {
+    return cells[coords.x][coords.y];
   }
 }

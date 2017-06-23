@@ -3,126 +3,85 @@ package greatescape;
 import java.util.List;
 import java.util.Scanner;
 
+import greatescape.ai.AI;
+
 /**
  * Auto-generated code below aims at helping you parse the standard input
  * according to the problem statement.
  **/
 public class Player {
-  static Board board = new Board();
-  static Point myPos;
-  private static int playerCount;
-  private static int alivePlayer;
+  static GameState state = new GameState();
+  public final static int W = 9;
+  public final static int H = 9;
   
-  private static int w;
-  private static int h;
-  private static int myId;
-  private static Point coords[];
   private static int turn;
-  private static int[] wallsLeft;
-  private static int wallCount;
-
+  public static long start;
+  
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
-    w = in.nextInt();
-    h = in.nextInt();
-    playerCount = in.nextInt();
-    myId = in.nextInt();
-
+  
     turn = 0;
-    coords = new Point[3];
-    wallsLeft = new int[3];
-    
-    for (int i = 0; i < 3; i++) {
-      coords[i] = new Point();
-    }
-    myPos = coords[myId];
+    state.readInitialInput(in);
 
     // game loop
     while (true) {
       turn++;
-      alivePlayer = 0;
-      for (int i = 0; i < playerCount; i++) {
-        int x = in.nextInt(); // x-coordinate of the player
-        int y = in.nextInt(); // y-coordinate of the player
-        int wl = in.nextInt(); // number of walls available for the // player
-        alivePlayer += x != -1 ? 1 : 0;
-        
-        coords[i].x = x;
-        coords[i].y = y;
-        wallsLeft[i] = wl;
-        System.err.println("Player"+i+" ("+x+","+y+","+wl+")");
-      }
-      wallCount = in.nextInt();
-      System.err.println("Board board = new Board();");
-      board.resetWalls();
-      for (int i = 0; i < wallCount; i++) {
-        int wallX = in.nextInt(); // x-coordinate of the wall
-        int wallY = in.nextInt(); // y-coordinate of the wall
-        String wallOrientation = in.next(); // wall orientation ('H' or 'V')
-        board.addWall(i+1, wallX, wallY, WallOrientation.valueOf(wallOrientation));
-        System.err.println("board.addWall("+(i+1)+","+wallX+", "+wallY+", WallOrientation."+wallOrientation+");");
-      }
+      state.readInput(in);
 
-      String finalMove = calculateMove();
-     
-      System.out.println(finalMove);
+      AI ai = new AI();
+      ai.evaluate(state);
+      //String finalMove = calculateMove();
+      //System.err.println("Perf : "+(System.currentTimeMillis()-start));
+      //System.out.println(finalMove);
     }
   }
 
-  static int getNextOpponent() {
-    int nextOpponnentId = (myId + 1) % playerCount;
-    while (coords[nextOpponnentId].x == -1) {
-      nextOpponnentId = (nextOpponnentId + 1) % playerCount;
-    }
-    return nextOpponnentId;
-  }
-  
   private static String calculateMove() {
-    System.err.println("My id  : "+myId);
-    int bestScore = evaluateMove(0, 0, 0 , WallOrientation.H)-myId;// substract myId to counter turn disadvantage
+    int bestScore = evaluateAction(0, 0, 0 , WallOrientation.H)-state.myId;// substract myId to counter turn disadvantage
     System.err.println("Score for move is "+bestScore);
     String finalMove = null;
     
-    if (turn > 4 && bestScore < 0 && wallsLeft[myId] > 0) {
-      board.backupCells();
-      for (int x=0;x<w-1;x++) {
-        for (int y=0;y<h-1;y++) {
+    if (turn > 4 && bestScore < 0 && state.agents[state.myId].wallsLeft > 0) {
+      for (int x=0;x<W-1;x++) {
+        for (int y=0;y<H-1;y++) {
           for (WallOrientation wo : WallOrientation.values()) {
             if (x == 0 && wo == WallOrientation.V) continue;
             if (y == 0 && wo == WallOrientation.H) continue;
             
-            board.restore();
-            if (!board.addWall(wallCount+1,x, y, wo)) {
+            if (!state.board.addWall(state.wallCount+1,x, y, wo)) {
               continue;
             }
-            int score = evaluateMove(wallCount+1,x, y, wo)-myId; 
+            int score = evaluateAction(state.wallCount+1,x, y, wo)-state.myId; 
             if (score < -1000) {
               System.err.println("Doing "+x+" "+y+" "+wo+" would block a player");
             }
+            
             if (score > bestScore) {
               bestScore = score;
               finalMove = ""+x+" "+y+" "+wo.toString();
               System.err.println("New best score: "+bestScore+" for move "+finalMove);
               System.err.println("My trajectory");
-              List<PathItem> trajectory = new AStar(board, board.cells[coords[myId].x][coords[myId].y], getTargetFromId(myId)).find();
+              List<PathItem> trajectory = new AStar(state.board, state.board.getCell(state.agents[state.myId].position), state.me.goal).find();
               debugTrajectory(trajectory);
               System.err.println("others trajectorys");
-              for (int i=0;i<playerCount;i++) {
-                if (i == myId) continue;
-                if (coords[i].x == -1) continue;
+              for (int i=0;i<state.playerCount;i++) {
+                if (i == state.myId) continue;
+                if (state.agents[i].isDead()) continue;
                 System.err.println("player "+i);
-                List<PathItem> trajectory2 = new AStar(board, board.cells[coords[i].x][coords[i].y], getTargetFromId(i)).find();
+                List<PathItem> trajectory2 = new AStar(state.board, state.board.getCell(state.agents[i].position), state.agents[i].goal).find();
                 debugTrajectory(trajectory2);
               }
             }
+            
+            state.restore();
           }
         }
       }
     } 
     if (finalMove == null) {
       // need to get the trajectory back
-      Cell currentCell = board.cells[myPos.x][myPos.y];
-      List<PathItem> trajectory = new AStar(board, currentCell, getTargetFromId(myId)).find();
+      Cell currentCell = state.board.getCell(state.me.position);
+      List<PathItem> trajectory = new AStar(state.board, currentCell, state.me.goal).find();
       debugTrajectory(trajectory);
       if (trajectory.size() > 1) {
         finalMove = getMoveFromCells(currentCell, trajectory.get(1).pos);
@@ -133,65 +92,47 @@ public class Player {
     return finalMove;
   }
 
-  private static int evaluateMove(int wallId, int x, int y, WallOrientation wo) {
+  private static int evaluateAction(int wallId, int x, int y, WallOrientation wo) {
     int lengths[] = new int[3];
     int bestLength = Integer.MAX_VALUE;
     int bestId = 0;
     List<PathItem> myTrajectory = null;
     Cell myCurrentCell = null;
     
-    for (int i=0;i<playerCount;i++) {
-      if ( coords[i].x == -1) {
-        continue; // dead player
-      }
+    for (int i=0;i<state.playerCount;i++) {
+      if ( state.agents[i].isDead()) continue;
       
-      Cell currentCell = board.cells[coords[i].x][coords[i].y];
-      List<PathItem> trajectory = new AStar(board, currentCell, getTargetFromId(i)).find();
+      Cell currentCell = state.board.getCell(state.agents[i].position);
+      List<PathItem> trajectory = new AStar(state.board, currentCell, state.agents[i].goal).find();
       lengths[i] = trajectory.size();
       if (lengths[i]<bestLength) {
         bestLength = lengths[i];
         bestId = i;
       }
-      if (i == myId) {
+      if (i == state.myId) {
         myCurrentCell = currentCell;
         myTrajectory = trajectory;
       }
     }
 
     int score = 0;
-    for (int i=0;i<playerCount;i++) {
+    for (int i=0;i<state.playerCount;i++) {
+      if ( state.agents[i].isDead()) continue;
+      
       if (lengths[i] <= 1) {
-        if ( coords[i].x == -1) {
-          continue; // dead player
-        }
-        return -5000;
+        return -5000; // bad bad
       }
-      if (i!= myId) {
+      
+      if (i!= state.myId) {
         score +=100*lengths[i];
         if (wallId != 0) {
-          score -=( Math.abs(coords[i].x - x) + Math.abs(coords[i].y - y));
+          score -=( Math.abs(state.agents[i].position.x - x) + Math.abs(state.agents[i].position.y - y));
         }
       } else {
-        score -=100*(alivePlayer-1)*lengths[i];
+        score -=100*(state.alivePlayer-1)*lengths[i];
       }
     }
     return score;
-  }
-
-  static Target getTargetFromId(int id) {
-    Target target = Target.RIGHT;
-    switch (id) {
-      case 0:
-        target = Target.RIGHT;
-        break;
-      case 1:
-        target = Target.LEFT;
-        break;
-      case 2:
-        target = Target.DOWN;
-        break;
-    }
-    return target;
   }
 
   static void debugTrajectory(List<PathItem> trajectory) {
@@ -201,7 +142,7 @@ public class Player {
     System.err.println("");
   }
 
-  private static String getMoveFromCells(Cell origin, Cell destination) {
+  public static String getMoveFromCells(Cell origin, Cell destination) {
     if (origin.up == destination) {
       return "UP";
     }

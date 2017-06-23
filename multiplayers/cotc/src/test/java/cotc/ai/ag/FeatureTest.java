@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import cotc.GameSituationTest;
@@ -22,6 +23,7 @@ GameState state;
   }
   
   @Test
+  @Ignore // no more mobility
   /*
   mineCount=8
   seed=823675928

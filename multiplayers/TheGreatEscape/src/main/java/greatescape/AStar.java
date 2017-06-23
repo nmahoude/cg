@@ -11,6 +11,7 @@ import java.util.Map;
 /**
  * PATH : A*
  *
+ * Modified version to reach a certain row/column instead of a cell
  */
 public class AStar {
   Map<Cell, PathItem> closedList = new HashMap<>();

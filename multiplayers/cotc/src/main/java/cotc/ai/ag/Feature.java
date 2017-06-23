@@ -30,7 +30,8 @@ public class Feature {
   public static final int HIS_DELTA_HEALTH_FEATURE = 17;
   public static final int DESTROYED_BARRELS = 18;
   public static final int DISTANCE_TO_CLOSEST_BARREL_FEATURE = 19;
-  public static final int LAST = 20;
+  public static final int STUCK_ON_BORDER_FEATURE = 20;
+  public static final int LAST = 21;
 
   public double features[] = new double[LAST];
   public static final String[] debugFeatures= {
@@ -54,6 +55,7 @@ public class Feature {
       "HisDeltaHealth    ",
       "destroyedBarrels  ",
       "dist2ClosestBarrel",
+      "stuckOnBorder     ",
   };
   
   public final static double[] speeds = new double []{ 0.0, 1.0 , 1.3};
@@ -69,7 +71,7 @@ public class Feature {
     features[MINE_DROPPED_FEATURE] = state.droppedMines; // hack to know how many cannonballs have been shot during the simulation
     features[BARREL_COUNT_FEATURE] = state.barrels.length; // Number of barrels
     features[DESTROYED_BARRELS] = state.destroyedBarrels;
-    updateMobilityFeature(state);
+    //updateMobilityFeature(state);
     
     for (int s=0;s<state.teams[1].shipsAlive.length;s++) {
       Ship ship = state.teams[1].shipsAlive.elements[s];
@@ -83,7 +85,7 @@ public class Feature {
 
       features[MY_HEALTH_FEATURE] += ship.health * (ship.champion ? 2 : 1);
       features[SPEED_FEATURE] += speeds[ship.speed];
-      features[DISTANCE_TO_CENTER_FEATURE] += ship.position.distanceTo(Simulation.MAP_CENTER);
+      features[DISTANCE_TO_CENTER_FEATURE] += 1.0 / (1.0+ship.position.distanceTo(Simulation.MAP_CENTER));
 
       // distances to ships
       int bestDist = Integer.MAX_VALUE;

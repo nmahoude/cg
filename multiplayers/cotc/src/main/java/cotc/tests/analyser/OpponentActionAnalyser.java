@@ -20,27 +20,32 @@ public class OpponentActionAnalyser {
     
     BattlesReader br = new BattlesReader();
     game = br.game;
-    br.readOneBattle("230481736");
+    br.readOneBattle("230752328");
     
     analyse();
   }
 
   private static void analyse() {
+    int compareId = 0;
     for (int i=0;i<game.frames.size()-1;i++) {
       System.err.println("Analyse opponent, turn "+(2*i));
       GameState state = game.frames.get(i).frameToState();
       GameState nextState = game.frames.get(i+1).frameToState();
       
-      swapTeams(state);
+      if (compareId == 1) {
+        swapTeams(state);
+      }
       
       AG ag = new AG();
       ag.setState(state);
-      AGSolution bestSol = (AGSolution)ag.evolve(System.currentTimeMillis() + 44);
+      AGSolution bestSol = (AGSolution)ag.evolve(System.currentTimeMillis() + 5000);
  
       for (int s=0;s<3;s++) {
         AGAction agAction = bestSol.actions.elements[0 + s*AGSolution.DEPTH];
-        if (agAction.action != nextState.teams[1].ships.get(s).action) {
-          System.err.println("   "+s+" - Difference : his="+nextState.teams[1].ships.get(s).action+ " vs my calculated : "+agAction.action);
+        if (agAction.action != nextState.teams[compareId].ships.get(s).action) {
+          System.err.println("   "+s+" - Difference : his="+nextState.teams[compareId].ships.get(s).action+ " vs my calculated : "+agAction.action);
+        } else {
+          System.err.println("   "+s+" - Same       : his="+nextState.teams[compareId].ships.get(s).action+ " vs my calculated : "+agAction.action);
         }
       }
       

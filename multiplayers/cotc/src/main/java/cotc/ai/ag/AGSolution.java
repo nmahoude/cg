@@ -70,7 +70,13 @@ public class AGSolution implements AISolution{
   }
 
   public static void crossOver(AGSolution solution1, AGSolution solution2, AGSolution parent1, AGSolution parent2) {
-    int cut = Player.rand.nextInt(parent1.shipCount * DEPTH);
+    int cut;
+    if (parent1.shipCount == 1) {
+      cut = Player.rand.nextInt(DEPTH);
+    } else {
+      cut = DEPTH * Player.rand.nextInt(parent1.shipCount-1);
+    }
+    
     for (int i=0;i<3 * DEPTH;i++) {
       if (i<cut) {
         solution1.actions.elements[i].copyFrom(parent1.actions.elements[i]);
@@ -161,6 +167,13 @@ public class AGSolution implements AISolution{
     // ATM, the health with a patience coef is not a good result (really not !)
     for (int s=0;s<state.teams[0].shipsAlive.length;s++) {
       Ship ship = state.teams[0].shipsAlive.elements[s];
+
+      // stuck on border
+      if (turn == 0) {
+        boolean onBorder = ship.position.x == 0 || ship.position.x == 22 || ship.position.y == 0 || ship.position.y == 20;
+        feature.features[Feature.STUCK_ON_BORDER_FEATURE] += onBorder ? 1.0 : 0.0;
+      }
+
       
       // greedy health
       energy += (ship.health-ship.b_health);
