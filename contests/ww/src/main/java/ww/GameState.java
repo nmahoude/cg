@@ -122,10 +122,10 @@ public class GameState {
     System.err.println("public void test() {");
     System.err.println("  state.size = "+size+";");
     for (Agent agent : agents) {
-      System.err.println("  setAgent("+agent.id+","+agent.x+","+agent.y+");");
+      System.err.println("  TU.setAgent(state, "+agent.id+","+agent.x+","+agent.y+");");
     }
     
-    System.err.println("  setHeights(");
+    System.err.println("  TU.setHeights(state, ");
     for (int y=0;y<size;y++) {
       System.err.print("    \"");
       for (int x=0;x<size;x++) {
@@ -139,9 +139,10 @@ public class GameState {
       System.err.print("\"");
       if (y != size-1) {
         System.err.println(",");
+      } else {
+        System.err.println(");");
       }
     }
-    System.err.println("  );");
     
     System.err.println("}");
   }

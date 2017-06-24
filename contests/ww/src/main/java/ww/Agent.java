@@ -32,7 +32,7 @@ public class Agent {
     return getPossibleActions(state, false);
   }
   
-  public int getPossibleActions(GameState state, boolean restrictToMove) {
+  private int getPossibleActions(GameState state, boolean restrictToMove) {
     int actionsLeft = 0; // count possible actions for the agent, if too few, we force this agent to move (boost his score)
     for (Dir dir : Dir.values()) {
       int dirX = x+dir.dx;

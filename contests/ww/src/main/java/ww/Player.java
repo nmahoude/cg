@@ -52,6 +52,14 @@ public class Player {
       }
         
 
+      if (best[0] == null && best[1] == null) {
+        System.out.println("ACCEPT-DEFEAT Good fight. Well done!");
+        return;
+      }
+      System.err.println("Scores: ");
+      System.err.println("   0 = "+bestScore[0]);
+      System.err.println("   1 = "+bestScore[1]);
+      
       if (bestScore[0] > bestScore[1]) {
         System.out.println(best[0]);
       } else {
@@ -63,11 +71,27 @@ public class Player {
   
   private static double calculateScore(Move move) {
     if (move.isPushed) {
-      return calculatePushScore(move);
+      return calculateMovabilityBonus() + calculatePushScore(move);
     } else {
-      return calculateMoveScore(move);
+      return calculateMovabilityBonus() + calculateMoveScore(move);
     }
   }
+
+  /**
+   * Bonus if we have a lot of move possible, malus for the opp
+   * @return
+   */
+  private static double calculateMovabilityBonus() {
+    double movability = 0;
+    for (int i=0;i<state.unitsPerPlayer;i++) {
+      movability += 1 * state.agents[i].getPossibleMoves(state);
+    }
+    for (int i=0;i<state.unitsPerPlayer;i++) {
+      movability -= 1 * state.agents[state.unitsPerPlayer+i].getPossibleMoves(state);
+    }
+    return movability;
+  }
+  
   public static double calculateMoveScore(Move move) {
     int moveScore = 0
         // our next height
