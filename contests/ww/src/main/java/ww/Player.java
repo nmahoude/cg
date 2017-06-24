@@ -18,46 +18,67 @@ public class Player {
       round++;
 
       String best[] = new String[state.unitsPerPlayer];
-      for (int i = 0; i < 2; i++) {
+      int bestScore[] = new int[state.unitsPerPlayer];
+      
+      for (int i = 0; i < state.unitsPerPlayer; i++) {
         int unitX = state.unitX[i];
         int unitY = state.unitY[i];
 
-        int level = state.grid[unitX][unitY];
-        int blockLevel = -1;
+        bestScore[i] = Integer.MIN_VALUE;
+        
         for (Dir dir : Dir.values()) {
-          for (Dir dirBlock : Dir.values()) {
-            int dirX = unitX+dir.dx;
-            int dirY = unitY+dir.dy;
-            int blockX = dirX+dirBlock.dx;
-            int blockY = dirY+dirBlock.dy;
-
-            if (!state.isValid(dirX, dirY)) continue;
-            if (!state.isValid(blockX, blockY)) continue;
-            if (state.isOccupied(i, dirX, dirY)) continue;
-            if (state.isOccupied(i, blockX, blockY)) continue;
+          int dirX = unitX+dir.dx;
+          int dirY = unitY+dir.dy;
+          if (!state.isValid(dirX, dirY)) continue;
+          int deltaHeight = state.getHeight(dirX,dirY) - state.getHeight(unitX,unitY);
+          if (deltaHeight > 1 ) continue;
+        
+          int moveScore = 20*state.getHeight(dirX, dirY) + (state.getHeight(dirX, dirY) == 3 ? 1000 : 0);
+          
+          if (state.isOccupied(i, dirX, dirY)) {
+            if (state.isFriendly(i, dirX, dirY)) continue;
             
-            if (state.grid[dirX][dirY] - state.grid[unitX][unitY] > 1 ) continue;
-            
-            if (best[i] == null || state.grid[dirX][dirY] >= level) {
-              if ( best[i] != null && state.grid[blockX][blockY] == 3) {
-                continue;
-              } else {
-                level = state.grid[dirX][dirY];
-                blockLevel = state.grid[blockX][blockY];
+            for (Dir push : dir.pushDirections()) {
+              int pushedX = dirX+push.dx;
+              int pushedY = dirY+push.dy;
+              if (!state.isValid(pushedX, pushedY)) continue;
+              if (state.isOccupied(i, pushedX, pushedY)) continue;
+              
+              int deltaY = state.getHeight(dirX, dirY)-state.getHeight(pushedX, pushedY);
+              if (deltaY < 0) continue;
+              
+              int pushScore = 15 * deltaY; // just under 1 floor up for me so I prefer climbing, but 2 stairs fall is better
+              if ( pushScore > bestScore[i]) {
+                bestScore[i] = pushScore;
+                best[i] = "PUSH&BUILD "+i+" "+dir.toString()+" "+push.toString();
+                System.err.println("for "+i+" pos = "+unitX+" "+unitY+" best is "+best[i]);
+                System.err.println("Scores are  : move = "+moveScore+" , push= "+pushScore);
+              }
+            }
+          } else {
+            for (Dir dirBlock : Dir.values()) {
+              int blockX = dirX+dirBlock.dx;
+              int blockY = dirY+dirBlock.dy;
+              if (!state.isValid(blockX, blockY)) continue;
+              if (state.isOccupied(i, blockX, blockY)) continue;
+              
+              int buildScore = state.getHeight(blockX,blockY) + (state.getHeight(blockX,blockY) == 3 ? -5 : 0);
+              
+              if (moveScore + buildScore > bestScore[i]) {
+                bestScore[i] = moveScore + buildScore;
                 best[i]="MOVE&BUILD "+i+" "+dir.toString()+" "+dirBlock.toString();
+                System.err.println("for "+i+" pos = "+unitX+" "+unitY+" best is "+best[i]);
+                System.err.println("Scores are  : move = "+moveScore+" , build= "+buildScore);
               }
             }
           }
         }
-        System.err.println("for "+i+" pos = "+unitX+" "+unitY+" best is "+best[i]);
-
       }
 
-      int firstPlayerToPlay = s%2;
-      if (best[firstPlayerToPlay] != null) {
-        System.out.println(best[firstPlayerToPlay]);
+      if (bestScore[0] > bestScore[1]) {
+        System.out.println(best[0]);
       } else {
-        System.out.println(best[1-firstPlayerToPlay]);
+        System.out.println(best[1]);
       }
       s++;
     }
