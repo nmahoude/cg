@@ -12,7 +12,7 @@ public enum Dir {
     this.dy = dy;
   }
 
-  Dir[] pushDirections() {
+  public Dir[] pushDirections() {
     switch (this) {
     case E:
       return new Dir[] { NE, E, SE };

@@ -1,4 +1,7 @@
 = CR des submits
 
+= 20170625 (Bronze)
+00h00 - 122 -> ??? : ajotu de la simulation (sensée iso) + output TDD :)
+
 = 20170624 (Bronze)
-13h24 - B - 50eme
+13h24  - 50eme
