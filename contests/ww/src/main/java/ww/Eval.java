@@ -21,6 +21,8 @@ public class Eval {
     System.err.println("   movability   "+features[MOVABILITY_FEATURE] );
     System.err.println("   push         "+features[PUSH_FEATURE] );
     System.err.println("   move         "+features[MOVE_FEATURE] );
+    
+    System.err.println("total = "+calculateTotal());
   }
   public double calculateScore(GameState state, Move move) {
     this.state = state;
@@ -37,6 +39,9 @@ public class Eval {
       features[PUSH_FEATURE] =  0.0;
     }
     
+    return calculateTotal();
+  }
+  private double calculateTotal() {
     double score = 0.0;
     for (int i=0;i<feature-1;i++) {
       score+= features[i];
@@ -50,7 +55,7 @@ public class Eval {
     for (int i=0;i<2;i++) {
       int manhattanDistance = Math.abs(state.agents[i].x - GameState.size/2)
           +Math.abs(state.agents[i].y - GameState.size/2);
-      score += 5.0*(GameState.size - manhattanDistance);
+      score += 1.0*(GameState.size - manhattanDistance);
     }
     return score;
   }
@@ -66,7 +71,7 @@ public class Eval {
       if (possibleMoves == 0) {
         movability -= 10_000; // big malus if we can't move
       }
-      movability += 5.0 * possibleMoves;
+      movability += 5.0 * Math.min(4, possibleMoves);
     }
     for (int i=0;i<GameState.unitsPerPlayer;i++) {
       if (state.agents[GameState.unitsPerPlayer+i].inFogOfWar()) continue;
@@ -75,7 +80,7 @@ public class Eval {
       if (possibleMoves == 0) {
         movability += 10_000; // high bonus if he can't move
       }
-      movability -= 1.0 * possibleMoves;
+      movability -= 1.0 * Math.min(4, possibleMoves);
     }
     return movability;
   }
@@ -87,12 +92,12 @@ public class Eval {
         // if we go on a lvl 3 height next, it's a big bonus (score 1 point)
         + (move.dir1Height == 3 ? 1000 : 0);
     
-    int deltaY = move.dir2Height + 1 - move.dir1Height;
+    int deltaY = move.dir2Height  - move.dir1Height;
     double buildScore = 0
         // height of the next block we put
-        + move.dir2Height 
+        + 10.0 * move.dir2Height 
         // Malus if we go to height 4
-        + (move.dir2Height == 3 ? -5 : 0)
+        + (move.dir2Height == 4 ? -50 : 0)
         // Malus if the block is higher than our next position
         - (deltaY > 1 ? 100 : 0);
 

@@ -43,7 +43,6 @@ public class EvalTest {
     assertThat(move.isValid(), is(true));
     
     double score1 = eval.calculateScore(state, move);
-    eval.debug("MOVE UP");
     
     state.restore();
 
@@ -52,7 +51,6 @@ public class EvalTest {
     assertThat(move2.isValid(), is(true));
 
     double score2 = eval.calculateScore(state, move2);
-    eval.debug("BUILD LVL 1");
 
     assertThat(score1-score2 > 0 , is(true));
   }
@@ -103,5 +101,37 @@ public class EvalTest {
     double score = eval.calculateScore(state, move);
     
     assertThat(score > 5000, is(true));
+  }
+  
+  @Test
+  public void buildingAtHeight_2_isBetterThan_1() {
+    state.size = 6;
+    TU.setAgent(state, 0,2,4);
+    TU.setAgent(state, 1,4,4);
+    TU.setAgent(state, 2,5,5);
+    TU.setAgent(state, 3,-1,-1);
+    TU.setHeights(state, 
+      "010000",
+      "003001",
+      ".3031.",
+      "003311",
+      "000010",
+      "000000");
+    
+    Move move1 = TU.getMove(1, Dir.NE, Dir.W);
+    simulation.simulate(move1, state);
+    assertThat(move1.isValid(), is(true));
+    double score1 = eval.calculateScore(state, move1);
+    eval.debug("BUILD Next to lvl 3");
+
+    state.restore();
+    Move move2 = TU.getMove( 1, Dir.N, Dir.SE);
+    simulation.simulate(move2, state);
+    assertThat(move2.isValid(), is(true));
+    double score2 = eval.calculateScore(state, move2);
+    eval.debug("BUILD FAR");
+
+    
+    assertThat(score1 > score2, is(true));
   }
 }

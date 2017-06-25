@@ -92,7 +92,7 @@ public class Simulation {
     
     move.dir2X = placeTargetX;
     move.dir2Y = placeTargetY;
-    move.dir2Height = placeTargetHeight;
+    move.dir2Height = placeTargetHeight+1;
     
     if (targetHeight == FINAL_HEIGHT - 1) {
       agent.score++;
