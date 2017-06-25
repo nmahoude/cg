@@ -10,6 +10,10 @@ public class GameState {
   public Agent agents[];
   
   public GameState() {
+    agents = new Agent[2*2];
+    for (int i=0;i<2*2;i++) {
+      agents[i] = new Agent(i);
+    } 
   }
 
   public void backup() {
@@ -30,10 +34,7 @@ public class GameState {
     size = in.nextInt();
     unitsPerPlayer = in.nextInt();
 
-    agents = new Agent[2*unitsPerPlayer];
-    for (int i=0;i<2*unitsPerPlayer;i++) {
-      agents[i] = new Agent(i);
-    }
+    
   }
 
   public void readRound(Scanner in) {

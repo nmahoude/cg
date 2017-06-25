@@ -41,4 +41,11 @@ public class Move {
     isDir1Valid = true;
     isDir2Valid = true;
   }
+  public String toPlayerOutput() {
+    if (isPush) {
+      return  "PUSH&BUILD "+id+" "+dir1.toString()+" "+dir2.toString();
+    } else {
+      return "MOVE&BUILD "+id+" "+dir1.toString()+" "+dir2.toString();
+    }
+  }
 }
