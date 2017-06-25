@@ -25,31 +25,30 @@ public class PlayerTest {
   }
   
   @Test
-  public void test() {
+  public void blockedInTopRightIsNotAGoodIdea() {
     state.size = 5;
-    TU.setAgent(state, 0,3,4);
-    TU.setAgent(state, 1,1,0);
+    TU.setAgent(state, 0,3,0);
+    TU.setAgent(state, 1,1,1);
     TU.setAgent(state, 2,-1,-1);
-    TU.setAgent(state, 3,0,1);
+    TU.setAgent(state, 3,1,0);
     TU.setHeights(state, 
-      "00110",
-      "00200",
-      "00000",
-      "00000",
-      "00000");
+      "20033",
+      "00444",
+      "00044",
+      "00043",
+      "00134");
     
-    Move move = TU.getMove(1 , Dir.E, Dir.W);
-    boolean valid = simulation.simulate(move, state);
-    assertThat(valid, is (true));
-    double score = Player.calculateMoveScore(move);
+    Move move = TU.getMove(0 , Dir.E, Dir.W);
+    simulation.simulate(move, state);
+    
+    
+    assertThat(move.isValid(), is (true));
+    assertThat(state.agents[0].getPossibleActions(state), is(0));
+
+    double score = Player.calculateScore(move);
     System.err.println(score);
     
-    state.restore();
-    Move move2 = TU.getMove(0 , Dir.N, Dir.N);
-    boolean valid2 = simulation.simulate(move2, state);
-    assertThat(valid2, is (true));
-    double score2 = Player.calculateMoveScore(move2);
-    System.err.println(score2);
-    
   }
+  
+  
 }

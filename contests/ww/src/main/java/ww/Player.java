@@ -28,19 +28,21 @@ public class Player {
       state.backup();
       for (int i = 0; i < state.unitsPerPlayer; i++) {
         Move move = new Move();
-        move.index = i;
+        move.id = i;
         move.currentHeight = state.getHeight(state.agents[i].x, state.agents[i].y);
         bestScore[i] = Double.NEGATIVE_INFINITY;
         for (Dir dir1 : Dir.values()) {
           for (Dir dir2 : Dir.values()) {
             move.dir1 = dir1;
             move.dir2 = dir2;
-            boolean valid = simulation.simulate(move, state);
-            if (!valid) continue;
+            simulation.simulate(move, state);
+            if (!move.isDir1Valid()) break; 
+            if (!move.isDir2Valid()) continue;
+            
             double score = calculateScore(move);
             if (score > bestScore[i]) {
               bestScore[i] = score;
-              if (move.isPushed) {
+              if (move.isPush) {
                 best[i] = "PUSH&BUILD "+i+" "+dir1.toString()+" "+dir2.toString();
               } else {
                 best[i] = "MOVE&BUILD "+i+" "+dir1.toString()+" "+dir2.toString();
@@ -69,12 +71,23 @@ public class Player {
     }
   }
   
-  private static double calculateScore(Move move) {
-    if (move.isPushed) {
-      return calculateMovabilityBonus() + calculatePushScore(move);
+  public static double calculateScore(Move move) {
+    if (move.isPush) {
+      return positioningScore() + calculateMovabilityBonus() + calculatePushScore(move);
     } else {
-      return calculateMovabilityBonus() + calculateMoveScore(move);
+      return positioningScore() + calculateMovabilityBonus() + calculateMoveScore(move);
     }
+  }
+
+  private static double positioningScore() {
+    // 1 try : manhattan distance between my agents
+    double score = 0.0;
+    for (int i=0;i<2;i++) {
+      int manhattanDistance = Math.abs(state.agents[i].x - state.size/2)
+          +Math.abs(state.agents[i].y - state.size/2);
+      score += 10.0*(state.size - manhattanDistance);
+    }
+    return score;
   }
 
   /**
@@ -84,10 +97,20 @@ public class Player {
   private static double calculateMovabilityBonus() {
     double movability = 0;
     for (int i=0;i<state.unitsPerPlayer;i++) {
-      movability += 1 * state.agents[i].getPossibleMoves(state);
+      int possibleMoves = state.agents[i].getPossibleMoves(state);
+      if (possibleMoves == 0) {
+        movability -= 10_000; // big malus if we can't move
+      }
+      movability += 5 * possibleMoves;
     }
     for (int i=0;i<state.unitsPerPlayer;i++) {
-      movability -= 1 * state.agents[state.unitsPerPlayer+i].getPossibleMoves(state);
+      if (state.agents[state.unitsPerPlayer+i].inFogOfWar()) continue;
+      
+      int possibleMoves = state.agents[state.unitsPerPlayer+i].getPossibleMoves(state);
+      if (possibleMoves == 0) {
+        movability += 10_000; // high bonus if he can't move
+      }
+      movability -= 1 * possibleMoves;
     }
     return movability;
   }

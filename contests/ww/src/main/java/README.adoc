@@ -1,6 +1,8 @@
 = CR des submits
 
 = 20170625 (Bronze)
+02h53 - 44 : eval : se rapprocher du centre 
+02h00 - 65 : passage de la simulation a une validité sur le move plutot que globale
 01h00 - 90 -> 55 : baisse de la movability, me rapprocher d'un opp mettais trop de points
 00h28 - 92 -> 90 : ajout de la movbility : le nombre de move (pas d'action) que chaque agent peut faire (bonus pour moi, malus pour lui)
 00h00 - 122 -> 92 : ajout de la simulation (sensée iso) + output TDD :)

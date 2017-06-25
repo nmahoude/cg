@@ -69,4 +69,8 @@ public class Agent {
     }
     return actionsLeft;
   }
+
+  public boolean inFogOfWar() {
+    return x == -1;
+  }
 }

@@ -5,7 +5,7 @@ import ww.sim.Move;
 public class TU {
   public static Move getMove(int i, Dir dir1, Dir dir2) {
     Move move = new Move();
-    move.index = i;
+    move.id = i;
     move.dir1 = dir1;
     move.dir2 = dir2;
     return move;

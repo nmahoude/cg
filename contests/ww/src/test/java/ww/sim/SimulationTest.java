@@ -42,9 +42,9 @@ public class SimulationTest {
     
     Move move = TU.getMove(1, Dir.NW, Dir.N);
 
-    boolean valid = simulation.simulate(move, state);
+    simulation.simulate(move, state);
     
-    assertThat(valid, is(false));
+    assertThat(move.isValid(), is(false));
   }
   
   @Test
@@ -64,9 +64,9 @@ public class SimulationTest {
     
     Move move = TU.getMove(1, Dir.E, Dir.W);
 
-    boolean valid = simulation.simulate(move, state);
+    simulation.simulate(move, state);
     
-    assertThat(valid, is(true));
+    assertThat(move.isValid(), is(true));
   }
   
 }
