@@ -1,7 +1,5 @@
 package ww.sim;
 
-import com.sun.xml.internal.ws.developer.MemberSubmissionAddressing.Validation;
-
 import ww.Agent;
 import ww.Dir;
 import ww.GameState;

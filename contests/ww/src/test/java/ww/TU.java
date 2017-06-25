@@ -12,6 +12,7 @@ public class TU {
   }
 
   public static void setHeights(GameState state, String... rows) {
+    state.grid.reset();
     for (int y=0;y<rows.length;y++) {
       for (int x=0;x<rows.length;x++) {
         char c = rows[y].charAt(x);

@@ -1,27 +1,26 @@
 package ww;
 
 public class Grid {
-  public long holes = 0; // 1 in x*y is a hole
+  public static long holes = 0; // 1 in x*y is a hole, static because it is immutable
+  
   public long layer1, layer2;
   public long ceiling = 0;
 
-  long _holes, _layer1, _layer2, _ceiling;
+  long _layer1, _layer2, _ceiling;
 
   public void backup() {
-    _holes = holes;
     _layer1 = layer1;
     _layer2 = layer2;
     _ceiling = ceiling;
   }
   
   public void restore() {
-    holes = _holes;
     layer1 = _layer1;
     layer2 = _layer2;
     ceiling = _ceiling;
   }
 
-  public void initRound() {
+  public void reset() {
     holes = 0xFFFFFFFFFFFFFFFFL;
     layer1 = layer2 = 0L;
     holes |= 0b1000000000000000000000000000000000000000000000000000000000000000L; // TODO NEEDED ?
@@ -105,4 +104,5 @@ public class Grid {
     return ((holes & bitToTest) == 0) 
         && ((ceiling & bitToTest) == 0);
   }
+
 }

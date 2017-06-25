@@ -3,12 +3,11 @@ package ww;
 import java.util.Scanner;
 
 public class GameState {
-  public  int size;
-  public int unitsPerPlayer;
+  public static int size;
+  public static int unitsPerPlayer;
   
   public Grid grid = new Grid();
   public Agent agents[];
-
   
   public GameState() {
   }
@@ -38,7 +37,7 @@ public class GameState {
   }
 
   public void readRound(Scanner in) {
-    grid.initRound();
+    grid.reset();
     
     for (int y = 0; y < size; y++) {
       String row = in.next();
