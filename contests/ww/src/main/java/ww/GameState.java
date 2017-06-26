@@ -2,6 +2,8 @@ package ww;
 
 import java.util.Scanner;
 
+import javax.xml.bind.ValidationException;
+
 public class GameState {
   public static int size;
   public static int unitsPerPlayer;
@@ -164,8 +166,7 @@ public class GameState {
     
     visited = 0L;
     validPosMask = (0xFFFFFFFFFFFFFFFFL & ~grid.holes) & ~grid.ceiling;
-        
-    
+
     int x = agents[id].x;
     int y = agents[id].y;
     

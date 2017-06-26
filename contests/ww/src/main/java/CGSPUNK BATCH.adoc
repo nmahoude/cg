@@ -1,6 +1,6 @@
 = 20 matchs, places entre 90 & 110
 
-==== manimax à 0.01 * score : 
+==== Ajouter les agents comme bloquants dnas les cases reachables : 12/8/0
 ==== avec minimax a 1 * score : 0 / 20 / 0 !!!
 ==== sans le minimax : 11 / 9 / 0 
 ==== 2017/26/06, 23h29. minimax à 0.1 * miniScore , Result is : 9 / 10 / 1

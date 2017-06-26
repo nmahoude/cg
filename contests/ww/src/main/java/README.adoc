@@ -1,6 +1,10 @@
 = CR des submits
 
 
+= 20170627 (Silver)
+00h30 - 42 : suppression des cases bloquées par les agents enemis ...
+00h10 - 105 : ajout des cases bloquées par les agents enemis
+
 = 20170626 (Bronze)
 17h00 - 100 : pas mal de modif encore :/
 14h19 - 65 : Desactivation du code du Minimax 
