@@ -84,7 +84,6 @@ public class Simulation {
     agent.x = targetX;
     agent.y = targetY;
 
-    state.setHeight(placeTargetX, placeTargetY, placeTargetHeight + 1);
 
     move.dir1X = targetX;
     move.dir1Y = targetY;
@@ -94,6 +93,11 @@ public class Simulation {
     move.dir2Y = placeTargetY;
     move.dir2Height = placeTargetHeight+1; // take the new height into account
     
+    // move ok, update agent position & grid
+    agent.x = targetX;
+    agent.y = targetY;
+    state.setHeight(placeTargetX, placeTargetY, placeTargetHeight + 1);
+
     if (targetHeight == FINAL_HEIGHT - 1) {
       agent.score++;
     }
@@ -137,7 +141,9 @@ public class Simulation {
 
     // TODO check if we know a agent is at pushTo and would block the action ?
     
-    // move ok
+    // move ok, update agent position & grid
+    agent.x = agent.x;
+    agent.y = agent.y;   
     state.setHeight(targetX, targetY, pushFromHeight + 1);
 
     pushed.x = pushToX;

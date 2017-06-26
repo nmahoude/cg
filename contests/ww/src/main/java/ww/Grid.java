@@ -85,6 +85,10 @@ public class Grid {
   public int getHeight(int x, int y) {
     long bitToTest = toBitMask(x, y);
 
+    return getHeightFromMask(bitToTest);
+  }
+
+  public int getHeightFromMask(long bitToTest) {
     if ((holes & bitToTest) != 0L)
       return -1;
     if ((ceiling & bitToTest) != 0L)

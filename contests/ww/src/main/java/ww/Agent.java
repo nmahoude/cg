@@ -38,10 +38,9 @@ public class Agent {
       int dirX = x+dir.dx;
       int dirY = y+dir.dy;
       if (!state.isValid(dirX, dirY)) continue;
-      int deltaHeight = state.getHeight(dirX,dirY) - state.getHeight(x,y);
-      if (deltaHeight > 1 ) continue;
     
       if (state.isOccupied(id, dirX, dirY)) {
+        // PUSH action
         if (state.isFriendly(id, dirX, dirY)) continue;
         
         for (Dir push : dir.pushDirections()) {
@@ -51,11 +50,21 @@ public class Agent {
           if (state.isOccupied(id, pushedX, pushedY)) continue;
           
           int deltaY = state.getHeight(dirX, dirY)-state.getHeight(pushedX, pushedY);
-          if (deltaY < 0) continue;
+          if (deltaY < -1) continue;
           actionsLeft++;
           if (restrictToMove) break;
         }
       } else {
+        // MOVE ACTION
+        int deltaHeight = state.getHeight(dirX,dirY) - state.getHeight(x,y);
+        if (deltaHeight > 1 ) continue;
+
+        if (restrictToMove) {
+          // we always can put a block on the incomming cell, so it's always true
+          actionsLeft++;
+          break;
+        }
+        
         for (Dir dirBlock : Dir.values()) {
           int blockX = dirX+dirBlock.dx;
           int blockY = dirY+dirBlock.dy;
@@ -63,7 +72,6 @@ public class Agent {
           if (state.isOccupied(id, blockX, blockY)) continue;
           
           actionsLeft++;
-          if (restrictToMove) break;
         }
       }
     }

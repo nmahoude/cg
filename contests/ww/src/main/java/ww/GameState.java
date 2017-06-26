@@ -6,6 +6,7 @@ public class GameState {
   public static int size;
   public static int unitsPerPlayer;
   
+  public int legalActions;
   public Grid grid = new Grid();
   public Agent agents[];
   public long startTime;
@@ -65,8 +66,7 @@ public class GameState {
       agent.y = in.nextInt();
     }
     
-    // don't need the legal actions
-    int legalActions = in.nextInt();
+    legalActions = in.nextInt();
     for (int i = 0; i < legalActions; i++) {
       in.next();
       in.nextInt();
@@ -158,34 +158,116 @@ public class GameState {
   }
   
   long visited;
+  long validPosMask;
   public int getReachableCells(int id) {
     if (agents[id].inFogOfWar()) return 0;
     
+    visited = 0L;
+    validPosMask = (0xFFFFFFFFFFFFFFFFL & ~grid.holes) & ~grid.ceiling;
+        
+    
     int x = agents[id].x;
     int y = agents[id].y;
-    visited = Grid.toBitMask(x, y);
     
-    return getReachableCells(x, y);
+    return getReachableCells(Grid.toBitMask(x, y), getHeight(x, y)) -1 ;// -1 to remove the cell we are one
   }
 
-  private int getReachableCells(int x, int y) {
-    int count =0;
-    int currentHeight = getHeight(x, y);
-    for (int dy=-1;dy<=1;dy++) {
-      for (int dx=-1;dx<=1;dx++) {
-        int newX = x+dx;
-        int newY = y+dy;
-        if (newX<0 || newX>=size || newY < 0 || newY>=size) continue;
-        if ((visited & Grid.toBitMask(newX, newY)) != 0) continue;
-        int nextHeight = getHeight(newX, newY);
-        if (nextHeight <0 || nextHeight == 4 || nextHeight > currentHeight+1) continue;
-        
-        visited |= Grid.toBitMask(newX, newY);
-        count++;
-        count += getReachableCells(newX, newY);
-      }
-    }
+  private int getReachableCells(long positionMask, int fromHeight) {
+    int count = 0;
+    int currentHeight = grid.getHeightFromMask(positionMask);
+
+    if ((positionMask & visited) != 0) return 0; // already visited
+    if (currentHeight > fromHeight+1) return 0; // step too high
+
+    visited |= positionMask;
+    count = 1;
+    
+    long newPosition;
+    
+    newPosition = (positionMask << 1) & validPosMask;
+    if (newPosition != 0) { count+=getReachableCells(newPosition, currentHeight); }
+    newPosition = (positionMask >>> 1) & validPosMask;
+    if (newPosition != 0) { count+=getReachableCells(newPosition, currentHeight); }
+    newPosition = (positionMask << 8) & validPosMask;
+    if (newPosition != 0) { count+=getReachableCells(newPosition, currentHeight); }
+    newPosition = (positionMask >>> 8) & validPosMask;
+    if (newPosition != 0) { count+=getReachableCells(newPosition, currentHeight); }
+    newPosition = (positionMask << 7) & validPosMask;
+    if (newPosition != 0) { count+=getReachableCells(newPosition, currentHeight); }
+    newPosition = (positionMask << 9) & validPosMask;
+    if (newPosition != 0) { count+=getReachableCells(newPosition, currentHeight); }
+    newPosition = (positionMask >>> 7) & validPosMask;
+    if (newPosition != 0) { count+=getReachableCells(newPosition, currentHeight); }
+    newPosition = (positionMask >>> 9) & validPosMask;
+    if (newPosition != 0) { count+=getReachableCells(newPosition, currentHeight); }
+
     return count;
   }
 
+  public int getPossibleActions(int id) {
+   if (agents[id].inFogOfWar()) return 0;
+    
+    validPosMask = (0xFFFFFFFFFFFFFFFFL & ~grid.holes) & ~grid.ceiling;
+        
+    
+    int x = agents[id].x;
+    int y = agents[id].y;
+    
+    long positionMask = Grid.toBitMask(x, y);
+    int currentHeight = getHeight(x, y);
+    
+    int count = 0;
+    
+    // move positions
+    long newPosition;
+    newPosition = (positionMask << 1) & validPosMask;
+    if (newPosition != 0) { count+=getPossibleActions(newPosition, currentHeight); }
+    newPosition = (positionMask >>> 1) & validPosMask;
+    if (newPosition != 0) { count+=getPossibleActions(newPosition, currentHeight); }
+    newPosition = (positionMask << 8) & validPosMask;
+    if (newPosition != 0) { count+=getPossibleActions(newPosition, currentHeight); }
+    newPosition = (positionMask >>> 8) & validPosMask;
+    if (newPosition != 0) { count+=getPossibleActions(newPosition, currentHeight); }
+    newPosition = (positionMask << 7) & validPosMask;
+    if (newPosition != 0) { count+=getPossibleActions(newPosition, currentHeight); }
+    newPosition = (positionMask << 9) & validPosMask;
+    if (newPosition != 0) { count+=getPossibleActions(newPosition, currentHeight); }
+    newPosition = (positionMask >>> 7) & validPosMask;
+    if (newPosition != 0) { count+=getPossibleActions(newPosition, currentHeight); }
+    newPosition = (positionMask >>> 9) & validPosMask;
+    if (newPosition != 0) { count+=getPossibleActions(newPosition, currentHeight); }
+
+    // push
+    if (id == 0 || id == 1) {
+      validPosMask = 0x0L | Grid.toBitMask(agents[2].y, agents[2].y) | Grid.toBitMask(agents[3].y, agents[3].y);
+    } else {
+      validPosMask = 0x0L | Grid.toBitMask(agents[0].y, agents[0].y) | Grid.toBitMask(agents[1].y, agents[1].y);
+    }
+    newPosition = (positionMask << 1) & validPosMask;
+    if (newPosition != 0) { count+=1; }
+    newPosition = (positionMask >>> 1) & validPosMask;
+    if (newPosition != 0) { count+=1; }
+    newPosition = (positionMask << 8) & validPosMask;
+    if (newPosition != 0) { count+=1; }
+    newPosition = (positionMask >>> 8) & validPosMask;
+    if (newPosition != 0) { count+=1; }
+    newPosition = (positionMask << 7) & validPosMask;
+    if (newPosition != 0) { count+=1; }
+    newPosition = (positionMask << 9) & validPosMask;
+    if (newPosition != 0) { count+=1; }
+    newPosition = (positionMask >>> 7) & validPosMask;
+    if (newPosition != 0) { count+=1; }
+    newPosition = (positionMask >>> 9) & validPosMask;
+    if (newPosition != 0) { count+=1; }
+
+    return count;
+  }
+
+  private int getPossibleActions(long positionMask, int fromHeight) {
+    int currentHeight = grid.getHeightFromMask(positionMask);
+
+    if (currentHeight > fromHeight+1) return 0; // stop too high
+
+    return 1;
+  }
 }

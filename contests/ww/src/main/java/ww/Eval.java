@@ -11,6 +11,7 @@ public class Eval {
   public static final int MOVABILITY_FEATURE = feature++;
   public static final int PUSH_FEATURE = feature++;
   public static final int MOVE_FEATURE = feature++;
+  public static final int REACHABILITY_FEATURE = feature++;
   public static final int LAST_FEATURE =feature++;
   
   public double features[] = new double[LAST_FEATURE];
@@ -21,6 +22,7 @@ public class Eval {
     System.err.println("   movability   "+features[MOVABILITY_FEATURE] );
     System.err.println("   push         "+features[PUSH_FEATURE] );
     System.err.println("   move         "+features[MOVE_FEATURE] );
+    System.err.println("   reacability  "+features[REACHABILITY_FEATURE] );
     
     System.err.println("total = "+calculateTotal());
   }
@@ -30,6 +32,7 @@ public class Eval {
     
     features[POSITION_FEATURE] = positioningScore();
     features[MOVABILITY_FEATURE] = calculateMovabilityBonus();
+    features[REACHABILITY_FEATURE] = calculateReachabilityBonus();
 
     if (move.isPush) {
       features[MOVE_FEATURE] = 0.0;
@@ -63,20 +66,20 @@ public class Eval {
   /*
    * Bonus if we can reach a lot of Cells
    */
-  private double calculateMovabilityBonus() {
+  private double calculateReachabilityBonus() {
     double movability = 0.0;
-    for (int i=0;i<2;i++) {
-      int reachableCellsForAgent = state.getReachableCells(i);
-      movability += 2.0*reachableCellsForAgent;
+    for (int id=0;id<2;id++) {
+      int reachableCellsForAgent = state.getReachableCells(id);
+      movability += 0.1*reachableCellsForAgent;
       if (reachableCellsForAgent == 0) {
         movability -= 100_000;
       }
     }
-    for (int i=2;i<4;i++) {
-      if (state.agents[i].inFogOfWar()) continue;
+    for (int id=2;id<4;id++) {
+      if (state.agents[id].inFogOfWar()) continue;
       
-      int reachableCellsForAgent = state.getReachableCells(i);
-      movability -= 1.0*reachableCellsForAgent;
+      int reachableCellsForAgent = state.getReachableCells(id);
+      movability -= 0.1*reachableCellsForAgent;
       if (reachableCellsForAgent == 0) {
         movability += 10_000; // big bonus if we block him
       }
@@ -88,7 +91,7 @@ public class Eval {
    * Bonus if we have a lot of move possible, malus for the opp
    * @return
    */
-  private double calculateMovabilityBonus_old() {
+  private double calculateMovabilityBonus() {
     double movability = 0;
     for (int i=0;i<GameState.unitsPerPlayer;i++) {
       int possibleMoves = state.agents[i].getPossibleMoves(state);

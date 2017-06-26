@@ -3,9 +3,7 @@ package ww;
 import ww.sim.Move;
 import ww.sim.Simulation;
 
-public class Node {
-  private static final int MAX_DEPTH = 0;
-  
+public class NodeV2 {
   static private Simulation simulation = new Simulation();
   static private Eval eval = new Eval();
   
@@ -62,32 +60,15 @@ public class Node {
           if (!move.isDir1Valid()) break; 
           if (!move.isDir2Valid()) continue;
           
-          // move append
-          if (depth < MAX_DEPTH) {
-            double score = eval.calculateScore(state, move);
-            
-            Node child = new Node();
-            child.calculateChilds(depth+1, state);
-
-            double totalScore;
-            if (Double.isFinite(child.bestScore)) {
-              totalScore = score + 0.9*child.bestScore;
-            } else {
-              totalScore = score ;
-            }
-            
-            if (totalScore > bestScore) {
-              bestScore = totalScore;
-              bestAction = move;
-              move = createMove(i);
-            }
-          } else {
-            double score = eval.calculateScore(state, move);
-            if (score > bestScore) {
-              bestScore = score;
-              bestAction = move;
-              move = createMove(i);
-            }
+          // Minimax style : do all possible move by opp and get the lowest score
+          for (Dir oppWall : Dir.values()) {
+          }
+          
+          double score = eval.calculateScore(state, move);
+          if (score > bestScore) {
+            bestScore = score;
+            bestAction = move;
+            move = createMove(i);
           }
           reload(state);
         }

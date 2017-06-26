@@ -1,0 +1,13 @@
+= TODO LIST
+
+
+* simu Minimax : En fin de simulation, faire un round supplémentaire avec push dans chaque dir possible, build dans chaque dir possible
+  Eval et prendre le plus mauvais score (comme un minimax, mais sur un etage)
+  Si on connait la position des 2 unités, il faut filtrer les actions sur celles qui seront possible :)
+  
+  
+= TO VALIDATE
+* Si une unité est bloquée définitivement, il faut la locker pour ne pas oublier sa pos dans le fog of war
+
+
+= DONE
