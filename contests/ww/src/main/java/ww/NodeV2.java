@@ -4,7 +4,9 @@ import ww.sim.Move;
 import ww.sim.Simulation;
 
 public class NodeV2 {
-  private static final boolean DO_MINIMAX = false;
+  private static final boolean DO_MINIMAX = true;
+  private static final boolean CHECK_BLOCKED = false;
+  
   static private Simulation simulation = new Simulation();
   static private Eval eval = new Eval();
   
@@ -64,11 +66,21 @@ public class NodeV2 {
           
           // Minimax style : do all possible move by opp and get the lowest score
           // moves
-          double minimaxScore = eval.calculateScore(state, move);
+          double actionScore = eval.calculateScore(state, move);
+          double minimaxScore = actionScore;
           Move minimaxAction = move;
+
+          if (CHECK_BLOCKED) {
+            int count = checkAgentPotentiallyBlocked();
+            if (count > 0) {
+              minimaxScore -= count * 10_000;
+            }
+          }
+          
           if (DO_MINIMAX) {
             for (int id=0;id<2;id++) {
               Agent toCheck = state.agents[id];
+              // move
               for (Dir oppWall : Dir.values()) {
                 int tx = toCheck.x + oppWall.dx;
                 int ty = toCheck.y + oppWall.dy;
@@ -108,8 +120,9 @@ public class NodeV2 {
               }
             }
           }
-          if (minimaxScore > bestScore) {
-            bestScore = minimaxScore;
+          
+          if (actionScore + 0.1*minimaxScore > bestScore) {
+            bestScore = actionScore + 0.1*minimaxScore;
             bestAction = minimaxAction;
             move = createMove(i);
           }
@@ -118,5 +131,58 @@ public class NodeV2 {
         }
       }
     }
+  }
+
+  int checkAgentPotentiallyBlocked() {
+    int count = 0;
+    for (int id=0;id<2;id++) {
+      Agent toCheck = state.agents[id];
+      if (canBeBlocked(toCheck)) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  boolean canBeBlocked(Agent toCheck) {
+    for (Dir oppWall : Dir.values()) {
+      int tx = toCheck.x + oppWall.dx;
+      int ty = toCheck.y + oppWall.dy;
+      if (!state.isValid(tx, ty)) continue;
+      int currentHeight = state.getHeight(tx, ty);
+
+      state.setHeight(tx, ty, currentHeight+1);
+      if (toCheck.getPossibleActions(state) == 0) {
+        state.setHeight(tx, ty, currentHeight);
+        return true;
+      }
+      state.setHeight(tx, ty, currentHeight);
+    }
+
+    // pushes
+    for (Dir oppWall : Dir.values()) {
+      int tx = toCheck.x + oppWall.dx;
+      int ty = toCheck.y + oppWall.dy;
+      if (!state.isValid(tx, ty)) continue;
+      
+      int x = toCheck.x;
+      int y = toCheck.y;
+      int currentHeight = state.getHeight(x, y);
+
+      toCheck.x = tx;
+      toCheck.y = ty;
+      state.setHeight(x, y, currentHeight+1);
+
+      if (toCheck.getPossibleActions(state) == 0) {
+        toCheck.x = x;
+        toCheck.y = y;
+        state.setHeight(x, y, currentHeight);
+        return true;
+      }
+      toCheck.x = x;
+      toCheck.y = y;
+      state.setHeight(x, y, currentHeight);
+    }
+    return false;
   }
 }

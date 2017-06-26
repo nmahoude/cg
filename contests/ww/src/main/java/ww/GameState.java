@@ -173,14 +173,14 @@ public class GameState {
   }
 
   private int getReachableCells(long positionMask, int fromHeight) {
-    int count = 0;
-    int currentHeight = grid.getHeightFromMask(positionMask);
 
     if ((positionMask & visited) != 0) return 0; // already visited
+
+    int currentHeight = grid.getHeightFromMask(positionMask);
     if (currentHeight > fromHeight+1) return 0; // step too high
 
     visited |= positionMask;
-    count = 1;
+    int count = 1;
     
     long newPosition;
     

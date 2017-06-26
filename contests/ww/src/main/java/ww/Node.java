@@ -14,7 +14,7 @@ public class Node {
   int x[] = new int[4];
   int y[] = new int[4];
 
-  public Move bestAction;
+  public Move bestAction = new Move();
 
   GameState state;
   private double bestScore;
@@ -81,15 +81,13 @@ public class Node {
             
             if (totalScore > bestScore) {
               bestScore = totalScore;
-              bestAction = move;
-              move = createMove(i);
+              move.copyTo(bestAction);
             }
           } else {
             double score = eval.calculateScore(state, move);
             if (score > bestScore) {
               bestScore = score;
-              bestAction = move;
-              move = createMove(i);
+              move.copyTo(bestAction);
             }
           }
           reload(state);

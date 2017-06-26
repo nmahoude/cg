@@ -44,11 +44,13 @@ public class Grid {
   public void setHeight(long bitToSet, int height) {
     if ((height & 0b1L) != 0) {
       layer1 |= bitToSet;
+      ceiling &= ~bitToSet; // unset ceiling bit
     } else {
       layer1 &= ~bitToSet; 
     }
     if ((height & 0b10L) != 0) {
       layer2 |= bitToSet;
+      ceiling &= ~bitToSet; // unset ceiling bit
     } else {
       layer2 &= ~bitToSet;
     }
@@ -89,18 +91,10 @@ public class Grid {
   }
 
   public int getHeightFromMask(long bitToTest) {
-    if ((holes & bitToTest) != 0L)
-      return -1;
-    if ((ceiling & bitToTest) != 0L)
-      return 4;
+    if (((holes|ceiling) & bitToTest ) != 0L) return 4;
 
-    int height = 0;
-    if ((layer1 & bitToTest) != 0L)
-      height += 1;
-    if ((layer2 & bitToTest) != 0L)
-      height += 2;
-
-    return height;
+    return (((layer1 & bitToTest) != 0L) ? 1:0) 
+        + (((layer2 & bitToTest) != 0L) ? 2:0);
   }
 
   public boolean isValid(int x, int y) {

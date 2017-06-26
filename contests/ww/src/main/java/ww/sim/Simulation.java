@@ -80,11 +80,6 @@ public class Simulation {
       return;
     }
 
-    // all is ok, do the actual action
-    agent.x = targetX;
-    agent.y = targetY;
-
-
     move.dir1X = targetX;
     move.dir1Y = targetY;
     move.dir1Height = targetHeight;

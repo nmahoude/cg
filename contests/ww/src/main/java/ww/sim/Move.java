@@ -16,6 +16,25 @@ public class Move {
   public int dir1X, dir1Y, dir1Height;
   public int dir2X, dir2Y, dir2Height;
   
+  public void copyTo(Move move) {
+    move.id = id;
+    move.dir1 = dir1;
+    move.dir2 = dir2;
+    
+    move.isDir1Valid = isDir1Valid;
+    move.isDir2Valid = isDir2Valid;
+    
+    move.isPush = isPush;
+    
+    move.currentHeight = currentHeight;
+    move.dir1X = dir1X; 
+    move.dir1Y = dir1Y; 
+    move.dir1Height = dir1Height;
+    move.dir2X = dir2X;
+    move.dir2Y = dir2Y;
+    move.dir2Height = dir2Height;
+  }
+  
   public boolean isDir1Valid() {
     return isDir1Valid;
   }

@@ -1,0 +1,453 @@
+= 20 matchs, places entre 90 & 110
+
+==== manimax à 0.01 * score : 
+==== avec minimax a 1 * score : 0 / 20 / 0 !!!
+==== sans le minimax : 11 / 9 / 0 
+==== 2017/26/06, 23h29. minimax à 0.1 * miniScore , Result is : 9 / 10 / 1
+
+Json  :
+{
+  "swapEnabled": false,
+  "arenaCodeEnabled": false,
+  "numOpponents": 1,
+  "matches": [
+    {
+      "iteration": 0,
+      "gameOptions": "mapIndex=1\nseed=570510948\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350821,
+          "pseudo": "Aengus",
+          "codingamer": {
+            "pseudo": "Aengus",
+            "avatar": 9983363899985
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 1,
+      "gameOptions": "mapIndex=1\nseed=315141434\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350821,
+          "pseudo": "Aengus",
+          "codingamer": {
+            "pseudo": "Aengus",
+            "avatar": 9983363899985
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 2,
+      "gameOptions": "mapIndex=1\nseed=773090546\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350737,
+          "pseudo": "Tantal",
+          "codingamer": {
+            "pseudo": "Tantal",
+            "avatar": 4397412588363
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 3,
+      "gameOptions": "mapIndex=2\nseed=832008924\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1351003,
+          "pseudo": "cup_of_tea",
+          "codingamer": {
+            "pseudo": "cup_of_tea",
+            "avatar": 1810656553728
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 4,
+      "gameOptions": "mapIndex=0\nseed=673703019\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350692,
+          "pseudo": "0950",
+          "codingamer": {
+            "pseudo": "0950",
+            "avatar": 13221274223457
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 5,
+      "gameOptions": "mapIndex=0\nseed=586473241\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350751,
+          "pseudo": "andry57",
+          "codingamer": {
+            "pseudo": "andry57",
+            "avatar": 2877521106055
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 6,
+      "gameOptions": "mapIndex=0\nseed=198475428\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350659,
+          "pseudo": "Kodle",
+          "codingamer": {
+            "pseudo": "Kodle",
+            "avatar": 10779658189856
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 7,
+      "gameOptions": "mapIndex=1\nseed=334811280\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350631,
+          "pseudo": "Dwarth",
+          "codingamer": {
+            "pseudo": "Dwarth"
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 8,
+      "gameOptions": "mapIndex=1\nseed=872418630\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1351305,
+          "pseudo": "Risen",
+          "codingamer": {
+            "pseudo": "Risen",
+            "avatar": 1840452387524
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 9,
+      "gameOptions": "mapIndex=2\nseed=950816455\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1351703,
+          "pseudo": "Petras",
+          "codingamer": {
+            "pseudo": "Petras",
+            "avatar": 11894025582875
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 10,
+      "gameOptions": "mapIndex=1\nseed=480970719\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350631,
+          "pseudo": "Dwarth",
+          "codingamer": {
+            "pseudo": "Dwarth"
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 11,
+      "gameOptions": "mapIndex=2\nseed=458389748\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350789,
+          "pseudo": "Natrem",
+          "codingamer": {
+            "pseudo": "Natrem",
+            "avatar": 12653931482407
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 12,
+      "gameOptions": "mapIndex=0\nseed=48763717\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1351003,
+          "pseudo": "cup_of_tea",
+          "codingamer": {
+            "pseudo": "cup_of_tea",
+            "avatar": 1810656553728
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 13,
+      "gameOptions": "mapIndex=1\nseed=442180990\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350712,
+          "pseudo": "Woof",
+          "codingamer": {
+            "pseudo": "Woof",
+            "avatar": 13006084324933
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 14,
+      "gameOptions": "mapIndex=2\nseed=399007855\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350653,
+          "pseudo": "[CG]jupoulton",
+          "codingamer": {
+            "pseudo": "[CG]jupoulton",
+            "avatar": 9399538004630
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 15,
+      "gameOptions": "mapIndex=1\nseed=10064657\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350659,
+          "pseudo": "Kodle",
+          "codingamer": {
+            "pseudo": "Kodle",
+            "avatar": 10779658189856
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 16,
+      "gameOptions": "mapIndex=0\nseed=373452284\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1351305,
+          "pseudo": "Risen",
+          "codingamer": {
+            "pseudo": "Risen",
+            "avatar": 1840452387524
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 17,
+      "gameOptions": "mapIndex=1\nseed=694239049\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350659,
+          "pseudo": "Kodle",
+          "codingamer": {
+            "pseudo": "Kodle",
+            "avatar": 10779658189856
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 18,
+      "gameOptions": "mapIndex=0\nseed=646209939\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1350692,
+          "pseudo": "0950",
+          "codingamer": {
+            "pseudo": "0950",
+            "avatar": 13221274223457
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    },
+    {
+      "iteration": 19,
+      "gameOptions": "mapIndex=1\nseed=832502917\n",
+      "agents": [
+        {
+          "agentId": -1,
+          "pseudo": "nmahoude",
+          "codingamer": null,
+          "specialAgent": true
+        },
+        {
+          "agentId": 1351003,
+          "pseudo": "cup_of_tea",
+          "codingamer": {
+            "pseudo": "cup_of_tea",
+            "avatar": 1810656553728
+          }
+        }
+      ],
+      "type": "ide",
+      "swapNum": 0
+    }
+  ]
+}
