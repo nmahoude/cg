@@ -4,6 +4,7 @@ import ww.sim.Move;
 import ww.sim.Simulation;
 
 public class NodeV2 {
+  private static final boolean DO_MINIMAX = false;
   static private Simulation simulation = new Simulation();
   static private Eval eval = new Eval();
   
@@ -50,6 +51,7 @@ public class NodeV2 {
     
     bestScore = Double.NEGATIVE_INFINITY;
     for (int i = 0; i < GameState.unitsPerPlayer; i++) {
+      Agent moving = state.agents[i];
       Move move = createMove(i);
       
       for (Dir dir1 : Dir.values()) {
@@ -61,15 +63,57 @@ public class NodeV2 {
           if (!move.isDir2Valid()) continue;
           
           // Minimax style : do all possible move by opp and get the lowest score
-          for (Dir oppWall : Dir.values()) {
+          // moves
+          double minimaxScore = eval.calculateScore(state, move);
+          Move minimaxAction = move;
+          if (DO_MINIMAX) {
+            for (int id=0;id<2;id++) {
+              Agent toCheck = state.agents[id];
+              for (Dir oppWall : Dir.values()) {
+                int tx = toCheck.x + oppWall.dx;
+                int ty = toCheck.y + oppWall.dy;
+                if (!state.isValid(tx, ty)) continue;
+                int currentHeight = state.getHeight(tx, ty);
+    
+                state.setHeight(tx, ty, currentHeight+1);
+                double score = eval.calculateScore(state, move);
+                if (score < minimaxScore) {
+                  minimaxScore = score;
+                  minimaxAction = move;
+                }
+                state.setHeight(tx, ty, currentHeight);
+              }
+    
+              // pushes
+              for (Dir oppWall : Dir.values()) {
+                int tx = toCheck.x + oppWall.dx;
+                int ty = toCheck.y + oppWall.dy;
+                if (!state.isValid(tx, ty)) continue;
+                
+                int x = toCheck.x;
+                int y = toCheck.y;
+                int currentHeight = state.getHeight(x, y);
+    
+                toCheck.x = tx;
+                toCheck.y = ty;
+                state.setHeight(x, y, currentHeight+1);
+                double score = eval.calculateScore(state, move);
+                if (score < minimaxScore) {
+                  minimaxScore = score;
+                  minimaxAction = move;
+                }
+                toCheck.x = x;
+                toCheck.y = y;
+                state.setHeight(x, y, currentHeight);
+              }
+            }
           }
-          
-          double score = eval.calculateScore(state, move);
-          if (score > bestScore) {
-            bestScore = score;
-            bestAction = move;
+          if (minimaxScore > bestScore) {
+            bestScore = minimaxScore;
+            bestAction = minimaxAction;
             move = createMove(i);
           }
+          
           reload(state);
         }
       }

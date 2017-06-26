@@ -4,7 +4,7 @@ import ww.sim.Move;
 import ww.sim.Simulation;
 
 public class Node {
-  private static final int MAX_DEPTH = 0;
+  private static final int MAX_DEPTH = 1;
   
   static private Simulation simulation = new Simulation();
   static private Eval eval = new Eval();
@@ -56,6 +56,9 @@ public class Node {
       
       for (Dir dir1 : Dir.values()) {
         for (Dir dir2 : Dir.values()) {
+          if (depth == 0 && System.currentTimeMillis() - GameState.startTime > 40 ) {
+            return;
+          }
           move.dir1 = dir1;
           move.dir2 = dir2;
           simulation.simulate(move, state);

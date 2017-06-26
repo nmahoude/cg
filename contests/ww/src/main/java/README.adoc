@@ -2,6 +2,7 @@
 
 
 = 20170626 (Bronze)
+14h19 - 65 : Desactivation du code du Minimax 
 02h44 - 106 : pas mal de changement sur l'heuristique
 
 = 20170625 (Bronze)

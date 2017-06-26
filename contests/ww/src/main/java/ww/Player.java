@@ -46,7 +46,7 @@ public class Player {
 
       
       
-      Node node = new Node();
+      NodeV2 node = new NodeV2();
       node.calculateChilds(0, state);
       
 

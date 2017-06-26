@@ -9,7 +9,7 @@ public class GameState {
   public int legalActions;
   public Grid grid = new Grid();
   public Agent agents[];
-  public long startTime;
+  public static long startTime;
   
   public GameState() {
     agents = new Agent[2*2];
