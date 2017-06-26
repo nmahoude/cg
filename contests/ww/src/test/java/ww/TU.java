@@ -29,5 +29,17 @@ public class TU {
     state.agents[id].x = x;
     state.agents[id].y = y;
   }
+
+  public static long toLong(String... row) {
+    long result = 0L;
+    for (int y=0;y<8;y++) {
+      for (int x=0;x<8;x++) {
+        if (row[y].charAt(x) == '1') {
+          result |=  0b1L << x+y*8;
+        }
+      }
+    }
+    return result;
+  }
   
 }

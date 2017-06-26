@@ -4,6 +4,8 @@ import ww.sim.Move;
 import ww.sim.Simulation;
 
 public class Node {
+  private static final int MAX_DEPTH = 0;
+  
   static private Simulation simulation = new Simulation();
   static private Eval eval = new Eval();
   
@@ -15,6 +17,7 @@ public class Node {
   public Move bestAction;
 
   GameState state;
+  private double bestScore;
   
   void save(GameState state) {
     layer1 = state.grid.layer1;
@@ -43,11 +46,11 @@ public class Node {
     return move;
   }
   
-  public void calculateChilds(GameState state) {
+  public void calculateChilds(int depth, GameState state) {
     this.state = state;
     save(state);
     
-    double bestScore = Double.NEGATIVE_INFINITY;
+    bestScore = Double.NEGATIVE_INFINITY;
     for (int i = 0; i < GameState.unitsPerPlayer; i++) {
       Move move = createMove(i);
       
@@ -59,11 +62,25 @@ public class Node {
           if (!move.isDir1Valid()) break; 
           if (!move.isDir2Valid()) continue;
           
-          double score = eval.calculateScore(state, move);
-          if (score > bestScore) {
-            bestScore = score;
-            bestAction = move;
-            move = createMove(i);
+          // move append
+          if (depth < MAX_DEPTH) {
+            double score = eval.calculateScore(state, move);
+            
+            Node child = new Node();
+            child.calculateChilds(depth+1, state);
+            double totalScore = score + 0.9*child.bestScore;
+            if (totalScore > bestScore) {
+              bestScore = totalScore;
+              bestAction = move;
+              move = createMove(i);
+            }
+          } else {
+            double score = eval.calculateScore(state, move);
+            if (score > bestScore) {
+              bestScore = score;
+              bestAction = move;
+              move = createMove(i);
+            }
           }
           reload(state);
         }

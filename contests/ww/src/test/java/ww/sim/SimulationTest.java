@@ -69,4 +69,24 @@ public class SimulationTest {
     assertThat(move.isValid(), is(true));
   }
   
+  @Test
+  public void pushSS() {
+    state.size = 6;
+    TU.setAgent(state, 0, 1, 2);
+    TU.setAgent(state, 1, 2, 4);
+    TU.setAgent(state, 2, 0, 3);
+    TU.setAgent(state, 3, 1, 3);
+    TU.setHeights(state,
+        "33..33",
+        "333333",
+        ".3..3.",
+        "03..03",
+        "300000",
+        "1.00.0");
+
+    Move move = TU.getMove(0, Dir.S, Dir.S);
+    simulation.simulate(move, state);
+    assertThat(move.isValid(), is(true));
+
+  }
 }

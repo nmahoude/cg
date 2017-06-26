@@ -60,11 +60,35 @@ public class Eval {
     return score;
   }
 
+  /*
+   * Bonus if we can reach a lot of Cells
+   */
+  private double calculateMovabilityBonus() {
+    double movability = 0.0;
+    for (int i=0;i<2;i++) {
+      int reachableCellsForAgent = state.getReachableCells(i);
+      movability += 2.0*reachableCellsForAgent;
+      if (reachableCellsForAgent == 0) {
+        movability -= 100_000;
+      }
+    }
+    for (int i=2;i<4;i++) {
+      if (state.agents[i].inFogOfWar()) continue;
+      
+      int reachableCellsForAgent = state.getReachableCells(i);
+      movability -= 1.0*reachableCellsForAgent;
+      if (reachableCellsForAgent == 0) {
+        movability += 10_000; // big bonus if we block him
+      }
+    }
+    return movability;
+    
+  }
   /**
    * Bonus if we have a lot of move possible, malus for the opp
    * @return
    */
-  private double calculateMovabilityBonus() {
+  private double calculateMovabilityBonus_old() {
     double movability = 0;
     for (int i=0;i<GameState.unitsPerPlayer;i++) {
       int possibleMoves = state.agents[i].getPossibleMoves(state);
@@ -105,17 +129,15 @@ public class Eval {
   }
   
   public double calculatePushScore() {
-    double moveScore = 0
-        + 20*move.currentHeight;
-
+    double moveScore = 0 + 20 * move.currentHeight;
+    int deltaY = move.dir1Height - move.dir2Height;
     
-    int deltaY = move.dir1Height-move.dir2Height;
-    double pushScore = 0
-        // just under 1 floor up for me so I prefer climbing, but 2 stairs fall is better
-        + 15.0 * deltaY
-        // If opp is on lvl 3 and we push it <= than lvl 1, it's a very good move
-        + (move.dir1Height == 3 ? 1000*Math.max(deltaY-1,0) : 0);
+    double pushScore = 0 
+        + // just under 1 floor up for me so I prefer climbing, but 2 stairs fall is better
+        15.0 * deltaY 
+        + // If opp is on lvl 3 and we push it <= than lvl 1, it's a very good move
+        (move.dir1Height == 3 ? 1000 * Math.max(deltaY - 1, 0) : 0);
     
     return moveScore + pushScore;
-  }
+}
 }

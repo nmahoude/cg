@@ -44,9 +44,13 @@ public class Grid {
   public void setHeight(long bitToSet, int height) {
     if ((height & 0b1L) != 0) {
       layer1 |= bitToSet;
+    } else {
+      layer1 &= ~bitToSet; 
     }
     if ((height & 0b10L) != 0) {
       layer2 |= bitToSet;
+    } else {
+      layer2 &= ~bitToSet;
     }
   }
 
@@ -64,16 +68,13 @@ public class Grid {
 
   public void debugLayers() {
     System.err.println("layer " + 1 + " :");
-    long layer = layer1;
-    layer |= 0b1000000000000000000000000000000000000000000000000000000000000000L;
-    for (int i = 0; i < 8; i++) {
-      System.err.println(
-          new StringBuilder(
-              Long.toBinaryString(layer).substring(8 * (7 - i), 8 * (7 - i) + 8)).reverse().toString());
-    }
-
+    debugLayer(layer1);
+    
     System.err.println("layer " + 2 + " :");
-    layer = layer2;
+    debugLayer(layer2);
+  }
+
+  public static void debugLayer(long layer) {
     layer |= 0b1000000000000000000000000000000000000000000000000000000000000000L;
     for (int i = 0; i < 8; i++) {
       System.err.println(
@@ -81,7 +82,6 @@ public class Grid {
               Long.toBinaryString(layer).substring(8 * (7 - i), 8 * (7 - i) + 8)).reverse().toString());
     }
   }
-
   public int getHeight(int x, int y) {
     long bitToTest = toBitMask(x, y);
 
@@ -105,4 +105,16 @@ public class Grid {
         && ((ceiling & bitToTest) == 0);
   }
 
+  public long getFloodFillMask(long initialPositionMask, long toFill) {
+    long currentMask = initialPositionMask;
+    long nextMask = initialPositionMask;
+    do {
+      currentMask = nextMask;
+
+      nextMask = (currentMask | (currentMask << 8L) | (currentMask >>> 8L) | (currentMask << 1L) | (currentMask >>> 1L));
+      nextMask = (nextMask | (currentMask << 7L) | (currentMask >>> 7L) | (currentMask << 9L) | (currentMask >>> 9L));
+      nextMask &= toFill;
+    } while (nextMask != currentMask);
+    return currentMask;
+  }
 }

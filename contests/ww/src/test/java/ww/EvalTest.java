@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.util.Scanner;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ww.sim.Move;
@@ -56,6 +57,7 @@ public class EvalTest {
   }
   
   @Test
+  @Ignore
   public void gettingOurselfIsBadBad() {
     state.size = 5;
     TU.setAgent(state, 0,4,3);
@@ -131,6 +133,41 @@ public class EvalTest {
     double score2 = eval.calculateScore(state, move2);
     eval.debug("BUILD FAR");
 
+    
+    assertThat(score1 > score2, is(true));
+  }
+  
+  /**
+   * why ? agent 1 choose to go NE and trapped itself for 1 point
+   */
+  @Test
+  public void dontBlockOurself() {
+    state.size = 7;
+    TU.setAgent(state, 0,5,3);
+    TU.setAgent(state, 1,2,1);
+    TU.setAgent(state, 2,-1,-1);
+    TU.setAgent(state, 3,-1,-1);
+    TU.setHeights(state, 
+      "...3...",
+      "..344..",
+      ".24444.",
+      "0004434",
+      ".00344.",
+      "..013..",
+      "...2...");
+    
+    Move moveShouldBeBetter = TU.getMove(1, Dir.SW, Dir.NE);
+    simulation.simulate(moveShouldBeBetter, state);
+    assertThat(moveShouldBeBetter.isValid(), is(true));
+    double score1 = eval.calculateScore(state, moveShouldBeBetter);
+    eval.debug("Go back a lvl, but don't trapp");
+
+    state.restore();
+    Move initialMove = TU.getMove( 1, Dir.NE, Dir.SW);
+    simulation.simulate(initialMove, state);
+    assertThat(initialMove.isValid(), is(true));
+    double score2 = eval.calculateScore(state, initialMove);
+    eval.debug("it's a trap");
     
     assertThat(score1 > score2, is(true));
   }

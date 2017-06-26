@@ -8,6 +8,7 @@ public class GameState {
   
   public Grid grid = new Grid();
   public Agent agents[];
+  public long startTime;
   
   public GameState() {
     agents = new Agent[2*2];
@@ -51,6 +52,7 @@ public class GameState {
         }
       }
     }
+    startTime = System.currentTimeMillis();
     
     for (int i = 0; i < unitsPerPlayer; i++) {
       Agent agent = agents[i];
@@ -145,6 +147,45 @@ public class GameState {
     }
     
     System.err.println("}");
+  }
+
+  public void getFloodFillInfo() {
+    System.err.println("Flood fill: ");
+    for (int i=0;i<4;i++) {
+      int movable = getReachableCells(i);
+      System.err.println(" for "+i+" => "+ movable);
+    }
+  }
+  
+  long visited;
+  public int getReachableCells(int id) {
+    if (agents[id].inFogOfWar()) return 0;
+    
+    int x = agents[id].x;
+    int y = agents[id].y;
+    visited = Grid.toBitMask(x, y);
+    
+    return getReachableCells(x, y);
+  }
+
+  private int getReachableCells(int x, int y) {
+    int count =0;
+    int currentHeight = getHeight(x, y);
+    for (int dy=-1;dy<=1;dy++) {
+      for (int dx=-1;dx<=1;dx++) {
+        int newX = x+dx;
+        int newY = y+dy;
+        if (newX<0 || newX>=size || newY < 0 || newY>=size) continue;
+        if ((visited & Grid.toBitMask(newX, newY)) != 0) continue;
+        int nextHeight = getHeight(newX, newY);
+        if (nextHeight <0 || nextHeight == 4 || nextHeight > currentHeight+1) continue;
+        
+        visited |= Grid.toBitMask(newX, newY);
+        count++;
+        count += getReachableCells(newX, newY);
+      }
+    }
+    return count;
   }
 
 }

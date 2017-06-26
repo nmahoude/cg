@@ -26,13 +26,21 @@ public class Player {
       }
 
       Node node = new Node();
-      node.calculateChilds(state);
+      node.calculateChilds(0, state);
       
-      System.out.println(node.bestAction.toPlayerOutput());
 
-      state.restore();
-      simulation.simulate(node.bestAction, state); // simulate the state after our action
-      backupState.save(state);
+//      state.restore();
+//      simulation.simulate(node.bestAction, state); // simulate the state after our action
+//      backupState.save(state);
+
+      long endTime = System.currentTimeMillis();
+      System.err.println("Reflexion time : "+(endTime-state.startTime));
+      
+      if (node.bestAction != null) {
+        System.out.println(node.bestAction.toPlayerOutput());
+      } else {
+        System.out.println("ACCEPT-DEFEAT GOOD FIGHT, WELL DONE");
+      }
     }
   }
 

@@ -1,6 +1,13 @@
 = CR des submits
 
+
+= 20170626 (Bronze)
+02h44 - 106 : pas mal de changement sur l'heuristique
+
 = 20170625 (Bronze)
+00h07 - 66 : correction d'un gros bug dans grid + reutilisation du code de 22h00
+22h00 - 67 : review eval + correct height for build step
+...
 02h53 - 44 : eval : se rapprocher du centre 
 02h00 - 65 : passage de la simulation a une validité sur le move plutot que globale
 01h00 - 90 -> 55 : baisse de la movability, me rapprocher d'un opp mettais trop de points
