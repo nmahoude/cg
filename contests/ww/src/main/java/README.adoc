@@ -2,6 +2,10 @@
 
 
 = 20170627 (Silver)
+01h37 - 60 : remise de tous les bonus/malus de position + ajout minuscule bonus pour construire vers le centre
+01h28 - 87 : rollback de la modif calcul bonus
+01h17 - 71 : suppression bonus
+01h06 - 69 : position : ajout du bonus si l'adv s'eloigne du centre + modification calcul de mon bonus
 00h30 - 42 : suppression des cases bloquées par les agents enemis ...
 00h10 - 105 : ajout des cases bloquées par les agents enemis
 

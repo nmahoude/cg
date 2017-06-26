@@ -58,8 +58,16 @@ public class Eval {
     for (int i=0;i<2;i++) {
       int manhattanDistance = Math.abs(state.agents[i].x - GameState.size/2)
           +Math.abs(state.agents[i].y - GameState.size/2);
-      score += 1.0*(GameState.size - manhattanDistance);
+      score += -1.0*manhattanDistance; // malus if we are far from center
     }
+    
+    // big malus if the enemy get nearer to center
+    for (int i=2;i<4;i++) {
+      int manhattanDistance = Math.abs(state.agents[i].x - GameState.size/2)
+          +Math.abs(state.agents[i].y - GameState.size/2);
+      score += +5.0*manhattanDistance; // bonus if opp is far from center
+    }
+    
     return score;
   }
 
@@ -128,6 +136,11 @@ public class Eval {
         // Malus if the block is higher than our next position
         - (deltaY > 1 ? 100 : 0);
 
+    // small bonus if we build toward center
+    int manhattanDistance = Math.abs(move.dir2X - GameState.size/2)
+        +Math.abs(move.dir2Y - GameState.size/2);
+    buildScore += 0.001*(GameState.size - manhattanDistance);
+    
     return moveScore+ buildScore;
   }
   

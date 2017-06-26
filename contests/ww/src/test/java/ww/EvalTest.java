@@ -171,4 +171,36 @@ public class EvalTest {
     
     assertThat(score1 > score2, is(true));
   }
+  
+  @Test
+  public void prefereBuildingTowardCenter() {
+    state.size = 7;
+    TU.setAgent(state, 0,3,2);
+    TU.setAgent(state, 1,4,3);
+    TU.setAgent(state, 2,-1,-1);
+    TU.setAgent(state, 3,-1,-1);
+    TU.setHeights(state, 
+      "4440444",
+      "4401044",
+      "4000004",
+      "0000000",
+      "4000004",
+      "4410044",
+      "4441444");
+    
+    Move moveShouldBeBetter = TU.getMove(1, Dir.N, Dir.S);
+    simulation.simulate(moveShouldBeBetter, state);
+    assertThat(moveShouldBeBetter.isValid(), is(true));
+    double score1 = eval.calculateScore(state, moveShouldBeBetter);
+    eval.debug("building south");
+
+    state.restore();
+    Move initialMove = TU.getMove( 1, Dir.N, Dir.N);
+    simulation.simulate(initialMove, state);
+    assertThat(initialMove.isValid(), is(true));
+    double score2 = eval.calculateScore(state, initialMove);
+    eval.debug("building north");
+    
+    assertThat(score1 > score2, is(true));
+  }
 }
