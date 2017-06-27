@@ -4,6 +4,7 @@ public class Cell {
   public static final int FINAL_HEIGHT = 4;
   public static final Cell InvalidCell = new Cell();
   static {
+    InvalidCell.position = Point.unknown;
     InvalidCell.height = 4;
     for (Dir dir : Dir.values()) {
       InvalidCell.neighbors[dir.index] = InvalidCell;
@@ -19,12 +20,11 @@ public class Cell {
   Agent _agent;
 
   public boolean isHole; // for debug information
-  public int x,y; // for debug information
-  
+  public Point position; // for debug information
   
   @Override
   public String toString() {
-    return "("+x+","+y+"), h:"+height+" occ:"+(agent != null ? agent.id : -1);
+    return "("+position.x+","+position.y+"), h:"+height+" occ:"+(agent != null ? agent.id : -1);
   }
   /**
    * Get the cell in the direction dir

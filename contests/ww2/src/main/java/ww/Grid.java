@@ -11,8 +11,7 @@ public class Grid {
     for (int x=0;x<size;x++) {
       for (int y=0;y<size;y++) {
         cells[x][y] = new Cell();
-        cells[x][y].x = x;
-        cells[x][y].y = y;
+        cells[x][y].position = Point.get(x, y);
       }
     }
     

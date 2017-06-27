@@ -23,7 +23,7 @@ public class Player {
       state.toTDD();
       for (int id=0;id<4;id++) {
         if (state.agents[id].inFogOfWar()) continue;
-        // System.err.println("Reachable for "+id+" "+state.getReachableCells(id));
+        System.err.println("Reachable for "+id+" "+AccessibleCellsCalculator.count(state, state.agents[id]));
       }
 
       /* Debug possible actions calculus*/

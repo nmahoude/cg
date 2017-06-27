@@ -38,7 +38,16 @@ public class AgentEvaluator {
         + 1.0 * ae.neighbouringElevation()
         + 1.0 * ae.countActions()
         + 1.0 * ae.dangerousCliffs()
+        + 1.0 * ae.accessibleCells()
         ;
+  }
+
+  private double accessibleCells() {
+    if (AccessibleCellsCalculator.count(state, agent) > 0)
+      return AccessibleCellsCalculator.countWithoutLevel(state, agent);
+    else {
+      return -10_000; // big malus
+    }
   }
 
   private double neighbouringElevation() {
