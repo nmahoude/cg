@@ -15,6 +15,12 @@ public class Agent {
     this.id = id;
   }
 
+  public void copyTo(GameState otherState, Agent agent) {
+    agent.position = position;
+    agent.cell = otherState.grid.get(position.x, position.y);
+    agent.score = score;
+  }
+
   public void backup() {
     _position = position;
     _cell = cell;

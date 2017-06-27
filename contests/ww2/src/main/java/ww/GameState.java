@@ -111,4 +111,11 @@ public class GameState {
     System.err.println("}");
   }
 
+  public void copyTo(GameState expected) {
+    grid.copyTo(expected);
+    for (int i=0;i<4;i++) {
+      agents[i].copyTo(expected, expected.agents[i]);
+    }
+  }
+
 }

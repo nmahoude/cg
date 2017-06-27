@@ -21,6 +21,11 @@ public class Point {
     this.mask = toBitMask(x, y);
   }
   
+  @Override
+  public String toString() {
+    return "("+x+","+y+")";
+  }
+
   public static Point get(int x, int y) {
     if (x == -1) return unknown;
     return points[x+8*y];

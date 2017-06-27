@@ -1,8 +1,9 @@
 package ww;
 
 public class Grid {
+  private static long gridMask;
   private Cell cells[][] ; // just to save them, don't use this
-  private int size;
+  static int size;
   
   public Grid(int size) {
     this.size = size;
@@ -12,6 +13,7 @@ public class Grid {
       for (int y=0;y<size;y++) {
         cells[x][y] = new Cell();
         cells[x][y].position = Point.get(x, y);
+        gridMask|=Point.get(x, y).mask;
       }
     }
     
@@ -62,9 +64,31 @@ public class Grid {
   public void setHole(int x, int y) {
     cells[x][y].height = 4;
     cells[x][y].isHole = true; // only for debug ...
+    gridMask&=~Point.get(x, y).mask;
   }
 
   public void setHeight(int x, int y, int height) {
     cells[x][y].height = height;
+  }
+
+  public void copyTo(GameState other) {
+    for (int x=0;x<size;x++) {
+      for (int y=0;y<size;y++) {
+        cells[x][y].copyTo(other, other.grid.cells[x][y]);
+      }
+    }
+  }
+
+  public static long toBitMask() {
+    return gridMask;
+  }
+  
+  public static void debugLayer(long layer) {
+    layer |= 0b1000000000000000000000000000000000000000000000000000000000000000L;
+    for (int i = 0; i < size; i++) {
+      System.err.println(
+          new StringBuilder(
+              Long.toBinaryString(layer).substring(8 * (7 - i), 8 * (7 - i) + 8)).reverse().toString().substring(0, size));
+    }
   }
 }

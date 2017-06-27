@@ -68,4 +68,12 @@ public class Cell {
     return this.agent != null && 
         ((this.agent.id >=2 && agent.id >= 2) || (this.agent.id < 2 && agent.id < 2));
   }
+  public void copyTo(GameState otherState, Cell cell) {
+    cell.height = this.height;
+    if (agent == null) {
+      cell.agent = null;
+    } else {
+      cell.agent = otherState.agents[agent.id];
+    }
+  }
 }

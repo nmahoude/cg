@@ -7,34 +7,32 @@ import ww.sim.Simulation;
 
 public class Player {
   static GameState state = new GameState();
+  static Divination divination = null;
   
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
     
     
     state.readInit(in);
-
+    divination = new Divination(state);
+    
     int round = 0;
     // game loop
     while (true) {
       round++;
       
       state.readRound(in);
-      state.toTDD();
-      for (int id=0;id<4;id++) {
-        if (state.agents[id].inFogOfWar()) continue;
-        System.err.println("Reachable for "+id+" "+AccessibleCellsCalculator.count(state, state.agents[id]));
+//      state.toTDD();
+//      for (int id=0;id<4;id++) {
+//        if (state.agents[id].inFogOfWar()) continue;
+//        System.err.println("Reachable for "+id+" "+AccessibleCellsCalculator.count(state, state.agents[id]));
+//      }
+      
+      if (round > 1) {
+        divination.guessFrom(state);
       }
 
-      /* Debug possible actions calculus*/
-      int actionFor0 = Simulation.getPossibleActionsCount(state, state.agents[0]);
-      int actionFor1 = Simulation.getPossibleActionsCount(state, state.agents[1]);
-      int totalAction =  actionFor0 + actionFor1;
-      if (totalAction != state.legalActions) {
-        System.err.println("calculated actions : "+totalAction+" vs "+state.legalActions);
-        System.err.println("for 0 :"+actionFor0 +" , for 1 : "+actionFor1);
-        throw new RuntimeException("Difference in totalLegalAction on init round");
-      }
+      // debugPotentialActionsCount();
 
       
       // TODO get a good assessment
@@ -63,9 +61,8 @@ public class Player {
             move.dir2 = dir2;
             sim.simulate(move, true);
             if (move.isValid()) {
-              //System.err.println("Evaluating "+move.toPlayerOutput());
               double score = AgentEvaluator.score(state);
-                System.err.println(""+move.toPlayerOutput()+" = "+score);
+//              System.err.println(""+move.toPlayerOutput()+" = "+score);
               if (score > bestScore) {
                 bestScore = score;
                 move.copyTo(bestMove);
@@ -76,11 +73,29 @@ public class Player {
         }
       }
       
+      
       if (bestMove.agent != null) {
+        // just before the output, we replay our best move for the divination
+        divination.updateInitialState(state);
+        new Simulation().simulate(bestMove, true);
+        divination.updatePrediction(state);
+        
         System.out.println(bestMove.toPlayerOutput());
       } else {
         System.out.println("ACCEPT-DEFEAT GOOD FIGHT, WELL DONE");
       }
+    }
+  }
+
+  private static void debugPotentialActionsCount() {
+    /* Debug possible actions calculus*/
+    int actionFor0 = Simulation.getPossibleActionsCount(state, state.agents[0]);
+    int actionFor1 = Simulation.getPossibleActionsCount(state, state.agents[1]);
+    int totalAction =  actionFor0 + actionFor1;
+    if (totalAction != state.legalActions) {
+      System.err.println("calculated actions : "+totalAction+" vs "+state.legalActions);
+      System.err.println("for 0 :"+actionFor0 +" , for 1 : "+actionFor1);
+      throw new RuntimeException("Difference in totalLegalAction on init round");
     }
   }
 

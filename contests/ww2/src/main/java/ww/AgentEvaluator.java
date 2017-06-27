@@ -32,7 +32,7 @@ public class AgentEvaluator {
 //    if (agent.cell == null) System.err.println("Agent.Cell is null");
     
     return 0.0
-        + 1000.0 * agent.score
+        + 20.0 * agent.score
         + 1.0 * ae.position()
         + 50.0 * ae.elevation()
         + 1.0 * ae.neighbouringElevation()
@@ -43,11 +43,17 @@ public class AgentEvaluator {
   }
 
   private double accessibleCells() {
-    if (AccessibleCellsCalculator.count(state, agent) > 0)
-      return AccessibleCellsCalculator.countWithoutLevel(state, agent);
-    else {
-      return -10_000; // big malus
+    int count = AccessibleCellsCalculator.count(state, agent);
+    if (count == 0) {
+      return -10_000.0;
+    }else {
+      return count;
     }
+//    if (count > 0)
+//      return AccessibleCellsCalculator.countWithoutLevel(state, agent);
+//    else {
+//      return -10_000; // big malus
+//    }
   }
 
   private double neighbouringElevation() {
