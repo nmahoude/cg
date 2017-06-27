@@ -13,5 +13,6 @@
     <module>cotc</module>
     <module>c4l</module>
     <module>ww</module>
+    <module>ww2</module>
   </modules>
 </project>

@@ -1,0 +1,10 @@
+== Redo (ww2)
+
+= 20170627 (silver)
+* 16h54 : 108 : nouvelle relance ....
+* 16h44 - 150 : relance code de 16h18 pour confirmer :(
+* 16h20 - 136 : avec code du 26/07 -> 136 !
+* 16h18 - 106 / 25.21 : ajout de la hauteur des cotés
+* 16h02 - 137  : Augmenter le poids de la hauteur agent et diminuer le nb d'actions possibles
+* 2eme push : 272 avec le score à 1000. Gros probleme detecté, on ne 'monte' pas des murs
+* 1er push : 294

@@ -5,9 +5,9 @@
     <artifactId>contests</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>ww</artifactId>
+  <artifactId>ww2</artifactId>
   
-  <build>
+    <build>
 		<plugins>
 			<plugin>
 				<groupId>org.ndx.codingame</groupId>

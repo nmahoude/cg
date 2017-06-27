@@ -1,0 +1,71 @@
+package ww;
+
+public class Cell {
+  public static final int FINAL_HEIGHT = 4;
+  public static final Cell InvalidCell = new Cell();
+  static {
+    InvalidCell.height = 4;
+    for (Dir dir : Dir.values()) {
+      InvalidCell.neighbors[dir.index] = InvalidCell;
+    }
+  }
+  Cell neighbors[] = new Cell[8];
+  
+
+  public int height;
+  public Agent agent;
+  
+  int _height;
+  Agent _agent;
+
+  public boolean isHole; // for debug information
+  public int x,y; // for debug information
+  
+  
+  @Override
+  public String toString() {
+    return "("+x+","+y+"), h:"+height+" occ:"+(agent != null ? agent.id : -1);
+  }
+  /**
+   * Get the cell in the direction dir
+   */
+  public Cell get(Dir dir) {
+    return neighbors[dir.index];
+  }
+  
+  public void backup() {
+    _height = height;
+    _agent = agent;
+  }
+
+  public void restore() {
+    height = _height;
+    agent = _agent;
+  }
+
+  public boolean isValid() {
+    return height != 4;
+  }
+
+  public void elevate() {
+    height++;
+  }
+
+  public boolean isOccupied() {
+    return agent != null;
+  }
+
+  public boolean isOccupiedButNotBy(Agent by) {
+    return this.agent != null && this.agent != by;
+  }
+  
+  public boolean isThreat(Agent agent) {
+    return this.agent != null &&
+        ((this.agent.id >=2 && agent.id < 2) || (this.agent.id < 2 && agent.id >= 2));
+  }
+  
+  public boolean isFriendly(Agent agent) {
+    return this.agent != null && 
+        ((this.agent.id >=2 && agent.id >= 2) || (this.agent.id < 2 && agent.id < 2));
+  }
+}
