@@ -1,5 +1,6 @@
 package ww;
 
+import com.sun.org.apache.bcel.internal.generic.PopInstruction;
 import com.sun.org.apache.bcel.internal.util.SyntheticRepository;
 
 /**
@@ -10,13 +11,9 @@ import com.sun.org.apache.bcel.internal.util.SyntheticRepository;
 public class Divination {
   GameState initial;
   GameState expected;
-  
-  Point knownAgentPos[] = new Point[2];
-  Point expectedAgent[] = new Point[2];
-  {
-    expectedAgent[0] = Point.unknown;
-    expectedAgent[1] = Point.unknown;
-  }
+  public Point guessedPosition[] = new Point[2];
+  public boolean guessedPositionLocked[] = new boolean[2];
+  private int stillToFind;
   
   Divination(GameState model) {
     expected = new GameState();
@@ -25,6 +22,8 @@ public class Divination {
     initial = new GameState();
     initial.grid = new Grid(model.size);
     
+    guessedPosition[0] = Point.unknown;
+    guessedPosition[1] = Point.unknown;
   }
   
   /**
@@ -35,14 +34,126 @@ public class Divination {
    */
   
   public void guessFrom(GameState state) {
+    stillToFind = 2;
     System.err.println("Divination : ");
 
-    boolean allFound = getCorrectInformations(state);
-    if (allFound == true) {
+    getCorrectInformations(state);
+    if (stillToFind == 0) {
       // no guess this time, TODO still need to prepare something ?
       return;
     }
     
+    long potential = getPotentialPositionsFromStaticGrid(state);
+    Grid.debugLayer(potential);
+    
+    guessFromPotentialOnly(potential);
+    if (stillToFind == 0) return;
+    
+    guessFromConstruction(state, potential); 
+    if (stillToFind == 0) return;
+  }
+
+  private void guessFromConstruction(GameState state, long gridMask) {
+    Cell constructionCell = locateConstruction(state);
+    if (constructionCell == Cell.InvalidCell) return;
+    
+    long wasThereMask = 0;
+    long willBeThereMask = 0;
+    
+    wasThereMask|= constructionCell.position.mask;
+    for (int xi=-2;xi<3;xi++) {
+      for (int yi=-2;yi<3;yi++) {
+        int cx = constructionCell.position.x+xi; 
+        int cy=constructionCell.position.y+yi;
+        if (cx >=0 && cx < Grid.size && cy >=0 && cy<Grid.size) {
+          wasThereMask|= Point.get(cx,  cy).mask;
+          if (xi!= -2 && xi != 2 && yi!=-2 && yi!=2) {
+            willBeThereMask|= Point.get(cx,  cy).mask;
+          }
+        }
+      }
+    }
+    willBeThereMask &= ~constructionCell.position.mask;
+    wasThereMask &= ~constructionCell.position.mask;
+    
+    long potential = gridMask & willBeThereMask;
+    System.err.println("guessFromConstruction");
+    Grid.debugLayer(potential);
+    if (Long.bitCount(potential) == 1 && stillToFind >= 1) {
+      int y = (int)(Math.log(potential) / Math.log(256));
+      int x = (int)(Math.log(potential) / Math.log(2)) - 8*y;
+      if (guessedPosition[0] == Point.unknown) {
+        guessedPosition[0] = Point.get(x, y);
+      } else {
+        guessedPosition[1] = Point.get(x, y);
+      }
+      stillToFind--;
+      return; 
+    }
+  }
+
+  Cell locateConstruction(GameState state) {
+    for (int y=0;y<GameState.size;y++) {
+      for (int x=0;x<GameState.size;x++) {
+        Cell expectedCell = expected.grid.get(x, y);
+        Cell currentCell = state.grid.get(x,y);
+        if (expectedCell.height != currentCell.height) {
+          return currentCell;
+        }
+      }
+    }
+    return Cell.InvalidCell;
+  }
+  
+  private void guessFromPotentialOnly(long potential) {
+    if (Long.bitCount(potential) == 1 && stillToFind == 1) {
+      int y = (int)(Math.log(potential) / Math.log(256));
+      int x = (int)(Math.log(potential) / Math.log(2)) - 8*y;
+      if (guessedPosition[0] == Point.unknown) {
+        guessedPosition[0] = Point.get(x, y);
+      } else {
+        guessedPosition[1] = Point.get(x, y);
+      }
+      stillToFind = 0;
+      return; 
+    } else if (Long.bitCount(potential) == 2 && stillToFind == 2) {
+      long first = Long.highestOneBit(potential);
+      int y = (int)(Math.log(potential) / Math.log(256));
+      int x = (int)(Math.log(potential) / Math.log(2)) - 8*y;
+      guessedPosition[0] = Point.get(x, y);
+      
+      long second = potential & ~first;
+      y = (int)(Math.log(second) / Math.log(256));
+      x = (int)(Math.log(second) / Math.log(2)) - 8*y;
+      guessedPosition[1] = Point.get(x, y);
+
+      stillToFind = 0;
+    }
+  }
+
+  /**
+   * Apply the divination
+   * @param state
+   */
+  public void apply(GameState state) {
+    for (int i=0;i<2;i++) {
+      if (guessedPosition[i] != Point.unknown) {
+        System.err.println("Applying guessed agent "+i+" at "+guessedPosition[i]);
+        state.positionAgent(state.agents[2+i], guessedPosition[i]);
+      }
+    }
+    state.backup();
+  }
+  
+  public void debug() {
+    for (int i=0;i<2;i++) {
+      if (guessedPosition[i] != Point.unknown) {
+        System.err.println("Found agent "+i+" at "+guessedPosition[i]);
+      }
+    }
+  }
+  
+  private void oldDivination(GameState state) {
     // do the divination here
     long potential = getPotentialPositionsFromStaticGrid(state);
     Grid.debugLayer(potential);
@@ -74,33 +185,31 @@ public class Divination {
     }
     
     Grid.debugLayer(wasThereMask);
-    // check agent 0 :
-    if (knownAgentPos[0] == Point.unknown) {
-      if (expectedAgent[0] != Point.unknown) {
-        if ((expectedAgent[0].mask & wasThereMask) != 0)  {
-          // ok were there so there is a chance it's us
-          if (knownAgentPos[1] != Point.unknown && (knownAgentPos[1].mask & wasThereMask) == 0) {
-            // the other one could not have been here, so it's us :)
-          }
+  }
+  
+  private void getCorrectInformations(GameState state) {
+    for (int i=0;i<2;i++) {
+      if (state.agents[2+i].position != Point.unknown) {
+        guessedPosition[i] = state.agents[2+i].position; // save the point but we know it
+        guessedPositionLocked[i] = isLocked(state.agents[2+i]);
+        stillToFind--;
+      } else {
+        if (guessedPositionLocked[i] == true) {
+          stillToFind--;
+        } else {
+          guessedPosition[i] = Point.unknown;
         }
       }
     }
-    
   }
 
-  private boolean getCorrectInformations(GameState state) {
-    boolean allFound = true;
-    for (int i=0;i<2;i++) {
-      if (state.agents[2+i].position != Point.unknown) {
-        // found it :)
-        System.err.println("   oppAgent "+i+" is at "+state.agents[2+i].position);
-        knownAgentPos[i] = state.agents[2+i].position; // save the point but we know it
-      } else {
-        knownAgentPos[i] = Point.unknown;
-        allFound = false;
-      }
+  private boolean isLocked(Agent agent) {
+    int height = agent.cell.height;
+    for (Dir dir : Dir.values()) {
+      Cell cell = agent.cell.get(dir);
+      if (cell.isValid() && cell.height <= height+1) return false; 
     }
-    return allFound;
+    return true;
   }
 
   /**

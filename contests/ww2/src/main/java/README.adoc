@@ -1,6 +1,8 @@
 == Redo (ww2)
 
 = 20170627 (silver)
+* 00h27 - ?? : divination activée
+* 23h51 - 45 : derniere version de Divination (pas d'autres changement normalemnt, divination pas appliquée)
 * 22h00 - 40 : on reste à 20, mais on repasse sur l'evaluation des cases atteignable en situation
 * 21h32 - 51 : on repasse a 20
 * 21h17 - 63 : relance avec 10 pour voir la variance

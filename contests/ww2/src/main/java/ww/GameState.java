@@ -59,13 +59,8 @@ public class GameState {
     
     for (int i = 0; i < 2*unitsPerPlayer; i++) {
       Agent agent = agents[i];
-      agent.position = Point.get(in.nextInt(), in.nextInt());
-      if (agent.position != Point.unknown) {
-        agent.cell = grid.get(agent.position.x, agent.position.y);
-        grid.get(agent.position.x, agent.position.y).agent = agent;
-      } else {
-        agent.cell = Cell.InvalidCell;
-      }
+      Point position = Point.get(in.nextInt(), in.nextInt());
+      positionAgent(agent, position);
     }
     
     legalActions = in.nextInt();
@@ -78,6 +73,24 @@ public class GameState {
     
     backup();
   }
+  
+  public void positionAgent(Agent agent, Point position) {
+    agent.position = position;
+    
+    if (agent.position != Point.unknown) {
+      if (agent.cell != null) {
+        agent.cell.agent = null; // detach agent
+      }
+      agent.cell = grid.get(agent.position.x, agent.position.y);
+      agent.cell.agent = agent;
+    } else {
+      if (agent.cell != null) {
+        agent.cell.agent = null;
+      }
+      agent.cell = Cell.InvalidCell;
+    }
+  }
+  
   public void toTDD() {
     System.err.println("@Test");
     System.err.println("public void test() {");

@@ -1,5 +1,7 @@
 package ww;
 
+import java.util.Scanner;
+
 import ww.Agent;
 import ww.Dir;
 import ww.GameState;
@@ -48,6 +50,12 @@ public class TU {
       }
     }
     return result;
+  }
+
+  public static void setHeights(GameState state, int size, String... rows) {
+    GameState.size = size;
+    state.readInit(new Scanner("" + GameState.size + " 2"));
+    setHeights(state, rows);
   }
   
 }

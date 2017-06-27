@@ -30,6 +30,8 @@ public class Player {
       
       if (round > 1) {
         divination.guessFrom(state);
+        divination.debug();
+        divination.apply(state);
       }
 
       // debugPotentialActionsCount();
