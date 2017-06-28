@@ -17,7 +17,7 @@
 == Divination
 * prendre en compte les cas où mon coup a été annulé
 * augmenter le nb de situation où on devine
-
+* si on ne peut pas trouver la position exacte des enemis, conserver le spectre de leur position potentiel pour vérifier qu'on ne prend pas de risque (cas des cliffs et des enfermements)
 
 == Minimax
 * reimplementer le minimax avec alpha/beta uniquement sur la position des opp connus (pas de lacheté à ne plus rien faire :) )

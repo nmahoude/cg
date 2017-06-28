@@ -153,40 +153,6 @@ public class Divination {
     }
   }
   
-  private void oldDivination(GameState state) {
-    // do the divination here
-    long potential = getPotentialPositionsFromStaticGrid(state);
-    Grid.debugLayer(potential);
-    
-    long wasThereMask = 0;
-    long willBeThereMask = 0;
-    // 1. find the constructed cell
-    for (int y=0;y<GameState.size;y++) {
-      for (int x=0;x<GameState.size;x++) {
-        Cell expectedCell = expected.grid.get(x, y);
-        Cell currentCell = state.grid.get(x,y);
-        if (expectedCell.height != currentCell.height) {
-          System.err.println("Construction on "+Point.get(x, y));
-          
-          wasThereMask|= currentCell.position.mask;
-          for (int xi=-2;xi<3;xi++) {
-            for (int yi=-2;yi<3;yi++) {
-              int cx = x+xi; int cy=y+yi;
-              if (cx >=0 && cx < Grid.size && cy >=0 && cy<Grid.size) {
-                wasThereMask|= Point.get(cx,  cy).mask;
-                if (xi!= -2 && xi != 2 && yi!=-2 && yi!=2) {
-                  willBeThereMask|= Point.get(cx,  cy).mask;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    
-    Grid.debugLayer(wasThereMask);
-  }
-  
   private void getCorrectInformations(GameState state) {
     for (int i=0;i<2;i++) {
       if (state.agents[2+i].position != Point.unknown) {
