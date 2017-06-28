@@ -2,8 +2,6 @@ package ww;
 
 import java.util.Scanner;
 
-import javax.xml.bind.ValidationException;
-
 public class GameState {
   public static int size;
   public static int unitsPerPlayer;
@@ -18,20 +16,6 @@ public class GameState {
     for (int i=0;i<2*2;i++) {
       agents[i] = new Agent(i);
     } 
-  }
-
-  public void backup() {
-    grid.backup();
-    for (int i=0;i<agents.length;i++) {
-      agents[i].backup();
-    }
-  }
-  
-  public void restore() {
-    grid.restore();
-    for (int i=0;i<agents.length;i++) {
-      agents[i].restore();
-    }
   }
 
   public void readInit(Scanner in) {
@@ -71,8 +55,8 @@ public class GameState {
       in.next();
     }
     
-    backup();
   }
+
   
   public void positionAgent(Agent agent, Point position) {
     agent.position = position;
@@ -129,6 +113,19 @@ public class GameState {
     for (int i=0;i<4;i++) {
       agents[i].copyTo(expected, expected.agents[i]);
     }
+  }
+
+  public boolean isModified() {
+    for (int i=0;i<4;i++) {
+      if (agents[i].isModified()) return true;
+    }
+    for (int y=0;y<size;y++) {
+      for (int x=0;x<size;x++) {
+        Cell cell = grid.get(x, y);
+        if (cell.isModified()) return true;
+      }
+    }
+    return false;
   }
 
 }

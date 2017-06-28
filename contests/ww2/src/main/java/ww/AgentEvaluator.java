@@ -6,6 +6,28 @@ public class AgentEvaluator {
   GameState state;
   Agent agent;
   
+  public static boolean debug = false;
+  private static int FEATURE_END = 0;
+  public static final int FEATURE_SCORE = FEATURE_END++;
+  public static final int FEATURE_POSITION = FEATURE_END++;
+  public static final int FEATURE_ELEVATION = FEATURE_END++;
+  public static final int FEATURE_NEIGHBOURS = FEATURE_END++;
+  public static final int FEATURE_ACTIONS = FEATURE_END++;
+  public static final int FEATURE_CLIFF = FEATURE_END++;
+  public static final int FEATURE_ACCESSIBLE_CELLS = FEATURE_END++;
+  public static final int FEATURE_POTENTIAL_CELLS = FEATURE_END++;
+  double features[] = new double [FEATURE_END];
+  static String[] featuresString = new String[]{
+      "SCORE",
+      "POSITION",
+      "ELEVATION",
+      "NEIGHBORS",
+      "ACTIONS",
+      "CLIFF",
+      "ACCESSIBLE CELLS",
+      "POTENTIAL CELLS"
+  };
+  
   AgentEvaluator(GameState state, Agent agent) {
     this.state = state;
     this.agent = agent;
@@ -25,21 +47,33 @@ public class AgentEvaluator {
     if (agent.inFogOfWar()) return 0.0;
     
     AgentEvaluator ae = new AgentEvaluator(state, agent);
+
+    ae.features[FEATURE_SCORE] = 20.0 * agent.score;
+    ae.features[FEATURE_POSITION] = 1.0 * ae.position();
+    ae.features[FEATURE_ELEVATION] = 50.0 * ae.elevation();
+    ae.features[FEATURE_NEIGHBOURS] = 1.0 * ae.neighbouringElevation();
+    ae.features[FEATURE_ACTIONS] =1.0 * ae.countActions();
+    ae.features[FEATURE_CLIFF] = 1.0 * ae.dangerousCliffs();
+    ae.features[FEATURE_ACCESSIBLE_CELLS] = 1.0 * ae.accessibleCells();
+    ae.features[FEATURE_POTENTIAL_CELLS] = 0.0 ;//* ae.potentialCells();
     
-//    System.err.println("Evaluating for agent : "+agent.id);
-//    if (agent == null) System.err.println("Agent is null");
-//    if (ae == null) System.err.println("AE is null");
-//    if (agent.cell == null) System.err.println("Agent.Cell is null");
+    if (debug) {
+      System.err.println("Scores for agent "+agent.id);
+      for (int i=0;i<FEATURE_END;i++) {
+        System.err.println("    "+featuresString[i]+" = "+ae.features[i]);
+      }
+    }
     
-    return 0.0
-        + 20.0 * agent.score
-        + 1.0 * ae.position()
-        + 50.0 * ae.elevation()
-        + 1.0 * ae.neighbouringElevation()
-        + 1.0 * ae.countActions()
-        + 1.0 * ae.dangerousCliffs()
-        + 1.0 * ae.accessibleCells()
-        ;
+    double score = 0.0;
+    for (int i=0;i<FEATURE_END;i++) {
+      score += ae.features[i];
+    }
+    return score;
+  }
+
+  private double potentialCells() {
+    int count = AccessibleCellsCalculator.countWithoutLevel(state, agent);
+    return count;
   }
 
   private double accessibleCells() {
@@ -58,8 +92,8 @@ public class AgentEvaluator {
 
   private double neighbouringElevation() {
     double score = 0.0;
-    for (Dir dir : Dir.values()) {
-      Cell checkCell = agent.cell.get(dir);
+    for (int i=0;i<Dir.LENGTH;i++) {
+      Cell checkCell = agent.cell.neighbors[i];
       if (checkCell.isValid() && checkCell.height <= agent.cell.height +1 ) {
         score += (1+checkCell.height) * (1+checkCell.height);
       }
@@ -77,7 +111,7 @@ public class AgentEvaluator {
   double dangerousCliffs() {
     double score = 0.0;
     Cell current = agent.cell;
-    for (Dir dir : Dir.values()) {
+    for (Dir dir : Dir.getValues()) {
       if (!current.get(dir).isThreat(agent)) continue;
       for (Dir push : dir.inversePushDirections()) {
         Cell pushCell = current.get(push);

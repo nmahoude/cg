@@ -60,4 +60,9 @@ public class Move {
       return "MOVE&BUILD "+agent.id+" "+dir1.toString()+" "+dir2.toString();
     }
   }
+  
+  @Override
+  public String toString() {
+    return toPlayerOutput();
+  }
 }

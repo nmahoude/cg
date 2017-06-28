@@ -1,9 +1,9 @@
 package ww;
 
 public class Grid {
-  private static long gridMask;
+  private long gridMask;
   private Cell cells[][] ; // just to save them, don't use this
-  static int size;
+  int size;
   
   public Grid(int size) {
     this.size = size;
@@ -20,7 +20,7 @@ public class Grid {
     // attach all now
     for (int x=0;x<size;x++) {
       for (int y=0;y<size;y++) {
-        for (Dir dir : Dir.values()) {
+        for (Dir dir : Dir.getValues()) {
           if (x+dir.dx >=0 && x+dir.dx<size && y+dir.dy>=0 && y+dir.dy < size) {
             cells[x][y].neighbors[dir.index] = cells[x+dir.dx][y+dir.dy];
           } else {
@@ -79,11 +79,11 @@ public class Grid {
     }
   }
 
-  public static long toBitMask() {
+  public long toBitMask() {
     return gridMask;
   }
   
-  public static void debugLayer(long layer) {
+  public void debugLayer(long layer) {
     layer |= 0b1000000000000000000000000000000000000000000000000000000000000000L;
     for (int i = 0; i < size; i++) {
       System.err.println(

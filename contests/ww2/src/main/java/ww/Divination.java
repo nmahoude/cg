@@ -1,8 +1,5 @@
 package ww;
 
-import com.sun.org.apache.bcel.internal.generic.PopInstruction;
-import com.sun.org.apache.bcel.internal.util.SyntheticRepository;
-
 /**
  * Responsible of magical finding where the opponents are (hope so)
  * @author nmahoude
@@ -14,6 +11,7 @@ public class Divination {
   public Point guessedPosition[] = new Point[2];
   public boolean guessedPositionLocked[] = new boolean[2];
   private int stillToFind;
+  private boolean debugMode;
   
   Divination(GameState model) {
     expected = new GameState();
@@ -26,6 +24,9 @@ public class Divination {
     guessedPosition[1] = Point.unknown;
   }
   
+  public void setDebug(boolean value) {
+    debugMode = value;
+  }
   /**
    * Entry : the new state
    * Divination keep the old state (after our move)
@@ -35,7 +36,7 @@ public class Divination {
   
   public void guessFrom(GameState state) {
     stillToFind = 2;
-    System.err.println("Divination : ");
+    if (debugMode) System.err.println("Divination : ");
 
     getCorrectInformations(state);
     if (stillToFind == 0) {
@@ -44,12 +45,21 @@ public class Divination {
     }
     
     long potential = getPotentialPositionsFromStaticGrid(state);
-    Grid.debugLayer(potential);
+    if (debugMode) {
+      System.err.println("static potential");
+      state.grid.debugLayer(potential);
+    }
     
-    guessFromPotentialOnly(potential);
+    long temp = potential;
+    temp = removeMyVision(state, potential);
+    temp = removeOpponents(state, temp);
+    guessFromPotentialOnly(temp);
     if (stillToFind == 0) return;
     
-    guessFromConstruction(state, potential); 
+    temp = potential;
+    temp = removeMyVision(state, potential);
+    temp = readdOpponents(state, temp);
+    guessFromConstruction(state, temp); 
     if (stillToFind == 0) return;
   }
 
@@ -65,7 +75,7 @@ public class Divination {
       for (int yi=-2;yi<3;yi++) {
         int cx = constructionCell.position.x+xi; 
         int cy=constructionCell.position.y+yi;
-        if (cx >=0 && cx < Grid.size && cy >=0 && cy<Grid.size) {
+        if (cx >=0 && cx < state.grid.size && cy >=0 && cy<state.grid.size) {
           wasThereMask|= Point.get(cx,  cy).mask;
           if (xi!= -2 && xi != 2 && yi!=-2 && yi!=2) {
             willBeThereMask|= Point.get(cx,  cy).mask;
@@ -77,8 +87,10 @@ public class Divination {
     wasThereMask &= ~constructionCell.position.mask;
     
     long potential = gridMask & willBeThereMask;
-    System.err.println("guessFromConstruction");
-    Grid.debugLayer(potential);
+    if (debugMode) {
+      System.err.println("guessFromConstruction");
+      state.grid.debugLayer(potential);
+    }
     if (Long.bitCount(potential) == 1 && stillToFind >= 1) {
       int y = (int)(Math.log(potential) / Math.log(256));
       int x = (int)(Math.log(potential) / Math.log(2)) - 8*y;
@@ -138,17 +150,16 @@ public class Divination {
   public void apply(GameState state) {
     for (int i=0;i<2;i++) {
       if (guessedPosition[i] != Point.unknown) {
-        System.err.println("Applying guessed agent "+i+" at "+guessedPosition[i]);
+        if (debugMode) System.err.println("Applying guessed agent "+i+" at "+guessedPosition[i]);
         state.positionAgent(state.agents[2+i], guessedPosition[i]);
       }
     }
-    state.backup();
   }
   
   public void debug() {
     for (int i=0;i<2;i++) {
       if (guessedPosition[i] != Point.unknown) {
-        System.err.println("Found agent "+i+" at "+guessedPosition[i]);
+        if (debugMode) System.err.println("Found agent "+i+" at "+guessedPosition[i]);
       }
     }
   }
@@ -171,8 +182,8 @@ public class Divination {
 
   private boolean isLocked(Agent agent) {
     int height = agent.cell.height;
-    for (Dir dir : Dir.values()) {
-      Cell cell = agent.cell.get(dir);
+    for (int i=0;i<Dir.LENGTH;i++) {
+      Cell cell = agent.cell.neighbors[i];
       if (cell.isValid() && cell.height <= height+1) return false; 
     }
     return true;
@@ -184,7 +195,7 @@ public class Divination {
    * @return
    */
   private long getPotentialPositionsFromStaticGrid(GameState state) {
-    long potential = Grid.toBitMask();
+    long potential = state.grid.toBitMask();
     
     // remove holes & height = 4
     for (int y=0;y<GameState.size;y++) {
@@ -194,28 +205,44 @@ public class Divination {
         }
       }
     }
+    return potential;
+  }
+
+  private long removeMyVision(GameState state, long potential) {
     // remove my vision
     for (int id=0;id<2;id++) {
       Agent agent = state.agents[id];
       potential &= ~agent.position.mask; // remove the point
 
-      for (Dir dir : Dir.values()) {
-        Cell around = agent.cell.get(dir);
+      for (int i=0;i<Dir.LENGTH;i++) {
+        Cell around = agent.cell.neighbors[i];
         if (around != Cell.InvalidCell) {
           potential &= ~around.position.mask; // remove the point
         }
       }
     }
-    // if we know one of the opponent, remove him too
-    for (int id=2;id<4;id++) {
-      Agent agent = state.agents[id];
-      if (!agent.inFogOfWar()) {
-        potential &= ~agent.position.mask; // remove the point
+    return potential;
+  }
+
+  private long removeOpponents(GameState state, long potential) {
+    for (int id=0;id<2;id++) {
+      if (guessedPosition[id] != Point.unknown) {
+        potential &= ~guessedPosition[id].mask; // reput the point
       }
     }
     return potential;
   }
 
+  private long readdOpponents(GameState state, long potential) {
+    // if we know one of the opponent, re-add him
+    for (int id=0;id<2;id++) {
+      if (guessedPosition[id] != Point.unknown) {
+        potential |= guessedPosition[id].mask; // reput the point
+      }
+    }
+    return potential;
+  }
+  
   /** update initial state as the one we got from CG*/
   public void updateInitialState(GameState state) {
     state.copyTo(initial);

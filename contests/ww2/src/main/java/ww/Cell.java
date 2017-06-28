@@ -6,7 +6,7 @@ public class Cell {
   static {
     InvalidCell.position = Point.unknown;
     InvalidCell.height = 4;
-    for (Dir dir : Dir.values()) {
+    for (Dir dir : Dir.getValues()) {
       InvalidCell.neighbors[dir.index] = InvalidCell;
     }
   }
@@ -26,6 +26,7 @@ public class Cell {
   public String toString() {
     return "("+position.x+","+position.y+"), h:"+height+" occ:"+(agent != null ? agent.id : -1);
   }
+  
   /**
    * Get the cell in the direction dir
    */
@@ -43,12 +44,26 @@ public class Cell {
     agent = _agent;
   }
 
+  public boolean isModified() {
+    boolean b = (height == _height && agent == _agent);
+    if (!b) {
+      System.err.println("Difference in cell : "+position);
+      System.err.println(""+height+" vs "+_height);
+      System.err.println(""+agent+" vs "+_agent);
+    }
+    return !b;
+  }
+
+  
   public boolean isValid() {
     return height != 4;
   }
 
   public void elevate() {
     height++;
+  }
+  public void decrease() {
+    height--;
   }
 
   public boolean isOccupied() {
@@ -76,4 +91,5 @@ public class Cell {
       cell.agent = otherState.agents[agent.id];
     }
   }
+
 }

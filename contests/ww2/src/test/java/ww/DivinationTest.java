@@ -1,9 +1,8 @@
 package ww;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
-
-import java.util.Scanner;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,8 +18,8 @@ public class DivinationTest {
   }
   
   private void initDivination() {
-    currentState.backup();
     divination = new Divination(currentState);
+    divination.setDebug(true);
   }
   @Test
   public void whenWeKnowEverything_contraryToJohnSnow() {
@@ -90,6 +89,19 @@ public class DivinationTest {
   
   @Test
   public void onlyOnePossibility_andOneMissing() {
+    GameState previous = new GameState();
+    TU.setHeights(previous, 6, 
+        "440000", // <- the only cell not visible !
+        "440000",
+        "444400",
+        "444400",
+        "444444",
+        "044444");
+      TU.setAgent(previous, 0,3,0);
+      TU.setAgent(previous, 1,5,2);
+      TU.setAgent(previous, 2,0,5);
+      TU.setAgent(previous, 3,-1,-1);
+    
     TU.setHeights(currentState, 6,
       "440000", // <- the only cell not visible !
       "440000",
@@ -103,7 +115,7 @@ public class DivinationTest {
     TU.setAgent(currentState, 3,-1,-1);
     
     initDivination();
-    
+    divination.updatePrediction(previous);
     divination.guessFrom(currentState);
     
     assertThat(divination.guessedPosition[0], is (Point.get(0,5)));
@@ -234,5 +246,43 @@ public class DivinationTest {
     
     assertThat(divination.guessedPosition[0], is (Point.get(0,5)));
     assertThat(divination.guessedPosition[1], is (Point.unknown));
+  }
+  
+  @Test
+  /*
+   * the divination guessed that the agent 0 clones itself
+   */
+  public void dontCloneTheOpponentAgents() {
+    GameState previous = new GameState();
+    TU.setHeights(previous, 6, 
+        "11040",
+        "14343",
+        "34443",
+        "34443",
+        "44113"
+        );
+    TU.setAgent(previous, 0,3,0);
+    TU.setAgent(previous, 1,5,2);
+    TU.setAgent(previous, 2,2,0);
+    TU.setAgent(previous, 3,-1,-1);
+    
+    TU.setHeights(currentState, 6,
+        "11040",
+        "14443",
+        "34443",
+        "34443",
+        "44113");
+      TU.setAgent(currentState, 0,0,1);
+      TU.setAgent(currentState, 1,0,0);
+      TU.setAgent(currentState, 2,1,0);
+      TU.setAgent(currentState, 3,-1,-1);
+    
+    initDivination();
+    
+    divination.updatePrediction(previous);
+    divination.guessFrom(currentState);
+    
+    assertThat(divination.guessedPosition[0], is (Point.get(1,0)));
+    assertThat(divination.guessedPosition[1], is(not(Point.get(2, 0))));
   }
 }

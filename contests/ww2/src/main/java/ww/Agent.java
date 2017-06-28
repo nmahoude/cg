@@ -1,8 +1,8 @@
 package ww;
 
 public class Agent {
-
   public final int id;
+  
   public Point position;
   public Cell cell;
   public int score;
@@ -33,6 +33,17 @@ public class Agent {
     score = _score;
   }
 
+  public boolean isModified() {
+    boolean b = position == _position && cell == _cell && score == _score;
+    if (!b) {
+      System.err.println("Difference in agent : "+position);
+      System.err.println(""+position+" vs "+_position);
+      System.err.println(""+cell+" vs "+_cell);
+      System.err.println(""+score+" vs "+_score);
+    }
+    return !b;
+  }
+
   public boolean inFogOfWar() {
     return cell == Cell.InvalidCell;
   }
@@ -43,9 +54,6 @@ public class Agent {
 
   public void moveTo(Cell target) {
     pushTo(target);
-    if (target.height == Cell.FINAL_HEIGHT - 1) {
-      score++;
-    }
 
   }
 

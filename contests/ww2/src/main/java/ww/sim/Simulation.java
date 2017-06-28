@@ -10,6 +10,7 @@ public class Simulation {
   private Move move;
   private Agent agent;
 
+  
   /**
    * simulate the move of any player (dir1, dir2 not null)
    * 
@@ -30,23 +31,30 @@ public class Simulation {
     }
     
     if (!target.isOccupied()) {
-      move.isPush = false;
       computeMove(doAction);
-      return;
     } else {
-      // potential push
-      if (target.isFriendly(agent)) {
-        move.dir1Invalid();
-        return;
-      }
-      move.isPush = true;
       computePush(doAction);
-      return;
     }
   }
 
+  
+  /** undo a move, move should be valid ! */
+  public void undo(Move move) {
+    if (move.isPush) {
+      Cell pushFrom = move.agent.cell.get(move.dir1);
+      Cell pushTo = pushFrom.get(move.dir2);
+      pushFrom.decrease();
+      pushTo.agent.moveTo(pushFrom);
+    } else {
+      if (move.agent.cell.height == Cell.FINAL_HEIGHT - 1) move.agent.score--;
+      Cell comingFrom = move.agent.cell.get(move.dir1.inverse());
+      Cell builtOn = move.agent.cell.get(move.dir2);
+      builtOn.decrease();
+      move.agent.moveTo(comingFrom);
+    }
+  }
+  
   private void computeMove(boolean doAction) {
-
     Cell target = agent.cell.get(move.dir1);
 
     int currentHeight = agent.cell.height;
@@ -69,8 +77,12 @@ public class Simulation {
     }
 
     // move ok, update agent position & grid
+    move.isPush = false;
     if (doAction) {
       agent.moveTo(target);
+      if (target.height == Cell.FINAL_HEIGHT - 1) {
+        agent.score++;
+      }
       placeTarget.elevate();
     }
     move.allValid();
@@ -91,9 +103,15 @@ public class Simulation {
     
     Cell pushFrom = agent.cell.get(move.dir1);
     Agent pushed = pushFrom.agent;
+    if (pushed.isFriendly(agent)) {
+      move.dir1Invalid();
+      return;
+    }
 
     Cell pushTo = pushFrom.get(move.dir2);
     
+    
+
     if ((!pushTo.isValid()) || (pushTo.isOccupied())) {
       move.dir2Invalid();
       return;
@@ -105,6 +123,7 @@ public class Simulation {
     }
 
     // move ok, update agent position & grid
+    move.isPush = true;
     if (doAction) {
       pushed.pushTo(pushTo);
       pushFrom.elevate();
@@ -115,16 +134,26 @@ public class Simulation {
   }
 
   public static int getPossibleActionsCount(GameState state, Agent agent) {
-    Simulation sim = new Simulation();
     int count = 0;
     
-    Move move = new Move(agent);
-    for (Dir dir1 : Dir.values()) {
-      for (Dir dir2 : Dir.values()) {
-        move.dir1 = dir1;
-        move.dir2 = dir2;
-        sim.simulate(move, false);
-        if (move.isValid()) {
+    for (Dir dir1 : Dir.getValues()) {
+      Cell dir1Cell = agent.cell.get(dir1);
+      if (!dir1Cell.isValid()) continue;
+      if (dir1Cell.isFriendly(agent)) continue;
+      if (dir1Cell.agent != null) {
+        // push
+        for (Dir dir2 : dir1.pushDirections()) {
+          Cell pushCell = dir1Cell.get(dir2);
+          if (pushCell.isValid() && !pushCell.isOccupied()) {
+            count++;
+          }
+        }
+      } else {
+        // move
+        for (Dir dir2 : Dir.getValues()) {
+          Cell buildCell = dir1Cell.get(dir2);
+          if (!buildCell.isValid()) continue;
+          if (buildCell.isOccupiedButNotBy(agent)) continue;
           count++;
         }
       }

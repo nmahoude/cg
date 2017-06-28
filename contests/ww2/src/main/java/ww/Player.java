@@ -4,9 +4,10 @@ import java.util.Scanner;
 
 import ww.sim.Move;
 import ww.sim.Simulation;
+import ww.think.Think;
 
 public class Player {
-  static GameState state = new GameState();
+  public static GameState state = new GameState();
   static Divination divination = null;
   static Simulation sim = new Simulation();
   
@@ -15,6 +16,7 @@ public class Player {
     
     state.readInit(in);
     divination = new Divination(state);
+    divination.setDebug(true);
     
     int round = 0;
     // game loop
@@ -22,7 +24,7 @@ public class Player {
       round++;
       
       state.readRound(in);
-//      state.toTDD();
+      state.toTDD();
 
 //      debugReachableCells();
 //      debugPotentialActionsCount();
@@ -33,10 +35,23 @@ public class Player {
         divination.apply(state);
       }
 
-      Move bestMove = think(sim);
+      // Move bestMove = think(sim);
+      int deepening = 1;
+      Move bestMove = new Think(state).think(deepening);
+
+      // deepening
+//      Move move = bestMove;
+//      while (move != null) {
+//        deepening+=2;
+//        move = new Think(state).think(deepening);
+//        if (move != null) {
+//          bestMove = move;
+//        }
+//      }
       
       long endTime = System.currentTimeMillis();
-      System.err.println("Reflexion time : "+(endTime-state.startTime));
+      int depth = 1 + deepening / 2;
+      System.err.println("Reflexion time : "+(endTime-state.startTime)+" depth reached : "+ depth);
       
       if (bestMove.agent != null) {
         // just before the output, we replay our best move for the divination
@@ -44,7 +59,7 @@ public class Player {
         new Simulation().simulate(bestMove, true);
         divination.updatePrediction(state);
         
-        System.out.println(bestMove.toPlayerOutput());
+        System.out.println(bestMove.toPlayerOutput()+" "+depth+" in "+(endTime-GameState.startTime));
       } else {
         System.out.println("ACCEPT-DEFEAT GOOD FIGHT, WELL DONE");
       }
@@ -58,7 +73,7 @@ public class Player {
     }
   }
 
-  private static Move think(Simulation sim) {
+  public static Move think(Simulation sim) {
     Move bestMove = new Move(null);
     double bestScore = Double.NEGATIVE_INFINITY;
     
@@ -66,19 +81,19 @@ public class Player {
       Agent agent = state.agents[i];
       Move move = new Move(agent);
 
-      for (Dir dir1 : Dir.values()) {
-        for (Dir dir2 : Dir.values()) {
+      for (Dir dir1 : Dir.getValues()) {
+        for (Dir dir2 : Dir.getValues()) {
           move.dir1 = dir1;
           move.dir2 = dir2;
           sim.simulate(move, true);
           if (move.isValid()) {
             double score = AgentEvaluator.score(state);
-//              System.err.println(""+move.toPlayerOutput()+" = "+score);
+//            System.err.println(""+move.toPlayerOutput()+" = "+score);
             if (score > bestScore) {
               bestScore = score;
               move.copyTo(bestMove);
             }
-            state.restore();
+            sim.undo(move);
           }
         }
       }

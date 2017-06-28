@@ -1,24 +1,37 @@
 == Redo (ww2)
 
+= 20170628 (gold)
+
+
+* 00h03 - ?? : rejoue du code hier 22h00
+-- recherche de la regression (up)
+
+* 23h38 - 50 : (passage en gold) + utilisation du minimax en depth = 1 bloquée  (à priori meme resultat que old.think)
+* ----- Bcp (trop) de changements ici
+
+= 20170628 (silver)
+* 13h31 - 40 : Correction d'un bug sur la divination
+* 11h30 - 32 : suite passe de perf (p-e une modification impactante sur le calcul des possibleActions
+
 = 20170627 (silver)
-* 00h27 - ?? : divination activée
-* 23h51 - 45 : derniere version de Divination (pas d'autres changement normalemnt, divination pas appliquée)
-* 22h00 - 40 : on reste à 20, mais on repasse sur l'evaluation des cases atteignable en situation
+* 00h27 - 42 : divination activï¿½e
+* 23h51 - 45 : derniere version de Divination (pas d'autres changement normalemnt, divination pas appliquï¿½e)
+* 22h00 - 40 : on reste ï¿½ 20, mais on repasse sur l'evaluation des cases atteignable en situation
 * 21h32 - 51 : on repasse a 20
 * 21h17 - 63 : relance avec 10 pour voir la variance
-* 21h01 - 38 : tentative à 10 ?
-* 20h28 - 33 : tentative à 20 !
-* 20h16 - 45 : passage du point de marquer à 200
-* 19h47 - 52 : passage du point de marquer à +50
-* 18h23 - 45 : passage du point de marquer à +100 au lieu de 1000
-* 18h07 - 80 : on repasse le coeff à  1.0 ... (pas trop de différence avec 17h30 ou on comptait uniquement les accessibles)
-* 17h59 - 218 : verifier qu'on peut build avant de checker que les cases (à l'arrache)
+* 21h01 - 38 : tentative ï¿½ 10 ?
+* 20h28 - 33 : tentative ï¿½ 20 !
+* 20h16 - 45 : passage du point de marquer ï¿½ 200
+* 19h47 - 52 : passage du point de marquer ï¿½ +50
+* 18h23 - 45 : passage du point de marquer ï¿½ +100 au lieu de 1000
+* 18h07 - 80 : on repasse le coeff ï¿½  1.0 ... (pas trop de diffï¿½rence avec 17h30 ou on comptait uniquement les accessibles)
+* 17h59 - 218 : verifier qu'on peut build avant de checker que les cases (ï¿½ l'arrache)
 * 17h45 - 151 : on check les case mais plus leur hauteur * 5000 ...
 * 17h30 - 84  : ajout nombre de case accessible (coef 1)
 * 16h54 - 108 : apres nouvelle relance ....
 * 16h44 - 150 : relance code de 16h18 pour confirmer :(
 * 16h20 - 136 : avec code du 26/07 -> 136 !
-* 16h18 - 106 / 25.21 : ajout de la hauteur des cotés
+* 16h18 - 106 / 25.21 : ajout de la hauteur des cotï¿½s
 * 16h02 - 137  : Augmenter le poids de la hauteur agent et diminuer le nb d'actions possibles
-* 2eme push : 272 avec le score à 1000. Gros probleme detecté, on ne 'monte' pas des murs
+* 2eme push : 272 avec le score ï¿½ 1000. Gros probleme detectï¿½, on ne 'monte' pas des murs
 * 1er push : 294

@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import ww.sim.Move;
 import ww.sim.Simulation;
 
 public class AgentEvaluatorTest {
@@ -36,7 +37,6 @@ public class AgentEvaluatorTest {
     TU.setAgent(state, 1,4,2);
     TU.setAgent(state, 2,-1,-1);
     TU.setAgent(state, 3,4,1);
-    state.backup();
 
     AgentEvaluator ae = new AgentEvaluator(state, state.agents[1]);
     
@@ -59,18 +59,17 @@ public class AgentEvaluatorTest {
     TU.setAgent(state, 1,1,3);
     TU.setAgent(state, 2,-1,-1);
     TU.setAgent(state, 3,0,3);
-    state.backup();
-    
     
     
     Agent agent = state.agents[1];
-    simulation.simulate(TU.getMove(agent, Dir.N, Dir.S), true);
+    Move move = TU.getMove(agent, Dir.N, Dir.S);
+    simulation.simulate(move, true);
     double tscore1 = AgentEvaluator.score(state);
 
     AgentEvaluator ae1 = new AgentEvaluator(state, agent);
     double score1 = ae1.score(state, agent);
 
-    state.restore();
+    simulation.undo(move);
     simulation.simulate(TU.getMove(agent, Dir.N, Dir.N), true);
     double tscore2 = AgentEvaluator.score(state);
 
@@ -96,15 +95,15 @@ public class AgentEvaluatorTest {
     TU.setAgent(state, 1,1,1);
     TU.setAgent(state, 2,-1,-1);
     TU.setAgent(state, 3,-1,-1);
-    state.backup();
     
     Agent agent = state.agents[0];
-    simulation.simulate(TU.getMove(agent, Dir.NE, Dir.SW), true);
+    Move move = TU.getMove(agent, Dir.NE, Dir.SW);
+    simulation.simulate(move, true);
     double tscore1 = AgentEvaluator.score(state);
     AgentEvaluator ae1 = new AgentEvaluator(state, agent);
     double score1 = ae1.score(state, agent);
 
-    state.restore();
+    simulation.undo(move);
     simulation.simulate(TU.getMove(agent, Dir.N, Dir.N), true);
     double tscore2 = AgentEvaluator.score(state);
 
@@ -114,4 +113,94 @@ public class AgentEvaluatorTest {
     assertThat(score2 > score1 , is(true));
   }
 
+  @Test
+  public void dontBlockTheTwo() {
+    state.size = 5;
+    state.readInit(new Scanner("" + state.size + " 2"));
+    TU.setHeights(state, 
+      "22312",
+      "33344",
+      "12444",
+      "04443",
+      "03233");
+    TU.setAgent(state, 0,4,3);
+    TU.setAgent(state, 1,3,4);
+    TU.setAgent(state, 2,-1,-1);
+    TU.setAgent(state, 3,-1,-1);
+    
+    Agent agent = state.agents[1];
+    Move move = TU.getMove(agent, Dir.W, Dir.W);
+    simulation.simulate(move, true); // W W block the my agents
+    double tscore1 = AgentEvaluator.score(state);
+    AgentEvaluator ae1 = new AgentEvaluator(state, agent);
+    double score1 = ae1.score(state, agent);
+
+    simulation.undo(move);
+    simulation.simulate(TU.getMove(agent, Dir.W, Dir.E), true); // W E should be better because it only blocks p0
+    double tscore2 = AgentEvaluator.score(state);
+
+    AgentEvaluator ae2 = new AgentEvaluator(state, agent);
+    double score2 = ae1.score(state, agent);
+
+    assertThat(score2 > score1 , is(true));
+  }
+  
+  @Test
+  public void bestActionIsBlockingTheOthers() {
+    state.size = 5;
+    state.readInit(new Scanner("" + state.size + " 2"));
+    TU.setHeights(state, 
+      "11212",
+      "32141",
+      "01420",
+      "04444",
+      "03322");
+    TU.setAgent(state, 0,0,3);
+    TU.setAgent(state, 1,4,0);
+    TU.setAgent(state, 2,3,4);
+    TU.setAgent(state, 3,2,4);
+    
+    Agent agent = state.agents[0];
+    Move move = TU.getMove(agent, Dir.S, Dir.N);
+    simulation.simulate(move, true); //<<-random action
+    double tscore1 = AgentEvaluator.score(state);
+
+    simulation.undo(move);
+    simulation.simulate(TU.getMove(agent, Dir.S, Dir.E), true); // should block both opponents in a little space
+    double tscore2 = AgentEvaluator.score(state);
+
+    assertThat(tscore2 > tscore1 , is(true));
+  }
+  
+  @Test
+  @Ignore // TODO find a good way to solve this
+  public void dontChooseTheBlockingPath() {
+    state.size = 7;
+    state.readInit(new Scanner("" + state.size + " 2"));
+    TU.setHeights(state, 
+      "...2...",
+      "..033..",
+      ".30443.",
+      "0034333",
+      ".33443.",
+      "..344..",
+      "...3...");
+    TU.setAgent(state, 0,5,3);
+    TU.setAgent(state, 1,4,3);
+    TU.setAgent(state, 2,-1,-1);
+    TU.setAgent(state, 3,-1,-1);
+    
+    //AgentEvaluator.debug = true;
+    
+    Agent agent = state.agents[1];
+    Move move = TU.getMove(agent, Dir.NE, Dir.NW);
+    simulation.simulate(move, true); //<<-random action
+    double tscore1 = AgentEvaluator.score(state);
+
+    simulation.undo(move);
+    simulation.simulate(TU.getMove(agent, Dir.NE, Dir.SE), true); // should block both opponents in a little space
+    double tscore2 = AgentEvaluator.score(state);
+
+    assertThat(tscore2 > tscore1 , is(true));
+  }
 }

@@ -17,7 +17,7 @@ public class AccessibleCellsCalculator {
     return acc.count();
   }
 
-  public static double countWithoutLevel(GameState state, Agent agent) {
+  public static int countWithoutLevel(GameState state, Agent agent) {
     AccessibleCellsCalculator acc = new AccessibleCellsCalculator(state, agent);
     acc.checkLevel  = false;
     return acc.count();
@@ -25,19 +25,21 @@ public class AccessibleCellsCalculator {
 
   public int count() {
     visited = 0L;
-    return countFromCell(agent.cell.height, agent.cell)-1; // -1 to remove the one we are on
+    return countFromCell(agent.cell)-1; // -1 to remove the one we are on
   }
   
-  public int countFromCell(int fromHeight, Cell cell) {
+  public int countFromCell(Cell cell) {
+    visited|=cell.position.mask;
     if (!cell.isValid()) return 0;
-    if ((cell.position.mask & visited) != 0) return 0;
-    if (checkLevel && cell.height > fromHeight+1) return 0;
     if (cell.agent != null && cell.agent != agent) return 0;
     
     int count = 1;
-    visited|=cell.position.mask;
-    for (Dir dir : Dir.values()) {
-      count += countFromCell(cell.height, cell.get(dir));
+    // optimize dir walking
+    for (int i=0;i<Dir.LENGTH;i++) {
+      Cell nextCell = cell.neighbors[i];
+      if ((nextCell.position.mask & visited) == 0 && (!checkLevel || nextCell.height <= cell.height+1)) {
+        count += countFromCell(nextCell);
+      }
     }
     return count;
   }

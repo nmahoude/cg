@@ -41,7 +41,6 @@ public class SimulationTest {
       TU.setAgent(state, 1,3,2);
       TU.setAgent(state, 2,4,2);
       TU.setAgent(state, 3,-1,-1);
-    state.backup();
     
     int t0 = simulation.getPossibleActionsCount(state, state.agents[0]);
     int t1 = simulation.getPossibleActionsCount(state, state.agents[1]);
@@ -64,10 +63,180 @@ public class SimulationTest {
     TU.setAgent(state, 1,3,4);
     TU.setAgent(state, 2,2,3);
     TU.setAgent(state, 3,-1,-1);
-    state.backup();
   
     simulation.simulate(TU.getMove(state.agents[0], Dir.E, Dir.E), true);
     
     assertThat(state.agents[0].cell, is(not(nullValue())));
+  }
+  
+  @Test
+  public void canDoOnePush() {
+    state.size = 5;
+    state.readInit(new Scanner("" + state.size + " 2"));
+    TU.setHeights(state, 
+      "11040",
+      "14443",
+      "34443",
+      "34443",
+      "44113");
+    TU.setAgent(state, 0,0,1);
+    TU.setAgent(state, 1,0,0);
+    TU.setAgent(state, 2,1,0);
+    TU.setAgent(state, 3,-1,-1);
+  
+    Move move = TU.getMove(state.agents[1], Dir.E, Dir.E);
+    simulation.simulate(move, true);
+    
+    assertThat(move.isValid(), is(true));
+  }
+  
+  
+  @Test
+  public void undoMove_emptyCells() {
+    state.size = 5;
+    state.readInit(new Scanner(""+state.size+" 2"));
+    TU.setHeights(state, 
+        "00000",
+        "00000",
+        "00000",
+        "00000",
+        "00000");
+    TU.setAgent(state, 0,0,0);
+    TU.setAgent(state, 1,0,4);
+    TU.setAgent(state, 2,4,0);
+    TU.setAgent(state, 3,4,4);
+  
+    Move move = TU.getMove(state.agents[0], Dir.E, Dir.E);
+    simulation.simulate(move, true);
+    simulation.undo(move);
+    
+    assertThat(state.grid.get(0, 0).agent, is(state.agents[0]));
+    assertThat(state.grid.get(1, 0).agent, is(nullValue()));
+    assertThat(state.grid.get(2, 0).height, is(0));
+    assertThat(state.agents[0].cell, is (state.grid.get(0, 0)));
+  }
+
+  @Test
+  public void undoMove_moveToHeight_3_checkScore() {
+    state.size = 5;
+    state.readInit(new Scanner(""+state.size+" 2"));
+    TU.setHeights(state, 
+        "33300",
+        "00000",
+        "00000",
+        "00000",
+        "00000");
+    TU.setAgent(state, 0,0,0);
+    TU.setAgent(state, 1,0,4);
+    TU.setAgent(state, 2,4,0);
+    TU.setAgent(state, 3,4,4);
+  
+    Move move = TU.getMove(state.agents[0], Dir.E, Dir.E);
+    simulation.simulate(move, true);
+    assertThat(state.agents[0].score, is(1));
+    
+    simulation.undo(move);
+    
+    assertThat(state.agents[0].score, is(0));
+  }
+  
+  @Test
+  public void undoMove_moveToHeight_4() {
+    state.size = 5;
+    state.readInit(new Scanner(""+state.size+" 2"));
+    TU.setHeights(state, 
+        "33300",
+        "00000",
+        "00000",
+        "00000",
+        "00000");
+    TU.setAgent(state, 0,0,0);
+    TU.setAgent(state, 1,0,4);
+    TU.setAgent(state, 2,4,0);
+    TU.setAgent(state, 3,4,4);
+  
+    Move move = TU.getMove(state.agents[0], Dir.E, Dir.E);
+    simulation.simulate(move, true);
+    simulation.undo(move);
+    
+    assertThat(state.grid.get(0, 0).agent, is(state.agents[0]));
+    assertThat(state.grid.get(1, 0).agent, is(nullValue()));
+    assertThat(state.grid.get(2, 0).height, is(3));
+    assertThat(state.agents[0].cell, is (state.grid.get(0, 0)));
+  }
+
+  @Test
+  public void undoMove_pushToLower() {
+    state.size = 5;
+    state.readInit(new Scanner(""+state.size+" 2"));
+    TU.setHeights(state, 
+        "33000",
+        "00000",
+        "00000",
+        "00000",
+        "00000");
+    TU.setAgent(state, 0,0,0);
+    TU.setAgent(state, 1,0,4);
+    TU.setAgent(state, 2,1,0);
+    TU.setAgent(state, 3,4,4);
+  
+    Move move = TU.getMove(state.agents[0], Dir.E, Dir.E);
+    simulation.simulate(move, true);
+    simulation.undo(move);
+    
+    assertThat(state.grid.get(0, 0).agent, is(state.agents[0]));
+    assertThat(state.grid.get(1, 0).agent, is(state.agents[2]));
+    
+    assertThat(state.grid.get(0, 0).agent, is(state.agents[0]));
+    assertThat(state.grid.get(1, 0).agent, is(state.agents[2]));
+    assertThat(state.grid.get(1, 0).height, is(3));
+    assertThat(state.agents[0].cell, is (state.grid.get(0, 0)));
+    assertThat(state.agents[2].cell, is (state.grid.get(1, 0)));
+  }
+  
+  @Test
+  public void undoMove_thatThrowException() {
+    state.size = 5;
+    state.readInit(new Scanner("" + state.size + " 2"));
+    TU.setHeights(state, 
+      "00000",
+      "00000",
+      "00000",
+      "00000",
+      "00000");
+    TU.setAgent(state, 0,1,1);
+    TU.setAgent(state, 1,4,0);
+    TU.setAgent(state, 2,1,0);
+    TU.setAgent(state, 3,2,1);
+
+    Move move = TU.getMove(state.agents[0], Dir.E, Dir.E);
+    simulation.simulate(move, true);
+    simulation.undo(move);
+  }
+  
+  @Test
+  public void simulateOpponent() {
+    state.size = 5;
+    state.readInit(new Scanner("" + state.size + " 2"));
+    TU.setHeights(state, 
+      "00000",
+      "00220",
+      "00000",
+      "00000",
+      "00000");
+    TU.setAgent(state, 0,1,1);
+    TU.setAgent(state, 1,4,1);
+    TU.setAgent(state, 2,1,0);
+    TU.setAgent(state, 3,3,1);
+
+    Move move = TU.getMove(state.agents[1], Dir.W, Dir.S);
+    simulation.simulate(move, true);
+    simulation.undo(move);
+    state.toTDD();
+    
+    move = TU.getMove(state.agents[1], Dir.W, Dir.SW);
+    simulation.simulate(move, true);
+    simulation.undo(move);
+    state.toTDD();
   }
 }
