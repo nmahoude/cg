@@ -16,7 +16,7 @@ public class Player {
     
     state.readInit(in);
     divination = new Divination(state);
-    divination.setDebug(true);
+    //divination.setDebug(true);
     
     int round = 0;
     // game loop
@@ -24,39 +24,41 @@ public class Player {
       round++;
       
       state.readRound(in);
-      state.toTDD();
+      //state.toTDD();
 
 //      debugReachableCells();
 //      debugPotentialActionsCount();
       
       if (round > 1) {
         divination.guessFrom(state);
-        divination.debug();
+        //divination.debug();
         divination.apply(state);
       }
 
-      // Move bestMove = think(sim);
-      int deepening = 1;
-      Move bestMove = new Think(state).think(deepening);
-
+      Move bestMove = think(sim);
       // deepening
-//      Move move = bestMove;
-//      while (move != null) {
+      int deepening = 0;
+//      Move bestMove = null;
+//      Move move = null;
+//      do {
 //        deepening+=2;
 //        move = new Think(state).think(deepening);
 //        if (move != null) {
 //          bestMove = move;
+//          System.err.println("AB @ "+deepening+" found bestMove :"+bestMove);
 //        }
-//      }
+//      } while (move != null && deepening < 8);
       
       long endTime = System.currentTimeMillis();
       int depth = 1 + deepening / 2;
       System.err.println("Reflexion time : "+(endTime-state.startTime)+" depth reached : "+ depth);
       
-      if (bestMove.agent != null) {
+      if (bestMove !=null && bestMove.agent != null) {
         // just before the output, we replay our best move for the divination
         divination.updateInitialState(state);
-        new Simulation().simulate(bestMove, true);
+        sim.simulate(bestMove, true);
+        // System.err.println("State after last simulation for prediction for move "+bestMove);
+        //state.toTDD();
         divination.updatePrediction(state);
         
         System.out.println(bestMove.toPlayerOutput()+" "+depth+" in "+(endTime-GameState.startTime));

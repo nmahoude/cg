@@ -61,6 +61,7 @@ public class Agent {
     if (cell.agent == this) // TODO this if only for debug purpose ?
       cell.agent = null;
     this.cell = target;
+    this.position = target.position;
     target.agent = this;
   }
 

@@ -9,6 +9,7 @@ public class Divination {
   GameState initial;
   GameState expected;
   public Point guessedPosition[] = new Point[2];
+  private Point backups[] = new Point[2];
   public boolean guessedPositionLocked[] = new boolean[2];
   private int stillToFind;
   private boolean debugMode;
@@ -36,9 +37,17 @@ public class Divination {
   
   public void guessFrom(GameState state) {
     stillToFind = 2;
-    if (debugMode) System.err.println("Divination : ");
+    if (debugMode) {
+      System.err.println("Divination : ");
+      System.err.println("known agents positions");
+      System.err.println("   0 "+guessedPosition[0]);
+      System.err.println("   1 "+guessedPosition[1]);
+    }
 
-    getCorrectInformations(state);
+    backups[0] = guessedPosition[0];
+    backups[1] = guessedPosition[1];
+    
+    getCorrectInformationsFromCurrentStateOrLockedAgents(state);
     if (stillToFind == 0) {
       // no guess this time, TODO still need to prepare something ?
       return;
@@ -84,7 +93,19 @@ public class Divination {
       }
     }
     willBeThereMask &= ~constructionCell.position.mask;
-    wasThereMask &= ~constructionCell.position.mask;
+    
+    // check if we know an agent that was not in the zone !
+    for (int i=0;i<2;i++) {
+      if (guessedPosition[i] != Point.unknown) continue; // already guessed
+      if (backups[i] == Point.unknown) continue; // not known before
+      if ((backups[i].mask & wasThereMask) == 0) {
+        if (debugMode) {
+          System.err.println("Agent "+(i+2) +" is not in the construction 'wasThere' zone, so he didn't move");
+        }
+        guessedPosition[i] = backups[i];
+        stillToFind--;
+      }
+    }
     
     long potential = gridMask & willBeThereMask;
     if (debugMode) {
@@ -94,14 +115,20 @@ public class Divination {
     if (Long.bitCount(potential) == 1 && stillToFind >= 1) {
       int y = (int)(Math.log(potential) / Math.log(256));
       int x = (int)(Math.log(potential) / Math.log(2)) - 8*y;
-      if (guessedPosition[0] == Point.unknown) {
-        guessedPosition[0] = Point.get(x, y);
-      } else {
-        guessedPosition[1] = Point.get(x, y);
+      // check that we don't already know the culprit
+      if (guessedPosition[0] != Point.get(x, y) && guessedPosition[1] != Point.get(x, y)) {
+        if (guessedPosition[0] == Point.unknown) {
+          guessedPosition[0] = Point.get(x, y);
+          if (debugMode) System.err.println("guessFromConstruction:: potentialCtor - Found 0 @ "+guessedPosition[0]);
+          stillToFind--;
+        } else {
+          guessedPosition[1] = Point.get(x, y);
+          if (debugMode) System.err.println("guessFromConstruction:: potentialCtor -Found 1 @ "+guessedPosition[1]);
+          stillToFind--;
+        }
       }
-      stillToFind--;
-      return; 
     }
+    
   }
 
   Cell locateConstruction(GameState state) {
@@ -123,8 +150,10 @@ public class Divination {
       int x = (int)(Math.log(potential) / Math.log(2)) - 8*y;
       if (guessedPosition[0] == Point.unknown) {
         guessedPosition[0] = Point.get(x, y);
+        if (debugMode) System.err.println("potential only found 0 @ "+guessedPosition[0]);
       } else {
         guessedPosition[1] = Point.get(x, y);
+        if (debugMode) System.err.println("potential only found 1 @ "+guessedPosition[1]);
       }
       stillToFind = 0;
       return; 
@@ -164,14 +193,21 @@ public class Divination {
     }
   }
   
-  private void getCorrectInformations(GameState state) {
+  private void getCorrectInformationsFromCurrentStateOrLockedAgents(GameState state) {
     for (int i=0;i<2;i++) {
       if (state.agents[2+i].position != Point.unknown) {
+        if (guessedPosition[1-i] == state.agents[2+i].position) {
+          // we had inversed the agents, correct error now
+          guessedPosition[1-i] = guessedPosition[i];
+          guessedPositionLocked[1-i] = guessedPositionLocked[i];
+        }
         guessedPosition[i] = state.agents[2+i].position; // save the point but we know it
         guessedPositionLocked[i] = isLocked(state.agents[2+i]);
+        if (debugMode) System.err.println("CG Info : set "+i+" @ "+guessedPosition[i]);
         stillToFind--;
       } else {
         if (guessedPositionLocked[i] == true) {
+          if (debugMode) System.err.println("CG Info & locked "+i+" @ "+guessedPosition[i]);
           stillToFind--;
         } else {
           guessedPosition[i] = Point.unknown;
@@ -251,6 +287,10 @@ public class Divination {
   /* update after our move */
   public void updatePrediction(GameState state) {
     state.copyTo(expected);
+    for (int i=0;i<2;i++) {
+      guessedPosition[i] = state.agents[2+i].position;
+      System.err.println("Setting guessedPos for "+i+" at "+guessedPosition[i]);
+    }
   }
 
   
