@@ -2,6 +2,7 @@ package ww;
 
 import java.util.Scanner;
 
+import ww.paths.AccessibleCellsCalculator;
 import ww.sim.Move;
 import ww.sim.Simulation;
 import ww.think.Think;

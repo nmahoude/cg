@@ -10,7 +10,7 @@ public class Cell {
       InvalidCell.neighbors[dir.index] = InvalidCell;
     }
   }
-  Cell neighbors[] = new Cell[8];
+  public Cell neighbors[] = new Cell[8];
   
 
   public int height;

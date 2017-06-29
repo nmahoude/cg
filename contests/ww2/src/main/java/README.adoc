@@ -1,17 +1,27 @@
 == Redo (ww2)
 
 =TODO  : 
-* Tester le minimax à plus de profondeur
+* supprimer l'ancien cache des agent & cells
+* Supprimer le AccessibleCellsCalculator (remplacé par voronoi)
+* Gerer le cas du pushed (by opp)
 * Gerer le cas du push pas reussi
-* changer le nb de cases accessibles par un 'voronoi like' (zones d'influence)
 * ordoner les coups apres la depth 1 ! (uniquement pour la depth 1 !)
+* Eloigner les agents pour couvrir plus de terrain (detection des opp agents)
+* Si on voit les 2 opp, ne pas limiter l'A/B
+* Ajouter des patterns pour les bons coups (principalement les blocage)
 * Tester le cas où, si on ne connait pas l'advesaire, on s'arrete à depth = 1 ?
 
 = DONE
+	* changer le nb de cases accessibles par un 'voronoi like' (zones d'influence)
+	* Tester le minimax à plus de profondeur >= ~ +10 places
 	* prendre les coups valides donnés par CG
 
 = 20170629 (gold)
-
+* 18h02 - : Reactivation divinition pour confirmation
+* 17h52 - 80 : Desactiver la divination pour vérifier que ca sert, si oui (classement <) -> coder les push dans la divination
+* 17h33 - 25 : voronoi à 4, poids 10_000
+* 16h37 - 43 : relancer avec le bug pour etre sur -> si ~ ou > : il faut faire le voronoi sur les 4 agents en meme temps !
+* 16h20 - 30 : ajout du voronoi * 1000 avec la correction du bug, 0 - i, mais c'est p-e pas plus mal ?
 * 13h36 - 30 : minimax non bridé + correction bug dans le minimax
 * 13h07 - 40 : utilisation du cache CG
 * 12h07 - 39 : relance code 9h49
