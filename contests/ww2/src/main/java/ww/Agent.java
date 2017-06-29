@@ -7,10 +7,6 @@ public class Agent {
   public Cell cell;
   public int score;
   
-  public Point _position;
-  public Cell _cell;
-  public int _score;
-
   public Agent(int id) {
     this.id = id;
   }
@@ -19,29 +15,6 @@ public class Agent {
     agent.position = position;
     agent.cell = otherState.grid.get(position.x, position.y);
     agent.score = score;
-  }
-
-  public void backup() {
-    _position = position;
-    _cell = cell;
-    _score = score;
-  }
-
-  public void restore() {
-    position = _position;
-    cell = _cell;
-    score = _score;
-  }
-
-  public boolean isModified() {
-    boolean b = position == _position && cell == _cell && score == _score;
-    if (!b) {
-      System.err.println("Difference in agent : "+position);
-      System.err.println(""+position+" vs "+_position);
-      System.err.println(""+cell+" vs "+_cell);
-      System.err.println(""+score+" vs "+_score);
-    }
-    return !b;
   }
 
   public boolean inFogOfWar() {

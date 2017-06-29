@@ -1,7 +1,5 @@
 package ww;
 
-import com.sun.xml.internal.org.jvnet.fastinfoset.Vocabulary;
-
 import ww.paths.AccessibleCellsCalculator;
 import ww.paths.Voronoi;
 import ww.sim.Simulation;
@@ -29,7 +27,7 @@ public class AgentEvaluator {
       "ACTIONS",
       "CLIFF",
       "ACCESSIBLE CELLS",
-      "POTENTIAL CELLS"
+      "POTENTIAL CELLS",
   };
   
   AgentEvaluator(GameState state, Agent agent) {
@@ -45,15 +43,10 @@ public class AgentEvaluator {
     score -= AgentEvaluator.score(state, state.agents[3]);
     
     Voronoi v = new Voronoi();
-    int voronoi = 0;
-//    for (int i=0;i<2;i++){
-//      for (int j=2;j<4;j++){
-//        int[] cells = v.voronoi2(state, state.agents[i], state.agents[j]);
-//        voronoi += (cells[0] - cells[1]);
-//      }
-//    }
     int cells[] = v.voronoi4(state);
-    score += 10000.0 * (cells[0]+cells[1]-cells[2]-cells[3]);
+    score += 100.0 * (cells[0]+cells[1]-cells[2]-cells[3]);
+    
+    //score += 5.0 * state.agents[0].position.manhattan(state.agents[1].position);
     return score;    
   }
 
@@ -68,7 +61,7 @@ public class AgentEvaluator {
     ae.features[FEATURE_NEIGHBOURS] = 1.0 * ae.neighbouringElevation();
     ae.features[FEATURE_ACTIONS] =1.0 * ae.countActions();
     ae.features[FEATURE_CLIFF] = 1.0 * ae.dangerousCliffs();
-    ae.features[FEATURE_ACCESSIBLE_CELLS] = 1.0 * ae.accessibleCells();
+    ae.features[FEATURE_ACCESSIBLE_CELLS] = 0.0; //1.0 * ae.accessibleCells();
     ae.features[FEATURE_POTENTIAL_CELLS] = 0.0 ;//* ae.potentialCells();
     
     if (debug) {

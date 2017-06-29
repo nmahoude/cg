@@ -1,4 +1,4 @@
-package ww;
+package ww.prediction;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -7,12 +7,18 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
+import ww.Dir;
+import ww.GameState;
+import ww.Point;
+import ww.TU;
+import ww.prediction.Divination;
 import ww.sim.Move;
 import ww.sim.Simulation;
 
 public class DivinationTest {
   Divination divination;
   private GameState currentState;
+  private Simulation simulation = new Simulation();
   
   @Before
   public void setup() {
@@ -118,7 +124,7 @@ public class DivinationTest {
     TU.setAgent(currentState, 3,-1,-1);
     
     initDivination();
-    divination.updatePrediction(previous);
+    divination.updateSimulated(previous, new Move(previous.agents[0]));
     divination.guessFrom(currentState);
     
     assertThat(divination.guessedPosition[0], is (Point.get(0,5)));
@@ -244,7 +250,7 @@ public class DivinationTest {
     
     initDivination();
     
-    divination.updatePrediction(previous);
+    divination.updateSimulated(previous, new Move(previous.agents[0]));
     divination.guessFrom(currentState);
     
     assertThat(divination.guessedPosition[0], is (Point.get(0,5)));
@@ -282,7 +288,7 @@ public class DivinationTest {
     
     initDivination();
     
-    divination.updatePrediction(previous);
+    divination.updateSimulated(previous,new Move(previous.agents[0]));
     divination.guessFrom(currentState);
     
     assertThat(divination.guessedPosition[0], is (Point.get(1,0)));
@@ -320,7 +326,7 @@ public class DivinationTest {
     
     initDivination();
     
-    divination.updatePrediction(previous);
+    divination.updateSimulated(previous, new Move(previous.agents[0]));
     divination.guessFrom(currentState);
     
     assertThat(divination.guessedPosition[0], is (Point.get(5, 5)));
@@ -355,7 +361,7 @@ public class DivinationTest {
     TU.setAgent(currentState, 3,-1,-1);
     
     initDivination();
-    divination.updatePrediction(previous);
+    divination.updateSimulated(previous, new Move(previous.agents[0]));
     divination.guessFrom(currentState);
     
     assertThat(divination.guessedPosition[0], is (Point.unknown));
@@ -386,14 +392,14 @@ public class DivinationTest {
         "000000",
         "000001"
       );
-      TU.setAgent(currentState, 0,0,1);
-      TU.setAgent(currentState, 1,0,0);
+      TU.setAgent(currentState, 0,0,0);
+      TU.setAgent(currentState, 1,0,1);
       TU.setAgent(currentState, 2,-1,-1);
       TU.setAgent(currentState, 3,-1,-1);
     
     initDivination();
     
-    divination.updatePrediction(previous);
+    divination.updateSimulated(previous,new Move(previous.agents[0]));
     divination.guessFrom(currentState);
     
     assertThat(divination.guessedPosition[0], is (not(Point.get(5, 5))));
@@ -441,5 +447,165 @@ public class DivinationTest {
     assertThat(currentState.agents[2].position, is (Point.get(2, 4)));
   }
   
+  @Test
+  public void beenPushed_onlyOneMoveCanDoTheAction() {
+    GameState previous = new GameState();
+    TU.setHeights(previous, 6, 
+        "000000",
+        "000000",
+        "000000",
+        "000000",
+        "000000",
+        "000000");
+    TU.setAgent(previous, 0,1,5);
+    TU.setAgent(previous, 1,4,1);
+    TU.setAgent(previous, 2,5,1);
+    TU.setAgent(previous, 3,3,1); // I know everyone
+      
+    TU.setHeights(currentState, 6,
+        "000000",
+        "000010",
+        "000000",
+        "000000",
+        "000000",
+        "000000");
+    TU.setAgent(currentState, 0,1,5);
+    TU.setAgent(currentState, 1,3,0);
+    TU.setAgent(currentState, 2,-1,-1);
+    TU.setAgent(currentState, 3,3,1);
+    
+    initDivination();
+    
+    divination.updateSimulated(previous, new Move(previous.agents[0]) );
+    divination.guessFrom(currentState);
+    
+    assertThat(divination.guessedPosition[0], is (Point.get(5 ,1)));
+    assertThat(divination.guessedPosition[1], is (Point.get(3, 1)));
+  }
   
+  @Test
+  public void beenPushed_onlyOneMoveCanDoThePush_EvenIfWeDontKnowThePositions() {
+    GameState previous = new GameState();
+    TU.setHeights(previous, 6, 
+        "000000",
+        "444444",
+        "000000",
+        "444444",
+        "000000",
+        "000000");
+    TU.setAgent(previous, 0,1,5);
+    TU.setAgent(previous, 1,1,2);
+    TU.setAgent(previous, 2,-1,-1);
+    TU.setAgent(previous, 3,-1,-1); // I know everyone
+      
+    TU.setHeights(currentState, 6,
+        "000000",
+        "444444",
+        "010000",
+        "444444",
+        "000000",
+        "000000");
+    TU.setAgent(currentState, 0,1,5);
+    TU.setAgent(currentState, 1,0,2);
+    TU.setAgent(currentState, 2,-1,-1);
+    TU.setAgent(currentState, 3,-1,-1);
+    
+    initDivination();
+    
+    divination.updateSimulated(previous, new Move(previous.agents[0]) );
+    divination.guessFrom(currentState);
+    
+    assertThat(divination.guessedPosition[0], is (Point.get(2, 2)));
+    assertThat(divination.guessedPosition[1], is (Point.unknown));
+  }
+  
+  @Test
+  public void doPush_detectInvalidatedMove_stillSeeIt() {
+    GameState previous = new GameState();
+    TU.setHeights(previous, 6, 
+        "000000",
+        "000000",
+        "000000",
+        "000000",
+        "000000",
+        "000000");
+    TU.setAgents(previous, 
+        Point.get(1, 1),
+        Point.get(0, 5),
+        Point.get(2, 1), // I will push him, but failed
+        Point.unknown
+        );
+    
+    GameState simulatedState = TU.createFromGameState(previous); 
+    Move move = TU.getMove(simulatedState.agents[0], Dir.E, Dir.E);
+    simulation.simulate(move, true);
+    
+    TU.setHeights(currentState, 6,
+        "000000",
+        "000000",
+        "000000",
+        "000000",
+        "000010",
+        "000000");
+    TU.setAgents(currentState, 
+        Point.get(1, 1),
+        Point.get(0, 2),
+        Point.get(2, 1), // I still see him
+        Point.unknown
+        );
+
+    
+    initDivination();
+    
+    divination.updateSimulated(simulatedState, move );
+    divination.guessFrom(currentState);
+    
+    assertThat(divination.guessedPosition[0], is (Point.get(2, 1)));
+    assertThat(divination.guessedPosition[1], is (Point.unknown));
+  }
+  
+  @Test
+  public void doPush_detectInvalidatedMove_wontSeeItAfter() {
+    GameState previous = new GameState();
+    TU.setHeights(previous, 6, 
+        "000000",
+        "000000",
+        "000000",
+        "000000",
+        "000000",
+        "000000");
+    TU.setAgents(previous, 
+        Point.get(1, 1),
+        Point.get(0, 5),
+        Point.get(2, 1), // I will push him, but failed
+        Point.unknown
+        );
+    
+    GameState simulatedState = TU.createFromGameState(previous); 
+    Move move = TU.getMove(simulatedState.agents[0], Dir.E, Dir.E);
+    simulation.simulate(move, true);
+    
+    TU.setHeights(currentState, 6,
+        "000000",
+        "000000",
+        "000000",
+        "000000",
+        "000010",
+        "000000");
+    TU.setAgents(currentState, 
+        Point.get(1, 1),
+        Point.get(0, 5),
+        Point.unknown, // Don't see it anymore
+        Point.unknown
+        );
+
+    
+    initDivination();
+    
+    divination.updateSimulated(simulatedState, move );
+    divination.guessFrom(currentState);
+    
+    assertThat(divination.guessedPosition[0], is (Point.unknown)); // currentState is incompatible with a validatedPush
+    assertThat(divination.guessedPosition[1], is (Point.unknown));
+  }
 }

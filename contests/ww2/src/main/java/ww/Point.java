@@ -4,7 +4,7 @@ public class Point {
   public final int x, y;
   public final long mask;
   
-  static Point unknown = new Point(-1, -1);
+  public static Point unknown = new Point(-1, -1);
   
   private static Point points[] = new Point[64];
   static {
@@ -34,6 +34,10 @@ public class Point {
   public static final long toBitMask(int x, int y) {
     if (x == -1) return 0L;
     return 0b1L << (x + 8L * y);
+  }
+
+  public int manhattan(Point position) {
+    return Math.abs(x-position.x)+Math.abs(y-position.y);
   }
 
 }

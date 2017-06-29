@@ -16,9 +16,6 @@ public class Cell {
   public int height;
   public Agent agent;
   
-  int _height;
-  Agent _agent;
-
   public boolean isHole; // for debug information
   public Point position; // for debug information
   
@@ -33,27 +30,6 @@ public class Cell {
   public Cell get(Dir dir) {
     return neighbors[dir.index];
   }
-  
-  public void backup() {
-    _height = height;
-    _agent = agent;
-  }
-
-  public void restore() {
-    height = _height;
-    agent = _agent;
-  }
-
-  public boolean isModified() {
-    boolean b = (height == _height && agent == _agent);
-    if (!b) {
-      System.err.println("Difference in cell : "+position);
-      System.err.println(""+height+" vs "+_height);
-      System.err.println(""+agent+" vs "+_agent);
-    }
-    return !b;
-  }
-
   
   public boolean isValid() {
     return height != 4;
@@ -90,6 +66,16 @@ public class Cell {
     } else {
       cell.agent = otherState.agents[agent.id];
     }
+  }
+
+  /** return the direction from this to To */
+  public Dir dirTo(Cell to) {
+    for (Dir dir : Dir.getValues()) {
+      if (this.get(dir) == to) {
+        return dir;
+      }
+    }
+    return null; // should never happen if the cells are adjacent
   }
 
 }

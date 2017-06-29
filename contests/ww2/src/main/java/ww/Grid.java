@@ -3,7 +3,7 @@ package ww;
 public class Grid {
   private long gridMask;
   private Cell cells[][] ; // just to save them, don't use this
-  int size;
+  public int size;
   
   public Grid(int size) {
     this.size = size;
@@ -31,23 +31,10 @@ public class Grid {
     }
   }
   
-  public void backup() {
-    for (int x=0;x<size;x++) {
-      for (int y=0;y<size;y++) {
-        cells[x][y].backup();
-      }
-    }
+  public Cell get(Point p) {
+    return get(p.x, p.y);
   }
-  
-  // TODO use a cache to restore only modified cells 
-  public void restore() {
-    for (int x=0;x<size;x++) {
-      for (int y=0;y<size;y++) {
-        cells[x][y].restore();
-      }
-    }
-  }
-  
+
   public Cell get(int x, int y) {
     if (x== -1) return Cell.InvalidCell;
     return cells[x][y];

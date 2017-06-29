@@ -57,5 +57,29 @@ public class TU {
     state.readInit(new Scanner("" + GameState.size + " 2"));
     setHeights(state, rows);
   }
+
+  public static GameState createEmptyGameState(int size) {
+    GameState state = new GameState();
+    TU.setHeights(state, size, 
+        "000000",
+        "000000",
+        "000000",
+        "000000",
+        "000000",
+        "000000");
+    return state;
+  }
+
+  public static GameState createFromGameState(GameState previous) {
+    GameState state = createEmptyGameState(previous.size);
+    previous.copyTo(state);
+    return state;
+  }
+
+  public static void setAgents(GameState previous, Point... points) {
+    for (int i=0;i<4;i++) {
+      TU.setAgent(previous, i,points[i].x,points[i].y);
+    }
+  }
   
 }

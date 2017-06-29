@@ -3,6 +3,7 @@ package ww;
 import java.util.Scanner;
 
 import ww.paths.AccessibleCellsCalculator;
+import ww.prediction.Divination;
 import ww.sim.Move;
 import ww.sim.Simulation;
 import ww.think.Think;
@@ -25,14 +26,14 @@ public class Player {
       round++;
       
       state.readRound(in);
-      //state.toTDD();
+//      state.toTDD();
 
 //      debugReachableCells();
 //      debugPotentialActionsCount();
       
       if (round > 1) {
         divination.guessFrom(state);
-        //divination.debug();
+        divination.debug(state);
         divination.apply(state);
       }
 
@@ -47,14 +48,14 @@ public class Player {
         }
         if (move != null && move.agent != null) {
           move.copyTo(bestMove);
-          System.err.println("AB @ "+deepening+" found bestMove :"+bestMove);
+          // System.err.println("AB @ "+deepening+" found bestMove :"+bestMove);
         }
         deepening+=2;
       } while (move != null && deepening < 20);
       
       long endTime = System.currentTimeMillis();
       int depth = deepening / 2;
-      System.err.println("Reflexion time : "+(endTime-state.startTime)+" depth reached : "+ depth);
+      // System.err.println("Reflexion time : "+(endTime-state.startTime)+" depth reached : "+ depth);
       
       if (bestMove !=null && bestMove.agent != null) {
         // just before the output, we replay our best move for the divination
@@ -62,7 +63,7 @@ public class Player {
         sim.simulate(bestMove, true);
         // System.err.println("State after last simulation for prediction for move "+bestMove);
         //state.toTDD();
-        divination.updatePrediction(state);
+        divination.updateSimulated(state, bestMove);
         
         System.out.println(bestMove.toPlayerOutput()+" "+depth+" in "+(endTime-GameState.startTime));
       } else {

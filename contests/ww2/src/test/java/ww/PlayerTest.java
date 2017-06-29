@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
+import ww.prediction.Divination;
 import ww.sim.Move;
 import ww.sim.Simulation;
 import ww.think.Think;

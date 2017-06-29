@@ -1,22 +1,36 @@
 == Redo (ww2)
 
 =TODO  : 
-* supprimer l'ancien cache des agent & cells
-* Supprimer le AccessibleCellsCalculator (remplacé par voronoi)
+* Le score est bien calculé ? x20 ou x1000 ne change rien
+* ordoner les coups apres la depth 1 ! (uniquement pour la depth 1 !)
 * Gerer le cas du pushed (by opp)
 * Gerer le cas du push pas reussi
-* ordoner les coups apres la depth 1 ! (uniquement pour la depth 1 !)
-* Eloigner les agents pour couvrir plus de terrain (detection des opp agents)
 * Si on voit les 2 opp, ne pas limiter l'A/B
 * Ajouter des patterns pour les bons coups (principalement les blocage)
 * Tester le cas où, si on ne connait pas l'advesaire, on s'arrete à depth = 1 ?
 
 = DONE
+	* Eloigner les agents pour couvrir plus de terrain (detection des opp agents)
+	* Je marque vraiment pas assez de points (passer le coeff score à 1000 ne change rien)
+	* Supprimer le AccessibleCellsCalculator (remplacé par voronoi)
+	* supprimer l'ancien cache des agent & cells
 	* changer le nb de cases accessibles par un 'voronoi like' (zones d'influence)
 	* Tester le minimax à plus de profondeur >= ~ +10 places
 	* prendre les coups valides donnés par CG
 
+= 20170630 (gold)
+* 01h31 - 23 : repush du 22h22
+* 00h30 - 34 : suppression distance de manhattan
+* 00h12 - 49 : distance de manhattan avec coeff 5*
+
 = 20170629 (gold)
+* 23h21 - 31 : Ajout de la distance de manhattan entre les 2 agents * 50
+* 22h52 - 31 : Augmentation du coeff (20 -> 1000) scoring, pour marquer plus de point
+* 22h22 - 27 : ajout de la detection de push subie
+* 21h09 - 31 : rematch
+* 20h45 - 35 : suppression de Accessible
+* 19h46 - 32: relance voronoi à 100 + suppression backup/restore
+* 19h31 - 31 : relance code 17h33 pour confirmation
 * 18h02 - : Reactivation divinition pour confirmation
 * 17h52 - 80 : Desactiver la divination pour vérifier que ca sert, si oui (classement <) -> coder les push dans la divination
 * 17h33 - 25 : voronoi à 4, poids 10_000

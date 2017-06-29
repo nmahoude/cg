@@ -1,4 +1,12 @@
-package ww;
+package ww.prediction;
+
+import ww.Agent;
+import ww.Cell;
+import ww.Dir;
+import ww.GameState;
+import ww.Grid;
+import ww.Point;
+import ww.sim.Move;
 
 /**
  * Responsible of magical finding where the opponents are (hope so)
@@ -7,16 +15,19 @@ package ww;
  */
 public class Divination {
   GameState initial;
-  GameState expected;
+
+  Move simulatedMove = new Move(null);
+  GameState simulated;
+  
   public Point guessedPosition[] = new Point[2];
   private Point backups[] = new Point[2];
   public boolean guessedPositionLocked[] = new boolean[2];
   private int stillToFind;
   private boolean debugMode;
   
-  Divination(GameState model) {
-    expected = new GameState();
-    expected.grid = new Grid(model.size);
+  public Divination(GameState model) {
+    simulated = new GameState();
+    simulated.grid = new Grid(model.size);
 
     initial = new GameState();
     initial.grid = new Grid(model.size);
@@ -53,6 +64,9 @@ public class Divination {
       return;
     }
     
+    // check if we have move in respect of the simulation
+    checkPushes(state);
+    
     long potential = getPotentialPositionsFromStaticGrid(state);
     if (debugMode) {
       System.err.println("static potential");
@@ -70,6 +84,26 @@ public class Divination {
     temp = readdOpponents(state, temp);
     guessFromConstruction(state, temp); 
     if (stillToFind == 0) return;
+  }
+
+  private void checkPushes(GameState state) {
+    if (simulatedMove.agent != null) {
+      // check if we have been pushed
+      boolean haveBeenPushed = false;
+      for (int i=0;i<2;i++) {
+        if (state.agents[i].position != simulated.agents[i].position) {
+          haveBeenPushed = true;
+          if (debugMode) System.err.println("Agent "+i+" has been pushed");
+          for (int other=0;other<2;other++) {
+            if (state.agents[2+other].position == Point.unknown && simulated.agents[2+other].position != Point.unknown) {
+              guessedPosition[other] = simulated.agents[2+other].position;
+              stillToFind--;
+            }
+          }
+        }
+      }
+    }
+    
   }
 
   private void guessFromConstruction(GameState state, long gridMask) {
@@ -134,7 +168,7 @@ public class Divination {
   Cell locateConstruction(GameState state) {
     for (int y=0;y<GameState.size;y++) {
       for (int x=0;x<GameState.size;x++) {
-        Cell expectedCell = expected.grid.get(x, y);
+        Cell expectedCell = simulated.grid.get(x, y);
         Cell currentCell = state.grid.get(x,y);
         if (expectedCell.height != currentCell.height) {
           return currentCell;
@@ -181,14 +215,19 @@ public class Divination {
       if (guessedPosition[i] != Point.unknown) {
         if (debugMode) System.err.println("Applying guessed agent "+i+" at "+guessedPosition[i]);
         state.positionAgent(state.agents[2+i], guessedPosition[i]);
+        guessedPositionLocked[i] = isLocked(state.agents[2+i]);
       }
     }
   }
   
-  public void debug() {
+  public void debug(GameState state) {
     for (int i=0;i<2;i++) {
-      if (guessedPosition[i] != Point.unknown) {
-        if (debugMode) System.err.println("Found agent "+i+" at "+guessedPosition[i]);
+      if (guessedPosition[i] != Point.unknown ) {
+        if (state.agents[2+i].position == Point.unknown) {
+          System.err.println("*GUESS* agent "+i+" at "+guessedPosition[i] + (guessedPositionLocked[i] ? "[Locked]" : ""));
+        } else {
+          System.err.println("known agent "+i+" at "+guessedPosition[i] + (guessedPositionLocked[i] ? "[Locked]" : ""));
+        }
       }
     }
   }
@@ -285,11 +324,12 @@ public class Divination {
   }
 
   /* update after our move */
-  public void updatePrediction(GameState state) {
-    state.copyTo(expected);
+  public void updateSimulated(GameState state, Move move) {
+    move.copyTo(simulatedMove);
+    state.copyTo(simulated);
     for (int i=0;i<2;i++) {
       guessedPosition[i] = state.agents[2+i].position;
-      if (debugMode) System.err.println("Setting guessedPos for "+i+" at "+guessedPosition[i]);
+      if (debugMode) System.err.println("Setting guessedPos for "+i+" at "+guessedPosition[i]+" in the simulated state");
     }
   }
 

@@ -139,18 +139,4 @@ public class GameState {
       agents[i].copyTo(expected, expected.agents[i]);
     }
   }
-
-  public boolean isModified() {
-    for (int i=0;i<4;i++) {
-      if (agents[i].isModified()) return true;
-    }
-    for (int y=0;y<size;y++) {
-      for (int x=0;x<size;x++) {
-        Cell cell = grid.get(x, y);
-        if (cell.isModified()) return true;
-      }
-    }
-    return false;
-  }
-
 }
