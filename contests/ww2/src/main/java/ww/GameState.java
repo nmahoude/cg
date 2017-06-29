@@ -8,7 +8,7 @@ import ww.sim.Move;
 import ww.think.Node;
 
 public class GameState {
-  public static final long MAX_TIME = 47;
+  public static final long MAX_TIME = 45;
   public static int size;
   public static int unitsPerPlayer;
   

@@ -40,6 +40,12 @@ public class AgentEvaluator {
     score -= AgentEvaluator.score(state, state.agents[2]);
     score -= AgentEvaluator.score(state, state.agents[3]);
     
+    int voronoi = 0
+        + AccessibleCellsCalculator.voronoi(state, state.agents[0], state.agents[2])
+        + AccessibleCellsCalculator.voronoi(state, state.agents[0], state.agents[3])
+        + AccessibleCellsCalculator.voronoi(state, state.agents[1], state.agents[2])
+        + AccessibleCellsCalculator.voronoi(state, state.agents[1], state.agents[3])
+        ;
     return score;    
   }
 

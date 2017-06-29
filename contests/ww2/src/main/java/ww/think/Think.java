@@ -49,6 +49,10 @@ public class Think {
         }
         validActions++;
         double score = alphaBeta(child, alpha, beta, !maximizingScore);
+        if (System.currentTimeMillis() - GameState.startTime > GameState.MAX_TIME) {
+          simulation.undo(child.move);
+          return Double.NEGATIVE_INFINITY;
+        }
         if (maximizingScore) {
           if (score > bestScore) {
             bestScore = score;

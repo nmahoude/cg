@@ -11,7 +11,9 @@
 	* prendre les coups valides donnés par CG
 
 = 20170629 (gold)
-* 13h07 - xx : utilisation du cache CG
+
+* 13h36 - 30 : minimax non bridé + correction bug dans le minimax
+* 13h07 - 40 : utilisation du cache CG
 * 12h07 - 39 : relance code 9h49
 * 11h52 - 48 : relance code de 10h25
 * 11h40 - 44 : relance pour confirmation

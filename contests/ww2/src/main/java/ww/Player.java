@@ -49,7 +49,7 @@ public class Player {
           System.err.println("AB @ "+deepening+" found bestMove :"+bestMove);
         }
         deepening+=2;
-      } while (move != null && deepening < 4);
+      } while (move != null && deepening < 20);
       
       long endTime = System.currentTimeMillis();
       int depth = deepening / 2;
