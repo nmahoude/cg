@@ -1,7 +1,25 @@
 == Redo (ww2)
 
+=TODO  : 
+* Tester le minimax à plus de profondeur
+* Gerer le cas du push pas reussi
+* changer le nb de cases accessibles par un 'voronoi like' (zones d'influence)
+* ordoner les coups apres la depth 1 ! (uniquement pour la depth 1 !)
+* Tester le cas où, si on ne connait pas l'advesaire, on s'arrete à depth = 1 ?
+
+= DONE
+	* prendre les coups valides donnés par CG
+
 = 20170629 (gold)
-* 9h35 - 60 : minimax corrigé, depth=1 bloquée
+* 13h07 - xx : utilisation du cache CG
+* 12h07 - 39 : relance code 9h49
+* 11h52 - 48 : relance code de 10h25
+* 11h40 - 44 : relance pour confirmation
+* 11h15 - 44: petit bug ? copy sur le bestMove plutot que =
+* 10h25 - 30 / 27.63 : relance pour confirmation :)
+* 10h11 - 40 : relance pour confirmation
+* 9h52 - 33: minimax depth 3 max
+* 8h35 - 60 : minimax corrigé, depth=1 bloquée
 * 8h00 - 56 : reclance code hier soir
 
 = 20170628 (gold)

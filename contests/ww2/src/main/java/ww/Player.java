@@ -35,7 +35,7 @@ public class Player {
         divination.apply(state);
       }
 
-      Move bestMove = null; //think(sim);
+      Move bestMove = new Move(null); //think(sim);
       // deepening
       int deepening = 1; // odd deepening only
       Move move = null;
@@ -44,12 +44,12 @@ public class Player {
         if (System.currentTimeMillis() > GameState.startTime + GameState.MAX_TIME) {
           move = null;
         }
-        if (move != null) {
-          bestMove = move;
+        if (move != null && move.agent != null) {
+          move.copyTo(bestMove);
           System.err.println("AB @ "+deepening+" found bestMove :"+bestMove);
         }
         deepening+=2;
-      } while (move != null && deepening < 2);
+      } while (move != null && deepening < 4);
       
       long endTime = System.currentTimeMillis();
       int depth = deepening / 2;
@@ -65,7 +65,7 @@ public class Player {
         
         System.out.println(bestMove.toPlayerOutput()+" "+depth+" in "+(endTime-GameState.startTime));
       } else {
-        System.out.println("ACCEPT-DEFEAT GOOD FIGHT, WELL DONE");
+        System.out.println("ACCEPT-DEFEAT GOOD FIGHT, GG");
       }
     }
   }

@@ -10,16 +10,21 @@ import ww.sim.Move;
 
 public class Node {
   static GameState state;
-  int depth = 0;
-  Move move;
   
-  Node(int depth) {
+  int depth = 0;
+  public Move move;
+  
+  public Node(int depth) {
     this.depth = depth;
   }
   
   public List<Node> getChildren() {
     List<Node> nodes = new ArrayList<>();
     if ((depth % 2) == 0) {
+      if (depth == 0) {
+        //System.err.println("Depth is 0, sending cache with "+state.legalActionDepth0NodeCache.size()+" moves");
+        return state.legalActionDepth0NodeCache;
+      }
       // my moves
       for (int i=0;i<2;i++) {
         for (Dir dir1 : Dir.getValues()) {

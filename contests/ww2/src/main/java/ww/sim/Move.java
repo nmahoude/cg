@@ -54,6 +54,9 @@ public class Move {
     isDir2Valid = true;
   }
   public String toPlayerOutput() {
+    if (agent == null) {
+      return "ACCEPT-DEFEAT GG";
+    }
     if (isPush) {
       return  "PUSH&BUILD "+agent.id+" "+dir1.toString()+" "+dir2.toString();
     } else {

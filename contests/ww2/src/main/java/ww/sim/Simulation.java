@@ -46,7 +46,9 @@ public class Simulation {
       pushFrom.decrease();
       pushTo.agent.moveTo(pushFrom);
     } else {
-      if (move.agent.cell.height == Cell.FINAL_HEIGHT - 1) move.agent.score--;
+      if (move.agent.cell.height == Cell.FINAL_HEIGHT - 1) {
+        move.agent.score--;
+      }
       Cell comingFrom = move.agent.cell.get(move.dir1.inverse());
       Cell builtOn = move.agent.cell.get(move.dir2);
       builtOn.decrease();

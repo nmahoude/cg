@@ -1,5 +1,7 @@
 package ww.think;
 
+import java.util.List;
+
 import ww.GameState;
 import ww.sim.Move;
 import ww.sim.Simulation;
@@ -34,16 +36,18 @@ public class Think {
     }
 
     double bestScore = maximizingScore ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
-    boolean oneValidMove = false;
-    for (Node child : node.getChildren()) {
+    int validActions = 0;
+    List<Node> children = node.getChildren();
+    for (Node child : children) {
       if (child.move == null) {
+        // no opponents known
         return alphaBeta(child, alpha, beta, !maximizingScore);
       } else {
         simulation.simulate(child.move, true);
         if (!child.move.isValid()) {
           continue;
         }
-        oneValidMove = true;
+        validActions++;
         double score = alphaBeta(child, alpha, beta, !maximizingScore);
         if (maximizingScore) {
           if (score > bestScore) {
@@ -65,7 +69,7 @@ public class Think {
         }
       }
     }
-    if (!oneValidMove) {
+    if (validActions == 0) {
       return node.evaluate();
     }
     return bestScore;
