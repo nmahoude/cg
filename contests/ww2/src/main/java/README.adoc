@@ -1,7 +1,11 @@
 == Redo (ww2)
 
+= 20170629 (gold)
+* 9h35 - 60 : minimax corrigé, depth=1 bloquée
+* 8h00 - 56 : reclance code hier soir
+
 = 20170628 (gold)
-* 02h53 - : remise en place divination + ancien think()
+* 02h53 - 59 : remise en place divination + ancien think()
 * 02h45 - dernier: Desactiviation de l'application dela divination
 * 02h35 - 55 : relance du code de 23h38
 * 02h22 - 64 : correction bug sur coup final (NPE sur le bestMove)

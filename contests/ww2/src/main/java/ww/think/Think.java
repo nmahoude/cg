@@ -7,7 +7,7 @@ import ww.sim.Simulation;
 public class Think {
   Simulation simulation = new Simulation();
   GameState state;
-  Move bestMove = null;
+  Move bestMove = new Move(null);
   private int maxDepth;
 
   public Think(GameState state) {
@@ -24,7 +24,10 @@ public class Think {
 
   public double alphaBeta(Node node, double alpha, double beta, boolean maximizingScore) {
     // timeout condition
-    if (System.currentTimeMillis() - GameState.startTime > 47) return Double.NEGATIVE_INFINITY;
+    if (System.currentTimeMillis() - GameState.startTime > GameState.MAX_TIME) {
+      bestMove = null;
+      return Double.NEGATIVE_INFINITY;
+    }
     
     if (node.depth == maxDepth) {
       return node.evaluate();
@@ -46,7 +49,7 @@ public class Think {
           if (score > bestScore) {
             bestScore = score;
             if (node.depth == 0) {
-              bestMove = child.move;
+              child.move.copyTo(bestMove);
             }
           }
           alpha = Math.max(alpha, bestScore);

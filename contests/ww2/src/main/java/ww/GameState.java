@@ -3,6 +3,7 @@ package ww;
 import java.util.Scanner;
 
 public class GameState {
+  public static final long MAX_TIME = 47;
   public static int size;
   public static int unitsPerPlayer;
   

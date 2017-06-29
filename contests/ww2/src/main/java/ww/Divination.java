@@ -289,7 +289,7 @@ public class Divination {
     state.copyTo(expected);
     for (int i=0;i<2;i++) {
       guessedPosition[i] = state.agents[2+i].position;
-      System.err.println("Setting guessedPos for "+i+" at "+guessedPosition[i]);
+      if (debugMode) System.err.println("Setting guessedPos for "+i+" at "+guessedPosition[i]);
     }
   }
 

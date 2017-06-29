@@ -19,7 +19,7 @@ public class Node {
   
   public List<Node> getChildren() {
     List<Node> nodes = new ArrayList<>();
-    if ((depth & 0b1) == 0) {
+    if ((depth % 2) == 0) {
       // my moves
       for (int i=0;i<2;i++) {
         for (Dir dir1 : Dir.getValues()) {

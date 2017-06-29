@@ -35,22 +35,24 @@ public class Player {
         divination.apply(state);
       }
 
-      Move bestMove = think(sim);
+      Move bestMove = null; //think(sim);
       // deepening
-      int deepening = 0;
-//      Move bestMove = null;
-//      Move move = null;
-//      do {
-//        deepening+=2;
-//        move = new Think(state).think(deepening);
-//        if (move != null) {
-//          bestMove = move;
-//          System.err.println("AB @ "+deepening+" found bestMove :"+bestMove);
-//        }
-//      } while (move != null && deepening < 8);
+      int deepening = 1; // odd deepening only
+      Move move = null;
+      do {
+        move = new Think(state).think(deepening);
+        if (System.currentTimeMillis() > GameState.startTime + GameState.MAX_TIME) {
+          move = null;
+        }
+        if (move != null) {
+          bestMove = move;
+          System.err.println("AB @ "+deepening+" found bestMove :"+bestMove);
+        }
+        deepening+=2;
+      } while (move != null && deepening < 2);
       
       long endTime = System.currentTimeMillis();
-      int depth = 1 + deepening / 2;
+      int depth = deepening / 2;
       System.err.println("Reflexion time : "+(endTime-state.startTime)+" depth reached : "+ depth);
       
       if (bestMove !=null && bestMove.agent != null) {
@@ -90,7 +92,7 @@ public class Player {
           sim.simulate(move, true);
           if (move.isValid()) {
             double score = AgentEvaluator.score(state);
-//            System.err.println(""+move.toPlayerOutput()+" = "+score);
+            System.err.println(""+move.toPlayerOutput()+" = "+score);
             if (score > bestScore) {
               bestScore = score;
               move.copyTo(bestMove);
