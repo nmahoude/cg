@@ -1,15 +1,16 @@
 == Redo (ww2)
 
 =TODO  : 
+* deepening = 1000 & fin de partie, ca marche comment ?
 * Le score est bien calculé ? x20 ou x1000 ne change rien
-* ordoner les coups apres la depth 1 ! (uniquement pour la depth 1 !)
 * Gerer le cas du pushed (by opp)
 * Gerer le cas du push pas reussi
-* Si on voit les 2 opp, ne pas limiter l'A/B
 * Ajouter des patterns pour les bons coups (principalement les blocage)
 * Tester le cas où, si on ne connait pas l'advesaire, on s'arrete à depth = 1 ?
 
 = DONE
+	* Si on voit les 2 opp, ne pas limiter l'A/B
+	* ordoner les coups apres la depth 1 ! (uniquement pour la depth 1 !)
 	* Eloigner les agents pour couvrir plus de terrain (detection des opp agents)
 	* Je marque vraiment pas assez de points (passer le coeff score à 1000 ne change rien)
 	* Supprimer le AccessibleCellsCalculator (remplacé par voronoi)
@@ -19,6 +20,11 @@
 	* prendre les coups valides donnés par CG
 
 = 20170630 (gold)
+* 09h30 - 21 : code de 7h58
+* 09h02 - 23 : deepening tout au max 
+* 07h58 - : ne pas limiter le deepening si on voit les 2 enemis
+* 02h41 - 26 : move ordering (uniquement à depth = 1, pas pour 'iterative)
+* 02h04 - 27 : repush avec code à jour, identique fonctionnellement à 22h22
 * 01h31 - 23 : repush du 22h22
 * 00h30 - 34 : suppression distance de manhattan
 * 00h12 - 49 : distance de manhattan avec coeff 5*

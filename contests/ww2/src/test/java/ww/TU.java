@@ -16,6 +16,12 @@ public class TU {
     return move;
   }
 
+  public static Move getPush(Agent agent, Dir dir1, Dir dir2) {
+    Move move = getMove(agent, dir1, dir2);
+    move.isPush =true;
+    return move;
+  }
+
   public static void setHeights(GameState state, String... rows) {
     state.grid.reset();
     for (int y=0;y<rows.length;y++) {

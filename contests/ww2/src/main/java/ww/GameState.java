@@ -139,4 +139,8 @@ public class GameState {
       agents[i].copyTo(expected, expected.agents[i]);
     }
   }
+
+  public int getEnemyInSight() {
+    return (!agents[2].inFogOfWar() ? 1 : 0) + (!agents[3].inFogOfWar() ? 1 : 0);
+  }
 }

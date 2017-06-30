@@ -7,8 +7,10 @@ import ww.GameState;
 import ww.Grid;
 import ww.Point;
 import ww.sim.Move;
+import ww.sim.Simulation;
 
 public class Oracle {
+  Simulation simulation = new Simulation();
   GameState initial;
 
   Move simulatedMove = new Move(null);
@@ -18,7 +20,7 @@ public class Oracle {
   private Point backupPosition[] = new Point[2];
   public boolean guessedPositionLocked[] = new boolean[2];
   private boolean debugMode;
-  
+
   public Oracle(GameState model) {
     simulated = new GameState();
     simulated.grid = new Grid(model.size);
@@ -31,25 +33,18 @@ public class Oracle {
   }
   
   public void guessFrom(GameState currentState) {
-    for (int i=0;i<2;i++) {
-      backupPosition[i] = guessedPosition[i];
-      if (guessedPosition[i] != Point.unknown && guessedPositionLocked[i]) {
-      } else {
-        guessedPosition[i] = Point.unknown;
-      }
-    }
+    initGuess(currentState);
 
-    for (int i=0;i<2;i++) {
-      if (currentState.agents[2+i].position != Point.unknown) {
-          guessedPosition[i] = currentState.agents[2+i].position;
-          guessedPositionLocked[i] = isLocked(currentState.agents[2+i]);
-      }
-    }
     if (stillToFind() == 0) {
       return; // nothing more to guess
     }
 
-    checkForPushed(currentState);
+    if (simulatedMove.isPush && checkForInvalidatedPush(currentState)) {
+      simulation.undo(simulatedMove); // our move has been invalidated
+    }
+    if (checkForPushed(currentState)) {
+      return;
+    }
     
     // check if we see an agent and we can tell HE has move, so the other one didn't move
     for (int i=0;i<2;i++) {
@@ -69,10 +64,44 @@ public class Oracle {
     
   }
 
-  void checkForPushed(GameState currentState) {
-    // 1. check for pushed
+  private void initGuess(GameState currentState) {
+    for (int i=0;i<2;i++) {
+      backupPosition[i] = guessedPosition[i];
+      if (guessedPosition[i] != Point.unknown && guessedPositionLocked[i]) {
+      } else {
+        guessedPosition[i] = Point.unknown;
+      }
+    }
+
+    for (int i=0;i<2;i++) {
+      if (currentState.agents[2+i].position != Point.unknown) {
+          guessedPosition[i] = currentState.agents[2+i].position;
+          guessedPositionLocked[i] = isLocked(currentState.agents[2+i]);
+      }
+    }
+  }
+
+  private boolean checkForInvalidatedPush(GameState currentState) {
+    int id = simulatedMove.agent.id;
+    Cell simulatedPushedFrom = simulatedMove.agent.cell.get(simulatedMove.dir1);
+    Cell currentPushedFrom = currentState.grid.get(currentState.agents[id].cell.get(simulatedMove.dir1).position);
+    if (simulatedPushedFrom.height > currentPushedFrom.height) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Check if wa have been pushed
+   * @param currentState
+   * @return
+   */
+  boolean checkForPushed(GameState currentState) {
+    boolean hasBeenPushed = false;
     for (int myAgentId=0;myAgentId<2;myAgentId++) {
       if (simulated.agents[myAgentId].position != currentState.agents[myAgentId].position) {
+        hasBeenPushed = true;
+        
         // pushed ! by who ?
         Cell in = currentState.agents[myAgentId].cell;
         Cell from = currentState.grid.get(simulated.agents[myAgentId].position);
@@ -91,15 +120,16 @@ public class Oracle {
               || simulatedPotential.isThreat(currentState.agents[myAgentId])) {
             noMoveFromEnemy(currentState, 0);
             noMoveFromEnemy(currentState, 1);
-            return;
+            return hasBeenPushed;
           }
         }
         if (potentialCount == 1) {
           foundPosition(onlyOne.position);
-          return;
+          return hasBeenPushed;
         }
       }
     }
+    return hasBeenPushed;
   }
   
   private boolean canSeeCell(Agent agent, Cell potential) {

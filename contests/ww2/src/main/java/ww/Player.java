@@ -1,11 +1,13 @@
 package ww;
 
+import java.util.Comparator;
 import java.util.Scanner;
 
 import ww.paths.AccessibleCellsCalculator;
 import ww.prediction.Divination;
 import ww.sim.Move;
 import ww.sim.Simulation;
+import ww.think.Node;
 import ww.think.Think;
 
 public class Player {
@@ -41,6 +43,13 @@ public class Player {
       // deepening
       int deepening = 1; // odd deepening only
       Move move = null;
+      int maxDeepening = 20;
+      int enemyInSight = state.getEnemyInSight();
+      switch(enemyInSight) {
+        case 0:  maxDeepening = 20; break;
+        case 1:  maxDeepening = 20; break;
+        case 2:  maxDeepening = 1000; break;
+      }
       do {
         move = new Think(state).think(deepening);
         if (System.currentTimeMillis() > GameState.startTime + GameState.MAX_TIME) {
@@ -50,8 +59,20 @@ public class Player {
           move.copyTo(bestMove);
           // System.err.println("AB @ "+deepening+" found bestMove :"+bestMove);
         }
+        if (deepening == 1) {
+          // order moves
+          state.legalActionDepth0NodeCache.sort(new Comparator<Node>() {
+            @Override
+            public int compare(Node o1, Node o2) {
+              return Double.compare(o2.score, o1.score);
+            }
+          });
+//          for (Node node : state.legalActionDepth0NodeCache) {
+//            System.err.println(""+node.move+" -> "+node.score);
+//          }
+        }
         deepening+=2;
-      } while (move != null && deepening < 20);
+      } while (move != null && deepening < maxDeepening);
       
       long endTime = System.currentTimeMillis();
       int depth = deepening / 2;
@@ -65,7 +86,7 @@ public class Player {
         //state.toTDD();
         divination.updateSimulated(state, bestMove);
         
-        System.out.println(bestMove.toPlayerOutput()+" "+depth+" in "+(endTime-GameState.startTime));
+        System.out.println(bestMove.toPlayerOutput()); //+" "+depth+" in "+(endTime-GameState.startTime));
       } else {
         System.out.println("ACCEPT-DEFEAT GOOD FIGHT, GG");
       }

@@ -53,6 +53,7 @@ public class Think {
           simulation.undo(child.move);
           return Double.NEGATIVE_INFINITY;
         }
+        child.score = score;
         if (maximizingScore) {
           if (score > bestScore) {
             bestScore = score;

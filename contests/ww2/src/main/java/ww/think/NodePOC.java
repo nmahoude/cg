@@ -8,14 +8,19 @@ import ww.Dir;
 import ww.GameState;
 import ww.sim.Move;
 
-public class Node {
+public class NodePOC {
+  long l1;
+  long l2;
+  long p1;
+  long p2;
+  
   static GameState state;
   
   int depth = 0;
   public Move move;
   public double score = 0.0;
   
-  public Node(int depth) {
+  public NodePOC(int depth) {
     this.depth = depth;
   }
   
@@ -67,5 +72,36 @@ public class Node {
 
   public double evaluate() {
     return AgentEvaluator.score(state);
+  }
+  
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + (int) (l1 ^ (l1 >>> 32));
+    result = prime * result + (int) (l2 ^ (l2 >>> 32));
+    result = prime * result + (int) (p1 ^ (p1 >>> 32));
+    result = prime * result + (int) (p2 ^ (p2 >>> 32));
+    return result;
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    NodePOC other = (NodePOC) obj;
+    if (l1 != other.l1)
+      return false;
+    if (l2 != other.l2)
+      return false;
+    if (p1 != other.p1)
+      return false;
+    if (p2 != other.p2)
+      return false;
+    return true;
   }
 }
