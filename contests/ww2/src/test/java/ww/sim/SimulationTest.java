@@ -21,9 +21,7 @@ public class SimulationTest {
   @Before 
   public void setup() {
     state = new GameState();
-    
-  
-    simulation = new Simulation();
+    simulation = new Simulation(state);
     
   }
   
@@ -64,7 +62,7 @@ public class SimulationTest {
     TU.setAgent(state, 2,2,3);
     TU.setAgent(state, 3,-1,-1);
   
-    simulation.simulate(TU.getMove(state.agents[0], Dir.E, Dir.E), true);
+    simulation.simulate(TU.getMove(state.agents[0], Dir.E, Dir.E));
     
     assertThat(state.agents[0].cell, is(not(nullValue())));
   }
@@ -85,7 +83,7 @@ public class SimulationTest {
     TU.setAgent(state, 3,-1,-1);
   
     Move move = TU.getMove(state.agents[1], Dir.E, Dir.E);
-    simulation.simulate(move, true);
+    simulation.simulate(move);
     
     assertThat(move.isValid(), is(true));
   }
@@ -107,7 +105,7 @@ public class SimulationTest {
     TU.setAgent(state, 3,4,4);
   
     Move move = TU.getMove(state.agents[0], Dir.E, Dir.E);
-    simulation.simulate(move, true);
+    simulation.simulate(move);
     simulation.undo(move);
     
     assertThat(state.grid.get(0, 0).agent, is(state.agents[0]));
@@ -132,7 +130,7 @@ public class SimulationTest {
     TU.setAgent(state, 3,4,4);
   
     Move move = TU.getMove(state.agents[0], Dir.E, Dir.E);
-    simulation.simulate(move, true);
+    simulation.simulate(move);
     assertThat(state.agents[0].score, is(1));
     
     simulation.undo(move);
@@ -156,7 +154,7 @@ public class SimulationTest {
     TU.setAgent(state, 3,4,4);
   
     Move move = TU.getMove(state.agents[0], Dir.E, Dir.E);
-    simulation.simulate(move, true);
+    simulation.simulate(move);
     simulation.undo(move);
     
     assertThat(state.grid.get(0, 0).agent, is(state.agents[0]));
@@ -181,7 +179,7 @@ public class SimulationTest {
     TU.setAgent(state, 3,4,4);
   
     Move move = TU.getMove(state.agents[0], Dir.E, Dir.E);
-    simulation.simulate(move, true);
+    simulation.simulate(move);
     simulation.undo(move);
     
     assertThat(state.grid.get(0, 0).agent, is(state.agents[0]));
@@ -210,7 +208,7 @@ public class SimulationTest {
     TU.setAgent(state, 3,2,1);
 
     Move move = TU.getMove(state.agents[0], Dir.E, Dir.E);
-    simulation.simulate(move, true);
+    simulation.simulate(move);
     simulation.undo(move);
   }
   
@@ -230,12 +228,12 @@ public class SimulationTest {
     TU.setAgent(state, 3,3,1);
 
     Move move = TU.getMove(state.agents[1], Dir.W, Dir.S);
-    simulation.simulate(move, true);
+    simulation.simulate(move);
     simulation.undo(move);
     state.toTDD();
     
     move = TU.getMove(state.agents[1], Dir.W, Dir.SW);
-    simulation.simulate(move, true);
+    simulation.simulate(move);
     simulation.undo(move);
     state.toTDD();
   }

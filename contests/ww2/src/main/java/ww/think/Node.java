@@ -10,6 +10,8 @@ import ww.sim.Move;
 
 public class Node {
   static GameState state;
+  static int testedNodes = 0;
+  public static int hit;
   
   int depth = 0;
   public Move move;
@@ -24,7 +26,7 @@ public class Node {
     if ((depth % 2) == 0) {
       if (depth == 0) {
         //System.err.println("Depth is 0, sending cache with "+state.legalActionDepth0NodeCache.size()+" moves");
-        return state.legalActionDepth0NodeCache;
+        //return state.legalActionDepth0NodeCache;
       }
       // my moves
       for (int i=0;i<2;i++) {

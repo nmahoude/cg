@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import ww.sim.Move;
 import ww.think.Node;
+import ww.think.NodePOC;
 
 public class GameState {
   public static final long MAX_TIME = 45;
@@ -18,7 +19,7 @@ public class GameState {
   public static long startTime;
 
   public List<Move> legalActionsDepth0Cache = new ArrayList<>();
-  public List<Node> legalActionDepth0NodeCache = new ArrayList<>(); // yeah, it's ugly
+  public List<NodePOC> legalActionDepth0NodeCache = new ArrayList<>(); // yeah, it's ugly
   
   public GameState() {
     agents = new Agent[2*2];
@@ -74,7 +75,7 @@ public class GameState {
 //      System.err.println("reading from CG : "+move);
       legalActionsDepth0Cache.add(move);
       
-      Node node = new Node(1);
+      NodePOC node = new NodePOC(1);
       node.move = move;
       legalActionDepth0NodeCache.add(node);
     }

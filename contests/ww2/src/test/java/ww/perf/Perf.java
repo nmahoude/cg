@@ -18,8 +18,7 @@ public class Perf {
   @Before
   public void setup() {
     state = new GameState();
-    simulation = new Simulation();
-
+    simulation = new Simulation(state);
   }
   
   @Test
@@ -37,8 +36,6 @@ public class Perf {
     TU.setAgent(state, 1,1,1);
     TU.setAgent(state, 2,-1,-1);
     TU.setAgent(state, 3,-1,-1);
-    
-    Simulation simulation = new Simulation();
     
     Player.state = state;
     for (int i=0;i<10_000;i++) {

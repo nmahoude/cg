@@ -18,12 +18,12 @@ import ww.sim.Simulation;
 public class DivinationTest {
   Divination divination;
   private GameState currentState;
-  private Simulation simulation = new Simulation();
+  private Simulation simulation;
   
   @Before
   public void setup() {
     currentState = new GameState();
-    
+    simulation = new Simulation(currentState);
   }
   
   private void initDivination() {
@@ -442,7 +442,7 @@ public class DivinationTest {
     
     initDivination();
     Move move = TU.getMove(currentState.agents[0], Dir.E, Dir.SE);
-    new Simulation().simulate(move, true);
+    simulation.simulate(move);
     
     assertThat(currentState.agents[2].position, is (Point.get(2, 4)));
   }
@@ -538,7 +538,7 @@ public class DivinationTest {
     
     GameState simulatedState = TU.createFromGameState(previous); 
     Move move = TU.getMove(simulatedState.agents[0], Dir.E, Dir.E);
-    simulation.simulate(move, true);
+    new Simulation(simulatedState).simulate(move);
     
     TU.setHeights(currentState, 6,
         "000000",
@@ -583,7 +583,7 @@ public class DivinationTest {
     
     GameState simulatedState = TU.createFromGameState(previous); 
     Move move = TU.getMove(simulatedState.agents[0], Dir.E, Dir.E);
-    simulation.simulate(move, true);
+    new Simulation(simulatedState).simulate(move);
     
     TU.setHeights(currentState, 6,
         "000000",

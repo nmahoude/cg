@@ -39,5 +39,8 @@ public class Point {
   public int manhattan(Point position) {
     return Math.abs(x-position.x)+Math.abs(y-position.y);
   }
-
+  public boolean inRange(int radius, Point p) {
+    if (p.x == -1 || x == -1) return false;
+    return (Math.abs(x - p.x) <= radius && Math.abs(y-p.y) <= radius); 
+  }
 }

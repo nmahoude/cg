@@ -1,6 +1,7 @@
 == Redo (ww2)
 
 =TODO  : 
+* poids aux cells en fonction de leur interet ? (hauteur, goulot, ..)
 * deepening = 1000 & fin de partie, ca marche comment ?
 * Le score est bien calculé ? x20 ou x1000 ne change rien
 * Gerer le cas du pushed (by opp)
@@ -9,6 +10,7 @@
 * Tester le cas où, si on ne connait pas l'advesaire, on s'arrete à depth = 1 ?
 
 = DONE
+	* transposition tables BOF ou buggées :)
 	* Si on voit les 2 opp, ne pas limiter l'A/B
 	* ordoner les coups apres la depth 1 ! (uniquement pour la depth 1 !)
 	* Eloigner les agents pour couvrir plus de terrain (detection des opp agents)
@@ -19,7 +21,19 @@
 	* Tester le minimax à plus de profondeur >= ~ +10 places
 	* prendre les coups valides donnés par CG
 
+
+
 = 20170630 (gold)
+20h13 : elevation 50 -> 10, tuning sur la profondeur (10, 20, 1000)
+
+* : division du voronoi par la taille de la grille au carré
+* 14h20 - 26 : voronoi à 1
+* 14h00 - 26 : changement complet des coeff (sauf voronoi)
+* 13h39 - 25 / 30.97: remise en place des accessibleCells (Lirkin en parle, ca marche p-e)
+* 13h20 - 23 / 31.32: suppression des transposition tables, return plus rapide pour eviter timeout
+* 13h07 - ?? : transposition + plus de limite au deepening
+* 13h00 - 34 : utilisation des transpositions
+* 11h30 - 26 : code idem 7h58
 * 09h30 - 21 : code de 7h58
 * 09h02 - 23 : deepening tout au max 
 * 07h58 - : ne pas limiter le deepening si on voit les 2 enemis

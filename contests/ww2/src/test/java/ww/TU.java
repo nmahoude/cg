@@ -1,11 +1,9 @@
 package ww;
 
+import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
-import ww.Agent;
-import ww.Dir;
-import ww.GameState;
-import ww.Point;
 import ww.sim.Move;
 
 public class TU {
@@ -16,6 +14,22 @@ public class TU {
     return move;
   }
 
+  public static void fillAllPossiblePositions(GameState state, Set<Point> pos) {
+    pos.clear();
+    for (int y=0;y<GameState.size;y++) {
+      for (int x=0;x<GameState.size;x++) {
+        Cell cell = state.grid.get(x,y);
+        if (!cell.isValid()) continue;
+        pos.add(cell.position);
+      }      
+    }
+  }
+
+  public static void fillAllPossiblePositionsWith(Set<Point> pos, List<Point> points) {
+    pos.clear();
+    pos.addAll(points);
+  }
+  
   public static Move getPush(Agent agent, Dir dir1, Dir dir2) {
     Move move = getMove(agent, dir1, dir2);
     move.isPush =true;

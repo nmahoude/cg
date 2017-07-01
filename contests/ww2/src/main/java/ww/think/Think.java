@@ -1,35 +1,58 @@
 package ww.think;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ww.GameState;
 import ww.sim.Move;
 import ww.sim.Simulation;
 
 public class Think {
-  Simulation simulation = new Simulation();
+  boolean timeout = false;
+  Map<NodePOC, NodePOC> transpositionMap = new HashMap<>();
+  
+  Simulation simulation;
   GameState state;
   Move bestMove = new Move(null);
   private int maxDepth;
 
   public Think(GameState state) {
     this.state = state;
+    simulation = new Simulation(state);
   }
 
   public Move think(int maxDepth) {
     this.maxDepth = maxDepth;
-    Node.state = state;
-    Node node0 = new Node(0);
+    NodePOC.state = state;
+    NodePOC node0 = new NodePOC(0);
+    
+    Node.testedNodes = 0;
+    Node.hit = 0;
+    transpositionMap.clear();
+    timeout = false;
     alphaBeta(node0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, true);
+    if (timeout) {
+      bestMove.agent = null;
+    }
+    // System.err.println("A/B nodes : "+Node.testedNodes+" hit : "+Node.hit);
     return bestMove;
   }
 
-  public double alphaBeta(Node node, double alpha, double beta, boolean maximizingScore) {
+  public double alphaBeta(NodePOC node, double alpha, double beta, boolean maximizingScore) {
     // timeout condition
+    if (timeout) return 0.0;
     if (System.currentTimeMillis() - GameState.startTime > GameState.MAX_TIME) {
-      bestMove = null;
+      timeout = true;
       return Double.NEGATIVE_INFINITY;
     }
+
+//    NodePOC alreadyCalculated = transpositionMap.get(node);
+//    if (alreadyCalculated != null) {
+//      Node.hit++;
+//      return alreadyCalculated.score;
+//    }
     
     if (node.depth == maxDepth) {
       return node.evaluate();
@@ -37,23 +60,26 @@ public class Think {
 
     double bestScore = maximizingScore ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
     int validActions = 0;
-    List<Node> children = node.getChildren();
-    for (Node child : children) {
+    List<NodePOC> children = node.getChildren();
+    for (NodePOC child : children) {
       if (child.move == null) {
         // no opponents known
         return alphaBeta(child, alpha, beta, !maximizingScore);
       } else {
-        simulation.simulate(child.move, true);
+        Node.testedNodes++;
+        double score;
+        
+        simulation.simulate(child.move, child.transposition);
+        //System.err.println(""+child.move + " => " + Arrays.toString(child.transposition));
         if (!child.move.isValid()) {
           continue;
         }
         validActions++;
-        double score = alphaBeta(child, alpha, beta, !maximizingScore);
-        if (System.currentTimeMillis() - GameState.startTime > GameState.MAX_TIME) {
-          simulation.undo(child.move);
-          return Double.NEGATIVE_INFINITY;
-        }
+        score = alphaBeta(child, alpha, beta, !maximizingScore);
+        simulation.undo(child.move);
+        
         child.score = score;
+        //transpositionMap.put(child, child);
         if (maximizingScore) {
           if (score > bestScore) {
             bestScore = score;
@@ -66,8 +92,6 @@ public class Think {
           bestScore = Math.min(bestScore, score);
           beta = Math.min(beta, bestScore);
         }
-
-        simulation.undo(child.move);
 
         if (beta <= alpha) {
           break;

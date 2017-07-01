@@ -4,23 +4,21 @@ import java.util.Comparator;
 import java.util.Scanner;
 
 import ww.paths.AccessibleCellsCalculator;
-import ww.prediction.Divination;
+import ww.prediction.Oracle;
 import ww.sim.Move;
 import ww.sim.Simulation;
-import ww.think.Node;
+import ww.think.NodePOC;
 import ww.think.Think;
 
 public class Player {
   public static GameState state = new GameState();
-  static Divination divination = null;
-  static Simulation sim = new Simulation();
+  static Oracle oracle = null;
+  static Simulation sim = new Simulation(state);
   
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
     
     state.readInit(in);
-    divination = new Divination(state);
-    //divination.setDebug(true);
     
     int round = 0;
     // game loop
@@ -28,15 +26,19 @@ public class Player {
       round++;
       
       state.readRound(in);
-//      state.toTDD();
+      state.toTDD();
 
 //      debugReachableCells();
 //      debugPotentialActionsCount();
       
       if (round > 1) {
-        divination.guessFrom(state);
-        divination.debug(state);
-        divination.apply(state);
+        oracle.guessFrom(state);
+        oracle.debug(state);
+        oracle.apply(state);
+      } else {
+        // init the oracle
+        oracle = new Oracle(state);
+        oracle.setDebug(true);
       }
 
       Move bestMove = new Move(null); //think(sim);
@@ -46,8 +48,8 @@ public class Player {
       int maxDeepening = 20;
       int enemyInSight = state.getEnemyInSight();
       switch(enemyInSight) {
-        case 0:  maxDeepening = 20; break;
-        case 1:  maxDeepening = 20; break;
+        case 0:  maxDeepening = 1000; break;
+        case 1:  maxDeepening = 1000; break;
         case 2:  maxDeepening = 1000; break;
       }
       do {
@@ -61,9 +63,9 @@ public class Player {
         }
         if (deepening == 1) {
           // order moves
-          state.legalActionDepth0NodeCache.sort(new Comparator<Node>() {
+          state.legalActionDepth0NodeCache.sort(new Comparator<NodePOC>() {
             @Override
-            public int compare(Node o1, Node o2) {
+            public int compare(NodePOC o1, NodePOC o2) {
               return Double.compare(o2.score, o1.score);
             }
           });
@@ -80,11 +82,11 @@ public class Player {
       
       if (bestMove !=null && bestMove.agent != null) {
         // just before the output, we replay our best move for the divination
-        divination.updateInitialState(state);
-        sim.simulate(bestMove, true);
+        oracle.updatePreviousState(state);
+        sim.simulate(bestMove);
         // System.err.println("State after last simulation for prediction for move "+bestMove);
         //state.toTDD();
-        divination.updateSimulated(state, bestMove);
+        oracle.updateSimulated(state, bestMove);
         
         System.out.println(bestMove.toPlayerOutput()); //+" "+depth+" in "+(endTime-GameState.startTime));
       } else {
@@ -112,7 +114,7 @@ public class Player {
         for (Dir dir2 : Dir.getValues()) {
           move.dir1 = dir1;
           move.dir2 = dir2;
-          sim.simulate(move, true);
+          sim.simulate(move);
           if (move.isValid()) {
             double score = AgentEvaluator.score(state);
             System.err.println(""+move.toPlayerOutput()+" = "+score);

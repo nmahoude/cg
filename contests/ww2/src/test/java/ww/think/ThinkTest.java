@@ -17,8 +17,7 @@ public class ThinkTest {
   @Before
   public void setup() {
     state = new GameState();
-    simulation = new Simulation();
-
+    simulation = new Simulation(state);
   }
   
   @Test
