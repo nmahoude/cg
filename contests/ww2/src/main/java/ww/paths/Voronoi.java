@@ -12,21 +12,21 @@ import ww.GameState;
 public class Voronoi {
   long visited;
   
-  VoronoiInfo infos[] = new VoronoiInfo[4];
-  
-  public int[] voronoi(GameState state, Agent[] agents) {
-
-    
-    boolean stop[] = new boolean[agents.length];
-    int cellsCount[] = new int[agents.length];
-    for (int i=0;i<agents.length;i++) {
+  static VoronoiInfo infos[] = new VoronoiInfo[4];
+  static {
+    for (int i=0;i<4;i++) {
       infos[i] = new VoronoiInfo();
     }
+  }
+  public int[] voronoi(GameState state, Agent[] agents) {
+    boolean stop[] = new boolean[agents.length];
+    int cellsCount[] = new int[agents.length];
     
     visited = 0L;
 
     for (int i=0;i<agents.length;i++) {
       stop[i] = agents[i].inFogOfWar();
+      infos[i].cellsList.clear();
       infos[i].cellsList.add(agents[i].cell);
       visited|= agents[i].position.mask;
     }

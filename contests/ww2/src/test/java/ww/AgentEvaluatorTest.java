@@ -79,6 +79,42 @@ public class AgentEvaluatorTest {
   }
   
   @Test
+  public void test_dontLetHimScore() {
+    state.size = 5;
+    state.readInit(new Scanner("" + state.size + " 2"));
+
+
+    TU.setHeights(state, 
+      "00000",
+      "00300",
+      "00220",
+      "00010",
+      "00000");
+    TU.setAgent(state, 0,1,1);
+    TU.setAgent(state, 1,3,3);
+    TU.setAgent(state, 2,1,2);
+    TU.setAgent(state, 3,2,2);
+    
+    
+    Agent agent = state.agents[3];
+    Move move = TU.getMove(agent, Dir.N, Dir.S);
+    simulation.simulate(move);
+    double tscore1 = AgentEvaluator.score(state);
+
+    AgentEvaluator ae1 = new AgentEvaluator(state, agent);
+    double score1 = ae1.score(state, agent);
+
+    simulation.undo(move);
+    simulation.simulate(TU.getMove(agent, Dir.S, Dir.E));
+    double tscore2 = AgentEvaluator.score(state);
+
+    AgentEvaluator ae2 = new AgentEvaluator(state, agent);
+    double score2 = ae1.score(state, agent);
+
+    assertThat(score1 > score2 , is(true));
+  }
+
+  @Test
   @Ignore
   public void wowDontBlockYourselfMan() {
     state.size = 6;
@@ -141,7 +177,7 @@ public class AgentEvaluatorTest {
     AgentEvaluator ae2 = new AgentEvaluator(state, agent);
     double score2 = ae1.score(state, agent);
 
-    assertThat(score2 > score1 , is(true));
+    assertThat(tscore2 > tscore1 , is(true));
   }
   
   @Test
@@ -172,7 +208,6 @@ public class AgentEvaluatorTest {
   }
   
   @Test
-  @Ignore // TODO find a good way to solve this
   public void dontChooseTheBlockingPath() {
     state.size = 7;
     state.readInit(new Scanner("" + state.size + " 2"));

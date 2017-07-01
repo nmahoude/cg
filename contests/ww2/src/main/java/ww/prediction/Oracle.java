@@ -167,7 +167,6 @@ public class Oracle {
   }
 
   private void checkForMove(GameState currentState, Cell locatedConstruction) {
-    // TODO be more precise, bruteforce possible moves !
     HashSet<Point> possibilitiesByAgent[] = (HashSet<Point>[])new HashSet[4];
     possibilitiesByAgent[2] = bruteForce(currentState, 2, formerPossiblePositions[2], locatedConstruction.position);
     if (possibilitiesByAgent[2].contains(locatedConstruction)) {
@@ -178,7 +177,6 @@ public class Oracle {
       possibilitiesByAgent[3].remove(locatedConstruction);
     }
     // if agents was seen and is still seen and didn't move, it's cant be him
-    // TODO handle the case of cancelled move
     for (int id= 2;id<4;id++) {
       if (hasBeenStill(currentState, id)) {
         possibilitiesByAgent[id].clear();

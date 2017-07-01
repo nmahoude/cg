@@ -22,8 +22,32 @@
 	* prendre les coups valides donnés par CG
 
 
+
+= 20170702
+tester avec une depth impaire
+
+* 01h11 - 18 / 21.04 : sensiblement identique à 18h48
+* 00h47 27 / 17.90 - voronoi 4, mais scorer en fonction de l'élévation
+* marche pas - voronoi, mais sans check elevation ?
+* 00h05 21 / 20.20 - voronoi4, poids 300
+
+
 = 20170701 (legend)
-* 14h30 - : utilisation FastArray dans le voronoi + perf sur neighbouring
+* 23h58 - voronoi 2 , poids 50
+* 23h46 - KO passer du voronoi 4 au 2 (poids 300) 
+* 23h28 - influence : scoring des celulles = 1.0
+* 23h17 - not good: Ajout de 1.0 * influenceMapScore
+* 22h40 - 22 / 18.73 : code de 20h06
+* 22h30 - 22 / 19.00 : voronoi 350
+* 20h44 - 22 / 18.95 : voronoi 350
+* 20h02 - 21 / 21.83 : vironoi 300
+* 19h18 - 22 / 19.47 : encore augmentation voronoi : 500
+* 18h48 - 16 / 20.45 : augmentation du voronoi (200)
+* 18h21 - 19 / 19.47 : remis ene place 14h37 pour confirmation
+* 17h31 - 20 / 18.82 : remise en place du CLIFF avec coeff x 2
+* 16h10 - 19 / 18.xx : retour arriere sur distance + coefficient *2 car ca semble jouer
+* 15h01 - 17 / 17.61 : modification scoring elevation + position / au centre 
+* 14h37 - 14 / 19.46 : utilisation FastArray dans le voronoi + perf sur neighbouring
 * 14h14 - 16 : retour arriere + augmentation de la depth (100, 100, 100)
 * 13h21 - 27 : 100 * accessible cells
 * 12h56 - 18 

@@ -1,6 +1,7 @@
 package ww;
 
 import ww.paths.AccessibleCellsCalculator;
+import ww.paths.InfluenceMap;
 import ww.paths.Voronoi;
 import ww.sim.Simulation;
 
@@ -42,14 +43,62 @@ public class AgentEvaluator {
     score -= AgentEvaluator.score(state, state.agents[2]);
     score -= AgentEvaluator.score(state, state.agents[3]);
     
+    score += 200.0 * voronoi(state);
+    //score += 5.0 * state.agents[0].position.manhattan(state.agents[1].position);
+    return score;    
+  }
+
+  private static double influenceMap(GameState state) {
+    InfluenceMap map[] = new InfluenceMap[4];
+    for (int i=0;i<4;i++) {
+      map[i] = new InfluenceMap();
+      if (!state.agents[i].inFogOfWar()) {
+        map[i].calculateInfluence(state, state.agents[i]);
+      }
+    }
+    double score = 0;
+    for (int y=0;y<GameState.size;y++) {
+      for (int x=0;x<GameState.size;x++) {
+        double cellValue = 1.0;
+        for (int i=0;i<4;i++) {
+          score += cellValue * map[i].influenceMap[x][y];
+        }
+      }
+    }    
+    return score;
+  }
+
+  private static double voronoi2(GameState state) {
+    double score = 0.0;
     Voronoi v = new Voronoi();
-    int cells[] = v.voronoi4(state);
-    score += 100.0 * (cells[0]+cells[1]-cells[2]-cells[3]);
+    int cells[];
+    if (!state.agents[2].inFogOfWar()) {
+      cells = v.voronoi2(state, state.agents[0], state.agents[2]);
+      score += (cells[0]-cells[1]);
+      cells = v.voronoi2(state, state.agents[1], state.agents[2]);
+      score += (cells[0]-cells[1]);
+    }
+    if (!state.agents[3].inFogOfWar()) {
+      cells = v.voronoi2(state, state.agents[0], state.agents[3]);
+      score += (cells[0]-cells[1]);
+      cells = v.voronoi2(state, state.agents[1], state.agents[3]);
+      score += (cells[0]-cells[1]);
+    }
     if (Player.DEBUG_SCORING) {
       System.err.println("Voronoi : "+ cells);
     }
-    //score += 5.0 * state.agents[0].position.manhattan(state.agents[1].position);
-    return score;    
+    return score;
+  }
+
+  private static double voronoi(GameState state) {
+    double score = 0.0;
+    Voronoi v = new Voronoi();
+    int cells[] = v.voronoi4(state);
+    score += (cells[0]+cells[1]-cells[2]-cells[3]);
+    if (Player.DEBUG_SCORING) {
+      System.err.println("Voronoi : "+ cells);
+    }
+    return score;
   }
 
   public static double score(GameState state, Agent agent) {
@@ -77,6 +126,7 @@ public class AgentEvaluator {
     for (int i=0;i<FEATURE_END;i++) {
       score += ae.features[i];
     }
+    
     return score;
   }
 
@@ -120,12 +170,18 @@ public class AgentEvaluator {
    */
   double dangerousCliffs() {
     double score = 0.0;
-    Cell current = agent.cell;
-    for (Dir dir : Dir.getValues()) {
-      if (!current.get(dir).isThreat(agent)) continue;
-      for (Dir push : dir.inversePushDirections()) {
-        Cell pushCell = current.get(push);
-        if (pushCell.agent == null && pushCell.height < current.height-1) {
+
+    for (int i=0;i<4;i++) {
+      if (agent.id  == i) continue;
+      Agent other = state.agents[i];
+      if (agent.isFriendly(other)) continue;
+      if (other.inFogOfWar()) continue;
+      if (!other.position.inRange(1, agent.position)) continue;
+      
+      Dir dir1 = other.cell.dirTo(agent.cell);
+      for (Dir dir2  : dir1.pushDirections()) {
+        Cell pushCell = agent.cell.get(dir2);
+        if (pushCell.agent == null && pushCell.height < agent.cell.height-1) {
           score -= 1.0; // malus
         }
       }
@@ -142,8 +198,7 @@ public class AgentEvaluator {
   }
 
   double position() {
-    int manhattanDistance = Math.abs(agent.position.x - GameState.size/2)
-        +Math.abs(agent.position.y - GameState.size/2);
+    int manhattanDistance = Math.abs(agent.position.x - GameState.size / 2) + Math.abs(agent.position.y - GameState.size / 2);
     return  -1.0*manhattanDistance; // malus if we are far from center
   }
 }

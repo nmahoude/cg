@@ -92,7 +92,7 @@ public class Player {
           AgentEvaluator.score(state);
         }
         
-        System.out.println(bestMove.toPlayerOutput()); //+" "+depth+" in "+(endTime-GameState.startTime));
+        System.out.println(bestMove.toPlayerOutput()+" "+depth+" in "+(endTime-GameState.startTime));
         
       } else {
         System.out.println("ACCEPT-DEFEAT GOOD FIGHT, GG");
