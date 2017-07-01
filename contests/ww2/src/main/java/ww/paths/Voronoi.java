@@ -3,6 +3,7 @@ package ww.paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import cgcollections.arrays.FastArray;
 import ww.Agent;
 import ww.Cell;
 import ww.Dir;
@@ -11,21 +12,22 @@ import ww.GameState;
 public class Voronoi {
   long visited;
   
+  VoronoiInfo infos[] = new VoronoiInfo[4];
+  
   public int[] voronoi(GameState state, Agent[] agents) {
 
     
     boolean stop[] = new boolean[agents.length];
     int cellsCount[] = new int[agents.length];
-    ArrayList<Cell>[] cellsList = (ArrayList<Cell>[])new ArrayList[agents.length];
     for (int i=0;i<agents.length;i++) {
-      cellsList[i] = new ArrayList<Cell>();
+      infos[i] = new VoronoiInfo();
     }
     
     visited = 0L;
 
     for (int i=0;i<agents.length;i++) {
       stop[i] = agents[i].inFogOfWar();
-      cellsList[i].add(agents[i].cell);
+      infos[i].cellsList.add(agents[i].cell);
       visited|= agents[i].position.mask;
     }
     
@@ -33,11 +35,11 @@ public class Voronoi {
       for (int i=0;i<agents.length;i++) {
         if (stop[i] == true) continue;
         
-        cellsList[i] = visitCells(cellsList[i]);
-        if (cellsList[i].size() == 0) {
+        visitCells(infos[i]);
+        if (infos[i].cellsList.size() == 0) {
           stop[i] = true;
         }
-        cellsCount[i]+= cellsList[i].size();
+        cellsCount[i]+= infos[i].cellsList.size();
       }
     }
     
@@ -62,18 +64,21 @@ public class Voronoi {
     return voronoi(state, state.agents);
   }
 
-  private ArrayList<Cell> visitCells(List<Cell> cells) {
-    ArrayList<Cell> newCells = new ArrayList<>();
+  private void visitCells(VoronoiInfo info) {
+    info.nextCellsList.clear();
     
-    for (Cell cell : cells) {
+    for (int c=0;c<info.cellsList.size();c++) {
+      Cell cell = info.cellsList.get(c);
       for (int i=0;i<Dir.LENGTH;i++) {
         Cell nextCell = cell.neighbors[i];
-        if (nextCell.isValid() && (nextCell.position.mask & visited) == 0 && (nextCell.height <= cell.height+1)) {
+        if ((nextCell.position.mask & visited) == 0 && nextCell.height != 4 && (nextCell.height <= cell.height+1)) {
           visited|= nextCell.position.mask;
-          newCells.add(nextCell);
+          info.nextCellsList.add(nextCell);
         }
       }
     }
-    return newCells;
+    FastArray<Cell> temp = info.cellsList;
+    info.cellsList = info.nextCellsList;
+    info.nextCellsList = temp;
   }
 }

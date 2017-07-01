@@ -14,6 +14,7 @@ public class Player {
   public static GameState state = new GameState();
   static Oracle oracle = null;
   static Simulation sim = new Simulation(state);
+  static final boolean DEBUG_SCORING = false;
   
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
@@ -26,7 +27,7 @@ public class Player {
       round++;
       
       state.readRound(in);
-      state.toTDD();
+//      state.toTDD();
 //      debugReachableCells();
 //      debugPotentialActionsCount();
       
@@ -47,18 +48,18 @@ public class Player {
       int maxDeepening = 20;
       int enemyInSight = state.getEnemyInSight();
       switch(enemyInSight) {
-        case 0:  maxDeepening = 1000; break;
-        case 1:  maxDeepening = 1000; break;
-        case 2:  maxDeepening = 1000; break;
+        case 0:  maxDeepening = 10; break;
+        case 1:  maxDeepening = 10; break;
+        case 2:  maxDeepening = 10; break;
       }
       do {
         move = new Think(state).think(deepening);
-        if (System.currentTimeMillis() > GameState.startTime + GameState.MAX_TIME) {
-          move = null;
-        }
+        
         if (move != null && move.agent != null) {
           move.copyTo(state, bestMove);
-          // System.err.println("AB @ "+deepening+" found bestMove :"+bestMove);
+          System.err.println("AB @ "+deepening+" found bestMove :"+bestMove);
+        } else {
+          System.err.println("AB curoff at "+deepening);
         }
         if (deepening == 1) {
           // order moves
@@ -73,7 +74,7 @@ public class Player {
 //          }
         }
         deepening+=2;
-      } while (move != null && deepening < maxDeepening);
+      } while (move.agent != null && deepening < maxDeepening);
       
       long endTime = System.currentTimeMillis();
       int depth = deepening / 2;
@@ -86,8 +87,13 @@ public class Player {
         // System.err.println("State after last simulation for prediction for move "+bestMove);
         //state.toTDD();
         oracle.updateSimulated(state, bestMove);
+        if (DEBUG_SCORING ) {
+          System.err.println("Evaluation for move : "+bestMove);
+          AgentEvaluator.score(state);
+        }
         
         System.out.println(bestMove.toPlayerOutput()); //+" "+depth+" in "+(endTime-GameState.startTime));
+        
       } else {
         System.out.println("ACCEPT-DEFEAT GOOD FIGHT, GG");
       }

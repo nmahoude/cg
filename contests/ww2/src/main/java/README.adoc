@@ -22,7 +22,13 @@
 	* prendre les coups valides donnés par CG
 
 
-
+= 20170701 (legend)
+* 14h30 - : utilisation FastArray dans le voronoi + perf sur neighbouring
+* 14h14 - 16 : retour arriere + augmentation de la depth (100, 100, 100)
+* 13h21 - 27 : 100 * accessible cells
+* 12h56 - 18 
+* 11h45 - 25 : modif param de profondeur (10, 50, 100)
+* 24 : arrivée
 = 20170630 (gold)
 20h13 : elevation 50 -> 10, tuning sur la profondeur (10, 20, 1000)
 

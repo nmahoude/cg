@@ -8,7 +8,6 @@ public class AgentEvaluator {
   GameState state;
   Agent agent;
   
-  public static boolean debug = false;
   private static int FEATURE_END = 0;
   public static final int FEATURE_SCORE = FEATURE_END++;
   public static final int FEATURE_POSITION = FEATURE_END++;
@@ -18,6 +17,7 @@ public class AgentEvaluator {
   public static final int FEATURE_CLIFF = FEATURE_END++;
   public static final int FEATURE_ACCESSIBLE_CELLS = FEATURE_END++;
   public static final int FEATURE_POTENTIAL_CELLS = FEATURE_END++;
+  private static final double[] elevationScore = new double[]{ 1, 4, 9, 16 };
   double features[] = new double [FEATURE_END];
   static String[] featuresString = new String[]{
       "SCORE",
@@ -45,7 +45,9 @@ public class AgentEvaluator {
     Voronoi v = new Voronoi();
     int cells[] = v.voronoi4(state);
     score += 100.0 * (cells[0]+cells[1]-cells[2]-cells[3]);
-    
+    if (Player.DEBUG_SCORING) {
+      System.err.println("Voronoi : "+ cells);
+    }
     //score += 5.0 * state.agents[0].position.manhattan(state.agents[1].position);
     return score;    
   }
@@ -59,12 +61,12 @@ public class AgentEvaluator {
     ae.features[FEATURE_POSITION] = 1.0 * ae.position();
     ae.features[FEATURE_ELEVATION] = 50.0 * ae.elevation();
     ae.features[FEATURE_NEIGHBOURS] = 1.0 * ae.neighbouringElevation();
-    ae.features[FEATURE_ACTIONS] =1.0 * ae.countActions();
+    ae.features[FEATURE_ACTIONS] =0.0; //1.0 * ae.countActions();
     ae.features[FEATURE_CLIFF] = 1.0 * ae.dangerousCliffs();
-    ae.features[FEATURE_ACCESSIBLE_CELLS] = 1.0 * ae.accessibleCells();
-    ae.features[FEATURE_POTENTIAL_CELLS] = 0.0 ;//* ae.potentialCells();
+    ae.features[FEATURE_ACCESSIBLE_CELLS] = 0.0; //1.0 * ae.accessibleCells();
+    ae.features[FEATURE_POTENTIAL_CELLS] = 0.0; // * ae.potentialCells();
     
-    if (debug) {
+    if (Player.DEBUG_SCORING) {
       System.err.println("Scores for agent "+agent.id);
       for (int i=0;i<FEATURE_END;i++) {
         System.err.println("    "+featuresString[i]+" = "+ae.features[i]);
@@ -101,8 +103,9 @@ public class AgentEvaluator {
     double score = 0.0;
     for (int i = 0; i < Dir.LENGTH; i++) {
         Cell checkCell = agent.cell.neighbors[i];
-        if (checkCell.isValid() && checkCell.height <= agent.cell.height + 1) {
-            score += (1 + checkCell.height) * (1 + checkCell.height);
+        int height = checkCell.height;
+        if (height != 4 && height <= agent.cell.height + 1) {
+            score += elevationScore[height]; //(1 + checkCell.height) * (1 + checkCell.height);
         }
     }
     return score;

@@ -43,7 +43,13 @@ public class AccessibleCellsCalculator {
     for (int i=0;i<Dir.LENGTH;i++) {
       Cell nextCell = cell.neighbors[i];
       if ((nextCell.position.mask & visited) == 0 && (!checkLevel || nextCell.height <= cell.height+1)) {
-        count += countFromCell(nextCell);
+        boolean blocker = false;
+        for (Cell neighbor : nextCell.neighbors) {
+          if (neighbor.isThreat(agent)) blocker = true;
+        }
+        if (!blocker) {
+          count += countFromCell(nextCell);
+        }
       }
     }
     return count;

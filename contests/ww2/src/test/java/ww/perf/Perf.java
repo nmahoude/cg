@@ -5,10 +5,14 @@ import java.util.Scanner;
 import org.junit.Before;
 import org.junit.Test;
 
+import ww.Dir;
 import ww.GameState;
 import ww.Player;
 import ww.TU;
+import ww.sim.Move;
 import ww.sim.Simulation;
+import ww.think.NodePOC;
+import ww.think.Think;
 
 public class Perf {
   
@@ -37,9 +41,24 @@ public class Perf {
     TU.setAgent(state, 2,-1,-1);
     TU.setAgent(state, 3,-1,-1);
     
+    
     Player.state = state;
-    for (int i=0;i<10_000;i++) {
-      Player.think(simulation);
+    GameState.startTime = System.currentTimeMillis()+1_000_000;
+    state.legalActionDepth0NodeCache.clear();
+    for (int i=0;i<2;i++) {
+      for (Dir dir1 : Dir.getValues()) {
+        for (Dir dir2 : Dir.getValues()) {
+          Move move = new Move(state.agents[i]);
+          move.dir1 = dir1;
+          move.dir2 = dir2;
+          NodePOC node = new NodePOC(1);
+          node.move = move;
+          state.legalActionDepth0NodeCache.add(node);
+        }
+      }
+    }
+    for (int i=0;i<500;i++) {
+      new Think(state).think(3);
     }
   }
 }

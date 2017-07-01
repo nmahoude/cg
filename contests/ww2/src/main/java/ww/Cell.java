@@ -12,7 +12,6 @@ public class Cell {
   }
   public Cell neighbors[] = new Cell[8];
   
-
   public int height;
   public Agent agent;
   
