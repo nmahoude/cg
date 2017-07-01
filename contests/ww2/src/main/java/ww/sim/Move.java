@@ -2,6 +2,7 @@ package ww.sim;
 
 import ww.Agent;
 import ww.Dir;
+import ww.GameState;
 
 public class Move {
   public Agent agent;
@@ -17,8 +18,8 @@ public class Move {
     this.agent = agent;
   }
 
-  public void copyTo(Move move) {
-    move.agent = agent;
+  public void copyTo(GameState state, Move move) {
+    move.agent = state.agents[agent.id];
     move.dir1 = dir1;
     move.dir2 = dir2;
     

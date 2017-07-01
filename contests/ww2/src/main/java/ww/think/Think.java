@@ -84,7 +84,7 @@ public class Think {
           if (score > bestScore) {
             bestScore = score;
             if (node.depth == 0) {
-              child.move.copyTo(bestMove);
+              child.move.copyTo(state, bestMove);
             }
           }
           alpha = Math.max(alpha, bestScore);

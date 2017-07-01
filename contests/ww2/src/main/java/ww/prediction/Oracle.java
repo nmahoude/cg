@@ -14,6 +14,7 @@ import ww.sim.Move;
 import ww.sim.Simulation;
 
 public class Oracle {
+  public static boolean PROD = true;
   Simulation simulatedSimulation;
   GameState initialPreviousState;
 
@@ -81,41 +82,74 @@ public class Oracle {
     possiblePositions[2].clear();
     possiblePositions[3].clear();
 
-    if (formerSimulatedMove.isPush && checkForCancellPush(currentState)) {
+    if (formerSimulatedMove.isPush && checkForCancelledPush(currentState)) {
       revertOwnPush();
     }
+    if (!formerSimulatedMove.isPush && checkForMyCancelledMove(currentState )) {
+      revertOwnMove();
+    }
     
-    int id = whoHasBeenPushed(currentState);
-    if (id != -1) {
-      if (debugMode) System.err.println("Opp action : push");
-      checkForPushed(id, currentState);
+    if (checkForHisCancelledPush(currentState)) {
+      possiblePositions[2].addAll(formerPossiblePositions[2]);
+      possiblePositions[3].addAll(formerPossiblePositions[3]);
     } else {
-      // here, we have not been pushed, check for move
-      Cell locateConstruction = locateConstruction(currentState);
-      if (locateConstruction != Cell.InvalidCell) {
-        if (debugMode) System.err.println("Opp action : move");
-        checkForMove(currentState, locateConstruction);
+      
+      int id = whoHasBeenPushed(currentState);
+      if (id != -1) {
+        if (debugMode) System.err.println("Opp action : push");
+        checkForPushed(id, currentState);
       } else {
-        // invalidated Move, try to know who move ..
-        if (hasMoved(currentState, 2) || hasBeenStill(currentState, 3)) {
-          possiblePositions[2].addAll(getOneMoveAnyDirectionList(currentState, formerPossiblePositions[2]));
-          possiblePositions[3].addAll(formerPossiblePositions[3]);
-        } else if (hasMoved(currentState, 3) || hasBeenStill(currentState, 2)) {
-          possiblePositions[2].addAll(formerPossiblePositions[2]);
-          possiblePositions[3].addAll(getOneMoveAnyDirectionList(currentState, formerPossiblePositions[3]));
+        // here, we have not been pushed, check for move
+        Cell locateConstruction = locateConstruction(currentState);
+        if (locateConstruction != Cell.InvalidCell) {
+          if (debugMode) System.err.println("Opp action : move");
+          checkForMove(currentState, locateConstruction);
         } else {
-          // we don't know
-          possiblePositions[2].addAll(getOneMoveAnyDirectionList(currentState, formerPossiblePositions[2]));
-          possiblePositions[3].addAll(getOneMoveAnyDirectionList(currentState, formerPossiblePositions[3]));
+          if (debugMode) System.err.println("Opp action : invalidated move");
+          // invalidated Move, try to know who move ..
+          if (hasMoved(currentState, 2) || hasBeenStill(currentState, 3)) {
+            possiblePositions[2].addAll(getOneMoveAnyDirectionList(currentState, formerPossiblePositions[2]));
+            possiblePositions[3].addAll(formerPossiblePositions[3]);
+          } else if (hasMoved(currentState, 3) || hasBeenStill(currentState, 2)) {
+            possiblePositions[2].addAll(formerPossiblePositions[2]);
+            possiblePositions[3].addAll(getOneMoveAnyDirectionList(currentState, formerPossiblePositions[3]));
+          } else {
+            // we don't know. He may have move or not ...
+            possiblePositions[2].addAll(formerPossiblePositions[2]);
+            possiblePositions[2].addAll(getOneMoveAnyDirectionList(currentState, formerPossiblePositions[2]));
+            possiblePositions[3].addAll(formerPossiblePositions[3]);
+            possiblePositions[3].addAll(getOneMoveAnyDirectionList(currentState, formerPossiblePositions[3]));
+          }
         }
       }
     }
+    
     Set<Point> temp;
     for (int i=2;i<4;i++) {
       temp = filterImpossiblePositions(i, currentState, possiblePositions[i]);
       possiblePositions[i].clear();
       possiblePositions[i].addAll(temp);
     }
+  }
+
+  private void revertOwnMove() {
+    Cell constructed = formerSimulatedMove.agent.cell.get(formerSimulatedMove.dir2);
+    constructed.decrease();
+  }
+
+  private boolean checkForMyCancelledMove(GameState currentState) {
+    Cell constructed = formerSimulatedMove.agent.cell.get(formerSimulatedMove.dir2);
+    if (constructed.height > currentState.grid.get(constructed.position).height) {
+      return true;
+    }
+    return false;
+  }
+
+  private boolean checkForHisCancelledPush(GameState currentState ) {
+    Cell locateConstruction = locateConstruction(currentState);
+    if (locateConstruction != Cell.InvalidCell) return false;
+    
+    return true;
   }
 
   private Set<Point> getOneMoveAnyDirectionList(GameState currentState, HashSet<Point> formerPoints) {
@@ -135,16 +169,21 @@ public class Oracle {
   private void checkForMove(GameState currentState, Cell locatedConstruction) {
     // TODO be more precise, bruteforce possible moves !
     HashSet<Point> possibilitiesByAgent[] = (HashSet<Point>[])new HashSet[4];
-    possibilitiesByAgent[2] = inRadius(currentState, 2, formerPossiblePositions[2], locatedConstruction.position);
-    possibilitiesByAgent[3] = inRadius(currentState, 2, formerPossiblePositions[3], locatedConstruction.position);
-
+    possibilitiesByAgent[2] = bruteForce(currentState, 2, formerPossiblePositions[2], locatedConstruction.position);
+    if (possibilitiesByAgent[2].contains(locatedConstruction)) {
+      possibilitiesByAgent[2].remove(locatedConstruction);
+    }
+    possibilitiesByAgent[3] = bruteForce(currentState, 3, formerPossiblePositions[3], locatedConstruction.position);
+    if (possibilitiesByAgent[3].contains(locatedConstruction)) {
+      possibilitiesByAgent[3].remove(locatedConstruction);
+    }
     // if agents was seen and is still seen and didn't move, it's cant be him
     // TODO handle the case of cancelled move
     for (int id= 2;id<4;id++) {
       if (hasBeenStill(currentState, id)) {
         possibilitiesByAgent[id].clear();
       }
-      if (hasMoved(currentState, id)) {
+      if (hasMoved(currentState, id) || locatedConstruction.position == formerSimulatedState.agents[id].position) {
         possibilitiesByAgent[theOtherId(id)].clear();
       }
     }
@@ -153,31 +192,19 @@ public class Oracle {
               + (possibilitiesByAgent[3].size() != 0 ? 1 : 0);
   
     if (count == 0) {
-      throw new RuntimeException("Nobody in the range to make the move !");
+      debugException(currentState, locatedConstruction, possibilitiesByAgent);
+      if (!PROD) {
+        throw new RuntimeException("Nobody in the range to make the move !");
+      } else {
+        fillAllPossiblePositions(currentState, possiblePositions[2]);
+        fillAllPossiblePositions(currentState, possiblePositions[3]);
+      }
     } else if (count == 1) {
       int id = possibilitiesByAgent[2].size() > 0 ? 2 : 3;
       if (!currentState.agents[id].inFogOfWar()) {
         possiblePositions[id].add(currentState.agents[id].position);
       } else {
-        // now we know who, we need to infer it's new position
-        // TODO brute force the possibilities will be better than checking distance !
-        for (int i=0;i<8;i++) {
-          Cell cellToCheck = locatedConstruction.neighbors[i];
-          if (!cellToCheck.isValid()) continue;
-          if (canSeeCell(currentState.agents[0], cellToCheck)) continue;
-          if (canSeeCell(currentState.agents[1], cellToCheck)) continue;
-          
-          boolean foundOneInRange = false;
-          for (Point p : possibilitiesByAgent[id]) {
-            if (p.inRange(1, cellToCheck.position)) {
-              foundOneInRange = true;
-              break;
-            }
-          }
-          if (foundOneInRange) {
-            possiblePositions[id].add(cellToCheck.position);
-          }
-        }
+        possiblePositions[id].addAll(possibilitiesByAgent[id]);
       }
       possiblePositions[theOtherId(id)].addAll(formerPossiblePositions[theOtherId(id)]);
     } else {
@@ -195,6 +222,44 @@ public class Oracle {
     }
   }
 
+  private void debugException(GameState currentState, Cell locatedConstruction, HashSet<Point>[] possibilitiesByAgent) {
+    System.err.println("DEBUG ----");
+    System.err.println("formerPossiblePositions[3]: "+formerPossiblePositions[3]);
+    System.err.println("possibilitiesByAgent[3]: "+possibilitiesByAgent[3] );
+    System.err.println("Location :"+locatedConstruction.position);
+    System.err.println("Simulated state : ");
+    formerSimulatedState.toTDD();
+    System.err.println("Current state : ");
+    currentState.toTDD();
+  }
+
+  private HashSet<Point> bruteForce(GameState currentState, int id, HashSet<Point> startPositions, Point position) {
+    HashSet<Point> points = new HashSet<>();
+    Cell formerCell = formerSimulatedState.agents[id].cell;
+    
+    for (Point p : startPositions) {
+      Cell newCell = formerSimulatedState.grid.get(p);
+      formerSimulatedState.agents[id].pushTo(newCell);
+      
+      Move move = new Move(formerSimulatedState.agents[id]);
+      for (Dir dir1 : Dir.getValues()) {
+        move.dir1 = dir1;
+        for (Dir dir2 : Dir.getValues()) {
+          move.dir2 = dir2;
+          simulatedSimulation.simulate(move);
+          if (!move.isDir1Valid()) break;
+          if (!move.isDir2Valid()) continue;
+          if (newCell.get(dir1).get(dir2).position == position) {
+            points.add(newCell.get(dir1).position);
+          }
+          simulatedSimulation.undo(move);
+        }
+      }
+    }
+    formerSimulatedState.agents[id].pushTo(formerCell);
+    return points;
+  }
+
   private boolean hasMoved(GameState currentState, int id) {
     return formerSimulatedState.agents[id].position != Point.unknown && currentState.agents[id].position != Point.unknown && formerSimulatedState.agents[id].position != currentState.agents[id].position;
   }
@@ -203,9 +268,9 @@ public class Oracle {
     return formerSimulatedState.agents[id].position != Point.unknown && formerSimulatedState.agents[id].position == currentState.agents[id].position;
   }
 
-  private HashSet<Point> inRadius(GameState currentState, int radius, HashSet<Point> positions, Point target) {
+  private HashSet<Point> inRadius(GameState currentState, int radius, HashSet<Point> startPositions, Point target) {
     HashSet<Point> points = new HashSet<>();
-    for (Point p : positions) {
+    for (Point p : startPositions) {
       if (p.inRange(radius, target)) {
         points.add(p);
       }
@@ -235,7 +300,7 @@ public class Oracle {
     return -1; // nobody pushed
   }
   
-    private boolean checkForCancellPush(GameState currentState) {
+    private boolean checkForCancelledPush(GameState currentState) {
     int id = formerSimulatedMove.agent.id;
     Cell simulatedPushedFrom = formerSimulatedMove.agent.cell.get(formerSimulatedMove.dir1);
     Cell currentPushedFrom = currentState.grid.get(currentState.agents[id].cell.get(formerSimulatedMove.dir1).position);
@@ -267,13 +332,28 @@ public class Oracle {
     
     // here pushFilter contains only cell where the push can originate
     if (pushFilter.size() == 0) {
-      throw new RuntimeException("Cant find the origin of the push ? ");
+      if (!PROD) {
+        throw new RuntimeException("Cant find the origin of the push ? ");
+      } else {
+        fillAllPossiblePositions(currentState, possiblePositions[2]);
+        fillAllPossiblePositions(currentState, possiblePositions[3]);
+      }
     }
     boolean agent2InFilter = isAgentInFilter(currentState, pushFilter, 2);
     boolean agent3InFilter = isAgentInFilter(currentState, pushFilter, 3);
     int count = (agent2InFilter ? 1: 0) +( agent3InFilter ? 1:0);
     if (count ==0) {
-      throw new RuntimeException("Nobody can be in the origin of the push ? ");
+      System.err.println("Push locations : "+pushFilter);
+      System.err.println("Simulated state :");
+      formerSimulatedState.toTDD();
+      System.err.println("Current state: ");
+      currentState.toTDD();
+      if (!PROD) {
+        throw new RuntimeException("Nobody can be in the origin of the push ? ");
+      } else {
+        fillAllPossiblePositions(currentState, possiblePositions[2]);
+        fillAllPossiblePositions(currentState, possiblePositions[3]);
+      }
     } else if (count == 1) {
       // only on agent can be here !
       int id = agent2InFilter ? 2 : 3;
@@ -422,7 +502,7 @@ public class Oracle {
   /* update after our move */
   public void updateSimulated(GameState state, Move move) {
     simulatedSimulation = new Simulation(formerSimulatedState);
-    move.copyTo(formerSimulatedMove);
+    move.copyTo(formerSimulatedState, formerSimulatedMove);
     state.copyTo(formerSimulatedState);
     
     for (int id=2;id<4;id++) {
@@ -437,5 +517,15 @@ public class Oracle {
 
   public void setDebug(boolean b) {
     debugMode = b;
+  }
+  public static void fillAllPossiblePositions(GameState state, Set<Point> pos) {
+    pos.clear();
+    for (int y=0;y<GameState.size;y++) {
+      for (int x=0;x<GameState.size;x++) {
+        Cell cell = state.grid.get(x,y);
+        if (!cell.isValid()) continue;
+        pos.add(cell.position);
+      }      
+    }
   }
 }

@@ -44,7 +44,7 @@ public class AgentEvaluator {
     
     Voronoi v = new Voronoi();
     int cells[] = v.voronoi4(state);
-    score += 150.0 * (cells[0]+cells[1]-cells[2]-cells[3]);
+    score += 100.0 * (cells[0]+cells[1]-cells[2]-cells[3]);
     
     //score += 5.0 * state.agents[0].position.manhattan(state.agents[1].position);
     return score;    
@@ -99,16 +99,14 @@ public class AgentEvaluator {
 
   private double neighbouringElevation() {
     double score = 0.0;
-    for (int i=0;i<Dir.LENGTH;i++) {
-      Cell checkCell = agent.cell.neighbors[i];
-      int delta = (1+checkCell.height) * (1+checkCell.height);
-      if (checkCell.isValid() && checkCell.height <= agent.cell.height +1 ) {
-        score += delta;
-      } else {
-      }
+    for (int i = 0; i < Dir.LENGTH; i++) {
+        Cell checkCell = agent.cell.neighbors[i];
+        if (checkCell.isValid() && checkCell.height <= agent.cell.height + 1) {
+            score += (1 + checkCell.height) * (1 + checkCell.height);
+        }
     }
     return score;
-  }
+}
 
   private int elevation() {
     return agent.cell.height * agent.cell.height;

@@ -27,18 +27,17 @@ public class Player {
       
       state.readRound(in);
       state.toTDD();
-
 //      debugReachableCells();
 //      debugPotentialActionsCount();
       
       if (round > 1) {
         oracle.guessFrom(state);
-        oracle.debug(state);
+        //oracle.debug(state);
         oracle.apply(state);
       } else {
         // init the oracle
         oracle = new Oracle(state);
-        oracle.setDebug(true);
+        //oracle.setDebug(true);
       }
 
       Move bestMove = new Move(null); //think(sim);
@@ -58,7 +57,7 @@ public class Player {
           move = null;
         }
         if (move != null && move.agent != null) {
-          move.copyTo(bestMove);
+          move.copyTo(state, bestMove);
           // System.err.println("AB @ "+deepening+" found bestMove :"+bestMove);
         }
         if (deepening == 1) {
@@ -120,7 +119,7 @@ public class Player {
             System.err.println(""+move.toPlayerOutput()+" = "+score);
             if (score > bestScore) {
               bestScore = score;
-              move.copyTo(bestMove);
+              move.copyTo(state,bestMove);
             }
             sim.undo(move);
           }

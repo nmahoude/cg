@@ -3,16 +3,13 @@ package ww.prediction;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import ww.Agent;
-import ww.Cell;
 import ww.Dir;
 import ww.GameState;
 import ww.Point;
@@ -66,7 +63,7 @@ public class OracleTest {
       
       TU.fillAllPossiblePositions(simulatedState, oracle.possiblePositions[2]);
       TU.fillAllPossiblePositions(simulatedState, oracle.possiblePositions[3]);
-      oracle.updateSimulated(simulatedState, new Move(null));
+      oracle.updateSimulated(simulatedState, TU.getMove(simulatedState.agents[0], Dir.N, Dir.N));
       oracle.guessFrom(currentState);
       
       assertThat(currentState.agents[2].position, is (Point.get(2,1)));
@@ -103,7 +100,7 @@ public class OracleTest {
           Point.get(-1,-1)// Don't see it anymore
           );
       
-      oracle.updateSimulated(simulatedState, new Move(null));
+      oracle.updateSimulated(simulatedState, TU.getMove(simulatedState.agents[0], Dir.N, Dir.N));
       oracle.guessFrom(currentState);
       
       assertThat(oracle.possiblePositions[2].size(), is(1));
@@ -145,7 +142,7 @@ public class OracleTest {
       TU.fillAllPossiblePositions(simulatedState, oracle.possiblePositions[2]);
       TU.fillAllPossiblePositions(simulatedState, oracle.possiblePositions[3]);
       
-      oracle.updateSimulated(simulatedState, new Move(null));
+      oracle.updateSimulated(simulatedState, TU.getMove(simulatedState.agents[0], Dir.N, Dir.N));
       oracle.guessFrom(currentState);
 
       assertThat(oracle.possiblePositions[2].size(), is(1));
@@ -187,7 +184,7 @@ public class OracleTest {
       
       TU.fillAllPossiblePositions(simulatedState, oracle.possiblePositions[2]);
       TU.fillAllPossiblePositions(simulatedState, oracle.possiblePositions[3]);
-      oracle.updateSimulated(simulatedState, new Move(null));
+      oracle.updateSimulated(simulatedState, TU.getMove(simulatedState.agents[0], Dir.N, Dir.N));
       oracle.guessFrom(currentState);
 
       assertThat(oracle.possiblePositions[2].size(), is(1));
@@ -221,7 +218,7 @@ public class OracleTest {
       TU.setAgent(currentState, 2,-1,-1);
       TU.setAgent(currentState, 3,3,1);
       
-      oracle.updateSimulated(simulatedState, new Move(null));
+      oracle.updateSimulated(simulatedState, TU.getMove(simulatedState.agents[0], Dir.N, Dir.N));
       oracle.guessFrom(currentState);
       
       assertThat(oracle.possiblePositions[2].size(), is(1));
@@ -258,7 +255,7 @@ public class OracleTest {
       
       TU.fillAllPossiblePositions(simulatedState, oracle.possiblePositions[2]);
       TU.fillAllPossiblePositions(simulatedState, oracle.possiblePositions[3]);
-      oracle.updateSimulated(simulatedState, new Move(null));
+      oracle.updateSimulated(simulatedState, TU.getMove(simulatedState.agents[0], Dir.N, Dir.N));
       oracle.guessFrom(currentState);
       
       
@@ -318,6 +315,57 @@ public class OracleTest {
       
       assertThat(currentState.agents[2].position, is (Point.get(2, 2)));
       assertThat(currentState.agents[3].position, is (Point.unknown));
+    }
+    @Test
+    public void push_hisPush_invalidated_2() throws Exception {
+      TU.setHeights(simulatedState, 6,
+          "0.03.3",
+          "0.24.3",
+          "333434",
+          "33..33",
+          "1.21.1",
+          "0.00.0");
+      TU.setAgents(simulatedState, 
+          Point.get(2, 2),
+          Point.get(2, 1),
+          Point.get(3, 0), 
+          Point.get(-1, -1)
+          );
+      
+      TU.setHeights(currentState, 6,
+          "0.03.3",
+          "0.24.3",
+          "333434",
+          "33..33",
+          "1.21.1",
+          "0.00.0");
+      TU.setAgents(currentState, 
+          Point.get(2, 2),
+          Point.get(2, 1),
+          Point.get(3, 0), 
+          Point.get(-1, -1)
+          );
+      
+      TU.fillAllPossiblePositionsWith(oracle.possiblePositions[3], Arrays.asList(
+          Point.get(2,5),
+          Point.get(4,2),
+          Point.get(5,0),
+          Point.get(0,0),
+          Point.get(5,3),
+          Point.get(3,5),
+          Point.get(5,5),
+          Point.get(5,5),
+          Point.get(3,4),
+          Point.get(5,1),
+          Point.get(0,5),
+          Point.get(5,4),
+          Point.get(4,3)
+          ));
+      oracle.updateSimulated(simulatedState, TU.getPush(simulatedState.agents[0], Dir.NE, Dir.N));
+      oracle.guessFrom(currentState);
+      
+      assertThat(currentState.agents[2].position, is (Point.get(3, 0)));
+      assertThat(oracle.formerPossiblePositions[3], hasItem (Point.get(0,0)));
     }
     
   }
@@ -561,6 +609,95 @@ public class OracleTest {
     }
     
     @Test
+    public void move_dontTakeImpossibleMove() throws Exception {
+      TU.setHeights(simulatedState, 5,
+          "13021", // <- can't move to right cell from (0,0)
+          "02311",
+          "24430",
+          "12330",
+          "12201");
+      TU.setAgents(simulatedState, 
+          Point.get(4, 3),
+          Point.get(2, 3),
+          Point.get(0, 0),
+          Point.get(-1, -1)
+          );
+      
+      TU.setHeights(currentState, 5,
+          "23021",
+          "02311",
+          "24430",
+          "12340",
+          "12201");
+      TU.setAgents(currentState, 
+          Point.get(4, 3),
+          Point.get(2, 3),
+          Point.get(-1, -1),
+          Point.get(-1, -1)
+          );
+      
+      oracle.updateSimulated(simulatedState, TU.getMove(simulatedState.agents[0], Dir.N, Dir.N));
+      oracle.guessFrom(currentState);
+      
+      assertThat(oracle.possiblePositions[2].size() , is (2));
+      assertThat(oracle.possiblePositions[2], hasItem(not(Point.get(0, 1))));
+    }
+    
+    @Test
+    public void move_himCancelledBuild() throws Exception {
+      TU.setHeights(simulatedState, 5,
+          "01000", 
+          "00000",
+          "00100",
+          "00100",
+          "00000");
+      TU.setAgents(simulatedState, 
+          Point.get(2, 3),
+          Point.get(3, 2),
+          Point.get(-1, -1),
+          Point.get(-1, -1)
+          );
+      
+      TU.setHeights(currentState, 5,
+          "01000", 
+          "00000",
+          "00100",
+          "00100",
+          "00000");
+      TU.setAgents(currentState, 
+          Point.get(2, 3),
+          Point.get(3, 2),
+          Point.get(2, 2),
+          Point.get(-1, -1)
+          );
+      
+      TU.fillAllPossiblePositionsWith(oracle.possiblePositions[2], Arrays.asList(
+          Point.get(0,4), Point.get(2,2),
+          Point.get(1,1), Point.get(4,4),
+          Point.get(0,0), Point.get(2,1),
+          Point.get(1,2), Point.get(0,2),
+          Point.get(2,0), Point.get(0,3),
+          Point.get(1,0), Point.get(0,1),
+          Point.get(4,3)
+          ));
+      TU.fillAllPossiblePositionsWith(oracle.possiblePositions[3], Arrays.asList(
+          Point.get(0,4), Point.get(2,2),
+          Point.get(1,1), Point.get(4,4),
+          Point.get(0,0), Point.get(2,1),
+          Point.get(1,2), Point.get(0,2),
+          Point.get(2,0), Point.get(0,3),
+          Point.get(1,0), Point.get(0,1),
+          Point.get(4,3)
+          ));
+      oracle.updateSimulated(simulatedState, TU.getMove(simulatedState.agents[0], Dir.N, Dir.N));
+      oracle.guessFrom(currentState);
+      
+      assertThat(oracle.possiblePositions[2].size() , is (1));
+      assertThat(oracle.possiblePositions[2], hasItem(Point.get(2, 2)));
+      assertThat(oracle.possiblePositions[3] , hasItem (Point.get(4,4)));
+    }
+    
+    @Test
     public void move_shouldNotLostTraceOfTheStillAgent() throws Exception {
       TU.setHeights(simulatedState, 5,
           "10021",
@@ -626,7 +763,7 @@ public class OracleTest {
           );
       
       TU.fillAllPossiblePositionsWith(oracle.possiblePositions[2], Arrays.asList(
-          Point.get(0, 2),
+          Point.get(0, 2), // seen
           Point.get(0, 0),
           Point.get(1, 1),
           Point.get(0, 1),
@@ -641,9 +778,163 @@ public class OracleTest {
       oracle.updateSimulated(simulatedState, TU.getMove(simulatedState.agents[0], Dir.N, Dir.N));
       oracle.guessFrom(currentState);
       
-      assertThat(oracle.possiblePositions[2].size() , is (5));
+      assertThat(oracle.possiblePositions[2].size() , is (4));
       assertThat(oracle.possiblePositions[3].size() , is (1));
       assertThat(oracle.possiblePositions[3], hasItem(Point.get(1, 3)));
+    }
+    
+  }
+  
+  public static class Size_7 {
+    GameState simulatedState;
+    GameState currentState;
+    Oracle oracle;
+    
+    @Before
+    public void setup() {
+      GameState.size = 7;
+      simulatedState = new GameState();
+      currentState = new GameState();
+      oracle = new Oracle(currentState);
+    }
+    
+    @Test
+    public void push_myPushWasCancelled() throws Exception {
+      TU.setHeights(simulatedState, 7,
+          "...2...",
+          "..333..",
+          ".04430.",
+          "0103201",
+          ".00100.",
+          "..000..",
+          "...0...");
+      TU.setAgents(simulatedState, 
+          Point.get(1, 3),
+          Point.get(4, 3),
+          Point.get(-1, -1),
+          Point.get(4, 1) // that's our simulation, but it has been cancelled
+          );
+      
+      TU.setHeights(currentState, 7,
+          "...2...",
+          "..333..",
+          ".04430.",
+          "0103201",
+          ".00100.",
+          "..000..",
+          "...0...");
+      TU.setAgents(currentState, 
+          Point.get(1, 3),
+          Point.get(4, 3),
+          Point.get(-1, -1),
+          Point.get(4, 2)
+          );
+      
+      TU.fillAllPossiblePositionsWith(oracle.possiblePositions[2], Arrays.asList(
+          Point.get(2,1),
+          Point.get(3,1),
+          Point.get(3,0)));
+      TU.fillAllPossiblePositionsWith(oracle.possiblePositions[3], Arrays.asList(
+          Point.get(2,1),
+          Point.get(3,1),
+          Point.get(3,0),
+          Point.get(4,1)));
+      oracle.updateSimulated(simulatedState, TU.getPush(simulatedState.agents[1], Dir.N, Dir.N));
+      oracle.guessFrom(currentState);
+      
+      assertThat(oracle.possiblePositions[2].size() , is (3));
+      assertThat(oracle.possiblePositions[3].size() , is (1));
+      assertThat(oracle.possiblePositions[3], hasItem(Point.get(4, 2)));
+    }
+
+    @Test
+    public void moveAgentCantBeOnTheCellThatHasBeenBuilt() throws Exception {
+      TU.setHeights(simulatedState, 7,
+          "...2...",
+          "..233..",
+          ".04400.",
+          "0102201",
+          ".00100.",
+          "..000..",
+          "...0...");
+      TU.setAgents(simulatedState, 
+          Point.get(1, 3),
+          Point.get(4, 3),
+          Point.get(2, 1),
+          Point.get(-1, -1)
+          );
+      
+      TU.setHeights(currentState, 7,
+          "...2...",
+          "..333..",
+          ".04400.",
+          "0102201",
+          ".00100.",
+          "..000..",
+          "...0...");
+      TU.setAgents(currentState, 
+          Point.get(1, 3),
+          Point.get(4, 3),
+          Point.get(-1, -1), // we have to remember 2 was on the spot 2,2 that has been build on
+          Point.get(-1, -1) 
+          );
+      
+      TU.fillAllPossiblePositionsWith(oracle.possiblePositions[3], Arrays.asList(
+          Point.get(2,1),
+          Point.get(3,1),
+          Point.get(3,0),
+          Point.get(4,1)));
+      oracle.updateSimulated(simulatedState, TU.getMove(simulatedState.agents[1], Dir.N, Dir.N));
+      oracle.guessFrom(currentState);
+      
+      assertThat(oracle.possiblePositions[2].size() , is (2));
+      assertThat(oracle.possiblePositions[2], hasItem(Point.get(3, 0)));
+      assertThat(oracle.possiblePositions[2], hasItem(Point.get(3, 1)));
+      assertThat(oracle.possiblePositions[3].size() , is (4));
+    }
+    
+    @Test
+    public void move_myCancelledMove() throws Exception {
+      TU.setHeights(simulatedState, 7,
+          "...1...",
+          "..303..",
+          ".34444.",
+          "0232434",
+          ".33324.",
+          "..041..",
+          "...0...");
+      TU.setAgents(simulatedState, 
+          Point.get(3, 1),
+          Point.get(2, 5),
+          Point.get(3, 6),
+          Point.get(-1, -1)
+          );
+      
+      TU.setHeights(currentState, 7,
+          "...1...",
+          "..303..",
+          ".33444.",
+          "0233434",
+          ".33324.",
+          "..041..",
+          "...0...");
+      TU.setAgents(currentState, 
+          Point.get(3, 1),
+          Point.get(2, 5),
+          Point.get(3, 6),
+          Point.get(-1, -1)
+          );
+      
+      TU.fillAllPossiblePositionsWith(oracle.possiblePositions[3], Arrays.asList(
+          Point.get(2, 2),
+          Point.get(1, 2)));
+      oracle.updateSimulated(simulatedState, TU.getMove(simulatedState.agents[0], Dir.S, Dir.SW));
+      oracle.guessFrom(currentState);
+      
+      assertThat(oracle.possiblePositions[2].size() , is (1));
+      assertThat(oracle.possiblePositions[2], hasItem(Point.get(3, 6)));
+      assertThat(oracle.possiblePositions[3].size() , is (1));
+      assertThat(oracle.possiblePositions[3], hasItem(Point.get(2, 3)));
     }
   }
 }

@@ -325,7 +325,7 @@ public class Divination {
 
   /* update after our move */
   public void updateSimulated(GameState state, Move move) {
-    move.copyTo(simulatedMove);
+    move.copyTo(simulated, simulatedMove);
     state.copyTo(simulated);
     for (int i=0;i<2;i++) {
       guessedPosition[i] = state.agents[2+i].position;
