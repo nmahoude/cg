@@ -2,17 +2,17 @@ package ww;
 
 public class Grid {
   private long gridMask;
-  private Cell cells[][] ; // just to save them, don't use this
+  private Cell cells[] ; // just to save them, don't use this
   public int size;
   
   public Grid(int size) {
     this.size = size;
     
-    cells = new Cell[size][size];
+    cells = new Cell[size*size];
     for (int x=0;x<size;x++) {
       for (int y=0;y<size;y++) {
-        cells[x][y] = new Cell();
-        cells[x][y].position = Point.get(x, y);
+        cells[x+size*y] = new Cell();
+        cells[x+size*y].position = Point.get(x, y);
         gridMask|=Point.get(x, y).mask;
       }
     }
@@ -22,9 +22,9 @@ public class Grid {
       for (int y=0;y<size;y++) {
         for (Dir dir : Dir.getValues()) {
           if (x+dir.dx >=0 && x+dir.dx<size && y+dir.dy>=0 && y+dir.dy < size) {
-            cells[x][y].neighbors[dir.index] = cells[x+dir.dx][y+dir.dy];
+            cells[x+size*y].neighbors[dir.index] = cells[x+dir.dx+size*(y+dir.dy)];
           } else {
-            cells[x][y].neighbors[dir.index] = Cell.InvalidCell;
+            cells[x+size*y].neighbors[dir.index] = Cell.InvalidCell;
           }
         }
       }
@@ -37,31 +37,31 @@ public class Grid {
 
   public Cell get(int x, int y) {
     if (x== -1) return Cell.InvalidCell;
-    return cells[x][y];
+    return cells[x+size*y];
   }
 
   public void reset() {
     for (int x=0;x<size;x++) {
       for (int y=0;y<size;y++) {
-        cells[x][y].agent = null;
+        cells[x+size*y].agent = null;
       }
     }
   }
 
   public void setHole(int x, int y) {
-    cells[x][y].height = 4;
-    cells[x][y].isHole = true; // only for debug ...
+    cells[x+size*y].height = 4;
+    cells[x+size*y].isHole = true; // only for debug ...
     gridMask&=~Point.get(x, y).mask;
   }
 
   public void setHeight(int x, int y, int height) {
-    cells[x][y].height = height;
+    cells[x+size*y].height = height;
   }
 
   public void copyTo(GameState other) {
     for (int x=0;x<size;x++) {
       for (int y=0;y<size;y++) {
-        cells[x][y].copyTo(other, other.grid.cells[x][y]);
+        cells[x+size*y].copyTo(other, other.grid.cells[x+size*y]);
       }
     }
   }

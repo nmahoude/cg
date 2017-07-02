@@ -11,6 +11,8 @@ import ww.GameState;
 
 public class Voronoi {
   long visited;
+  boolean stop[] = new boolean[4];
+  int cellsCount[] = new int[4];
   
   static VoronoiInfo infos[] = new VoronoiInfo[4];
   static {
@@ -19,9 +21,6 @@ public class Voronoi {
     }
   }
   public int[] voronoi(GameState state, Agent[] agents) {
-    boolean stop[] = new boolean[agents.length];
-    int cellsCount[] = new int[agents.length];
-    
     visited = 0L;
 
     for (int i=0;i<agents.length;i++) {
@@ -30,16 +29,20 @@ public class Voronoi {
       infos[i].cellsList.add(agents[i].cell);
       visited|= agents[i].position.mask;
     }
+    for (int i=agents.length;i<4;i++) {
+      stop[i] = true;
+    }
     
     while(dontStop(stop)) {
       for (int i=0;i<agents.length;i++) {
         if (stop[i] == true) continue;
         
         visitCells(infos[i]);
-        if (infos[i].cellsList.size() == 0) {
+        if (infos[i].cellsList.length == 0) {
           stop[i] = true;
+        } else {
+          cellsCount[i]+= infos[i].cellsList.length;
         }
-        cellsCount[i]+= infos[i].cellsList.size();
       }
     }
     
@@ -47,10 +50,7 @@ public class Voronoi {
   }
   
   private boolean dontStop(boolean[] stop) {
-    for (boolean b : stop) {
-      if (!b) return true;
-    }
-    return false;
+    return ! (stop[0] && stop[1] && stop[2] && stop[3]);
   }
 
   public int[] voronoi2(GameState state, Agent agent0, Agent agent1) {
@@ -68,7 +68,7 @@ public class Voronoi {
     info.nextCellsList.clear();
     
     for (int c=0;c<info.cellsList.size();c++) {
-      Cell cell = info.cellsList.get(c);
+      Cell cell = info.cellsList.elements[c];
       for (int i=0;i<Dir.LENGTH;i++) {
         Cell nextCell = cell.neighbors[i];
         if ((nextCell.position.mask & visited) == 0 && nextCell.height != 4 && (nextCell.height <= cell.height+1)) {

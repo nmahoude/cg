@@ -6,30 +6,11 @@ import ww.paths.Voronoi;
 import ww.sim.Simulation;
 
 public class AgentEvaluator {
+  private static final double[] elevationScore = new double[] { 1, 4, 9, 16 };
+  private static AgentEvaluator ae = new AgentEvaluator(null, null);
+
   GameState state;
   Agent agent;
-  
-  private static int FEATURE_END = 0;
-  public static final int FEATURE_SCORE = FEATURE_END++;
-  public static final int FEATURE_POSITION = FEATURE_END++;
-  public static final int FEATURE_ELEVATION = FEATURE_END++;
-  public static final int FEATURE_NEIGHBOURS = FEATURE_END++;
-  public static final int FEATURE_ACTIONS = FEATURE_END++;
-  public static final int FEATURE_CLIFF = FEATURE_END++;
-  public static final int FEATURE_ACCESSIBLE_CELLS = FEATURE_END++;
-  public static final int FEATURE_POTENTIAL_CELLS = FEATURE_END++;
-  private static final double[] elevationScore = new double[]{ 1, 4, 9, 16 };
-  double features[] = new double [FEATURE_END];
-  static String[] featuresString = new String[]{
-      "SCORE",
-      "POSITION",
-      "ELEVATION",
-      "NEIGHBORS",
-      "ACTIONS",
-      "CLIFF",
-      "ACCESSIBLE CELLS",
-      "POTENTIAL CELLS",
-  };
   
   AgentEvaluator(GameState state, Agent agent) {
     this.state = state;
@@ -47,6 +28,26 @@ public class AgentEvaluator {
     //score += 5.0 * state.agents[0].position.manhattan(state.agents[1].position);
     return score;    
   }
+  
+  public static double score(GameState state, Agent agent) {
+    if (agent.inFogOfWar()) return 0.0;
+    
+    ae.state = state;
+    ae.agent = agent;
+    
+    double score = 0.0
+        + 20.0 * agent.score
+        + 1.0 * ae.position()
+        + 50.0 * ae.elevation()
+        + 1.0 * ae.neighbouringElevation()
+        + 0.0 //1.0 * ae.countActions();
+        + 1.0 * ae.dangerousCliffs()
+        + 0.0 //1.0 * ae.accessibleCells();
+        + 0.0; // * ae.potentialCells();
+    
+    return score;
+  }
+
 
   private static double influenceMap(GameState state) {
     InfluenceMap map[] = new InfluenceMap[4];
@@ -98,35 +99,6 @@ public class AgentEvaluator {
     if (Player.DEBUG_SCORING) {
       System.err.println("Voronoi : "+ cells);
     }
-    return score;
-  }
-
-  public static double score(GameState state, Agent agent) {
-    if (agent.inFogOfWar()) return 0.0;
-    
-    AgentEvaluator ae = new AgentEvaluator(state, agent);
-
-    ae.features[FEATURE_SCORE] = 20.0 * agent.score;
-    ae.features[FEATURE_POSITION] = 1.0 * ae.position();
-    ae.features[FEATURE_ELEVATION] = 50.0 * ae.elevation();
-    ae.features[FEATURE_NEIGHBOURS] = 1.0 * ae.neighbouringElevation();
-    ae.features[FEATURE_ACTIONS] =0.0; //1.0 * ae.countActions();
-    ae.features[FEATURE_CLIFF] = 1.0 * ae.dangerousCliffs();
-    ae.features[FEATURE_ACCESSIBLE_CELLS] = 0.0; //1.0 * ae.accessibleCells();
-    ae.features[FEATURE_POTENTIAL_CELLS] = 0.0; // * ae.potentialCells();
-    
-    if (Player.DEBUG_SCORING) {
-      System.err.println("Scores for agent "+agent.id);
-      for (int i=0;i<FEATURE_END;i++) {
-        System.err.println("    "+featuresString[i]+" = "+ae.features[i]);
-      }
-    }
-    
-    double score = 0.0;
-    for (int i=0;i<FEATURE_END;i++) {
-      score += ae.features[i];
-    }
-    
     return score;
   }
 

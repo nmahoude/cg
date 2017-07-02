@@ -24,8 +24,9 @@
 
 
 = 20170702
-tester avec une depth impaire
-
+* 02h30 - 20 / 20.86 : ?? pdt la nuit
+* 01h52 - 19 / 21.30: Amelioration des perfs sur score
+* 01h35 - : amelioration des perfs sur le cliff --> OK
 * 01h11 - 18 / 21.04 : sensiblement identique à 18h48
 * 00h47 27 / 17.90 - voronoi 4, mais scorer en fonction de l'élévation
 * marche pas - voronoi, mais sans check elevation ?

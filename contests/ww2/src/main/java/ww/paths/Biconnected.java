@@ -1,5 +1,8 @@
 package ww.paths;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+
 public class Biconnected {
   private int n; // number of vertex in this graph
   private Node[] graph; // adjacent list for all vertex
@@ -11,21 +14,7 @@ public class Biconnected {
       n = vertex;
       graph = new Node[n];
   }
-  class Stack {
-      int top;
-      int[][] data = new int[100][2];
-      int[] v = new int[100];
-      public void push(int x, int y) {
-          data[top][0] = x;
-          data[top++][1] = y;
-      }
-      public int[] pop() {
-          return data[--top];
-      }
-      public boolean isEmpty() {
-          return top == 0;
-      }
-  }
+
   public void init() {
       dfn = new int[n];
       low = new int[n];
@@ -81,6 +70,7 @@ public class Biconnected {
       tt.link = graph[y];
       graph[y] = tt;
   }
+  
   public static void main(String[] argv) throws Exception {
       BufferedReader in = new BufferedReader(new FileReader(argv[0]));
       Biconnected g = new Biconnected(Integer.parseInt(in.readLine()));
