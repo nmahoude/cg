@@ -1,6 +1,5 @@
 package ww.prediction;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -83,20 +82,23 @@ public class Oracle {
     possiblePositions[3].clear();
 
     if (formerSimulatedMove.isPush && checkForCancelledPush(currentState)) {
+      if (debugMode) System.err.println("Revert our push");
       revertOwnPush();
     }
     if (!formerSimulatedMove.isPush && checkForMyCancelledMove(currentState )) {
+      if (debugMode) System.err.println("Revert our move");
       revertOwnMove();
     }
     
     if (checkForHisCancelledPush(currentState)) {
+      if (debugMode) System.err.println("Cancel his push");
       possiblePositions[2].addAll(formerPossiblePositions[2]);
       possiblePositions[3].addAll(formerPossiblePositions[3]);
     } else {
       
       int id = whoHasBeenPushed(currentState);
       if (id != -1) {
-        if (debugMode) System.err.println("Opp action : push");
+        if (debugMode) System.err.println("Opp action : push agent "+id);
         checkForPushed(id, currentState);
       } else {
         // here, we have not been pushed, check for move
@@ -134,6 +136,7 @@ public class Oracle {
 
   private void revertOwnMove() {
     Cell constructed = formerSimulatedMove.agent.cell.get(formerSimulatedMove.dir2);
+    if (debugMode) System.err.println("Decreasing height of "+constructed);
     constructed.decrease();
   }
 
@@ -301,8 +304,13 @@ public class Oracle {
     private boolean checkForCancelledPush(GameState currentState) {
     int id = formerSimulatedMove.agent.id;
     Cell simulatedPushedFrom = formerSimulatedMove.agent.cell.get(formerSimulatedMove.dir1);
-    Cell currentPushedFrom = currentState.grid.get(currentState.agents[id].cell.get(formerSimulatedMove.dir1).position);
+    Cell currentPushedFrom = currentState.grid.get(simulatedPushedFrom.position);
     if (simulatedPushedFrom.height > currentPushedFrom.height) {
+      if (debugMode) {
+        System.err.println("Current pushed from : "+currentPushedFrom);
+        System.err.println("Simulated height was "+ simulatedPushedFrom.height);
+        System.err.println("Current height is "+currentPushedFrom.height);
+      }
       return true;
     }
     return false;
@@ -355,8 +363,12 @@ public class Oracle {
     } else if (count == 1) {
       // only on agent can be here !
       int id = agent2InFilter ? 2 : 3;
+      if (debugMode) System.err.println("Pushed by "+id);
       possiblePositions[id].addAll(getFilteredPositions(currentState, formerPossiblePositions[id], pushFilter));
       possiblePositions[theOtherId(id)].addAll(formerPossiblePositions[theOtherId(id)]);
+      if (debugMode) {
+        System.err.println("Copying former position of the other : "+possiblePositions[theOtherId(id)]);
+      }
     } else if (count == 2) {
       // we don't know :(
       // one of them was in the pushFilter, but which one has move ?

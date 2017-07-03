@@ -33,7 +33,7 @@ public class Player {
       
       if (round > 1) {
         oracle.guessFrom(state);
-        //oracle.debug(state);
+//        oracle.debug(state);
         oracle.apply(state);
       } else {
         // init the oracle

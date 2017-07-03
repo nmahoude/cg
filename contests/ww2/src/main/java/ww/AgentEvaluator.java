@@ -7,7 +7,7 @@ import ww.sim.Simulation;
 
 public class AgentEvaluator {
   private static final double[] elevationScore = new double[] { 1, 4, 9, 16 };
-  private static AgentEvaluator ae = new AgentEvaluator(null, null);
+  static AgentEvaluator ae = new AgentEvaluator(null, null);
 
   GameState state;
   Agent agent;
@@ -19,20 +19,21 @@ public class AgentEvaluator {
   
   public static double score(GameState state) {
     double score = 0.0;
-    score += AgentEvaluator.score(state, state.agents[0]);
-    score += AgentEvaluator.score(state, state.agents[1]);
-    score -= AgentEvaluator.score(state, state.agents[2]);
-    score -= AgentEvaluator.score(state, state.agents[3]);
+    ae.state = state;
+    
+    score += AgentEvaluator.score(state.agents[0]);
+    score += AgentEvaluator.score(state.agents[1]);
+    score -= AgentEvaluator.score(state.agents[2]);
+    score -= AgentEvaluator.score(state.agents[3]);
     
     score += 200.0 * voronoi(state);
     //score += 5.0 * state.agents[0].position.manhattan(state.agents[1].position);
     return score;    
   }
   
-  public static double score(GameState state, Agent agent) {
-    if (agent.inFogOfWar()) return 0.0;
+  public static double score(Agent agent) {
+    if (agent.position == Point.unknown) return 0.0;
     
-    ae.state = state;
     ae.agent = agent;
     
     double score = 0.0

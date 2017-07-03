@@ -1,10 +1,10 @@
 package ww.think;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ww.Agent;
 import ww.GameState;
 import ww.sim.Move;
 import ww.sim.Simulation;
@@ -30,9 +30,9 @@ public class Think {
     
     Node.testedNodes = 0;
     Node.hit = 0;
-    transpositionMap.clear();
+    // transpositionMap.clear();
     timeout = false;
-    alphaBeta(node0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, true);
+    alphaBeta(node0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, true, dontSee(state.agents[0]), dontSee(state.agents[1]));
     if (timeout) {
       bestMove.agent = null;
     }
@@ -40,7 +40,11 @@ public class Think {
     return bestMove;
   }
 
-  public double alphaBeta(NodePOC node, double alpha, double beta, boolean maximizingScore) {
+  int dontSee(Agent agent) {
+    return (!state.agents[2].inFogOfWar() && state.agents[2].position.inRange(1, agent.position))
+         || (!state.agents[3].inFogOfWar() && state.agents[3].position.inRange(1, agent.position)) ? 0 : 1;
+  }
+  public double alphaBeta(NodePOC node, double alpha, double beta, boolean maximizingScore, int dontsee0, int dontsee1) {
     // timeout condition
     if (timeout) return 0.0;
     if (System.currentTimeMillis() - GameState.startTime > GameState.MAX_TIME) {
@@ -55,7 +59,7 @@ public class Think {
 //    }
     
     if (node.depth == maxDepth) {
-      return node.evaluate();
+      return node.evaluate(dontsee0, dontsee1);
     }
 
     double bestScore = maximizingScore ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
@@ -64,7 +68,7 @@ public class Think {
     for (NodePOC child : children) {
       if (child.move == null) {
         // no opponents known
-        return alphaBeta(child, alpha, beta, !maximizingScore);
+        return alphaBeta(child, alpha, beta, !maximizingScore, dontsee0, dontsee1);
       } else {
         Node.testedNodes++;
         double score;
@@ -75,7 +79,7 @@ public class Think {
           continue;
         }
         validActions++;
-        score = alphaBeta(child, alpha, beta, !maximizingScore);
+        score = alphaBeta(child, alpha, beta, !maximizingScore, dontsee0+dontSee(state.agents[0]), dontsee1+dontSee(state.agents[1]));
         simulation.undo(child.move);
         
         child.score = score;
@@ -99,7 +103,7 @@ public class Think {
       }
     }
     if (validActions == 0) {
-      return node.evaluate();
+      return node.evaluate(dontsee0, dontsee1);
     }
     return bestScore;
   }

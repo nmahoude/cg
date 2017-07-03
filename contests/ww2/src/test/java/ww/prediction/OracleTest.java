@@ -783,6 +783,47 @@ public class OracleTest {
       assertThat(oracle.possiblePositions[3], hasItem(Point.get(1, 3)));
     }
     
+    @Test
+    public void dontForgetTheOtherOne() throws Exception {
+      TU.setHeights(simulatedState, 5,
+          "01111",
+          "01120",
+          "03230",
+          "03420",
+          "00000");
+      TU.setAgents(simulatedState, 
+          Point.get(2, 4),
+          Point.get(2, 1),
+          Point.get(-1, -1),
+          Point.get(-1, -1)
+          );
+      
+      TU.setHeights(currentState, 5,
+          "01111",
+          "01220",
+          "03230",
+          "03420",
+          "00000");
+      TU.setAgents(currentState, 
+          Point.get(2, 4),
+          Point.get(2, 0),
+          Point.get(-1, -1),
+          Point.get(-1, -1)
+          );
+      
+      TU.fillAllPossiblePositionsWith(oracle.possiblePositions[2], Arrays.asList(
+          Point.get(2, 2)));
+      TU.fillAllPossiblePositionsWith(oracle.possiblePositions[3], Arrays.asList(
+          Point.get(4, 2)));
+      oracle.updateSimulated(simulatedState, TU.getPush(simulatedState.agents[1], Dir.E, Dir.SE));
+      oracle.guessFrom(currentState);
+      
+      assertThat(oracle.possiblePositions[2].size() , is (1));
+      assertThat(oracle.possiblePositions[3].size() , is (1));
+      assertThat(oracle.possiblePositions[2], hasItem(Point.get(2, 2)));
+      assertThat(oracle.possiblePositions[3], hasItem(Point.get(4, 2)));
+    }
+    
   }
   
   public static class Size_7 {

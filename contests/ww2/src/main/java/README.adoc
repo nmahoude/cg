@@ -24,6 +24,14 @@
 
 
 = 20170702
+* 14h00 : coef à 18
+* 14h00 : KO coeff à 30
+* 13h24 : 22.3 coef à 20
+* 12h54 : 21.16 retest à 10
+* 12h28 - 21.37 coeff à 12
+* 12h03 - 21.64 coeff à 15
+* 11h38 - 20.75 coeff à 20
+* 11h11 - 22.36 : coeff à 10
 * 02h30 - 20 / 20.86 : ?? pdt la nuit
 * 01h52 - 19 / 21.30: Amelioration des perfs sur score
 * 01h35 - : amelioration des perfs sur le cliff --> OK

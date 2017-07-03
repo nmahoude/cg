@@ -20,6 +20,7 @@ public class AgentEvaluatorTest {
   public void setup() {
     state = new GameState();
     simulation = new Simulation(state);
+    AgentEvaluator.ae.state = state;
   }
 
   @Test
@@ -66,14 +67,14 @@ public class AgentEvaluatorTest {
     double tscore1 = AgentEvaluator.score(state);
 
     AgentEvaluator ae1 = new AgentEvaluator(state, agent);
-    double score1 = ae1.score(state, agent);
+    double score1 = ae1.score(agent);
 
     simulation.undo(move);
     simulation.simulate(TU.getMove(agent, Dir.N, Dir.N));
     double tscore2 = AgentEvaluator.score(state);
 
     AgentEvaluator ae2 = new AgentEvaluator(state, agent);
-    double score2 = ae1.score(state, agent);
+    double score2 = ae1.score(agent);
 
     assertThat(score1 > score2 , is(true));
   }
@@ -102,14 +103,14 @@ public class AgentEvaluatorTest {
     double tscore1 = AgentEvaluator.score(state);
 
     AgentEvaluator ae1 = new AgentEvaluator(state, agent);
-    double score1 = ae1.score(state, agent);
+    double score1 = ae1.score(agent);
 
     simulation.undo(move);
     simulation.simulate(TU.getMove(agent, Dir.S, Dir.E));
     double tscore2 = AgentEvaluator.score(state);
 
     AgentEvaluator ae2 = new AgentEvaluator(state, agent);
-    double score2 = ae1.score(state, agent);
+    double score2 = ae1.score(agent);
 
     assertThat(score1 > score2 , is(true));
   }
@@ -136,14 +137,14 @@ public class AgentEvaluatorTest {
     simulation.simulate(move);
     double tscore1 = AgentEvaluator.score(state);
     AgentEvaluator ae1 = new AgentEvaluator(state, agent);
-    double score1 = ae1.score(state, agent);
+    double score1 = ae1.score(agent);
 
     simulation.undo(move);
     simulation.simulate(TU.getMove(agent, Dir.N, Dir.N));
     double tscore2 = AgentEvaluator.score(state);
 
     AgentEvaluator ae2 = new AgentEvaluator(state, agent);
-    double score2 = ae1.score(state, agent);
+    double score2 = ae1.score(agent);
 
     assertThat(score2 > score1 , is(true));
   }
@@ -168,14 +169,14 @@ public class AgentEvaluatorTest {
     simulation.simulate(move); // W W block the my agents
     double tscore1 = AgentEvaluator.score(state);
     AgentEvaluator ae1 = new AgentEvaluator(state, agent);
-    double score1 = ae1.score(state, agent);
+    double score1 = ae1.score(agent);
 
     simulation.undo(move);
     simulation.simulate(TU.getMove(agent, Dir.W, Dir.E)); // W E should be better because it only blocks p0
     double tscore2 = AgentEvaluator.score(state);
 
     AgentEvaluator ae2 = new AgentEvaluator(state, agent);
-    double score2 = ae1.score(state, agent);
+    double score2 = ae1.score(agent);
 
     assertThat(tscore2 > tscore1 , is(true));
   }

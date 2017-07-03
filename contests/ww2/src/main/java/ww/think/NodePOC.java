@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import ww.AgentEvaluator;
+import ww.Cell;
 import ww.Dir;
 import ww.GameState;
 import ww.sim.Move;
@@ -32,6 +33,7 @@ public class NodePOC {
       // my moves
       for (int i=0;i<2;i++) {
         for (Dir dir1 : Dir.getValues()) {
+          if (!state.agents[i].cell.get(dir1).isValid()) continue; // rearly cutoff
           for (Dir dir2 : Dir.getValues()) {
             Move move = new Move(state.agents[i]);
             move.dir1 = dir1;
@@ -90,8 +92,8 @@ public class NodePOC {
     transposition[4] = 0L; // position of them
   }
 
-  public double evaluate() {
-    return AgentEvaluator.score(state);
+  public double evaluate(int dontsee0, int dontsee1) {
+    return AgentEvaluator.score(state) + 18.0 * (dontsee0 + dontsee1);
   }
 
   @Override

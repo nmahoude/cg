@@ -20,21 +20,22 @@ public class Voronoi {
       infos[i] = new VoronoiInfo();
     }
   }
-  public int[] voronoi(GameState state, Agent[] agents) {
+  public int[] voronoi(GameState state, Agent[] agents, int length) {
     visited = 0L;
 
-    for (int i=0;i<agents.length;i++) {
+    stop[0] = true;
+    stop[1] = true;
+    stop[2] = true;
+    stop[3] = true;
+    for (int i=0;i<length;i++) {
       stop[i] = agents[i].inFogOfWar();
       infos[i].cellsList.clear();
       infos[i].cellsList.add(agents[i].cell);
       visited|= agents[i].position.mask;
     }
-    for (int i=agents.length;i<4;i++) {
-      stop[i] = true;
-    }
     
     while(dontStop(stop)) {
-      for (int i=0;i<agents.length;i++) {
+      for (int i=0;i<length;i++) {
         if (stop[i] == true) continue;
         
         visitCells(infos[i]);
@@ -57,11 +58,11 @@ public class Voronoi {
     Agent agents[] = new Agent[2];
     agents[0] = agent0;
     agents[1] = agent1;
-    return voronoi(state, agents);
+    return voronoi(state, agents, 2);
   }
 
   public int[] voronoi4(GameState state) {
-    return voronoi(state, state.agents);
+    return voronoi(state, state.agents, 4);
   }
 
   private void visitCells(VoronoiInfo info) {
