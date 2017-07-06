@@ -15,5 +15,7 @@
     <module>TheLabyrinth</module>
     <module>RollerCoaster</module>
     <module>surface</module>
+    <module>bender-ep2</module>
+    <module>tanNetwork</module>
   </modules>
 </project>
