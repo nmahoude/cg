@@ -14,5 +14,6 @@
     <module>theBridge</module>
     <module>TheLabyrinth</module>
     <module>RollerCoaster</module>
+    <module>surface</module>
   </modules>
 </project>
