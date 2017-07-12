@@ -1,0 +1,25 @@
+= Liste des TODOs
+
+== Scoring
+* avoir marqué un point
+* ne pas etre sous la menace d'un opposant
+* etre haut
+* etre entouré de case haute
+* pouvoir aller sur bcp de case
+* ne pas être dans un coin / bord
+* ne pas etre du mauvais coté d'un 'pont' / goulot
+* avoir ses 2 agents disponibles
+* ne pas laisser l'autre dans un position de marquer un point si on peut le pousser ou bloquer la future case
+* etre plus pret des cases 3 que lui
+* pouvoir bloquer le jeu avec un agent (+ push si il approche pour le rejeter, cas des goulot par exemple)
+* malus si on est sur un 'cliff' et que l'opp peut nous pousser
+
+== Divination
+* prendre en compte les cas où mon coup a été annulé
+* augmenter le nb de situation où on devine
+* si on ne peut pas trouver la position exacte des enemis, conserver le spectre de leur position potentiel pour vérifier qu'on ne prend pas de risque (cas des cliffs et des enfermements)
+
+== Minimax
+* reimplementer le minimax avec alpha/beta uniquement sur la position des opp connus (pas de lacheté à ne plus rien faire :) )
+
+
