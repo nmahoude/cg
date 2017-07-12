@@ -44,12 +44,15 @@ public class Simulation {
       secondCell.cells[Cell.UP].walls[Cell.DOWN] = Cell.wallIndex;
       Cell.wallIndex++;
     }
+    action.agent.wallLefts--;
     
     return true;
   }
 
   public void unplay(Action action) {
     if (action.type == ActionType.WALL) {
+      action.agent.wallLefts++;
+
       // undrop
       Cell firstCell = Player.grid.get(action.position);
       if (action.orientation == WallOrientation.VERTICAL) {

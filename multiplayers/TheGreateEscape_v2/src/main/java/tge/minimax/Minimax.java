@@ -25,22 +25,22 @@ public class Minimax {
     timeout = false;
     alphaBeta(node0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, true);
     if (timeout) {
-      bestAction = null;
-      return null;
+      return bestAction;
     }
     return bestAction;
   }
 
   public double alphaBeta(Node node, double alpha, double beta, boolean maximizingScore) {
     // timeout condition
-    if (timeout) return 0.0;
+    if (timeout) return Double.NEGATIVE_INFINITY;
     if (System.currentTimeMillis() - Player.startTime > Player.MAX_TIME) {
       timeout = true;
+      System.err.println("Timeout");
       return Double.NEGATIVE_INFINITY;
     }
 
     if (node.depth == maxDepth) {
-      return node.evaluate();
+      return node.evaluate_old();
     }
 
     double bestScore = maximizingScore ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
@@ -48,6 +48,7 @@ public class Minimax {
     for (Node child : node.getChildren()) {
       double score;
       if (!simulation.play(child.action)) {
+        System.err.println(""+child.action.toOutput()+" impossible");
         continue;
       }
       validActions++;

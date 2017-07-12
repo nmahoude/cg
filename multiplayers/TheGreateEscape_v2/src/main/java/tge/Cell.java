@@ -36,7 +36,8 @@ public class Cell implements Comparable<Cell> {
   // AStar helpers
   public double gScore;
   public double fScore;
-
+  public int counter;
+  
   public static double heuristicLength(Cell from, int id) {
     if (id == 0) {
       return 8 - from.position.x;
@@ -45,6 +46,10 @@ public class Cell implements Comparable<Cell> {
     } else {
       return 8-from.position.y;
     }
+  }
+
+  public static double heuristicLength(Cell from, Cell target) {
+    return from.position.manathan(target.position);
   }
   
 }

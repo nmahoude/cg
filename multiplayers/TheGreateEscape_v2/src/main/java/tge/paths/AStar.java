@@ -10,7 +10,13 @@ import tge.Player;
 import tge.Point;
 
 public class AStar {
+
   public static List<Cell> astar(Cell from, int id) {
+    return astar(from, id, Collections.EMPTY_LIST);
+  }
+  
+  public static List<Cell> astar(Cell from, int id, List<Cell> forbidenCells) {
+
     int cameFrom[] = new int[9*9];
     for (int i=0;i<cameFrom.length;i++) {
       cameFrom[i] = -1;
@@ -22,6 +28,7 @@ public class AStar {
       }
     }
     List<Cell> closedSet = new ArrayList<>();
+    closedSet.addAll(forbidenCells);
     List<Cell> openSet = new ArrayList<>();
     openSet.add(from);
     
@@ -44,15 +51,17 @@ public class AStar {
         if (closedSet.contains(neighbor)) {
           continue;
         }
-        if (!openSet.contains(neighbor)) {
-          openSet.add(neighbor);
-        }
         double gScore = current.gScore + 1;
-        if (gScore > neighbor.gScore) continue;
+        if (gScore > neighbor.gScore) {
+          continue;
+        }
         
         cameFrom[neighbor.position.x + 9*neighbor.position.y] = current.position.x + 9*current.position.y;
         neighbor.gScore = gScore;
         neighbor.fScore = gScore + Cell.heuristicLength(neighbor, id);
+        if (!openSet.contains(neighbor)) {
+          openSet.add(neighbor);
+        }
       }
     }
     return new ArrayList<>();
@@ -70,5 +79,59 @@ public class AStar {
       path.add(0, current);
     }
     return path;
+  }
+
+  // path between 2 cells
+  public static List<Cell> astar(Cell from, Cell target) {
+    return astar(from, target, Collections.EMPTY_LIST);
+  }
+  
+  // path between 2 cells
+  public static List<Cell> astar(Cell from, Cell target, List<Cell> forbidenCells) {
+    int cameFrom[] = new int[9*9];
+    for (int i=0;i<cameFrom.length;i++) {
+      cameFrom[i] = -1;
+    }
+    for (int y=0;y<9;y++) {
+      for (int x=0;x<9;x++) {
+        Player.grid.cells[x][y].gScore = Double.POSITIVE_INFINITY;
+        Player.grid.cells[x][y].fScore = Double.POSITIVE_INFINITY;
+      }
+    }
+    List<Cell> closedSet = new ArrayList<>();
+    closedSet.addAll(forbidenCells);
+    PriorityQueue<Cell> openSet = new PriorityQueue<>();
+    openSet.add(from);
+    
+    from.gScore = 0.0;
+    from.fScore = Cell.heuristicLength(from, target);
+    
+    while (!openSet.isEmpty()) {
+      Cell current = openSet.poll();
+      if (Cell.heuristicLength(current, target) == 0) {
+        return constructPath(cameFrom, current);
+      }
+      closedSet.add(current);
+      
+      for (int i=0;i<4;i++) {
+        if (current.walls[i] != 0) continue;
+        if (current.cells[i] == Cell.invalid) continue;
+        
+        Cell neighbor = current.cells[i];
+        if (closedSet.contains(neighbor)) {
+          continue;
+        }
+        double gScore = current.gScore + 1;
+        if (gScore > neighbor.gScore) continue;
+        
+        cameFrom[neighbor.position.x + 9*neighbor.position.y] = current.position.x + 9*current.position.y;
+        neighbor.gScore = gScore;
+        neighbor.fScore = gScore + Cell.heuristicLength(neighbor, target);
+        if (!openSet.contains(neighbor)) {
+          openSet.add(neighbor);
+        }
+      }
+    }
+    return new ArrayList<>();
   }
 }

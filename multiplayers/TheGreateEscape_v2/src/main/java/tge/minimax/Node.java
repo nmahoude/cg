@@ -2,7 +2,9 @@ package tge.minimax;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import tge.Agent;
 import tge.Cell;
@@ -23,25 +25,165 @@ public class Node {
     this.depth = depth;
   }
 
-  public double evaluate() {
-    List<Cell> path1 = AStar.astar(Player.grid.get(Player.agents[myId()].position), myId());
-    int dist1 = path1.size() -1 ;
-    List<Cell> path2 = AStar.astar(Player.grid.get(Player.agents[hisId()].position), hisId());
-    int dist2 = path2.size() -1 ;
-    System.err.println(""+action.toOutput()+" ==> d : " + dist1 + " vs "+dist2);
-
-    if (dist1 == -1) return Double.NEGATIVE_INFINITY;
-    if (dist2 == -1) return Double.NEGATIVE_INFINITY;
-    
-    double distScore = - (dist1 - dist2);
-    if (action.type == ActionType.MOVE) {
-      distScore +=0.5;
+  public double evaluate3() {
+    int dist1 = -1;
+    int dist2 = -1;
+    for (int i=0;i<Player.playerCount;i++) {
+      if (Player.agents[i].position == Point.unknown) continue;
+      List<Cell> path1 = AStar.astar(Player.grid.get(Player.agents[i].position), i);
+      int dist = path1.size() -1 ;
+      if (dist == -1) return Double.NEGATIVE_INFINITY;
+      if (i== Player.myId) dist1 = dist;
+      if (i== hisId()) dist2 = dist;
     }
+    
+    double score = 0.0;
     if (dist1 == 0) return 1_000_000;
-    if (dist2 == 1) distScore -=1_000_000;
-
-    return  distScore ;
+    if (dist2 == 1) return -1_000_000;
+    if (action.type == ActionType.WALL) {
+      //score += Player.agents[Player.myId].wallLefts;
+    }
+    score += 4 * (dist2-dist1);
+    int count1=0;
+    int count2=0;
+    if (dist1 > dist2) {
+      count1 = countPossibleCells(Player.myId);
+      count2 = countPossibleCells(hisId());
+      score+=(count2-count1);
+    }
+    System.err.println(""+action.toOutput()+" => "+score+" ( "+count1+" / "+dist1+" vs "+count2+" / "+dist2+")");
+    return  score;
   }
+
+  static int countPossibleCells(int id) {
+
+    Set<Cell> possible = getPossibleCells(id);
+    return possible.size();
+  }
+
+  private static Set<Cell> getPossibleCells(int id) {
+    Set<Cell> possible = new HashSet<>();
+    Set<Cell> visited = new HashSet<>();
+    for (int y=0;y<9;y++) {
+      for (int x=0;x<9;x++) {
+        Cell cell = Player.grid.cells[x][y];
+        if (visited.contains(cell)) continue;
+        visited.add(cell);
+        List<Cell> pathToDragon = AStar.astar(cell, Player.grid.get(Player.agents[id].position));
+        List<Cell> pathToExit = AStar.astar(cell, id, pathToDragon);
+        if (pathToDragon.isEmpty()) continue;
+        if (pathToExit.isEmpty()) continue;
+
+        visited.addAll(pathToDragon);
+        visited.addAll(pathToExit);
+
+        possible.addAll(pathToDragon);
+        possible.addAll(pathToExit);
+      }
+    }
+    return possible;
+  }
+  
+  public double evaluate() {
+    int dist1 = -1;
+    int dist2 = -1;
+    for (int i=0;i<Player.playerCount;i++) {
+      if (Player.agents[i].position == Point.unknown) continue;
+      List<Cell> path1 = AStar.astar(Player.grid.get(Player.agents[i].position), i);
+      int dist = path1.size() -1 ;
+      if (dist == -1) return Double.NEGATIVE_INFINITY;
+      if (i== Player.myId) dist1 = dist;
+      if (i== hisId()) dist2 = dist;
+    }
+
+    double score = dist2 - dist1;
+    if (Player.agents[Player.myId].wallLefts > 0) {
+      int myMaxPath = getMaximalPath_iteration2(Player.myId);
+      int hisMaxPath = 0; //getMaximalPath_iteration2(hisId());
+      System.err.println(""+action.toOutput()+" maxPath : "+myMaxPath+" vs "+hisMaxPath);
+      score += 0.5 * (hisMaxPath - myMaxPath);
+    }
+    return score;
+  }
+  
+  private int getMaximalPath_iteration2(int id) {
+    List<Cell> cellsToTest = new ArrayList<>();
+    List<Cell> testedCells = new ArrayList<>();
+    int cellCount = 0;
+    cellsToTest.add(Player.grid.get(Player.agents[id].position));
+    
+    while (!cellsToTest.isEmpty()) {
+      Cell currentCell = cellsToTest.remove(0);
+      if (Cell.heuristicLength(currentCell, id) == 1) continue;
+      if (testedCells.contains(currentCell)) continue;
+      testedCells.add(currentCell);
+      List<Cell> pathToDragon = AStar.astar(currentCell, Player.grid.get(Player.agents[Player.myId].position));
+      List<Cell> pathToExit = AStar.astar(currentCell, Player.myId, pathToDragon);
+      int pathToExitLength = pathToExit.size() -1 ;
+      if (pathToExitLength == -1) continue;
+      cellCount++;
+      if (currentCell.walls[Cell.UP] == 0 && currentCell.cells[Cell.UP] != Cell.invalid) cellsToTest.add(currentCell.cells[Cell.UP]);
+      if (currentCell.walls[Cell.DOWN] == 0 && currentCell.cells[Cell.DOWN] != Cell.invalid) cellsToTest.add(currentCell.cells[Cell.DOWN]);
+      if (currentCell.walls[Cell.RIGHT] == 0 && currentCell.cells[Cell.RIGHT] != Cell.invalid) cellsToTest.add(currentCell.cells[Cell.RIGHT]);
+      if (currentCell.walls[Cell.LEFT] == 0 && currentCell.cells[Cell.LEFT] != Cell.invalid) cellsToTest.add(currentCell.cells[Cell.LEFT]);
+    }
+    return cellCount;
+  }
+  private int getMaximalPath(int id) {
+    Cell myCell = Player.grid.get(Player.agents[id].position);
+    Set<Cell> biPathCells = new HashSet<>();
+    Set<Cell> impossibleCells = new HashSet<>();
+    for (int y=0;y<9;y++) {
+      for (int x=0;x<9;x++) {
+        Cell cell = Player.grid.get(Point.get(x, y));
+        if (cell == myCell) continue;
+        if (biPathCells.contains(cell)) continue;
+        if (impossibleCells.contains(cell)) continue;
+        List<Cell> path = AStar.astar(cell, myCell);
+        if (path.isEmpty()) {
+          impossibleCells.add(cell);
+          continue;
+        }
+        List<Cell> path2 = AStar.astar(cell, id, path);
+        if (path2.isEmpty()) {
+          impossibleCells.addAll(path);
+          continue;
+        }
+
+        biPathCells.addAll(path);
+      }
+    }
+    return biPathCells.size();
+  }
+
+  public double evaluate_old() {
+    List<Cell> path1 = AStar.astar(Player.grid.get(Player.agents[myId()].position), myId());
+    int dist1 = path1.size() - 1;
+    List<Cell> path2 = AStar.astar(Player.grid.get(Player.agents[hisId()].position), hisId());
+    int dist2 = path2.size() - 1;
+    System.err.println("" + action.toOutput() + " ==> d : " + dist1 + " vs " + dist2);
+    if (dist1 == -1)
+        return Double.NEGATIVE_INFINITY;
+    if (dist2 == -1)
+        return Double.NEGATIVE_INFINITY;
+    double distScore = -(dist1 - dist2);
+    if (action.type == ActionType.MOVE) {
+        distScore += 0.5;
+    }
+    if (dist1 == 0)
+        return 1_000_000;
+    if (dist2 == 1)
+        distScore -= 1_000_000;
+    if (action.type == ActionType.WALL) {
+        if (action.orientation == WallOrientation.HORIZONTAL && (action.position.x == 6 || action.position.x == 1)) {
+            distScore -= 0.5;
+        }
+        if (action.orientation == WallOrientation.VERTICAL && (action.position.y == 6 || action.position.y == 1)) {
+            distScore -= 0.5;
+        }
+    }
+    return distScore;
+}
 
   int myId() {
     return Player.myId;

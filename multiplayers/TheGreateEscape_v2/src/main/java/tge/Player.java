@@ -3,6 +3,7 @@ package tge;
 import java.util.Scanner;
 
 import tge.minimax.Minimax;
+import tge.paths.AStar;
 import tge.simulation.Action;
 
 public class Player {
@@ -13,6 +14,7 @@ public class Player {
   public static int myId;
   public static Agent agents[] = new Agent[3];
   public static Grid grid = new Grid();
+  public static int round;
   
   public static void main(String args[]) {
       Scanner in = new Scanner(System.in);
@@ -25,8 +27,10 @@ public class Player {
       for (int i=0;i<playerCount;i++) {
         agents[i] = new Agent(i);
       }
+      round = 0;
       // game loop
       while (true) {
+        round++;
           for (int i = 0; i < playerCount; i++) {
               int x = in.nextInt(); // x-coordinate of the player
               int y = in.nextInt(); // y-coordinate of the player
@@ -49,6 +53,13 @@ public class Player {
               grid.setWall(Point.get(wallX, wallY), "H".equals(wallOrientation) ? WallOrientation.HORIZONTAL : WallOrientation.VERTICAL);
           }
 
+          for (int i=0;i<playerCount;i++) {
+            if (agents[i].position != Point.unknown) {
+              agents[i].currentDist = AStar.astar(grid.get(agents[i].position), i).size();
+            } else {
+              agents[i].currentDist = 0;
+            }
+          }
           // Debug some informations
           //grid.toTDD();
 

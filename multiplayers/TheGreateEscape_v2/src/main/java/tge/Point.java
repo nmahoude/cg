@@ -31,4 +31,8 @@ public class Point {
   public String toString() {
     return "("+x+","+y+")";
   }
+
+  public double manathan(Point target) {
+    return Math.abs(target.x-x)+Math.abs(target.y-y);
+  }
 }
