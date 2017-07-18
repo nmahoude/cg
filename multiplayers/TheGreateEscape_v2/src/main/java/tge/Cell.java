@@ -1,9 +1,14 @@
 package tge;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Cell implements Comparable<Cell> {
   public static long wallIndex = 1;
   
   public Point position = Point.unknown;
+  public List<Cell> registered = new ArrayList<>();
+  public int from;
   
   @Override
   public int compareTo(Cell o) {
@@ -50,6 +55,14 @@ public class Cell implements Comparable<Cell> {
 
   public static double heuristicLength(Cell from, Cell target) {
     return from.position.manathan(target.position);
+  }
+
+  public void propagate() {
+    counter = 1;
+    while(!registered.isEmpty()) {
+      Cell cell = registered.remove(0);
+      cell.propagate();
+    }
   }
   
 }

@@ -3,7 +3,9 @@ package tge;
 import java.util.Scanner;
 
 import tge.minimax.Minimax;
+import tge.minimax.Node;
 import tge.paths.AStar;
+import tge.paths.FloodFill;
 import tge.simulation.Action;
 
 public class Player {
@@ -56,8 +58,10 @@ public class Player {
           for (int i=0;i<playerCount;i++) {
             if (agents[i].position != Point.unknown) {
               agents[i].currentDist = AStar.astar(grid.get(agents[i].position), i).size();
+              agents[i].currentMax= FloodFill.floodFillFromExit(i);
             } else {
               agents[i].currentDist = 0;
+              agents[i].currentMax = 0;
             }
           }
           // Debug some informations
