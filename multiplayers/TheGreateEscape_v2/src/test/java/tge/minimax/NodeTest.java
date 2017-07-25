@@ -40,7 +40,7 @@ public class NodeTest {
     Player.grid.setWall(Point.get(0, 1), WallOrientation.HORIZONTAL);
     int countPossibleCells = node.countPossibleCells(0);
     
-    assertThat(countPossibleCells , is(79));
+    assertThat(countPossibleCells , is(81));
   }
   
   @Test

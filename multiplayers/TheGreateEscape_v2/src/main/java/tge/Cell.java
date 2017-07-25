@@ -3,7 +3,7 @@ package tge;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cell implements Comparable<Cell> {
+public class Cell implements Comparable {
   public static long wallIndex = 1;
   
   public Point position = Point.unknown;
@@ -11,8 +11,14 @@ public class Cell implements Comparable<Cell> {
   public int from;
   
   @Override
-  public int compareTo(Cell o) {
-    return Double.compare(fScore, o.fScore);
+  public int compareTo(Object o) {
+    double d2 =  ((Cell)o).fScore;
+    if (fScore < d2)
+      return -1;
+    else if (fScore > d2)
+      return 1;    
+    else
+      return 0;
   }
   
   @Override
@@ -28,6 +34,7 @@ public class Cell implements Comparable<Cell> {
     invalid.walls[1] = -1;
     invalid.walls[2] = -1;
     invalid.walls[3] = -1;
+    invalid.from = 100;
   }
 
   public static final int RIGHT = 0;
@@ -44,13 +51,7 @@ public class Cell implements Comparable<Cell> {
   public int counter;
   
   public static double heuristicLength(Cell from, int id) {
-    if (id == 0) {
-      return 8 - from.position.x;
-    } else if (id == 1) {
-      return from.position.x;
-    } else {
-      return 8-from.position.y;
-    }
+    return Grid.heuristicLength(from.position, id);
   }
 
   public static double heuristicLength(Cell from, Cell target) {
@@ -63,6 +64,14 @@ public class Cell implements Comparable<Cell> {
       Cell cell = registered.remove(0);
       cell.propagate();
     }
+  }
+
+  public boolean visited() {
+    return from != 0;
+  }
+
+  public void visit() {
+    from = 1;
   }
   
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 import tge.Cell;
+import tge.Grid;
 import tge.Player;
 import tge.Point;
 
@@ -23,32 +24,32 @@ public class AStar {
     }
     for (int y=0;y<9;y++) {
       for (int x=0;x<9;x++) {
-        Player.grid.cells[x][y].gScore = Double.POSITIVE_INFINITY;
-        Player.grid.cells[x][y].fScore = Double.POSITIVE_INFINITY;
+        Player.grid.cells[x+9*y].gScore = Double.POSITIVE_INFINITY;
+        Player.grid.cells[x+9*y].fScore = Double.POSITIVE_INFINITY;
+        Player.grid.cells[x+9*y].from = 0;
       }
     }
     List<Cell> closedSet = new ArrayList<>();
     closedSet.addAll(forbidenCells);
-    List<Cell> openSet = new ArrayList<>();
+    PriorityQueue<Cell> openSet = new PriorityQueue<>();
     openSet.add(from);
+    from.from = 1;
     
     from.gScore = 0.0;
-    from.fScore = Cell.heuristicLength(from, id);
+    from.fScore = Grid.heuristicLength(from.position, id);
     
     while (!openSet.isEmpty()) {
-      Collections.sort(openSet);
-      Cell current = openSet.remove(0);
-      if (Cell.heuristicLength(current, id) == 0) {
+      Cell current = openSet.poll();
+      if (Grid.heuristicLength(current.position, id) == 0) {
         return constructPath(cameFrom, current);
       }
       closedSet.add(current);
+      current.from = 2;
       
       for (int i=0;i<4;i++) {
         if (current.walls[i] != 0) continue;
-        if (current.cells[i] == Cell.invalid) continue;
-        
         Cell neighbor = current.cells[i];
-        if (closedSet.contains(neighbor)) {
+        if (neighbor.from == 2) {
           continue;
         }
         double gScore = current.gScore + 1;
@@ -58,9 +59,10 @@ public class AStar {
         
         cameFrom[neighbor.position.x + 9*neighbor.position.y] = current.position.x + 9*current.position.y;
         neighbor.gScore = gScore;
-        neighbor.fScore = gScore + Cell.heuristicLength(neighbor, id);
-        if (!openSet.contains(neighbor)) {
+        neighbor.fScore = gScore + Grid.heuristicLength(neighbor.position, id);
+        if (neighbor.from != 1) {
           openSet.add(neighbor);
+          neighbor.from = 1;
         }
       }
     }
@@ -94,8 +96,8 @@ public class AStar {
     }
     for (int y=0;y<9;y++) {
       for (int x=0;x<9;x++) {
-        Player.grid.cells[x][y].gScore = Double.POSITIVE_INFINITY;
-        Player.grid.cells[x][y].fScore = Double.POSITIVE_INFINITY;
+        Player.grid.cells[x+9*y].gScore = Double.POSITIVE_INFINITY;
+        Player.grid.cells[x+9*y].fScore = Double.POSITIVE_INFINITY;
       }
     }
     List<Cell> closedSet = new ArrayList<>();

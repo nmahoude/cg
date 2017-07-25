@@ -1,9 +1,13 @@
 package tge;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
+import javax.sound.midi.MidiEvent;
+
+import tge.heuristic.Heuristic;
+import tge.heuristic.Heuristic2;
 import tge.minimax.Minimax;
-import tge.minimax.Node;
 import tge.paths.AStar;
 import tge.paths.FloodFill;
 import tge.simulation.Action;
@@ -17,6 +21,9 @@ public class Player {
   public static Agent agents[] = new Agent[3];
   public static Grid grid = new Grid();
   public static int round;
+  
+  public static Agent me;
+  public static Agent bandit;
   
   public static void main(String args[]) {
       Scanner in = new Scanner(System.in);
@@ -57,31 +64,43 @@ public class Player {
 
           for (int i=0;i<playerCount;i++) {
             if (agents[i].position != Point.unknown) {
-              agents[i].currentDist = AStar.astar(grid.get(agents[i].position), i).size();
-              agents[i].currentMax= FloodFill.floodFillFromExit(i);
+              agents[i].clearPath = true;
+              agents[i].currentPath = AStar.astar(grid.get(agents[i].position), i);
+              agents[i].maxPath = agents[i].currentPath.size(); 
+              agents[i].currentMax= new FloodFill().floodFillFromExit_dfs(i);
             } else {
-              agents[i].currentDist = 0;
+              agents[i].currentPath = new ArrayList<Cell>();
+              agents[i].maxPath = 0;
               agents[i].currentMax = 0;
             }
           }
+          
+          me = agents[myId];
+          bandit = agents[hisId()];
+          
           // Debug some informations
           //grid.toTDD();
 
-//          Agent agent = agents[myId];
-//          Cell cell = grid.get(agent.position);
-//          System.err.println("walls around :");
-//          System.err.println("  right : "+cell.wall[0]);
-//          System.err.println("  down  : "+cell.wall[1]);
-//          System.err.println("  left  : "+cell.wall[2]);
-//          System.err.println("  up     : "+cell.wall[3]);
-          
           // Write an action using System.out.println()
           // To debug: System.err.println("Debug messages...");
-          Minimax minimax = new Minimax();
-          Action bestAction = minimax.think(1);
 
+         Heuristic heuristic = new Heuristic();
+//          Heuristic2 heuristic2 = new Heuristic2();
+          Action bestAction = heuristic.getBestAction();
+
+//          Minimax max = new Minimax();
+//          Action bestAction = max.think(1);
+          
           // action: LEFT, RIGHT, UP, DOWN or "putX putY putOrientation" to place a wall
           System.out.println(bestAction.toOutput());
       }
   }
+  private static int hisId() {
+    int i = (Player.myId + 1) % Player.playerCount;
+    while (Player.agents[i].position == Point.unknown) {
+      i = (i + 1) % Player.playerCount;
+    }
+    return i;
+  }
+
 }

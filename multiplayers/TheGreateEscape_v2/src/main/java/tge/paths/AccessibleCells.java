@@ -21,9 +21,9 @@ public class AccessibleCells {
     
     for (int y=0;y<9;y++) {
       for (int x=0;x<9;x++) {
-        Player.grid.cells[x][y].counter = 0;
-        Player.grid.cells[x][y].registered.clear();
-        Player.grid.cells[x][y].from = -1;
+        Player.grid.cells[x+9*y].counter = 0;
+        Player.grid.cells[x+9*y].registered.clear();
+        Player.grid.cells[x+9*y].from = -1;
       }
     }
 
@@ -62,7 +62,7 @@ public class AccessibleCells {
     int count = 0;
     for (int y=0;y<9;y++) {
       for (int x=0;x<9;x++) {
-        count+= Player.grid.cells[x][y].counter > 0 ? 1 : 0;
+        count+= Player.grid.cells[x+9*y].counter > 0 ? 1 : 0;
 //        if (Player.grid.cells[x][y].counter > 0) {
 //          System.err.println(" in possible : "+x+","+y);
 //        }

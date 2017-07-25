@@ -33,7 +33,7 @@ public class FloodFillTest {
     Player.grid.setWall(Point.get(6 ,7), WallOrientation.HORIZONTAL);
     Player.grid.setWall(Point.get(8, 7), WallOrientation.VERTICAL);
     
-    int cells = FloodFill.floodFillFromExit(1);
+    int cells = new FloodFill().floodFillFromExit_dfs(1);
     
     assertThat(cells, is(80));
   }
@@ -53,7 +53,7 @@ public class FloodFillTest {
     Player.grid.setWall(Point.get(2, 6), WallOrientation.HORIZONTAL);
     Player.grid.setWall(Point.get(4, 4), WallOrientation.VERTICAL);
     
-    int cells = FloodFill.floodFillFromExit(1);
+    int cells = new FloodFill().floodFillFromExit_dfs(1);
     
     assertThat(cells, is(not(16)));
   }

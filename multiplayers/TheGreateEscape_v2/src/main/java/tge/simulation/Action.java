@@ -13,6 +13,7 @@ public class Action {
   public Point position = Point.unknown;
   public WallOrientation orientation = WallOrientation.HORIZONTAL; // wall
   
+  public String output;
   public void copyTo(Action toCopyTo) {
     toCopyTo.agent = agent;
     toCopyTo.type = type;
@@ -24,13 +25,13 @@ public class Action {
   public String toOutput() {
     if (type == ActionType.MOVE) {
       switch (moveIndex) {
-        case 0 : return "RIGHT";
-        case 1 : return "DOWN";
-        case 2 : return "LEFT";
-        case 3 : return "UP";
+        case 0 : return "RIGHT "+output;
+        case 1 : return "DOWN "+output;
+        case 2 : return "LEFT "+output;
+        case 3 : return "UP "+output;
       }
     } else {
-      return ""+position.x+" "+position.y+" "+(orientation == WallOrientation.HORIZONTAL ? "H" :"V");
+      return ""+position.x+" "+position.y+" "+(orientation == WallOrientation.HORIZONTAL ? "H" :"V") + " "+output;
     }
     return null;
   }

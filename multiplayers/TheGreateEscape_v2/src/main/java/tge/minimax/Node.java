@@ -74,7 +74,7 @@ public class Node {
     Set<Cell> visited = new HashSet<>();
     for (int y = 0; y < 9; y++) {
       for (int x = 0; x < 9; x++) {
-        Cell cell = Player.grid.cells[x][y];
+        Cell cell = Player.grid.cells[x+9*y];
         if (visited.contains(cell))
           continue;
         visited.add(cell);
@@ -197,6 +197,9 @@ public class Node {
         dist2 = dist;
     }
 
+    if (dist1 - Player.agents[Player.myId].currentPath.size() > 5) {
+      
+    }
     double distScore = - (1.8*dist1 - dist2);
     if (action.type == ActionType.MOVE) {
       distScore += 1.0;
@@ -216,9 +219,9 @@ public class Node {
     }
     
     
-    if (false && action.type == ActionType.WALL) {
-      int count1 = 0; //FloodFill.floodFillFromExit(Player.myId);
-      int count2 = 0; //FloodFill.floodFillFromExit(hisId());
+    if (action.type == ActionType.WALL) {
+      int count1 = 0; //new FloodFill().floodFillFromExit_dfs(Player.myId);
+      int count2 = 0; //new FloodFill().floodFillFromExit_dfs(hisId());
       if (Player.agents[Player.myId].currentMax - count1 > 20 
           && action.position.manathan(Player.agents[Player.myId].position) < 3) {
         distScore += 2;

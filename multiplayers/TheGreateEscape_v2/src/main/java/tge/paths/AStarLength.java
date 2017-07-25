@@ -19,8 +19,8 @@ public class AStarLength {
 
     for (int y=0;y<9;y++) {
       for (int x=0;x<9;x++) {
-        Player.grid.cells[x][y].gScore = Double.POSITIVE_INFINITY;
-        Player.grid.cells[x][y].fScore = Double.POSITIVE_INFINITY;
+        Player.grid.cells[x+9*y].gScore = Double.POSITIVE_INFINITY;
+        Player.grid.cells[x+9*y].fScore = Double.POSITIVE_INFINITY;
       }
     }
     List<Cell> closedSet = new ArrayList<>();
@@ -75,8 +75,8 @@ public class AStarLength {
     }
     for (int y=0;y<9;y++) {
       for (int x=0;x<9;x++) {
-        Player.grid.cells[x][y].gScore = Double.POSITIVE_INFINITY;
-        Player.grid.cells[x][y].fScore = Double.POSITIVE_INFINITY;
+        Player.grid.cells[x+9*y].gScore = Double.POSITIVE_INFINITY;
+        Player.grid.cells[x+9*y].fScore = Double.POSITIVE_INFINITY;
       }
     }
     List<Cell> closedSet = new ArrayList<>();
