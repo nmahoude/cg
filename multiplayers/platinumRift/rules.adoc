@@ -1,0 +1,87 @@
+=== The Goal
+
+The game is played on a map representing planet Earth continents. Each continent is shaped using hexagonal zones. Links between zones are provided at the start of a game as a graph.
+
+When the game starts, all zones are neutral. Platinum-beds are located on a given number of zones. They produce 1 to 6 bars of Platinum per game round.
+
+Your goal is to conquer a maximum of zones using war PODs. Taking ownership of zones allow you to win more Platinum and buy more PODs. You get ownership of a neutral zone by placing or moving a POD on it.
+ 	Rules
+
+You start a game with 200 Platinum bars, which is equivalent to 10 war PODs.
+
+At each game round, the following actions are executed sequentially :
+First step: distributing. Each player receives a number of Platinum bars related to the number of Platinum available on their owned zones.
+Second step: moving. Each player moves as many troops as they want on the map.
+Third step: buying. Each player buys PODs et puts them on the map.
+Fourth step: fighting. Once all players have completed steps 1, 2 and 3, fights are triggered on zones.
+Fifth step: owning. Ownership of zones changes.
+Rules for distributing:
+Each player receives as many Platinum bars as the number of bars available on the zones which belongs to the player.
+These bars add up to the number of bars already mined by the player and not yet converted to PODs.
+Rules for moving:
+A POD (or group of PODs) can only make one move per game round.
+A POD can only move from one zone to a contiguous zone – either neutral, already owned or owned by an enemy.
+A POD located on a zone where a fight is ongoing – meaning a zone with enemy PODs on it – can only move to a neutral zone or a zone he/she owns. Simply put, a POD that flees a fight can only retreat on a zone which does not belong to an enemy.
+Rules for buying:
+Each player can buy as many troops as their Platinum stock allows. A war POD costs 20 Platinum bars.
+A freshly bought POD can only be placed on a neutral zone or on a zone owned by the buyer.
+Rules for fighting:
+A fight is triggered on every zone having PODs from 2, 3 or 4 different players.
+For each fight zone, a POD from each player is first destroyed. If PODs from different players are still present on the zone after this destruction, an additional POD from each player still present is destroyed. This phase reproduces itself one more time. For each fight zone, a player loses a maximum of 3 PODs per game round.
+Rules for owning:
+A zone with only one player's PODs on it is won – or kept – by this player.
+A zone with no PODs on it or with PODs from multiple players on it does not change ownership: it remains neutral or kept by its previous owner.
+
+At the end of a game – 200 rounds –, the player owning the more zones wins. A game may end sooner if the system realizes that a player has won no matter what, for example if he/she conquered the super-continent Europe-Africa-Asia-Oceania.
+ 	Note
+You can navigate within the map in the same way you would on google maps: zoom/unzoom with the mouse wheel and move using drag'n drop. Debug mode is available from the settings panel (the dented wheel).
+ 	Game Input
+
+Your program must first read the initialization data from standard input, then, in an infinite loop, read the contextual data of the game (ownership of zones and location of PODs) and write to standard output the actions for your PODs.
+Initialization input
+Line 1: 4 integers:
+
+playerCount: number of players
+myId: id of your player (0, 1, 2, or 3)
+zoneCount: number of hexagonal zones on the map. Zones are identified with a unique id ranging from 0 to (zoneCount - 1)
+linkCount: number of links between zones – i.e. number of frontiers between zones.
+ 
+
+zoneCount following lines: for each zone, two integers zoneId platinumSource providing the number of platinum bars that can be mined on that zone per game round.
+
+linkCount following lines: two integers zone1 zone2 providing the ids of two connected zones – meaning a movement is possible from zone1 to zone2 and vice-versa.
+
+Input for one game turn
+Line 1: an integer platinum providing the number of platinum you have in stock.
+
+zoneCount following lines: for each zone, six integers:
+
+zId: id of the zone
+ownerId: player id of the zone owner (-1 for a neutral zone)
+podsP0: number of PODs for player with id 0 on the zone
+podsP1: number of PODs for player with id 1 on the zone
+podsP2: number of PODs for player with id 2 on the zone (always 0 for a two player game)
+podsP3: number of PODs for player with id 3 on the zone (always 0 for a two or three player game)
+ 
+
+Output for one game turn
+Line 1: a series of movement commands. A movement command is composed of 3 integers podsCount zoneOrigin zoneDestination that indicate the number of PODs to move from one zone to another.
+For example 4 2 1 3 2 6 = two commands: moving four PODs from zone 2 to zone 1 and moving three PODs from zone 2 to 6.
+Just write WAIT if you do not wish to make any movements.
+
+ 
+Line 2: a series of purchase commands. A purchase command is composed of 2 integers podsCount zoneDestination that indicate the number of PODs to add to a zone.
+For example 2 32 1 11 = two commands: buy two PODs for zone 32 and buy one POD for zone 11.
+Just write WAIT if you do not want to buy anything.
+
+Constraints
+2 ≤ playerCount ≤ 4
+0 ≤ myId, ownerId < playerCount
+zoneCount = 154 (may be changed during the contest if balancing is required < 200)
+linkCount = 306 (may be changed during the contest if balancing is required < 400)
+0 ≤ platinumSource ≤ 6
+0 ≤ platinum < 100000
+0 ≤ podsP0, podsP1, podsP2, podsP3 < 2000
+0 < podsCount < 2000
+0 ≤ zone1, zone2, zoneOrigin, zoneDestination < zoneCount
+Duration for a game round: 100ms
