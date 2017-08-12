@@ -3,6 +3,8 @@ package ww.prediction;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.text.Position;
+
 import ww.Agent;
 import ww.Cell;
 import ww.Dir;
@@ -247,13 +249,13 @@ public class Oracle {
         move.dir1 = dir1;
         for (Dir dir2 : Dir.getValues()) {
           move.dir2 = dir2;
-          simulatedSimulation.simulate(move);
+          simulatedSimulation.simulate(0, move);
           if (!move.isDir1Valid()) break;
           if (!move.isDir2Valid()) continue;
           if (newCell.get(dir1).get(dir2).position == position) {
             points.add(newCell.get(dir1).position);
           }
-          simulatedSimulation.undo(move);
+          simulatedSimulation.undo(0, move);
         }
       }
     }
@@ -282,7 +284,7 @@ public class Oracle {
   private void revertOwnPush() {
     // revert our push
     Agent pushedAgent = formerSimulatedMove.agent.cell.get(formerSimulatedMove.dir1).get(formerSimulatedMove.dir2).agent;
-    simulatedSimulation.undo(formerSimulatedMove); // our move has been invalidated
+    simulatedSimulation.undo(0, formerSimulatedMove); // our move has been invalidated
     formerPossiblePositions[pushedAgent.id].clear();
     formerPossiblePositions[pushedAgent.id].add(pushedAgent.cell.position);
   }
@@ -471,6 +473,19 @@ public class Oracle {
         state.positionAgent(state.agents[id], p);
       } else {
         if (debugMode) System.err.println("We don't know where the agent "+id+" is but he is in "+possiblePositions[id]);
+        // heightest place for unknown enemy
+        if (possiblePositions[id].size() > 0) {
+          int bestHeigh = -1;
+          Point bestPoint = null;
+          for (Point p : possiblePositions[id]) {
+            Cell cell = state.grid.get(p);
+            if (cell.height != 4 && cell.height > bestHeigh) {
+              bestHeigh = cell.height;
+              bestPoint = p;
+            }
+          }
+          state.positionAgent(state.agents[id], bestPoint);
+        }
       }
     }
   }

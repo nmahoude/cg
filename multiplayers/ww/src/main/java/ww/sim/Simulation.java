@@ -6,7 +6,12 @@ import ww.Dir;
 import ww.GameState;
 
 public class Simulation {
-
+  static double patience[] = new double[100];
+  static {
+    for (int i=0;i<patience.length;i++) {
+      patience[i] = Math.pow(0.8, i < 10 ? i : 10);
+    }
+  }
   private Move move;
   private Agent agent;
   private GameState state;
@@ -24,7 +29,7 @@ public class Simulation {
    * 
    * @return true if the move is valid
    */
-  public void simulate(Move move, long[] transposition) {
+  public void simulate(int depth, Move move, long[] transposition) {
     this.move = move;
     this.agent = move.agent;
 
@@ -35,15 +40,15 @@ public class Simulation {
     }
     
     if (!target.isOccupied()) {
-      computeMove(state, transposition);
+      computeMove(state, depth, transposition);
     } else {
-      computePush(state, transposition);
+      computePush(state, depth, transposition);
     }
   }
 
   
   /** undo a move, move should be valid ! */
-  public void undo(Move move) {
+  public void undo(int depth, Move move) {
     if (move.isPush) {
       Cell pushFrom = move.agent.cell.get(move.dir1);
       Cell pushTo = pushFrom.get(move.dir2);
@@ -51,7 +56,7 @@ public class Simulation {
       pushTo.agent.moveTo(pushFrom);
     } else {
       if (move.agent.cell.height == Cell.FINAL_HEIGHT - 1) {
-        move.agent.score--;
+        move.agent.score-=patience[depth];
       }
       Cell comingFrom = move.agent.cell.get(move.dir1.inverse());
       Cell builtOn = move.agent.cell.get(move.dir2);
@@ -60,7 +65,7 @@ public class Simulation {
     }
   }
   
-  private void computeMove(GameState state, long[] transposition) {
+  private void computeMove(GameState state, int depth, long[] transposition) {
     Cell target = agent.cell.get(move.dir1);
 
     int currentHeight = agent.cell.height;
@@ -87,7 +92,7 @@ public class Simulation {
     agent.moveTo(target);
     
     if (target.height == Cell.FINAL_HEIGHT - 1) {
-      agent.score++;
+      agent.score+=patience[depth];
     }
     placeTarget.elevate();
 
@@ -121,7 +126,7 @@ public class Simulation {
     if (!state.agents[3].inFogOfWar()) { transposition[4] |= state.agents[3].position.mask; }
   }
 
-  private void computePush(GameState state, long[] transposition) {
+  private void computePush(GameState state, int depth, long[] transposition) {
     Dir[] validDirs = move.dir1.pushDirections();
     boolean validPushDirection = 
         (move.dir2 == validDirs[0])
@@ -194,9 +199,15 @@ public class Simulation {
   }
 
 
-  public void simulate(Move move) {
+  public void simulate(int depth, Move move) {
     long transpo[] = new long[6];
-    simulate(move, transpo);
+    simulate(depth, move, transpo);
+  }
+  public void simulate(Move move) {
+    simulate(0, move);
+  }
+  public void undo(Move move) {
+    undo(0, move);
   }
 
 }

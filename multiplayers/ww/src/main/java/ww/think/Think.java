@@ -41,8 +41,9 @@ public class Think {
   }
 
   int dontSee(Agent agent) {
-        return (!state.agents[2].inFogOfWar() && state.agents[2].position.inRange(1, agent.position))
-         || (!state.agents[3].inFogOfWar() && state.agents[3].position.inRange(1, agent.position)) ? 0 : 1;
+    return 0;
+//        return (!state.agents[2].inFogOfWar() && state.agents[2].position.inRange(1, agent.position))
+//         || (!state.agents[3].inFogOfWar() && state.agents[3].position.inRange(1, agent.position)) ? 0 : 1;
   }
   public double alphaBeta(NodePOC node, double alpha, double beta, boolean maximizingScore, int dontsee0, int dontsee1) {
     // timeout condition
@@ -72,14 +73,14 @@ public class Think {
       } else {
         Node.testedNodes++;
         double score;
-        simulation.simulate(child.move, child.transposition);
+        simulation.simulate(child.depth, child.move, child.transposition);
         //System.err.println(""+child.move + " => " + Arrays.toString(child.transposition));
         if (!child.move.isValid()) {
           continue;
         }
         validActions++;
         score = alphaBeta(child, alpha, beta, !maximizingScore, dontsee0+dontSee(state.agents[0]), dontsee1+dontSee(state.agents[1]));
-        simulation.undo(child.move);
+        simulation.undo(child.depth, child.move);
         
         child.score = score;
         //transpositionMap.put(child, child);

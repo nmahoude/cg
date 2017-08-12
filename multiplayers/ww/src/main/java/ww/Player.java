@@ -84,7 +84,7 @@ public class Player {
       if (bestMove !=null && bestMove.agent != null) {
         // just before the output, we replay our best move for the divination
         oracle.updatePreviousState(state);
-        sim.simulate(bestMove);
+        sim.simulate(0, bestMove);
         // System.err.println("State after last simulation for prediction for move "+bestMove);
         //state.toTDD();
         oracle.updateSimulated(state, bestMove);
@@ -120,7 +120,7 @@ public class Player {
         for (Dir dir2 : Dir.getValues()) {
           move.dir1 = dir1;
           move.dir2 = dir2;
-          sim.simulate(move);
+          sim.simulate(0, move);
           if (move.isValid()) {
             double score = AgentEvaluator.score(state);
             System.err.println(""+move.toPlayerOutput()+" = "+score);
@@ -128,7 +128,7 @@ public class Player {
               bestScore = score;
               move.copyTo(state,bestMove);
             }
-            sim.undo(move);
+            sim.undo(0, move);
           }
         }
       }

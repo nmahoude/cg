@@ -5,14 +5,14 @@ import ww.paths.InfluenceMap;
 import ww.paths.Voronoi;
 import ww.sim.Simulation;
 
-public class AgentEvaluator {
+public class AgentEvaluator2 {
   private static final double[] elevationScore = new double[] { 1,  2 , 3, 4      };
-  static AgentEvaluator ae = new AgentEvaluator(null, null);
+  static AgentEvaluator2 ae = new AgentEvaluator2(null, null);
 
   GameState state;
   Agent agent;
   
-  AgentEvaluator(GameState state, Agent agent) {
+  AgentEvaluator2(GameState state, Agent agent) {
     this.state = state;
     this.agent = agent;
   }
@@ -21,13 +21,12 @@ public class AgentEvaluator {
     double score = 0.0;
     ae.state = state;
     
-    score += AgentEvaluator.score(state.agents[0]);
-    score += AgentEvaluator.score(state.agents[1]);
-    score -= AgentEvaluator.score(state.agents[2]);
-    score -= AgentEvaluator.score(state.agents[3]);
+    score += AgentEvaluator2.score(state.agents[0]);
+    score += AgentEvaluator2.score(state.agents[1]);
+    score -= AgentEvaluator2.score(state.agents[2]);
+    score -= AgentEvaluator2.score(state.agents[3]);
     
-    score += 200.0 * voronoi(state);
-    //score += 5.0 * state.agents[0].position.manhattan(state.agents[1].position);
+    score += 2.0 * voronoi(state);
     return score;    
   }
   
@@ -36,20 +35,23 @@ public class AgentEvaluator {
     
     ae.agent = agent;
     
-    double score = 0.0
-        + 5.0 * agent.score
-        + 1.0 * ae.position()
-        + 50.0 * ae.elevation()
-        + 1.0 * ae.neighbouringElevation()
-        + 0.0 //1.0 * ae.countActions();
-        + 1.0 * ae.dangerousCliffs()
-        + 0.0 //* ae.accessibleCells()
-        + 1.0 * ae.potentialCells()
+    double score = 2 * agent.score
+        -1_000.0 * ae.blocked()
         ;
     
     return score;
   }
 
+
+  private double blocked() {
+    int currentHeight = agent.cell.height;
+    for (int i = 0; i < Dir.LENGTH; i++) {
+      Cell checkCell = agent.cell.neighbors[i];
+      int height = checkCell.height;
+      if (height != 4 && height<=currentHeight+1) return 0.0;
+    }
+    return 1.0;
+  }
 
   private static double influenceMap(GameState state) {
     InfluenceMap map[] = new InfluenceMap[4];

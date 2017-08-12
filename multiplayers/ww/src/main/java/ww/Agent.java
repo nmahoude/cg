@@ -5,7 +5,7 @@ public class Agent {
   
   public Point position = Point.unknown;
   public Cell cell = Cell.InvalidCell;
-  public int score;
+  public double score;
   
   public Agent(int id) {
     this.id = id;

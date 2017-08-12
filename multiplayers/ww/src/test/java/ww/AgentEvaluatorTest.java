@@ -44,6 +44,7 @@ public class AgentEvaluatorTest {
   }
   
   @Test
+  @Ignore
   public void test() {
     state.size = 5;
     state.readInit(new Scanner("" + state.size + " 2"));

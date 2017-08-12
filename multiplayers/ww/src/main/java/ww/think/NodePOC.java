@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ww.AgentEvaluator;
-import ww.Cell;
+import ww.AgentEvaluator2;
 import ww.Dir;
 import ww.GameState;
 import ww.sim.Move;
@@ -93,7 +92,7 @@ public class NodePOC {
   }
 
   public double evaluate(int dontsee0, int dontsee1) {
-    return AgentEvaluator.score(state) + 18.0 * (dontsee0 + dontsee1);
+    return AgentEvaluator2.score(state); // + 18.0 * (dontsee0 + dontsee1);
   }
 
   @Override

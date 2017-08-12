@@ -131,11 +131,11 @@ public class SimulationTest {
   
     Move move = TU.getMove(state.agents[0], Dir.E, Dir.E);
     simulation.simulate(move);
-    assertThat(state.agents[0].score, is(1));
+    assertThat(state.agents[0].score, is(1.0));
     
     simulation.undo(move);
     
-    assertThat(state.agents[0].score, is(0));
+    assertThat(state.agents[0].score, is(0.0));
   }
   
   @Test

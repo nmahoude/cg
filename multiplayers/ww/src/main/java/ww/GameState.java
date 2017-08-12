@@ -73,11 +73,19 @@ public class GameState {
       
 //      System.err.println("reading from CG : "+action+" "+agentId+" "+dir1+" "+dir2);
 //      System.err.println("reading from CG : "+move);
-      legalActionsDepth0Cache.add(move);
+      if (move.isPush) {
+        legalActionsDepth0Cache.add(0, move);
+      } else {
+        legalActionsDepth0Cache.add(move);
+      }
       
       NodePOC node = new NodePOC(1);
       node.move = move;
-      legalActionDepth0NodeCache.add(node);
+      if (move.isPush) {
+        legalActionDepth0NodeCache.add(0, node);
+      } else {
+        legalActionDepth0NodeCache.add(node);
+      }
     }
     // System.err.println("Read "+legalActionsDepth0Cache.size()+" valid actions");
    
