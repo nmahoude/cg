@@ -4,6 +4,6 @@ import codeBusters.P;
 
 public class Entity {
   public int id;
-  public P position;
+  public P position = new P(0,0);
   public int type;
 }

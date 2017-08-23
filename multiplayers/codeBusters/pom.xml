@@ -7,6 +7,20 @@
   </parent>
   <artifactId>codeBusters</artifactId>
   
+  <dependencies>
+  	<dependency>
+  		<groupId>nmahoude.codingame</groupId>
+  		<artifactId>cgcollections</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>nmahoude.codingame</groupId>
+  		<artifactId>cgcollections</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<classifier>sources</classifier>
+  	</dependency>
+  </dependencies>
+  
   <build>
     <plugins>
       <plugin>
@@ -23,4 +37,5 @@
       </plugin>
     </plugins>
   </build>
+  
 </project>
