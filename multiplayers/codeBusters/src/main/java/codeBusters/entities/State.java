@@ -4,7 +4,7 @@ public enum State {
   UNKNOWN(false),
   FREE(true),
   BUSTED(true),
-  BASE(true), 
+  BASE(false), 
   IN_FOG(true);
   
   private boolean isOnMap;
