@@ -22,6 +22,7 @@
 		<module>veryHard</module>
 		<module>javaexplorer</module>
 		<module>contests</module>
+		<module>cc</module>
 	</modules>
 
 	<dependencies>

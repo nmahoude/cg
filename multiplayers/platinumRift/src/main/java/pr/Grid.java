@@ -1,9 +1,13 @@
 package pr;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Grid {
   Cell initCells[];
   Cell cells[];
   private int cellCount;
+  List<Continent> continents = new ArrayList<>();
   
   public Grid(int cellCount) {
     this.cellCount = cellCount;
@@ -17,5 +21,11 @@ public class Grid {
   
   public Cell getById(int id) {
     return initCells[id];
+  }
+
+  public Continent createContinent() {
+    Continent continent = new Continent();
+    continents.add(continent);
+    return continent;
   }
 }

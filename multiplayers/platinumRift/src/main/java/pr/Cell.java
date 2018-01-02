@@ -1,5 +1,8 @@
 package pr;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Cell {
   private static final int NEIGHBORS = 6;
   public static final Cell invalidCell = new Cell(-1);
@@ -18,6 +21,7 @@ public class Cell {
   public int[] pods = new int[4];
   public boolean atWar;
   public int totalPods;
+  public Continent continent;
   
   public Cell(int id) {
     this.id = id;
@@ -57,5 +61,50 @@ public class Cell {
       if (neighbors[c].ownerId != ownerId) return false;
     }
     return true;
+  }
+  
+  public int unsafeNeededBots() {
+    int needed[] = new int[4];
+    for (int c =0;c<neighborsFE;c++) {
+      if (neighbors[c].ownerId == -1) continue;
+      if (neighbors[c].ownerId != ownerId) needed[neighbors[c].ownerId]+=neighbors[c].pods[neighbors[c].ownerId];
+    }
+    return Math.max(needed[0], Math.max(needed[1], Math.max(needed[2], needed[3])));
+  }
+  
+  /**
+   *  return true if all neighbors are mine
+   */
+  public boolean neighborsAreMine() {
+    for (int i=0;i<neighborsFE;i++) {
+      if (neighbors[i].ownerId != ownerId) return false;
+    }
+    return true;
+  }
+
+  public boolean neighborsToEnemy() {
+    for (int i=0;i<neighborsFE;i++) {
+      if (neighbors[i].ownerId != ownerId && neighbors[i].ownerId >= 0) return true;
+    }
+    return false;
+  }
+
+  public List<Cell> getFreeNeighbors() {
+    List<Cell> freeCells = new ArrayList<>();
+    for (int i=0;i<neighborsFE;i++) {
+      if (neighbors[i].ownerId != ownerId && neighbors[i].totalPods == 0) {
+        freeCells.add(neighbors[i]);
+      }
+    }
+    return freeCells;
+  }
+
+  public void spread(Continent continent) {
+    continent.addCell(this);
+    for (int i=0;i<neighborsFE;i++) {
+      if (neighbors[i].continent == null) {
+        neighbors[i].spread(continent);
+      }
+    }
   }
 }

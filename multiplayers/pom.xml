@@ -28,5 +28,6 @@
 	<module>ww</module>
 	<module>Tron_v2</module>
 	<module>platinumRift</module>
+	<module>meanmax</module>
   </modules>
 </project>

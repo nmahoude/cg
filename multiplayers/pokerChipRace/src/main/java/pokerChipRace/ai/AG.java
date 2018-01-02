@@ -118,7 +118,7 @@ public class AG {
 
     do {
       bIndex = Player.rand.nextInt(max);
-    } while (bIndex == aIndex && bIndex != otherThanIndex);
+    } while (bIndex == aIndex || bIndex == otherThanIndex);
 
     return pool[aIndex].energy > pool[bIndex].energy ? aIndex : bIndex;
   }

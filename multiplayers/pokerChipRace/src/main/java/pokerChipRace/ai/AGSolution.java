@@ -60,7 +60,7 @@ public class AGSolution {
   }
 
   private double getRandomGene() {
-    if (Player.rand.nextDouble() < 0.3) {
+    if (Player.rand.nextDouble() < 0.5) {
       return -1; // WAIT
     } else {
       return _2PI * Player.rand.nextDouble(); // real angle between 0 and

@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import csb.ai.AISolution;
-import csb.ai.ag.AGAI;
+import csb.ai.ag.AGAI2;
 import trigonometry.Vector;
 
 public class Player {
@@ -48,7 +48,7 @@ public class Player {
         System.out.println(""+(int)state.checkPoints[1].x+" "+(int)state.checkPoints[1].y+" BOOST");
         continue;
       }
-      AGAI ag = new AGAI(start+145);
+      AGAI2 ag = new AGAI2(start+140);
       ag.setState(state);
       
       AISolution best = ag.evolve();

@@ -53,7 +53,7 @@ public class AGSolution implements AISolution {
     }
   }
 
-  private void randomize(int depth) {
+  void randomize(int depth) {
     angles[depth] = Player.rand.nextDouble();  // 0->1 linear
     if (Player.rand.nextDouble() < 0.05) {
       thrusts[depth] = -1; // shield 

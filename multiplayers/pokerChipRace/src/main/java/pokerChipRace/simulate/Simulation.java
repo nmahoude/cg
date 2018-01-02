@@ -138,13 +138,16 @@ public class Simulation {
         Collision col = collisions[i];
         if (col.a == a || col.b == b || col.a == b || col.b == a) continue;
         tempCollisions[tempCollisionsFE++] = col;
+        //col.t -= delta;
         if (col.t < next.t) {
           next = col;
         }
       }
       //swap collisions
+      Collision[] temp = collisions;
       collisions = tempCollisions;
       collisionsFE = tempCollisionsFE;
+      tempCollisions = temp;
 
       if (a.radius > 0) {
         Collision c = collisionsCache[collisionsCacheFE];
