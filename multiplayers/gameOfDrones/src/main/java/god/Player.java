@@ -74,6 +74,20 @@ public class Player {
 //      System.err.println("dist2Zone : "+droneUnderInvestigation.position.dist2(zoneUnderInvestigation.position));
 //      System.err.println("rapprcohement ? " + droneUnderInvestigation.lastPos.dist2(zoneUnderInvestigation.position));
       
+      System.err.println("Future owners");
+      state.zones.forEach(zone -> {
+        System.err.print(zone.id + " => [");
+        for (int i=0;i<Zone.TURNS_IN_FUTURE;i++) {
+          if (zone.futureOwner[i] != -1)
+            System.err.print(zone.futureOwner[i]);
+          else 
+            System.err.print("x");
+          System.err.print(" ");
+        }
+        System.err.print("]");
+        System.err.println();
+      });
+      
       List<Zone> otherZones = new ArrayList<>();
       getNotOwnedZones(otherZones);
       
@@ -108,7 +122,7 @@ public class Player {
       
       // do the knapsack problem with the spared drones
       List<Zone> optimalChoice = new ArrayList<>();
-      KnapSack.fillPackage(spareDrones.size(), otherZones, optimalChoice, otherZones.size());
+      new KnapSack<Zone>().fillPackage(spareDrones.size(), otherZones, optimalChoice, otherZones.size());
 
       if (optimalChoice.isEmpty()) {
         int maxPoint = 0;
@@ -127,7 +141,7 @@ public class Player {
               spareDrones.add(d);
             }
           }
-          KnapSack.fillPackage(spareDrones.size(), otherZones, optimalChoice, otherZones.size());
+          new KnapSack<Zone>().fillPackage(spareDrones.size(), otherZones, optimalChoice, otherZones.size());
         }
       }
       if (optimalChoice.isEmpty()) {

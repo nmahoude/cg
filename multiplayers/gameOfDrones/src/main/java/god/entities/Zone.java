@@ -4,13 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import god.GameState;
+import god.KnapsackUnit;
 
-public class Zone extends Entity {
+public class Zone extends Entity implements KnapsackUnit {
+  public static final int TURNS_IN_FUTURE = 20;
+  
   public int id;
   int radius = 100;
   public int drones[] = new int[4]; // drone count inside for each player
   public int incomming_drones[] = new int[4]; // incomming drones comming to this zone
   public int owner = -1; // controlled by id
+  public int futureOwner[] = new int[TURNS_IN_FUTURE];
+  
   public List<Drone> allDronesInOrder = new ArrayList<>();
   public List<Drone> myDrones = new ArrayList<>();
   public double value;
@@ -42,6 +47,42 @@ public class Zone extends Entity {
         }
       }
     });
+    
+    updateFutureOwners();
+  }
+
+  // update futureOwner, it's a worst case (all drones move to this zone) of the future
+  private void updateFutureOwners() {
+    futureOwner[0] = owner;
+    
+    for (int turn=1;turn<TURNS_IN_FUTURE;turn++) {
+      int drones[] = new int[4];
+      int maxDist = radius * radius + turn * Drone.speed * Drone.speed;
+      for (Drone drone : allDronesInOrder) {
+        if (drone.position.dist2(this.position) > maxDist) {
+          break; // all later drones are too far
+        } else {
+          drones[drone.owner]++;
+        }
+      }
+      int turnOwner = futureOwner[turn-1];
+      for (int i=0;i<4;i++) {
+        // TODO bug here, if we are equals, player 0 is advantaged
+        if (turnOwner == -1) {
+          if (drones[i]> 0) {
+            turnOwner = i;
+          }
+        } else if (drones[turnOwner] < drones[i]) {
+          turnOwner = i;
+        } else if (drones[turnOwner] == drones[i]) {
+          int pastOwner = futureOwner[turn-1];
+          if (pastOwner == i) {
+            turnOwner = i;
+          }
+        }
+      }
+      futureOwner[turn] = turnOwner;
+    }
   }
   
   public void debug(int myId) {
@@ -105,6 +146,16 @@ public class Zone extends Entity {
     return drone;
   }
 
+  @Override
+  public double getWeight() {
+    return unitsToTake();
+  }
+  
+  @Override
+  public double getReward() {
+    return 1 + value;
+  }
+  
   public int unitsToTake() {
     if (owner == -1) {
       return 1;

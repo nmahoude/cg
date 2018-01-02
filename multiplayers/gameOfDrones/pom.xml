@@ -30,7 +30,12 @@
       <version>0.0.1-SNAPSHOT</version>
       <classifier>sources</classifier>
     </dependency>
-  </dependencies>
+    <dependency>
+    	<groupId>org.mockito</groupId>
+    	<artifactId>mockito-all</artifactId>
+    	<version>2.0.2-beta</version>
+    </dependency>
+       </dependencies>
 
   <build>
     <plugins>

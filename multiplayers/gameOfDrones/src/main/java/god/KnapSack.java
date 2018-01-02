@@ -5,34 +5,34 @@ import java.util.List;
 
 import god.entities.Zone;
 
-public class KnapSack {
+public class KnapSack<T extends KnapsackUnit> {
 
-  static List<Zone> my_pack;
+  List<T> my_pack;
 
-  static double getZoneWeight(Zone zone) {
-    return zone.unitsToTake();
+  double getWeight(T zone) {
+    return zone.getWeight();
   }
   
-  static double getZoneReward(Zone zone) {
+  double getReward(T zone) {
     // TODO be the inverse of distance
-    return 1 + zone.value;
+    return zone.getReward();
   }
   
-  public static double fillPackage(double weight, List<Zone> item, List<Zone> optimalChoice, int n){
+  public double fillPackage(double weight, List<T> item, List<T> optimalChoice, int n){
       //base case
       if(n == 0 || weight == 0)
           return 0;
 
-      if(getZoneWeight(item.get(n-1)) > weight) {
-          List<Zone> subOptimalChoice = new ArrayList<>();
+      if(getWeight(item.get(n-1)) > weight) {
+          List<T> subOptimalChoice = new ArrayList<>();
           double optimalCost =fillPackage(weight, item, subOptimalChoice, n-1);
           optimalChoice.addAll(subOptimalChoice);
           return optimalCost;
       }
       else{
-          List<Zone> includeOptimalChoice = new ArrayList<>();
-          List<Zone> excludeOptimalChoice = new ArrayList<>();
-          double include_cost = getZoneReward(item.get(n-1)) + fillPackage(weight-getZoneWeight(item.get(n-1)), item, includeOptimalChoice, n-1);
+          List<T> includeOptimalChoice = new ArrayList<>();
+          List<T> excludeOptimalChoice = new ArrayList<>();
+          double include_cost = getReward(item.get(n-1)) + fillPackage(weight-getWeight(item.get(n-1)), item, includeOptimalChoice, n-1);
           double exclude_cost = fillPackage(weight, item, excludeOptimalChoice, n-1);
           if(include_cost > exclude_cost){
               optimalChoice.addAll(includeOptimalChoice);
@@ -46,7 +46,7 @@ public class KnapSack {
       }
   }
 
-  private static void printOptimalChoice(ArrayList<Zone> itemList, double weight) {
+  private void printOptimalChoice(ArrayList<T> itemList, double weight) {
       my_pack = new ArrayList<>();
       fillPackage(weight, itemList, my_pack, itemList.size());
       System.out.println("Best choice for weight: " + weight);
@@ -56,8 +56,8 @@ public class KnapSack {
   }
 
 
-  public List<Zone> knapsackResolution(int W, List<Zone> allFactories) {
-    List<Zone> knapsack;
+  public List<T> knapsackResolution(int W, List<Zone> allFactories) {
+    List<T> knapsack;
 
     // Input:
     // Values (stored in array v)
