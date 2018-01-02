@@ -4,12 +4,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import meanmax.Game;
+import meanmax.ai.eval.Eval;
 import meanmax.ai.eval.EvalV2;
 import meanmax.entities.Entity;
 
 public class EvalPERF {
   static Entity entities[] = new Entity[100];
-  EvalV2 eval = new EvalV2();
+  Eval eval = new EvalV2();
   Simulation simulation;
   Action actions[][] = new Action[3][9];
   

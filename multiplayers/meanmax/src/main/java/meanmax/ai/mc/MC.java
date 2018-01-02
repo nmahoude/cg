@@ -3,12 +3,13 @@ package meanmax.ai.mc;
 import meanmax.Game;
 import meanmax.Player;
 import meanmax.ai.ag.AGSolution;
+import meanmax.ai.eval.Eval;
 import meanmax.ai.eval.EvalV2;
 import meanmax.simulation.Simulation;
 
 public class MC {
   public int MAX_TIME = 35_000_000;
-  public EvalV2 eval = new EvalV2();
+  public Eval eval = new EvalV2();
       
   public AGSolution bestSolution = new AGSolution(eval); // not used directly, will be swapped in place
   private AGSolution solution = new AGSolution(eval);
@@ -40,7 +41,7 @@ public class MC {
     solution.energy = 0.0;
     solution.random();
     for (int j=0;j<AGSolution.DEPTH;j++) {
-      solution.crashTestDummies(j);
+      solution.actionForDummyPlayers(j);
       simulation.simulate(solution.actions[j]);
       solution.energy = patience[j] * eval.eval();
     }

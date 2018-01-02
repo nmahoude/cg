@@ -2,7 +2,7 @@ package meanmax.ai.ag;
 
 import meanmax.Game;
 import meanmax.Player;
-import meanmax.ai.eval.EvalV2;
+import meanmax.ai.eval.Eval;
 import meanmax.entities.Destroyer;
 import meanmax.entities.SkillEffect;
 import meanmax.entities.Wreck;
@@ -11,20 +11,21 @@ import meanmax.simulation.Simulation;
 import trigo.Position;
 
 public class AGSolution implements Comparable<AGSolution> {
-  public static final int DEPTH = 3;
+  public static final int DEPTH = 4;
   public static final int ACTIONS = 9;
   private static final int ACTIONS_FOR_PLAYER0 = 3;
   private static final int INV_MUTATION_RATE = 100;
-  double patience[] = new double[] { 1.0, 0.9, 0.8, 0.7 };
+  double patience[] = new double[] { 1.0, 0.9, 0.8, 0.7, 0.6 };
 
   private static Simulation simulation = new Simulation();
 
   public Action actions[][] = new Action[DEPTH][ACTIONS];
-  public double energy = 0.0;
+  public double energies[] = new double[DEPTH];
+  public double energy = Double.NEGATIVE_INFINITY;
   public String messages[] = new String[3];
-  private EvalV2 eval;
+  private Eval eval;
   
-  public AGSolution(EvalV2 eval) {
+  public AGSolution(Eval eval) {
     this.eval = eval;
     for (int j = 0; j < DEPTH; j++) {
       for (int i = 0; i < ACTIONS; i++) {
@@ -32,22 +33,41 @@ public class AGSolution implements Comparable<AGSolution> {
       }
     }
   }
-  
-  public void evaluate() {
+
+  public boolean isBetterThan(AGSolution other) {
+    return this.energy > other.energy;
+  }
+  public void evaluateRandom() {
     energy = 0.0;
-    for (int j=0;j<AGSolution.DEPTH;j++) {
-      crashTestDummies(j);
-      simulation.simulate(actions[j]);
-      energy += patience[AGSolution.DEPTH-1] * eval.eval();
+    for (int depth=0;depth<AGSolution.DEPTH;depth++) {
+      randomOneDepth(depth);
+      actionForDummyPlayers(depth);
+      simulation.simulate(actions[depth]);
+      updateEnergy(depth);
     }
     Game.restore();
   }
 
+  public void evaluate() {
+    energy = 0.0;
+    for (int depth=0;depth<AGSolution.DEPTH;depth++) {
+      actionForDummyPlayers(depth);
+      simulation.simulate(actions[depth]);
+      updateEnergy(depth);
+    }
+    Game.restore();
+  }
+
+  private void updateEnergy(int depth) {
+    energies[depth] = eval.eval();
+    energy += patience[AGSolution.DEPTH-1] * energies[depth];
+  }
+  
   public void reevaluate() {
     energy = 0.0;
-    for (int j=0;j<AGSolution.DEPTH;j++) {
-      simulation.simulate(actions[j]);
-      energy += patience[AGSolution.DEPTH-1] * eval.eval();
+    for (int depth=0;depth<AGSolution.DEPTH;depth++) {
+      simulation.simulate(actions[depth]);
+      updateEnergy(depth);
     }
   }
 
@@ -100,6 +120,10 @@ public class AGSolution implements Comparable<AGSolution> {
           action.thrust = 0;
       }
     }
+    if (depth == 0) {
+      sendOil(actions[0/*depth*/][Game.DOOF], 0);
+      sendGrenade(actions[0/*depth*/][Game.DESTROYER], Game.players[0]);
+    }
   }
   
   private void sendOil(Action action, int playerId) {
@@ -138,7 +162,7 @@ public class AGSolution implements Comparable<AGSolution> {
 
   private void sendGrenade(Action action, Player player) {
     if (player.rage < 60) return;
-    if (Game.random.nextDouble() < 0.8) return; // 80% to not throw
+    if (Game.random.nextDouble() < 0.6) return; // 80% to not throw
     
     action.thrust = -1;
     double angleRand = Game.random.nextDouble();
@@ -161,14 +185,13 @@ public class AGSolution implements Comparable<AGSolution> {
     }
   }
 
-  /**
-   * dummies for ennemies
-   */
-  public void crashTestDummies(int turn) {
+  public void actionForDummyPlayers(int turn) {
+    Action[] actionsAtDepth = actions[turn];
     for (int i=1;i<3;i++) {
-      Game.dummy.dummyReaper(actions[turn][3*i],     Game.players[i]);
-      Game.dummy.dummyDestroyer(actions[turn][3*i+1], Game.players[i]);
-      Game.dummy.dummyDoof(actions[turn][3*i+2],    Game.players[i]);
+      Player player = Game.players[i];
+      Game.dummy.dummyReaper(actionsAtDepth[3*i],     player);
+      Game.dummy.dummyDestroyer(actionsAtDepth[3*i+1], player);
+      Game.dummy.dummyDoof(actionsAtDepth[3*i+2],    player);
     }
   }
 
@@ -209,8 +232,8 @@ public class AGSolution implements Comparable<AGSolution> {
   }
 
   public static void crossOverAndMutate(AGSolution child1, AGSolution child2, AGSolution parent1, AGSolution parent2) {
-    child1.energy = 0.0;
-    child2.energy = 0.0;
+    child1.energy = Double.NEGATIVE_INFINITY;
+    child2.energy = Double.NEGATIVE_INFINITY;
     
     for (int l=0;l<3;l++) {
       // skill versus move
@@ -308,7 +331,7 @@ public class AGSolution implements Comparable<AGSolution> {
   }
 
   public void shiftAndCopy(AGSolution model) {
-    energy = 0.0;
+    energy = Double.NEGATIVE_INFINITY;
     for (int depth=0;depth<DEPTH-1;depth++) {
       actions[depth][0].copyFrom(model.actions[depth+1][0]);
       actions[depth][1].copyFrom(model.actions[depth+1][1]);
@@ -317,9 +340,24 @@ public class AGSolution implements Comparable<AGSolution> {
     randomOneDepth(DEPTH-1);
   }
 
+  public void debugOilPrediction() {
+    for (int j=0;j<AGSolution.DEPTH;j++) {
+      System.err.println("at depth "+j);
+      if (actions[j][3+2].thrust == -1) {
+        System.err.print("p2 will oil -> ");
+        actions[j][3+2].debug();
+      }
+      if (actions[j][3*2+2].thrust == -1) {
+        System.err.print("p3 will oil -> ");
+        actions[j][3*2+2].debug();
+      }
+    }
+  }
+  
   public void debug() {
     System.err.println("best solution : ");
     for (int j=0;j<AGSolution.DEPTH;j++) {
+      System.err.println("at depth "+j);
       simulation.simulate(actions[j]);
       for (int i=0;i<3;i++) {
         actions[j][i].debug();
@@ -331,6 +369,10 @@ public class AGSolution implements Comparable<AGSolution> {
     System.err.println("total rage : "+Game.players[0].rage);
     
     Game.restore();
+  }
+
+  public void resetEnergy() {
+    energy = Double.NEGATIVE_INFINITY;    
   }
 
 }

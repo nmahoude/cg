@@ -2,9 +2,8 @@ package meanmax;
 
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.ThreadLocalRandom;
 
-import meanmax.ai.ag.AG;
+import meanmax.ai.ag2.AG;
 import meanmax.ai.dummy.DummyAG;
 import meanmax.entities.Entity;
 import meanmax.entities.SkillEffect;
@@ -16,7 +15,7 @@ public class Game {
   public static boolean DEBUG_INPUT = false;
   public static boolean DEBUG_AI = false;
 
-  public static ThreadLocalRandom random = ThreadLocalRandom.current();
+  public static Random random = new Random(System.currentTimeMillis());
   
   private static final int MAX_ENTITIES = 1000;
   public static final int REAPER = 0;
@@ -76,22 +75,23 @@ public class Game {
     // game loop
     turn = 0;
     while (true) {
-      turn++;
       turnInit();
       
       readInput(in);
 
+      System.err.println("Current eval : " + ai.eval.eval());
       //ai.compareExpected();
       ai.think(Game.players[0]);
       //ai.saveExpected();
       
       ai.output();
+      System.err.println("time : "+(System.currentTimeMillis()-start));
     }
   }
 
   private static void readInput(Scanner in) {
     players[0].score = in.nextInt();
-    start = System.nanoTime();
+    start = System.currentTimeMillis();
     players[1].score = in.nextInt();
     players[2].score = in.nextInt();
     for (int i=0;i<3;i++) {
@@ -197,6 +197,7 @@ public class Game {
   }
 
   public static void turnInit() {
+    turn++;
     entities_FE = 9; // keep the inmovable entities
     wrecks_FE = tankers_FE = skillEffects_FE = seDoofs_FE = 0;
   }

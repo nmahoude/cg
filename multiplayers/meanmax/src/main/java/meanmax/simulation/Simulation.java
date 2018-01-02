@@ -9,9 +9,9 @@ import meanmax.entities.Tanker;
 import meanmax.entities.Wreck;
 
 public class Simulation {
-  public static int COLLISION_CACHE = 100_000;
+  public static int COLLISION_CACHE = 150;
   
-  private static final int MAX_COLLISION = 1000;
+  private static final int MAX_COLLISION = 150;
   public static Collision[] collisionsCache;
   public static int collisionsCacheFE;
   public static Collision[] tempCollisions;
@@ -37,7 +37,7 @@ public class Simulation {
   }
   
   private void applySol(Action actions[]) {
-    for (int i=0;i<9;i++) {
+    for (int i=0;i<3*3;i++) {
       int playerIndex = (int)(i / 3);
       Entity entity = Game.entities[i];
       Action action = actions[i];

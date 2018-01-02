@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import meanmax.Game;
 import meanmax.ai.ag.AGSolution;
-import meanmax.ai.eval.Eval;
+import meanmax.ai.eval.EvalOrigin;
 import meanmax.entities.Entity;
 import meanmax.entities.Wreck;
 import meanmax.simulation.Action;
@@ -20,11 +20,11 @@ import meanmax.simulation.Simulation;
 import trigo.Position;
 import trigo.Speed;
 
-public class EvalTest {
+public class EvalOriginTest {
   static Entity entities[] = new Entity[100];
   Simulation simulation;
   Action actions[] = new Action[9];
-  Eval eval;
+  EvalOrigin eval;
   private int currentAction;
   
   @Before 
@@ -32,7 +32,7 @@ public class EvalTest {
     Game.DEBUG_INPUT = false;
     Game.turnInit();
     
-    eval = new Eval();
+    eval = new EvalOrigin();
     simulation = new Simulation();
     for (int i=0;i<9;i++) {
       actions[i] = new Action();
@@ -47,7 +47,7 @@ public class EvalTest {
     
     read(9,4,-1,5.0,650.0,/**/1000.0,1000.0/**/,0.0,0.0,5,5);
 
-    Eval eval = new Eval();
+    EvalOrigin eval = new EvalOrigin();
     
     assertThat(eval.isDefended((Wreck)Game.entities[9]), is(true));
   }
@@ -60,7 +60,7 @@ public class EvalTest {
     
     read(9,4,-1,5.0,650.0,/**/1000.0,1000.0/**/,0.0,0.0,5,5);
 
-    Eval eval = new Eval();
+    EvalOrigin eval = new EvalOrigin();
     
     assertThat(eval.isDefended((Wreck)Game.entities[9]), is(true));
   }
@@ -129,7 +129,7 @@ public class EvalTest {
     read(16,3,-1,3.0,600.0,-6899.0,-4115.0,292.0,174.0,1,4);
     read(17,3,-1,3.0,600.0,7013.0,-3918.0,-297.0,166.0,1,4);
 
-    Eval eval = new Eval();
+    EvalOrigin eval = new EvalOrigin();
     eval.eval();
     eval.debug();
   }

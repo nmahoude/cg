@@ -1,11 +1,11 @@
-package meanmax.ai.ag;
+package meanmax.ai.ag2;
 
 import java.util.Arrays;
 
 import meanmax.Game;
 import meanmax.Player;
 import meanmax.ai.eval.Eval;
-import meanmax.ai.eval.EvalV2;
+import meanmax.ai.eval.EvalV4;
 import trigo.Position;
 import trigo.Speed;
 
@@ -13,7 +13,7 @@ public class AG {
   public static int POPULATION = 150;
   public static int SURVIVOR_POP_SIZE = 30;
   public static int POPULATION_RANDOM_START = 90;
-  public Eval eval = new EvalV2();
+  public Eval eval = new EvalV4();
 
   public long MAX_TIME = 28;
       

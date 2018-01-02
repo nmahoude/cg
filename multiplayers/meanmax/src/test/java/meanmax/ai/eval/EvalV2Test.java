@@ -17,7 +17,7 @@ public class EvalV2Test {
   static Entity entities[] = new Entity[100];
   Simulation simulation;
   Action actions[] = new Action[9];
-  Eval eval;
+  EvalOrigin eval;
   private int currentAction;
   
   @Before
@@ -25,7 +25,7 @@ public class EvalV2Test {
     Game.DEBUG_INPUT = false;
     Game.turnInit();
 
-    eval = new Eval();
+    eval = new EvalOrigin();
     simulation = new Simulation();
     for (int i = 0; i < 9; i++) {
       actions[i] = new Action();

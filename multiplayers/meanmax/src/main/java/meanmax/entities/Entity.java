@@ -124,20 +124,20 @@ public class Entity {
   public final Collision getCollisionWithEntity(Entity u, Collision collision, double remainingTime) {
 
     // quick check for evicting entities : projection of move shadow
-    double posx1Min = Math.min(position.x-radius, remainingTime*(position.x+speed.vx)-radius);
-    double posx2Max = Math.max(u.position.x+u.radius, remainingTime*(u.position.x+u.speed.vx)+u.radius);
+    double posx1Min = position.x-radius + Math.min(0 , remainingTime*speed.vx);
+    double posx2Max = u.position.x+u.radius + Math.max(0 , remainingTime*u.speed.vx);
     if (posx1Min > posx2Max) return Collision.NO_COLLISION;
 
-    double posx1Max = Math.max(position.x+radius, remainingTime*(position.x+speed.vx)+radius);
-    double posx2Min = Math.min(u.position.x-u.radius, remainingTime*(u.position.x+u.speed.vx)-u.radius);
+    double posx1Max = position.x+radius + Math.max(0, remainingTime*speed.vx);
+    double posx2Min = u.position.x-u.radius + Math.min(0 , remainingTime*u.speed.vx);
     if (posx2Min > posx1Max) return Collision.NO_COLLISION;
 
-    double posy1Min = Math.min(position.y-radius, remainingTime*(position.y+speed.vy)-radius);
-    double posy2Max = Math.max(u.position.y+u.radius, remainingTime*(u.position.y+u.speed.vy)+u.radius);
+    double posy1Min = position.y-radius + Math.min(0, remainingTime*speed.vy);
+    double posy2Max = u.position.y+u.radius + Math.max(0, remainingTime*u.speed.vy);
     if (posy1Min > posy2Max) return Collision.NO_COLLISION;
 
-    double posy1Max = Math.max(position.y+radius, remainingTime*(position.y+speed.vy)+radius);
-    double posy2Min = Math.min(u.position.y-u.radius, remainingTime*(u.position.y+u.speed.vy)-u.radius);
+    double posy1Max = position.y+radius + Math.max(0, remainingTime*speed.vy);
+    double posy2Min = u.position.y-u.radius + Math.min(0, remainingTime*u.speed.vy);
     if (posy2Min > posy1Max) return Collision.NO_COLLISION;
 
     // Check instant collision

@@ -32,4 +32,12 @@ public class Player {
     Scanner in = new Scanner(System.in);
     Game.play(in);
   }
+
+  public double deltaScore() {
+    return score - b_score;
+  }
+
+  public double deltaRage() {
+    return rage-b_rage;
+  }
 }
