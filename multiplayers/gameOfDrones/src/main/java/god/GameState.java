@@ -105,4 +105,20 @@ public class GameState {
     }
     return best;
   }
+
+  public void debugFutureOwners() {
+    System.err.println("Future owners");
+    zones.forEach(zone -> {
+      System.err.print(zone.id + " => [");
+      for (int i=0;i<Zone.TURNS_IN_FUTURE;i++) {
+        if (zone.futureOwner[i] != -1)
+          System.err.print(zone.futureOwner[i]);
+        else 
+          System.err.print("x");
+        System.err.print(" ");
+      }
+      System.err.print("]");
+      System.err.println();
+    });    
+  }
 }

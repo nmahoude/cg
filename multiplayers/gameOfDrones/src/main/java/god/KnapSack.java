@@ -18,25 +18,25 @@ public class KnapSack<T extends KnapsackUnit> {
     return zone.getReward();
   }
   
-  public double fillPackage(double weight, List<T> item, List<T> optimalChoice, int n){
+  public double fillPackage(double weight, List<T> items, List<T> optimalChoice, int n){
       //base case
       if(n == 0 || weight == 0)
           return 0;
 
-      if(getWeight(item.get(n-1)) > weight) {
+      if(getWeight(items.get(n-1)) > weight) {
           List<T> subOptimalChoice = new ArrayList<>();
-          double optimalCost =fillPackage(weight, item, subOptimalChoice, n-1);
+          double optimalCost =fillPackage(weight, items, subOptimalChoice, n-1);
           optimalChoice.addAll(subOptimalChoice);
           return optimalCost;
       }
       else{
           List<T> includeOptimalChoice = new ArrayList<>();
           List<T> excludeOptimalChoice = new ArrayList<>();
-          double include_cost = getReward(item.get(n-1)) + fillPackage(weight-getWeight(item.get(n-1)), item, includeOptimalChoice, n-1);
-          double exclude_cost = fillPackage(weight, item, excludeOptimalChoice, n-1);
+          double include_cost = getReward(items.get(n-1)) + fillPackage(weight-getWeight(items.get(n-1)), items, includeOptimalChoice, n-1);
+          double exclude_cost = fillPackage(weight, items, excludeOptimalChoice, n-1);
           if(include_cost > exclude_cost){
               optimalChoice.addAll(includeOptimalChoice);
-              optimalChoice.add(item.get(n - 1));
+              optimalChoice.add(items.get(n - 1));
               return include_cost;
           }
           else{

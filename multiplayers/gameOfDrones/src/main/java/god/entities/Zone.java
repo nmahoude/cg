@@ -15,6 +15,7 @@ public class Zone extends Entity implements KnapsackUnit {
   public int incomming_drones[] = new int[4]; // incomming drones comming to this zone
   public int owner = -1; // controlled by id
   public int futureOwner[] = new int[TURNS_IN_FUTURE];
+  public int dronesInFuture[][] = new int[TURNS_IN_FUTURE][4];
   
   public List<Drone> allDronesInOrder = new ArrayList<>();
   public List<Drone> myDrones = new ArrayList<>();
@@ -56,32 +57,41 @@ public class Zone extends Entity implements KnapsackUnit {
     futureOwner[0] = owner;
     
     for (int turn=1;turn<TURNS_IN_FUTURE;turn++) {
-      int drones[] = new int[4];
-      int maxDist = radius * radius + turn * Drone.speed * Drone.speed;
+      int drones[] = dronesInFuture[turn];
+      for (int i=0;i<4;i++) {
+        drones[i] = 0;
+      }
+      int maxDist2 = (radius + turn * Drone.SPEED)*(radius + turn * Drone.SPEED) ;
       for (Drone drone : allDronesInOrder) {
-        if (drone.position.dist2(this.position) > maxDist) {
-          break; // all later drones are too far
+        if (drone.position.dist2(this.position) > maxDist2) {
+          //break; // all later drones are too far
         } else {
           drones[drone.owner]++;
         }
       }
       int turnOwner = futureOwner[turn-1];
+      boolean equality = false;
       for (int i=0;i<4;i++) {
-        // TODO bug here, if we are equals, player 0 is advantaged
         if (turnOwner == -1) {
           if (drones[i]> 0) {
             turnOwner = i;
           }
         } else if (drones[turnOwner] < drones[i]) {
+          equality = false;
           turnOwner = i;
         } else if (drones[turnOwner] == drones[i]) {
+          equality = true;
           int pastOwner = futureOwner[turn-1];
           if (pastOwner == i) {
             turnOwner = i;
           }
         }
       }
-      futureOwner[turn] = turnOwner;
+      if (equality) {
+        futureOwner[turn] = futureOwner[turn-1];
+      } else {
+        futureOwner[turn] = turnOwner;
+      }
     }
   }
   
@@ -167,7 +177,7 @@ public class Zone extends Entity implements KnapsackUnit {
     int max = 0;
     for (int i=0;i<GameState.playerCount;i++) {
       if (i == GameState.myId) continue;
-      max = Math.max(max,  drones[i]);
+      max = Math.max(max,  drones[i]+incomming_drones[i]);
     }
     return max - drones[GameState.myId]+1;
   }
@@ -190,5 +200,8 @@ public class Zone extends Entity implements KnapsackUnit {
     return owner == -1;
   }
   
-  
+  @Override
+  public String toString() {
+    return String.valueOf(id);
+  }
 }

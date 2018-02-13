@@ -1,6 +1,8 @@
 package god;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import cgutils.io.InputReader;
@@ -18,47 +20,22 @@ public class Player {
     InputReader in = new InputReader(System.in);
     state.readInit(in);
     
-    bestZonesToCheck = new ArrayList<>();
-    for (Zone zone : state.zones) {
-      bestZonesToCheck.add(zone);
-    }
-//    if (state.playerCount == 2) {
-//    } else {
-//      int zonesToCheck = 0;
-//      if (state.playerCount == 3) {
-//        zonesToCheck = 3;
-//      } else if (state.playerCount == 4) {
-//        zonesToCheck = 3;
-//      }
-//      double bestDist = Double.POSITIVE_INFINITY;
-//      for (Zone z1 : state.zones) {
-//        for (Zone z2 : state.zones) {
-//          if (z1 == z2) continue;
-//          for (Zone z3 : state.zones) {
-//            if (z1 == z3 || z2 == z3) continue;
-//            double dist = z1.position.distance(z2.position) 
-//                + z1.position.distance(z3.position)
-//                + z2.position.distance(z3.position);
-//            if( dist < bestDist) {
-//              bestDist = dist;
-//              bestZonesToCheck = Arrays.asList(z1, z2, z3);
-//            }
-//          }
-//        }
-//      }
-//    }
-    
-    
-    System.err.println("Selection of zones to attack/defend : ");
-    for (Zone zone : bestZonesToCheck) {
-      System.err.print(""+zone.id+" ; ");
-    }
-    System.err.println();
     
     // game loop
     while (true) {
       turns++;
       state.readRound(in);
+
+      bestZonesToCheck = new ArrayList<>();
+      for (Zone zone : state.zones) {
+        bestZonesToCheck.add(zone);
+      }
+      
+      System.err.println("Selection of zones to attack/defend : ");
+      for (Zone zone : bestZonesToCheck) {
+        System.err.print(""+zone.id+" ; ");
+      }
+      System.err.println();
 
       // debug
 //      for (Zone zone : state.zones) {
@@ -74,23 +51,11 @@ public class Player {
 //      System.err.println("dist2Zone : "+droneUnderInvestigation.position.dist2(zoneUnderInvestigation.position));
 //      System.err.println("rapprcohement ? " + droneUnderInvestigation.lastPos.dist2(zoneUnderInvestigation.position));
       
-      System.err.println("Future owners");
-      state.zones.forEach(zone -> {
-        System.err.print(zone.id + " => [");
-        for (int i=0;i<Zone.TURNS_IN_FUTURE;i++) {
-          if (zone.futureOwner[i] != -1)
-            System.err.print(zone.futureOwner[i]);
-          else 
-            System.err.print("x");
-          System.err.print(" ");
-        }
-        System.err.print("]");
-        System.err.println();
-      });
+      state.debugFutureOwners();
       
       List<Zone> otherZones = new ArrayList<>();
       getNotOwnedZones(otherZones);
-      
+      System.err.println("Not owned zones : " + Arrays.toString(otherZones.toArray()));
       
       
       List<Drone> spareDrones = new ArrayList<>();
@@ -122,7 +87,8 @@ public class Player {
       
       // do the knapsack problem with the spared drones
       List<Zone> optimalChoice = new ArrayList<>();
-      new KnapSack<Zone>().fillPackage(spareDrones.size(), otherZones, optimalChoice, otherZones.size());
+      updateZonesValue(otherZones, spareDrones);
+      new KnapSack<Zone>().fillPackage(spareDrones.size(), Collections.unmodifiableList(otherZones), optimalChoice, otherZones.size());
 
       if (optimalChoice.isEmpty()) {
         int maxPoint = 0;
@@ -141,7 +107,8 @@ public class Player {
               spareDrones.add(d);
             }
           }
-          new KnapSack<Zone>().fillPackage(spareDrones.size(), otherZones, optimalChoice, otherZones.size());
+          updateZonesValue(otherZones, spareDrones);
+          new KnapSack<Zone>().fillPackage(spareDrones.size(), Collections.unmodifiableList(otherZones), optimalChoice, otherZones.size());
         }
       }
       if (optimalChoice.isEmpty()) {
@@ -163,11 +130,22 @@ public class Player {
     }
   }
 
+  private static void updateZonesValue(List<Zone> otherZones, List<Drone> spareDrones) {
+    for (Zone zone : otherZones) {
+      zone.value = 0;
+      for (Drone drone : spareDrones) {
+        zone.value += 100 - (100.0 * drone.position.distance(zone.position) / Math.sqrt(4000*4000+1800*1800));
+      }
+    }
+  }
+
   private static void affectSparedDronesToZones(List<Drone> spareDrones, List<Zone> zones) {
+    System.err.println("Zone to check for ASDtZ : " + Arrays.toString(zones.toArray()));
     OptimalSubSet algo = new OptimalSubSet();
     List<ZoneInfo> optimize = algo.optimize(zones, spareDrones, 200-turns);
     for (ZoneInfo info : optimize) {
       for (Drone drone : info.affectedDrones) {
+        System.err.println("sending drone "+drone.id+" to "+info.zone.id);
         drone.target = info.zone.position;
       }
     }
