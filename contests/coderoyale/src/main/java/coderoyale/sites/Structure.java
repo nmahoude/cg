@@ -22,4 +22,7 @@ public class Structure {
     this.attachedTo = site;
   }
 
+  public boolean isMine() {
+    return owner == 0;
+  }
 }

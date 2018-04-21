@@ -176,7 +176,7 @@ public class Player {
     long ennemyTowers = towers.stream()
                           .filter(t -> {return t.owner != 0; })
                           .count();
-    if (ennemyTowers > 0) {
+    if (ennemyTowers > 100) { // TODO yolo
       Site site = getSiteByClosestDistance(me).stream()
           .filter(s -> { return s.isTower(); } )
           .findFirst().orElse(null);
@@ -230,8 +230,28 @@ public class Player {
   }
 
   private static boolean doNormalMove(Site closestFree) {
-    if (closestFree != null) {
+    long myBarracksCount = barracks.stream()
+          .filter(Structure::isMine)
+          .count();
+    if (myBarracksCount < 3) {
+      System.err.println("Building barracks ....");
       return me.moveTo(closestFree).and(closestFree::buildKnightBarrack);
+    }
+    
+    //TODO Here, lot to do
+    //  - if we are endanger, we may goback near tower and (re)power them
+    //  - we may want to add mines to have more knight later
+    //  - we may want to build outpost to get nearest the ennemy (faster waves of creeps)
+    //  - we may want to build new towers to increase protection
+    
+    System.err.println("Enough barracks, try to go back to towers and regenerate them");
+    List<Site> closestTowers = getSiteByClosestDistance(me).stream()
+        .filter(s -> { return s.imOwner() && s.isTower(); })
+        .collect(Collectors.toList());
+    
+    if (!closestTowers.isEmpty()) {
+      Site towerSite = closestTowers.get(0);
+      return me.moveTo(towerSite).and(towerSite::buildTower);
     }
     return false;
   }
@@ -239,7 +259,7 @@ public class Player {
   private static boolean doDefensiveMove() {
     System.err.println("Defensive mode activated ... ");
     // defensive move, go back to tower !
-    List<Site> closestTowers = getSiteByClosestDistance(him).stream()
+    List<Site> closestTowers = getSiteByClosestDistance(me).stream()
         .filter(s -> { return s.imOwner() && s.isTower(); })
         .collect(Collectors.toList());
     
@@ -284,6 +304,7 @@ public class Player {
       .filter(s -> { return s != closestTower;})
         // but protection range
       .filter(s -> { return s.pos.dist(closestTower.pos) < t.attackRadius + s.radius; } )
+      .sorted(me::closest)
       .findFirst().orElse(null);
     
     if (site != null) {

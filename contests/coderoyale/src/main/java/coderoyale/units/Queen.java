@@ -34,4 +34,8 @@ public class Queen extends Unit {
     }
   }
 
+  public int closest(Site site1, Site site2) {
+    return Double.compare(this.pos.dist(site1.pos), this.pos.dist(site2.pos));
+  }
+
 }
