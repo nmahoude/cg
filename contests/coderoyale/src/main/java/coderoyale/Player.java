@@ -206,7 +206,9 @@ public class Player {
     System.err.println("I'm currently mining " + minedGoldPerTurn);
     if (minedGoldPerTurn < 4) {
       System.err.println("Still got to add some mines ...");
-      List<Site> sites = getSiteByClosestDistance(me);
+      List<Site> sites = getSiteByClosestDistance(me).stream()
+                            .filter(s -> !s.isTower())
+                            .collect(Collectors.toList());
       for (Site site : sites) {
         if (!site.maxMined() || site.imNotOwner()) {
           return moveToSiteAndBuildMine(site);
@@ -238,7 +240,7 @@ public class Player {
       return me.moveTo(closestFree).and(closestFree::buildKnightBarrack);
     }
     
-    //TODO Here, lot to do
+    //TODO Here, THERE IS A LOT TO DO
     //  - if we are endanger, we may goback near tower and (re)power them
     //  - we may want to add mines to have more knight later
     //  - we may want to build outpost to get nearest the ennemy (faster waves of creeps)
