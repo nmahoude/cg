@@ -1,7 +1,6 @@
 package coderoyale.sites;
 
-import java.util.function.Supplier;
-
+import coderoyale.Player;
 import coderoyale.Pos;
 import coderoyale.units.Queen;
 
@@ -22,6 +21,12 @@ public class Site {
   
   public Structure structure = Structure.NONE;
   public int maxMineSize;
+  
+  
+  @Override
+  public String toString() {
+    return "(id= "+id+")";
+  }
   
   public boolean canTrain() {
     return structure.type == Structure.BARRACK && ((Barrack)structure).turnBeforeTrain <= 0;
@@ -63,8 +68,22 @@ public class Site {
   }
 
   public boolean buildMine() {
-    System.out.println("BUILD " + this.id + " MINE");
-    return true;
+    if (this.isInRange(Player.me) && !this.isAMine() ) {
+      System.out.println("BUILD " + this.id + " MINE");
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public boolean upgradeMine() {
+    System.err.println("Upgrading mine ...");
+    if (this.isInRange(Player.me) && this.isAMine() && !this.maxMined()) {
+      System.out.println("BUILD " + this.id + " MINE");
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public boolean buildGiant() {
@@ -82,6 +101,10 @@ public class Site {
 
   public boolean maxMined() {
     return isAMine() && ((Mine)structure).incomeRate >= maxMineSize;
+  }
+
+  public boolean isNotBuildable(Queen me) {
+    return isTower() && imNotOwner();
   }
 
 }
