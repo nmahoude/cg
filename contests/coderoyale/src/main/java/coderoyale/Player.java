@@ -288,7 +288,7 @@ public class Player {
     if (!closestTowers.isEmpty()) {
       System.err.println("Move back to tower and upgrade it");
       Site towerSite = closestTowers.get(0);
-      return me.moveTo(towerSite).then(towerSite::buildTower).end();
+      return me.action(towerSite::moveTo).then(towerSite::buildTower).end();
     } else {
       System.err.println("No Tower to move back");
     }

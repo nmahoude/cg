@@ -35,6 +35,10 @@ public class Queen extends Unit {
     return site.isInRange(this);
   }
 
+  public Action action(Supplier<Boolean> action) {
+    return new Action().then(action);
+  }
+  
   public Action moveTo(Site site) {
     if (this.canBuild(site)) {
       return new Action();

@@ -58,6 +58,8 @@ public class Site {
   }
 
   public boolean moveTo() {
+    if (this.isInRange(Player.me)) return false;
+    
     System.out.println("MOVE " + this.pos);
     return true;
   }
