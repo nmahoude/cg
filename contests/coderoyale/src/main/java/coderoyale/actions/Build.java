@@ -2,6 +2,7 @@ package coderoyale.actions;
 
 import javax.print.CancelablePrintJob;
 
+import coderoyale.CommandException;
 import coderoyale.sites.Site;
 import coderoyale.units.Queen;
 

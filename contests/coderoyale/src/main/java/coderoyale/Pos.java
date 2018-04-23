@@ -1,5 +1,7 @@
 package coderoyale;
 
+import coderoyale.sites.Site;
+
 public class Pos {
   public int x;
   public int y;
@@ -22,5 +24,13 @@ public class Pos {
   
   double dist2(Pos pos) {
     return (pos.x-x)*(pos.x-x) + (pos.y-y)*(pos.y-y);
+  }
+
+  public Vector direction(Pos pos) {
+    return new Vector(pos.x - this.x , pos.y - this.y);
+  }
+
+  public Pos add(Vector v) {
+    return new Pos((int)(x+v.x), (int)(y+v.y));
   }
 }
