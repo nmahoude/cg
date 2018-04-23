@@ -3,21 +3,18 @@ package coderoyale.sites;
 import coderoyale.CommandException;
 import coderoyale.Player;
 import coderoyale.Pos;
+import coderoyale.units.Disk;
 import coderoyale.units.Queen;
 
-public class Site {
+public class Site extends Disk {
 
   private static final int QUEEN_RADIUS = 30;
 
   public Site(int siteId, int x, int y, int radius) {
+    super(x, y, radius);
     this.id = siteId;
-    this.radius = radius;
-    pos.x = x;
-    pos.y = y;
   }
   public int id;
-  public Pos pos = new Pos();
-  public int radius;
   private int gold;
   
   public Structure structure = Structure.NONE;

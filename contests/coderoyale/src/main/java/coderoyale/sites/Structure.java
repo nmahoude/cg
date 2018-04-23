@@ -1,5 +1,7 @@
 package coderoyale.sites;
 
+import coderoyale.units.Disk;
+
 public class Structure {
   public final static Structure NONE = new Structure(null);
 

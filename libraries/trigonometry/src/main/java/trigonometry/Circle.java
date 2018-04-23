@@ -6,8 +6,8 @@ import java.util.List;
 public class Circle {
   static final double PRECISION = 0.001;
   
-  final Point center;
-  final double radius;
+  final public Point center;
+  final public double radius;
   
   public Circle(Point center, double radius) {
     this.center = center;

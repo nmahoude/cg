@@ -26,6 +26,11 @@ public class Queen extends Unit {
   public List<Unit> creeps = new ArrayList<>();
   public int frontierX;
 
+  
+  public Queen() {
+    super(0,0, -1);
+  }
+  
   public static class Action {
     public Action then(Supplier<Boolean> action) {
       boolean result = action.get();

@@ -1,12 +1,12 @@
 package coderoyale;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import coderoyale.pathfinding.PathFinding;
+import coderoyale.pathfinding.Route;
 import coderoyale.sites.Barrack;
 import coderoyale.sites.Mine;
 import coderoyale.sites.Site;
@@ -21,7 +21,7 @@ public class Player {
   private static final int ARCHER_COST = 100;
   private static final int GIANT_COST  = 140;
   
-  private static List<Site> sitesRenamed;
+  public static List<Site> allSites = new ArrayList<>();
   private static List<Tower> allTowers = new ArrayList<>();
   private static List<Barrack> barracks = new ArrayList<>();
   private static List<Mine> mines = new ArrayList<>();
@@ -36,41 +36,19 @@ public class Player {
   static int turn = 0;
   public static Queen me = new Queen();
   private static Queen him = new Queen();
+  private static int keepForKnightRush = 0;
   
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
-    int numSites = in.nextInt();
-    sitesRenamed = new ArrayList<>();
-    for (int i = 0; i < numSites; i++) {
-      int siteId = in.nextInt();
-      int x = in.nextInt();
-      int y = in.nextInt();
-      int radius = in.nextInt();
-      Site site = new Site(siteId, x, y, radius);
-      sitesRenamed.add(site);
-    }
+    readPreGame(in);
 
     // game loop
     while (true) {
-      turn++;
       readGameState(in, numSites);
 
-      Site closestFree = null;
-      for (Site site : sitesRenamed) {
-        if (site.imOwner()) {
-          continue;
-        }
-        if (closestFree == null ) {
-          closestFree = site;
-        } else if (site.imNotOwner() && closestFree.pos.dist2(me.pos) > site.pos.dist2(me.pos)) {
-          closestFree = site;
-        }
-      }
-
       try {
-        issueQueenCommand(closestFree);
-        System.err.println("WARNING : NO COMMAND ISSUED");
-        System.out.println("WAIT");
+        issueQueenCommand();
+        issueNoCommand(); // if here there is no command
       } catch(CommandException ce) {
         ce.output();
       }
@@ -78,7 +56,37 @@ public class Player {
     }
   }
 
+
+  private static Site getClosestFree() {
+    Site closestFree = null;
+    for (Site site : allSites) {
+      if (site.imOwner()) {
+        continue;
+      }
+      if (closestFree == null ) {
+        closestFree = site;
+      } else if (site.imNotOwner() && closestFree.pos.dist2(me.pos) > site.pos.dist2(me.pos)) {
+        closestFree = site;
+      }
+    }
+    return closestFree;
+  }
+
+  private static void readPreGame(Scanner in) {
+    numSites = in.nextInt();
+    for (int i = 0; i < numSites; i++) {
+      int siteId = in.nextInt();
+      int x = in.nextInt();
+      int y = in.nextInt();
+      int radius = in.nextInt();
+      Site site = new Site(siteId, x, y, radius);
+      allSites.add(site);
+    }
+  }
+
   private static void readGameState(Scanner in, int numSites) {
+    turn++;
+
     me.reset();
     him.reset();
     
@@ -149,10 +157,9 @@ public class Player {
         him.updatePos(x, y);
         unit = him;
       } else {
-        unit = new Unit();
+        unit = new Unit(x, y, unitType);
         unit.owner = owner;
         unit.updatePos(x, y);
-        unit.type = unitType;
         ownerQueen.creeps.add(unit);
       }
       unit.health = health;
@@ -181,18 +188,39 @@ public class Player {
         }
       }      
     }
+
+    // only spend money on knight if we dont need a giant ...
     if (!needGiant) {
-      // only spend money on knight if we dont need a giant ...
-      System.err.println("Build as many knight as possible ....");
-      for (Site site : closestToHim) {
-        if (gold < KNIGHT_COST) break;
-        train += site.id + " ";
-        gold -= KNIGHT_COST;
+      keepForKnightRush = calculateKeepForKnightRush();
+      
+      if (keepForKnightRush  <= 1) {
+        System.err.println("Build as many knight as possible ....");
+        for (Site site : closestToHim) {
+          if (gold < KNIGHT_COST) break;
+          train += site.id + " ";
+          gold -= KNIGHT_COST;
+        }
+      } else {
+        if (gold >= keepForKnightRush * KNIGHT_COST) {
+          for (Site site : closestToHim) {
+            if (gold < KNIGHT_COST) break;
+            train += site.id + " ";
+            gold -= KNIGHT_COST;
+          }
+        }
       }
     } else {
       System.err.println("not spending for giant");
     }
     System.out.println(train.trim());
+  }
+
+  private static int calculateKeepForKnightRush() {
+    if (him.onHomeSide(him.pos.x) && him.towers.size() > 3) {
+      System.err.println("keep gold for 2 waves");
+      return 2; 
+    }
+    return 0;
   }
 
   private static boolean needGiant() {
@@ -201,16 +229,23 @@ public class Player {
         .filter(u -> u.owner == me.owner)
         .filter(Unit::isGiant)
         .count() > 0;
-    boolean giantBarrackExists = sitesRenamed.stream()
+    boolean giantBarrackExists = allSites.stream()
         .filter(Site::imOwner)
         .filter(Site::isGiant)
         .count() > 0;
         return giantBarrackExists && !giantExists ;
   }
 
-  private static void issueQueenCommand(Site closestFree) {
-    //initialRush();
+  private static void issueQueenCommand() {
+    // try pathfinding to other wall !
+//    Route route  = PathFinding.getPath(me.pos, him.pos);    
+//    route.go();
     
+    
+    Site closestFree = getClosestFree();
+
+    //initialRush();
+
     fleeFromCreeps();
     fleeFromTowers();
     if (needToBlitz()) {
@@ -303,7 +338,7 @@ public class Player {
   }
 
   private static void buildGiantBarracks(Site site) {
-    if (sitesRenamed.stream()
+    if (allSites.stream()
         .filter(Site::imOwner)
         .filter(Site::isGiant)
         .count() == 0) {
@@ -312,7 +347,7 @@ public class Player {
   }
 
   private static void fleeFromTowers() {
-    List<Site> hisTowerSites = sitesRenamed.stream()
+    List<Site> hisTowerSites = allSites.stream()
         .filter(Site::isTower)
         .filter(Site::imNotOwner)
         .collect(Collectors.toList());
@@ -344,7 +379,7 @@ public class Player {
     List<Unit> enemyUnits = units.stream()
         .filter(u -> u.owner == 1)
         .collect(Collectors.toList());
-    List<Site> hisTowers = sitesRenamed.stream()
+    List<Site> hisTowers = allSites.stream()
           .filter(Site::isTower)
           .filter(Site::imNotOwner)
           .filter(s -> { return s.getTower().protects(me, 0);})
@@ -355,12 +390,12 @@ public class Player {
     }
     
     // build a flee vector
-    Vector flee = new Vector();
+    CRVector flee = new CRVector();
     System.err.println("Building flee vector");
     for (Unit unit : enemyUnits) {
       double dist = unit.pos.dist(me.pos);
-      Vector invDir = unit.pos.direction(me.pos).normalize();
-      Vector contribution = invDir.mult(1.0 / (dist * dist)); // plus c'est loin moins ca compte
+      CRVector invDir = unit.pos.direction(me.pos).normalize();
+      CRVector contribution = invDir.mult(1.0 / (dist * dist)); // plus c'est loin moins ca compte
       flee = flee.add(contribution);
     }
     
@@ -369,9 +404,9 @@ public class Player {
       if (t.protects(me, 60)) {
         // the tower can harm me, 
         double dist = site.pos.dist(me.pos);
-        Vector invDir = site.pos.direction(me.pos).normalize();
+        CRVector invDir = site.pos.direction(me.pos).normalize();
         System.err.println("dist : "+dist + " invDir : "+invDir);
-        Vector contribution = invDir.mult(1.0 / (dist * dist)); // plus c'est loin moins ca compte
+        CRVector contribution = invDir.mult(1.0 / (dist * dist)); // plus c'est loin moins ca compte
         System.err.println("site "+ site + " contibution : "+ contribution);
         flee = flee.add(contribution);
       }
@@ -414,6 +449,7 @@ public class Player {
 
   static boolean initialRush = true;
   static Site rushSite  = null;
+  private static int numSites;
   private static void initialRush() {
     if (!initialRush) return;
     System.err.println("STILL IN RUSH");
@@ -422,7 +458,7 @@ public class Player {
       // find the farthest site that is closest to me than him
       double farther = 0;
       Site best = null;
-      for (Site site : sitesRenamed) {
+      for (Site site : allSites) {
         double dist = site.pos.dist(me.pos);
         if (dist > farther && dist < site.pos.dist(him.pos)) {
           farther = dist;
@@ -547,7 +583,7 @@ public class Player {
   }
 
   private static List<Site> getSiteByClosestDistance(Queen queen) {
-    return sitesRenamed.stream()
+    return allSites.stream()
         .sorted((s1, s2) -> Double.compare(s1.pos.dist(queen.pos), s2.pos.dist(queen.pos)))
         .collect(Collectors.toList());
   }
@@ -737,7 +773,7 @@ public class Player {
     Tower t = (Tower)closestTower.structure;
     
     // site qui ne sont pas closestTower, mais qui sont dans son range
-    Site site = sitesRenamed.stream()
+    Site site = allSites.stream()
         // not the current protecting tower 
       .filter(s -> { return s != closestTower;})
         // but protection range
@@ -781,7 +817,7 @@ public class Player {
   }
 
   private static Site getSite(int siteId) {
-    List<Site> sList = sitesRenamed.stream().filter(s -> s.id == siteId).collect(Collectors.toList());
+    List<Site> sList = allSites.stream().filter(s -> s.id == siteId).collect(Collectors.toList());
     if (sList.isEmpty()) {
       System.out.println("Cant find id " + siteId +" !!!!!!!");
       return null;
@@ -789,4 +825,9 @@ public class Player {
       return sList.get(0);
     }
   }
+  private static void issueNoCommand() {
+    System.err.println("WARNING : NO COMMAND ISSUED");
+    System.out.println("WAIT");
+  }
+
 }
