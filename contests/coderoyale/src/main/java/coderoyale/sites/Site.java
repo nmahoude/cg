@@ -139,4 +139,8 @@ public class Site {
   public void updateGold(int gold) {
     this.gold = gold;
   }
+
+  public boolean inTerritoryOf(Queen queen) {
+    return queen.onHomeSide(this.pos.x);
+  }
 }

@@ -158,6 +158,9 @@ public class Player {
       unit.health = health;
       units.add(unit);
     }
+    
+    me.calculateFrontierPosition();
+    him.calculateFrontierPosition();
   }
 
   private static void issueTrainCommand() {
@@ -262,12 +265,11 @@ public class Player {
       return; // too few towers to try to stabilize
     }
 
-    int frontierX = calculateFrontierPosition();
     List<Site> sites = getSiteByClosestDistance(me);
 
     // check if there is still empty sites behind the frontier (better attacks this space!)
     for (Site site : sites) {
-      if (site.noBuilding() && !me.onHomeSide(site.pos.x, frontierX)) {
+      if (site.noBuilding() && !site.inTerritoryOf(me) && !site.inTerritoryOf(him)) {
         System.err.println("Still room for expansion ...");
         
         return; // don't try to stabilise if there is still room to expand
@@ -276,7 +278,7 @@ public class Player {
     
     // try to build mine & barracks if needed
     for (Site site : sites) {
-      if (site.noBuilding() && me.onHomeSide(site.pos.x, frontierX)) {
+      if (site.noBuilding() && site.inTerritoryOf(me)) {
         // build a mine if possible
         moveToSiteAndBuildMine(site);
         
@@ -292,7 +294,7 @@ public class Player {
  / check if we can destroy some tower ?
  */
     for (Site site : sites) {
-      if (site.isTower() && me.onHomeSide(site.pos.x, frontierX)) {
+      if (site.isTower() && site.inTerritoryOf(me)) {
         moveToSiteAndBuildMine(site);
         moveToSiteAndBuildBarracks(site, false);
       }
@@ -307,22 +309,6 @@ public class Player {
         .count() == 0) {
       me.moveTo(site).then(site::buildGiant).end();
     }
-  }
-
-  private static int calculateFrontierPosition() {
-    List<Tower> farthestTowers = me.towers.stream()
-        .sorted((t1, t2) -> Double.compare(
-                                    Math.abs(t1.attachedTo.pos.x - 1920), 
-                                    Math.abs(t2.attachedTo.pos.x - 1920)))
-        .collect(Collectors.toList());
-    int frontier = 0;
-    int towers = Math.min(3, farthestTowers.size());
-    for (int i=0;i<towers;i++) {
-      frontier += farthestTowers.get(i).attachedTo.pos.x;
-    }
-    frontier /=towers;
-    System.err.println("The frontier is x = " + frontier);
-    return frontier;
   }
 
   private static void fleeFromTowers() {
@@ -622,10 +608,15 @@ public class Player {
 
   private static void buildNewMineOrBarracks(List<Site> closestAvailableSites) {
     for (Site site : closestAvailableSites) {
-      if (isInEnnemyTerritory(site)) {
+      if (isProtectedByEnnemyTowers(site)) {
+        System.err.println("Won't build in tower protected site: "+site);
+        continue;
+      } else if (isEnnemyTerritory(site)) {
         System.err.println("Won't build in ennermy territory site: "+site);
         continue;
       }
+      
+      
       
       System.err.println("Try to build mine");
       moveToSiteAndBuildMine(site);
@@ -633,6 +624,10 @@ public class Player {
       System.err.println("Try to build barracks");
       moveToSiteAndBuildBarracks(site, false);
     }
+  }
+
+  private static boolean isEnnemyTerritory(Site site) {
+    return site.inTerritoryOf(him);
   }
 
   private static void moveToSiteAndBuildBarracks(Site site, boolean force) {
@@ -650,7 +645,7 @@ public class Player {
     me.moveTo(site).then(site::buildKnightBarrack).end();
   }
 
-  private static boolean isInEnnemyTerritory(Site site) {
+  private static boolean isProtectedByEnnemyTowers(Site site) {
     for (Tower tower : him.towers) {
       if (tower.protects(site.pos, -site.radius)) return true;
     }
