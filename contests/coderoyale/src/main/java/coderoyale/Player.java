@@ -98,7 +98,7 @@ public class Player {
       int param1 = in.nextInt();
       int param2 = in.nextInt();
       Site site = getSite(siteId);
-      site.gold = gold;
+      site.updateGold(gold);
       site.maxMineSize = maxMineSize;
       
       Queen ownerQueen = owner == 0 ? me : him;
@@ -141,6 +141,7 @@ public class Player {
       int health = in.nextInt();
       Unit unit;
       
+      Queen ownerQueen = owner == 0 ? me : him;
       if (unitType == -1 && owner == 0) {
         me.updatePos(x, y);
         unit = me;
@@ -152,6 +153,7 @@ public class Player {
         unit.owner = owner;
         unit.updatePos(x, y);
         unit.type = unitType;
+        ownerQueen.creeps.add(unit);
       }
       unit.health = health;
       units.add(unit);
@@ -206,6 +208,7 @@ public class Player {
   private static void issueQueenCommand(Site closestFree) {
     //initialRush();
     
+    fleeFromCreeps();
     fleeFromTowers();
     if (needToBlitz()) {
       blitz();
@@ -225,6 +228,31 @@ public class Player {
   }
 
   
+  private static void fleeFromCreeps() {
+    // TODO When creeps are near, 
+    // we have to flee or turn around any tower to save some life
+    // the better would be to flee toward an unused structure to prepare for next move
+    
+    // what are the conditions to flee ?
+    // 1. the creeps will eventually catch us (ie : they wont be dead before ...)
+    // 2. we are not building a fancy new tower to kill them ?
+    // 3. they dont push us in the ennemy territory ....
+    // 4. it won't derails us from a good strategy (ie : we could exchange a little bit of life for a good move)
+    
+    
+    // What is the strategy to flee
+    // 1. build a flee vector from all the creeps nearby to get a general direction
+    // 2. try to find a target in or near this direction (ie : a tower, a free Site ?)
+    // 3. dont run into ennemy towers ...
+    // 4. don't flee towards mines (unless it's almost depleted or they wont reach it)
+    // 5. beware of walls ...
+    
+    // What functionnality I need :
+    // 1. how much time a creep will outlive the towers ?
+    // 2. basic math to chekc for Site and vector collision/distance
+    
+  }
+
   /**
    *  try to stabilize the game when there is enough security
    *  low creeps number, a barrier of towers, etc ...
@@ -253,18 +281,8 @@ public class Player {
         moveToSiteAndBuildMine(site);
         
         // build a barrack if needed
-        boolean needBarracks = false;
-        List<Site> myBarracks = sitesRenamed.stream().filter(Site::imOwner).filter(Site::isBarrack).collect(toList());
-        boolean betterBarracksExists = false;
-        for (Site b : myBarracks) {
-          if (me.onHomeSide(site.pos.x, b.pos.x)) {
-            betterBarracksExists = true;
-            System.err.println("No need to barracks illed placed");
-          }
-        }
-        if (!betterBarracksExists) {
-          me.moveTo(site).then(site::buildKnightBarrack).end();
-        }
+        moveToSiteAndBuildBarracks(site, false);
+        
         // build a giant if needed
         // TODO find a good spot to build giant ?
         // buildGiantBarracks(site);
@@ -276,7 +294,7 @@ public class Player {
     for (Site site : sites) {
       if (site.isTower() && me.onHomeSide(site.pos.x, frontierX)) {
         moveToSiteAndBuildMine(site);
-        me.moveTo(site).then(site::buildKnightBarrack).end();
+        moveToSiteAndBuildBarracks(site, false);
       }
     }
     
@@ -439,6 +457,11 @@ public class Player {
 
   private static void takeCareOfTowers(int energyThreshold) {
     System.err.println("Take care of towers ...");
+    if (him.creeps.size() == 0) {
+      System.err.println("No creep, let the tower decay ...");
+      return;
+    }
+    
     List<Site> towers = getSiteByClosestDistance(me).stream()
         .filter(Site::imOwner)
         .filter(Site::isTower)
@@ -551,7 +574,7 @@ public class Player {
       System.err.println("Won't build a mine with ennemy around ...");
       return false;
     }
-    if (site.gold == 0) {
+    if (!site.hasGold()) {
       System.err.println("No more gold in this site");
       return false;
     }
@@ -598,13 +621,40 @@ public class Player {
   }
 
   private static void buildNewMineOrBarracks(List<Site> closestAvailableSites) {
-    if (!closestAvailableSites.isEmpty()) {
-      Site site = closestAvailableSites.get(0);
+    for (Site site : closestAvailableSites) {
+      if (isInEnnemyTerritory(site)) {
+        System.err.println("Won't build in ennermy territory site: "+site);
+        continue;
+      }
+      
       System.err.println("Try to build mine");
       moveToSiteAndBuildMine(site);
+
       System.err.println("Try to build barracks");
-      me.moveTo(site).then(site::buildKnightBarrack).end();
+      moveToSiteAndBuildBarracks(site, false);
     }
+  }
+
+  private static void moveToSiteAndBuildBarracks(Site site, boolean force) {
+    // dont go in back lines and build barracks if sufficient well placed barracks already exists !
+    // we may force if we want to build a barracks because we will destroy the others soon (for mine)
+    if (!force) {
+      for (Barrack b : me.knightBarracks) {
+        if (b.attachedTo.pos.dist2(him.pos) < site.pos.dist2(him.pos)) {
+          System.err.println("Barracks with better place exists");
+          return;
+        }
+      }
+    }
+    
+    me.moveTo(site).then(site::buildKnightBarrack).end();
+  }
+
+  private static boolean isInEnnemyTerritory(Site site) {
+    for (Tower tower : him.towers) {
+      if (tower.protects(site.pos, -site.radius)) return true;
+    }
+    return false;
   }
 
   private static void buildNewTowers(List<Site> closestAvailableSites) {
@@ -622,7 +672,7 @@ public class Player {
 
     if (myBarracksCount == 0) {
       System.err.println("Building first barracks ....");
-      me.moveTo(closestFree).then(closestFree::buildKnightBarrack).end();
+      moveToSiteAndBuildBarracks(closestFree, true);
     }
   }
 

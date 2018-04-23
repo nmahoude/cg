@@ -1,5 +1,6 @@
 package coderoyale.sites;
 
+import coderoyale.Pos;
 import coderoyale.units.Queen;
 
 public class Tower extends Structure {
@@ -12,6 +13,10 @@ public class Tower extends Structure {
   }
 
   public boolean protects(Queen me, int extraRadius) {
-    return (attachedTo.pos.dist(me.pos) < extraRadius + attackRadius);
+    return protects(me.pos, extraRadius);
+  }
+
+  public boolean protects(Pos pos, int extraRadius) {
+    return (attachedTo.pos.dist(pos) < extraRadius + attackRadius);
   }
 }

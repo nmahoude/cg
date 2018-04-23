@@ -22,6 +22,7 @@ public class Queen extends Unit {
   public List<Barrack> knightBarracks = new ArrayList<>();
   public List<Tower> towers = new ArrayList<>();
   public List<Mine> mines = new ArrayList<>();
+  public List<Unit> creeps = new ArrayList<>();
 
   public static class Action {
     public Action then(Supplier<Boolean> action) {
@@ -93,6 +94,7 @@ public class Queen extends Unit {
     mines.clear();
     towers.clear();
     knightBarracks.clear();
+    creeps.clear();
   }
 
 }

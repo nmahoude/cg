@@ -10,7 +10,7 @@ public class Mine extends Structure {
   }
 
   public boolean hasGold() {
-    return attachedTo.gold > 0;
+    return attachedTo.hasGold();
   }
 
 }

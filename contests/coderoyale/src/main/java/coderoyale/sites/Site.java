@@ -18,7 +18,7 @@ public class Site {
   public int id;
   public Pos pos = new Pos();
   public int radius;
-  public int gold;
+  private int gold;
   
   public Structure structure = Structure.NONE;
   public int maxMineSize;
@@ -130,5 +130,13 @@ public class Site {
 
   public boolean isBarrack() {
     return structure.type == Structure.BARRACK;
+  }
+
+  public boolean hasGold() {
+    return gold > 0;
+  }
+
+  public void updateGold(int gold) {
+    this.gold = gold;
   }
 }
