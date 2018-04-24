@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-import coderoyale.pathfinding.PathFinding;
-import coderoyale.pathfinding.Route;
 import coderoyale.sites.Barrack;
 import coderoyale.sites.Mine;
 import coderoyale.sites.Site;
@@ -34,8 +32,8 @@ public class Player {
   
   private static List<Unit> units;
   static int turn = 0;
-  public static Queen me = new Queen();
-  private static Queen him = new Queen();
+  public static Queen me = new Queen(0);
+  private static Queen him = new Queen(1);
   private static int keepForKnightRush = 0;
   
   public static void main(String args[]) {
@@ -72,103 +70,7 @@ public class Player {
     return closestFree;
   }
 
-  private static void readPreGame(Scanner in) {
-    numSites = in.nextInt();
-    for (int i = 0; i < numSites; i++) {
-      int siteId = in.nextInt();
-      int x = in.nextInt();
-      int y = in.nextInt();
-      int radius = in.nextInt();
-      Site site = new Site(siteId, x, y, radius);
-      allSites.add(site);
-    }
-  }
-
-  private static void readGameState(Scanner in, int numSites) {
-    turn++;
-
-    me.reset();
-    him.reset();
-    
-    me.gold = in.nextInt();
-    me.touchedSite = in.nextInt(); // -1 if none
-    
-    barracks.clear();
-    allTowers.clear();
-    mines.clear();
-    
-    for (int i = 0; i < numSites; i++) {
-      int siteId = in.nextInt();
-      int gold = in.nextInt(); // used in future leagues
-      int maxMineSize = in.nextInt(); // used in future leagues
-      int structureType = in.nextInt(); // -1 = No structure, 2 = Barracks
-      int owner = in.nextInt(); // -1 = No structure, 0 = Friendly, 1 = Enemy
-      int param1 = in.nextInt();
-      int param2 = in.nextInt();
-      Site site = getSite(siteId);
-      site.updateGold(gold);
-      site.maxMineSize = maxMineSize;
-      
-      Queen ownerQueen = owner == 0 ? me : him;
-      
-      if (structureType == Structure.BARRACK) {
-        Barrack b= new Barrack(site);
-        b.turnBeforeTrain = param1;
-        b.subtype = param2; // KNIGHT, ... , GIANT
-        site.structure = b;
-        barracks.add(b);
-        if (b.subtype == Structure.KNIGHT) {
-          ownerQueen.knightBarracks.add(b);
-        }
-      } else if (structureType == Structure.TOWER){
-        Tower t = new Tower(site);
-        t.life = param1;
-        t.attackRadius = param2;
-        site.structure = t;
-        allTowers.add(t);
-        ownerQueen.towers.add(t);
-      } else if (structureType == Structure.MINE) {
-        Mine m = new Mine(site);
-        m.incomeRate = param1;
-        site.structure = m;
-        mines.add(m);
-        ownerQueen.mines.add(m);
-      }  else {
-        site.structure = Structure.NONE;
-      }
-      site.structure.owner = owner;
-    }
-    
-    int numUnits = in.nextInt();
-    units = new ArrayList<>();
-    for (int i = 0; i < numUnits; i++) {
-      int x = in.nextInt();
-      int y = in.nextInt();
-      int owner = in.nextInt();
-      int unitType = in.nextInt(); // -1 = QUEEN, 0 = KNIGHT, 1 = ARCHER
-      int health = in.nextInt();
-      Unit unit;
-      
-      Queen ownerQueen = owner == 0 ? me : him;
-      if (unitType == -1 && owner == 0) {
-        me.updatePos(x, y);
-        unit = me;
-      } else if (unitType == -1 && owner == 1) {
-        him.updatePos(x, y);
-        unit = him;
-      } else {
-        unit = new Unit(x, y, unitType);
-        unit.owner = owner;
-        unit.updatePos(x, y);
-        ownerQueen.creeps.add(unit);
-      }
-      unit.health = health;
-      units.add(unit);
-    }
-    
-    me.calculateFrontierPosition();
-    him.calculateFrontierPosition();
-  }
+  
 
   private static void issueTrainCommand() {
     String train = "TRAIN ";
@@ -243,8 +145,6 @@ public class Player {
     
     
     Site closestFree = getClosestFree();
-
-    //initialRush();
 
     fleeFromCreeps();
     fleeFromTowers();
@@ -830,4 +730,100 @@ public class Player {
     System.out.println("WAIT");
   }
 
+  private static void readPreGame(Scanner in) {
+    numSites = in.nextInt();
+    for (int i = 0; i < numSites; i++) {
+      int siteId = in.nextInt();
+      int x = in.nextInt();
+      int y = in.nextInt();
+      int radius = in.nextInt();
+      Site site = new Site(siteId, x, y, radius);
+      allSites.add(site);
+    }
+  }
+  private static void readGameState(Scanner in, int numSites) {
+    turn++;
+
+    me.reset();
+    him.reset();
+    
+    me.gold = in.nextInt();
+    me.touchedSite = in.nextInt(); // -1 if none
+    
+    barracks.clear();
+    allTowers.clear();
+    mines.clear();
+    
+    for (int i = 0; i < numSites; i++) {
+      int siteId = in.nextInt();
+      int gold = in.nextInt(); // used in future leagues
+      int maxMineSize = in.nextInt(); // used in future leagues
+      int structureType = in.nextInt(); // -1 = No structure, 2 = Barracks
+      int owner = in.nextInt(); // -1 = No structure, 0 = Friendly, 1 = Enemy
+      int param1 = in.nextInt();
+      int param2 = in.nextInt();
+      Site site = getSite(siteId);
+      site.updateGold(gold);
+      site.maxMineSize = maxMineSize;
+      
+      Queen ownerQueen = owner == 0 ? me : him;
+      
+      if (structureType == Structure.BARRACK) {
+        Barrack b= new Barrack(site);
+        b.turnBeforeTrain = param1;
+        b.subtype = param2; // KNIGHT, ... , GIANT
+        site.structure = b;
+        barracks.add(b);
+        if (b.subtype == Structure.KNIGHT) {
+          ownerQueen.knightBarracks.add(b);
+        }
+      } else if (structureType == Structure.TOWER){
+        Tower t = new Tower(site);
+        t.life = param1;
+        t.attackRadius = param2;
+        site.structure = t;
+        allTowers.add(t);
+        ownerQueen.towers.add(t);
+      } else if (structureType == Structure.MINE) {
+        Mine m = new Mine(site);
+        m.incomeRate = param1;
+        site.structure = m;
+        mines.add(m);
+        ownerQueen.mines.add(m);
+      }  else {
+        site.structure = Structure.NONE;
+      }
+      site.structure.owner = owner;
+    }
+    
+    int numUnits = in.nextInt();
+    units = new ArrayList<>();
+    for (int i = 0; i < numUnits; i++) {
+      int x = in.nextInt();
+      int y = in.nextInt();
+      int owner = in.nextInt();
+      int unitType = in.nextInt(); // -1 = QUEEN, 0 = KNIGHT, 1 = ARCHER
+      int health = in.nextInt();
+      Unit unit;
+      
+      Queen ownerQueen = owner == 0 ? me : him;
+      if (unitType == -1 && owner == 0) {
+        me.updatePos(x, y);
+        unit = me;
+      } else if (unitType == -1 && owner == 1) {
+        him.updatePos(x, y);
+        unit = him;
+      } else {
+        unit = new Unit(x, y, unitType);
+        unit.owner = owner;
+        unit.updatePos(x, y);
+        ownerQueen.creeps.add(unit);
+      }
+      unit.health = health;
+      units.add(unit);
+    }
+    
+    me.calculateFrontierPosition();
+    him.calculateFrontierPosition();
+  }
 }

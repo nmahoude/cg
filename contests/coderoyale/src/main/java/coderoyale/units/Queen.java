@@ -27,8 +27,9 @@ public class Queen extends Unit {
   public int frontierX;
 
   
-  public Queen() {
+  public Queen(int owner) {
     super(0,0, -1);
+    this.owner = owner;
   }
   
   public static class Action {
@@ -108,8 +109,8 @@ public class Queen extends Unit {
   public void calculateFrontierPosition() {
     List<Tower> farthestTowers = this.towers.stream()
         .sorted((t1, t2) -> Double.compare(
-                                    Math.abs(t1.attachedTo.pos.x - 1920), 
-                                    Math.abs(t2.attachedTo.pos.x - 1920)))
+                                    Math.abs(t1.attachedTo.pos.x - oppositeWallX), 
+                                    Math.abs(t2.attachedTo.pos.x - oppositeWallX)))
         .collect(Collectors.toList());
 
     if (farthestTowers.size() == 0) {
