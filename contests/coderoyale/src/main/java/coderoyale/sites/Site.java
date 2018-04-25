@@ -1,5 +1,8 @@
 package coderoyale.sites;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import coderoyale.CommandException;
 import coderoyale.Player;
 import coderoyale.Pos;
@@ -139,5 +142,11 @@ public class Site extends Disk {
 
   public boolean inTerritoryOf(Queen queen) {
     return queen.onHomeSide(this.pos.x);
+  }
+
+  public List<Tower> protectedByTowers(Queen him) {
+    return him.towers.stream()
+          .filter(tower -> tower.protects(this.pos, -this.radius))
+          .collect(Collectors.toList());
   }
 }

@@ -11,7 +11,7 @@ public class Structure {
   
   
   public static final int KNIGHT = 0;
-  public static final int ARCHER = 0;
+  public static final int ARCHER = 1;
   public static final int GIANT = 2;
 
   public int type = -1;
