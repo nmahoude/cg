@@ -18,7 +18,7 @@ public class Site extends Disk {
     this.id = siteId;
   }
   public int id;
-  private int gold;
+  public int gold;
   
   public Structure structure = Structure.NONE;
   public int maxMineSize;
@@ -65,7 +65,7 @@ public class Site extends Disk {
       System.err.println("not in range, aborting");
       return false;
     }
-    if (this.getTower().life > 600) {
+    if (this.getTower().health > 600) {
       System.err.println("life sufficient");
       return false;
     }
@@ -137,6 +137,7 @@ public class Site extends Disk {
   }
 
   public void updateGold(int gold) {
+    if (gold == -1) return; // oups we don't know
     this.gold = gold;
   }
 

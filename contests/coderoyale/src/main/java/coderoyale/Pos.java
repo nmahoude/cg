@@ -22,7 +22,7 @@ public class Pos {
     return Math.sqrt(dist2(pos));
   }
   
-  double dist2(Pos pos) {
+  public double dist2(Pos pos) {
     return (pos.x-x)*(pos.x-x) + (pos.y-y)*(pos.y-y);
   }
 

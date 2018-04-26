@@ -1,6 +1,8 @@
 === Test
 
 Silver
+14h12 : : 4
+
 01h27 : : resync avec le code java
 01h07 : 30 : passage des mines initiales à 6
 00h41 : 4 : suppression du blitz

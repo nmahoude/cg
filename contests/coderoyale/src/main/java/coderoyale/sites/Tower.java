@@ -4,7 +4,7 @@ import coderoyale.Pos;
 import coderoyale.units.Queen;
 
 public class Tower extends Structure {
-  public int life;
+  public int health;
   public int attackRadius;
 
   public Tower(Site site) {

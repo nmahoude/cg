@@ -1,11 +1,10 @@
 package coderoyale;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-
-import javax.xml.ws.handler.MessageContext;
 
 import coderoyale.sites.Barrack;
 import coderoyale.sites.Mine;
@@ -15,8 +14,6 @@ import coderoyale.sites.Tower;
 import coderoyale.units.Disk;
 import coderoyale.units.Queen;
 import coderoyale.units.Unit;
-import trigonometry.Point;
-import trigonometry.Vector;
 
 public class Player {
   
@@ -36,10 +33,11 @@ public class Player {
   static Phase phase = Phase.EXPANSION;
   
   private static List<Unit> units;
-  static int turn = 0;
+  public static int turn = 0;
   public static Queen me = new Queen();
-  private static Queen him = new Queen();
+  public static Queen him = new Queen();
   private static int keepForKnightRush = 0;
+  private static int myInitialLife = -1;
   
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
@@ -124,7 +122,7 @@ public class Player {
         }
       } else if (structureType == Structure.TOWER){
         Tower t = new Tower(site);
-        t.life = param1;
+        t.health = param1;
         t.attackRadius = param2;
         site.structure = t;
         allTowers.add(t);
@@ -141,6 +139,8 @@ public class Player {
       site.structure.owner = owner;
     }
     
+    inferMissingGold();
+    
     int numUnits = in.nextInt();
     units = new ArrayList<>();
     for (int i = 0; i < numUnits; i++) {
@@ -153,6 +153,7 @@ public class Player {
       
       Queen ownerQueen = owner == 0 ? me : him;
       if (unitType == -1 && owner == 0) {
+        if (myInitialLife == -1) myInitialLife = health; 
         me.updatePos(x, y);
         unit = me;
       } else if (unitType == -1 && owner == 1) {
@@ -171,6 +172,16 @@ public class Player {
     me.calculateFrontierPosition();
     him.calculateFrontierPosition();
   }
+
+  private static void inferMissingGold() {
+    for (int i=0;i<numSites;i=i+2) {
+      Site s1 = getSite(i);
+      Site s2 = getSite(i+1);
+      if (s1.gold == -1 && s2.gold != -1) s1.updateGold(s2.gold);
+      if (s2.gold == -1 && s1.gold != -1) s2.updateGold(s1.gold);
+    }
+  }
+
 
   private static void issueTrainCommand() {
     String train = "TRAIN ";
@@ -238,21 +249,79 @@ public class Player {
 
   private static void issueQueenCommand() {
     Site closestFree = getClosestFree();
+    if (myInitialLife  <= 25) {
+      rushWithLowInitialLife();
+    }
     //initialRush();
-    takeCareOfTowers(200);
     fleeFromCreeps();
+    takeCareOfTowers(200);
     fleeFromTowers();
     stabilisation();
     takeCareOfTowers(600);
     doDefensiveMoves();
     //buildSomeInitialBarracks();
-    buildSomeInitialMines(closestFree);
+    buildSomeInitialMines();
     doGiantInitiative();
     doOtherMoves(closestFree);
+    
+    exploitation();
+    
+    upgradeClosestTower(); // last resort
+
     return;
   }
 
+  private static void exploitation() {
+    System.err.println(" --- exploitation ---");
+    //look in our side if there is management to do ...
+
+    // find barracks not used and replace them by mine or tower
+    List<Site> notUsedBarracks = getSiteByClosestDistance(him).stream()
+        .filter(s -> s.isBarrack())
+        .filter(s -> s.imOwner())
+        .collect(Collectors.toList())
+        ;
+
+    if (notUsedBarracks.size() >= 2) {
+      // 1st is the closest, go replace the other ...
+      notUsedBarracks.remove(notUsedBarracks.get(0));
+      Site toChange = notUsedBarracks.stream().sorted(me::closest).findFirst().orElse(null);
+      if (toChange.hasGold()) {
+        me.moveTo(toChange).then(toChange::buildMine).then(toChange::upgradeMine).end();
+      } else {
+        me.moveTo(toChange).then(toChange::buildTower).then(toChange::upgradeTower).end();
+      }
+    }
+  }
+
+  private static void rushWithLowInitialLife() {
+    // quickly build a barrack and a tower
+    
+    finishNearMineUpgrade();
+    
+    List<Site> sites= getSiteByClosestDistance(me).stream()
+        .filter(s -> s.structure.owner == -1)
+        .collect(Collectors.toList());
+
+    Site site = sites.get(0);
+    if (me.mines.size() < 2 ) {
+      me.moveTo(site).then(site::buildMine).end();
+    }
+    
+    if (me.knightBarracks.size() == 0) {
+      me.moveTo(site).then(site::buildKnightBarrack).end();
+    }
+    if (me.towers.size() == 0) {
+      me.moveTo(site).then(site::buildTower).end();
+    }
+  }
+
+
   private static void fleeFromCreeps() {
+    
+    //new DamageEvaluator().evaluateDamageInFuture(me.pos, me.pos);
+    new DamageEvaluator().findFleeSolution();
+    
     // TODO When creeps are near, 
     // we have to flee or turn around any tower to save some life
     // the better would be to flee toward an unused structure to prepare for next move
@@ -285,6 +354,7 @@ public class Player {
    *  low creeps number, a barrier of towers, etc ...
    */
   private static void stabilisation() {
+    System.err.println("--- stabilisation");
     if (me.towers.size() < 4) {
       return; // too few towers to try to stabilize
     }
@@ -496,8 +566,8 @@ public class Player {
         continue;
       }
       
-      if (tower.life < energyThreshold) {
-        System.err.println("Refill tower " + site + "because energy "+ tower.life +" is less than "+ energyThreshold);
+      if (tower.health < energyThreshold) {
+        System.err.println("Refill tower " + site + "because energy "+ tower.health +" is less than "+ energyThreshold);
         me.moveTo(site).then(site::upgradeTower).end();
       }
     }
@@ -534,7 +604,9 @@ public class Player {
     return false;
   }
 
-  private static boolean buildSomeInitialMines(Site closestFree) {
+  private static boolean buildSomeInitialMines() {
+    System.err.println("--- buildSomeInitialMines");
+
     System.err.println("Dealing with mines ...");
     List<Mine> myMines = mines.stream()
         .filter(mine -> {return mine.owner == 0;})
@@ -562,8 +634,12 @@ public class Player {
           me.moveTo(site).then(site::buildKnightBarrack).end();
         }
         
-        moveToSiteAndBuildMine(site);
-        System.err.println("Site " + site.id + " is not eligeable");
+        if (isProtectedByEnnemyTowers(site)) {
+          System.err.println("Won't build in tower protected site: "+site);
+        } else {
+          moveToSiteAndBuildMine(site);
+          System.err.println("Site " + site.id + " is not eligeable");
+        }
       }
     }
     return false;
@@ -620,11 +696,11 @@ public class Player {
       return false;
     }
     if (!site.hasGold()) {
-      System.err.println("No more gold in this site");
+      System.err.println("No more gold in " + site);
       return false;
     }
     
-    System.err.println("Move and build to site "+ site.id);
+    System.err.println("Move and build MINE to site "+ site.id);
     return me.moveTo(site).then(site::buildMine).then(site::upgradeMine).end();
   }
 
@@ -645,7 +721,6 @@ public class Player {
     //  - we may want to build outpost to get nearest the ennemy (faster waves of creeps)
     //  - we may want to build new towers to increase protection
     
-    upgradeClosestTower();
     return false;
   }
 
@@ -654,19 +729,36 @@ public class Player {
         .filter(s -> { return s.imOwner() && s.isTower(); })
         .collect(Collectors.toList());
     
-    for (Site towerSite : closestTowers) {
-      if (!isProtectedByEnnemyTowers(towerSite)) {
-        System.err.println("Move back to tower and upgrade it");
-
-        me.action(towerSite::moveTo)
-               .then(towerSite::buildTower)
-               .then(towerSite::upgradeTower)
-               .end();
+    if (!closestTowers.isEmpty()) {
+      System.err.println("Move back to tower and upgrade it");
+      Site towerSite = closestTowers.get(0);
+      System.err.println("Towerlife is " + towerSite.getTower().health);
+      if (towerSite.getTower().health > 700) {
+        return;
       }
+      if (!isProtectedByEnnemyTowers(towerSite)) {
+        me.action(towerSite::moveTo).then(towerSite::buildTower).then(towerSite::upgradeTower).end();
+      } else {
+        System.err.println("Protected by enemy towers, we should do something ?");
+      }
+    } else {
+      System.err.println("No Tower to move back");
     }
+    
+//    for (Site towerSite : closestTowers) {
+//      if (!isProtectedByEnnemyTowers(towerSite)) {
+//        System.err.println("Move back to tower and upgrade it");
+//
+//        me.action(towerSite::moveTo)
+//               .then(towerSite::buildTower)
+//               .then(towerSite::upgradeTower)
+//               .end();
+//      }
+//    }
   }
 
   private static void buildNewMineOrBarracks(List<Site> closestAvailableSites) {
+    System.err.println("--- buildNewMineOrBarracks");
     for (Site site : closestAvailableSites) {
       if (isProtectedByEnnemyTowers(site)) {
         System.err.println("Won't build in tower protected site: "+site);
@@ -676,14 +768,59 @@ public class Player {
         continue;
       }
       
+      if (priorityToBarrack(site)) {
+        System.err.println("Priority building  barracks on " + site);
+        moveToSiteAndBuildBarracks(site, true);
+      }
 
-      System.err.println("Try to build mine");
+      System.err.println("Try to build mine on " + site);
       moveToSiteAndBuildMine(site);
 
-      System.err.println("Try to build barracks");
+      System.err.println("Try to build barracks on " + site);
       moveToSiteAndBuildBarracks(site, false);
     }
   }
+
+  private static boolean priorityToBarrack(Site site) {
+    if (true) {
+      double bestDist = Double.POSITIVE_INFINITY;
+      for (Barrack b : me.knightBarracks) {
+        double dist = b.attachedTo.pos.dist(him.pos);
+        System.err.println("barrack "+b.attachedTo+" dist to queen : "+dist);
+        if (dist < bestDist) {
+          bestDist = dist;
+        }
+      }
+      System.err.println("best dist to queen : " + bestDist);
+      double siteDist = site.pos.dist(him.pos);
+      System.err.println("potential site "+ site + " : "+ siteDist);
+      if (siteDist < bestDist - 500) {
+        return true;
+      } else {
+        // no ROI 
+        return false;
+      }
+    }
+    return false;
+  }
+
+
+  private static boolean checkBeforeBuildingMineOn(Site site) {
+    List<Site> closeToHim = getSiteByClosestDistance(him);
+    for (Site free : closeToHim) {
+      if (free.isNotBuildable(me)) continue;
+      if (isProtectedByEnnemyTowers(free)) continue;
+      if (free ==  site) {
+        System.err.println("Won't build mine, it's the front site");
+        return false;
+      } else {
+        System.err.println("Site "+ free + " is a better front");
+        return true;
+      }
+    }
+    return true;
+  }
+
 
   private static boolean isEnnemyTerritory(Site site) {
     return site.inTerritoryOf(him);
@@ -709,12 +846,12 @@ public class Player {
       if (tower.protects(site.pos, -site.radius)) {
         // check for my creeps
         boolean occupee = false;
-        for (Unit creep : me.creeps) {
-          if (tower.protects(creep.pos, 0)) {
-            occupee = true;
-            break;
-          }
-        }
+//        for (Unit creep : me.creeps) {
+//          if (tower.protects(creep.pos, 0)) {
+//            occupee = true;
+//            break;
+//          }
+//        }
         if (occupee) {
           System.err.println("Il y a du boulot pour la tour " + tower.attachedTo.id);
         } else {
@@ -727,12 +864,15 @@ public class Player {
 
   
   private static void buildNewTowers(List<Site> closestAvailableSites) {
-    if (!closestAvailableSites.isEmpty() && !towerCoverMap(me)) {
+    if (!closestAvailableSites.isEmpty()) {
+      if (!towerCoverMap(me)) {
         Site site = closestAvailableSites.get(0);
-        System.err.println("Try to build tower");
+        System.err.println("Try to build tower on " + site);
         me.moveTo(site).then(site::buildTower).then(site::upgradeTower).end();
+      }
     }
-}
+  }
+  
   private static void buildNewBarracks(Site closestFree) {
     long myBarracksCount = barracks.stream()
         .filter(Structure::isMine)
@@ -853,7 +993,7 @@ public class Player {
         .count();
   }
 
-  private static Site getSite(int siteId) {
+  static Site getSite(int siteId) {
     List<Site> sList = allSites.stream().filter(s -> s.id == siteId).collect(Collectors.toList());
     if (sList.isEmpty()) {
       System.out.println("Cant find id " + siteId + " !!!!!!!");

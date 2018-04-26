@@ -31,6 +31,9 @@ public class Queen extends Unit {
     super(0,0, -1);
   }
   
+  public int closest(Site s1, Site s2) {
+    return Double.compare(s1.pos.dist2(this.pos), s2.pos.dist2(this.pos));
+  }
   public static class Action {
     public Action then(Supplier<Boolean> action) {
       boolean result = action.get();
@@ -80,10 +83,6 @@ public class Queen extends Unit {
     }
   }
 
-  public int closest(Site site1, Site site2) {
-    return Double.compare(this.pos.dist(site1.pos), this.pos.dist(site2.pos));
-  }
-  
   public Action moveTo(Pos position) {
     if (Player.me.pos.x == position.x && Player.me.pos.y == position.y) {
       return new Action();
@@ -124,6 +123,24 @@ public class Queen extends Unit {
       System.err.println("The frontier is x = " + frontier);
       frontierX = frontier;
     }
+  }
+  public void moveTowards(Pos towards) {
+    double vx, vy;
+    vx = towards.x - this.pos.x;
+    vy = towards.y - this.pos.y;
+    // resize to 3.0
+    double length = Math.sqrt(vx*vx+vy*vy);
+    
+    double vcoeff;
+    if (/*speed*/ 100 > length) {
+    } else { 
+      vcoeff = (/*speed*/100.0) / length; 
+      vx = vcoeff * vx;
+      vy = vcoeff * vy;
+    }
+    
+    this.pos.x = (int) (this.pos.x + vx);
+    this.pos.y = (int) (this.pos.y + vy);
   }
 
 }
