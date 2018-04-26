@@ -467,11 +467,19 @@ public class Player {
   }
 
   private static void takeCareOfTowers(int energyThreshold) {
-    System.err.println("Take care of towers ...");
+    System.err.println("Take care of towers ... ");
     if (him.creeps.size() == 0) {
       System.err.println("No creep, let the tower decay ...");
       return;
     }
+    
+//    Site nearSite = getSiteByClosestDistance(me).get(0);
+//    if (!nearSite.imOwner() 
+//          && !nearSite.isNotBuildable(me) 
+//          && nearSite.pos.dist(me.pos) < 20 + nearSite.radius + me.radius) {
+//      System.err.println("Ok, I'm near a build site, let it finish before refilling");
+//      return;
+//    }
     
     List<Site> towers = getSiteByClosestDistance(me).stream()
         .filter(Site::imOwner)
@@ -484,8 +492,12 @@ public class Player {
     for (int i=0;i<Math.min(2, towers.size());i++) {
       Site site = towers.get(i);
       Tower tower = (Tower)(site.structure);
+      if (isProtectedByEnnemyTowers(site)) {
+        continue;
+      }
+      
       if (tower.life < energyThreshold) {
-        System.err.println("Refill tower " + site);
+        System.err.println("Refill tower " + site + "because energy "+ tower.life +" is less than "+ energyThreshold);
         me.moveTo(site).then(site::upgradeTower).end();
       }
     }
@@ -571,6 +583,28 @@ public class Player {
     return false;
   }
 
+  private static List<Site> getSiteByBarycenter(Disk unit) {
+    int positions = 1;
+    Pos barycenter = new Pos();
+    barycenter.x = me.pos.x;
+    barycenter.y = me.pos.y;
+    
+    for (Site site : allSites) {
+      if (site.imOwner()) {
+        positions++;
+        barycenter.x += site.pos.x;
+        barycenter.y += site.pos.y;
+      }
+    }
+    barycenter.x /= positions;
+    barycenter.y /= positions;
+    
+    
+    return allSites.stream()
+        .sorted((s1, s2) -> Double.compare(s1.pos.dist(barycenter), s2.pos.dist(barycenter)))
+        .collect(Collectors.toList());
+  }
+  
   private static List<Site> getSiteByClosestDistance(Disk unit) {
     return allSites.stream()
         .sorted((s1, s2) -> Double.compare(s1.pos.dist(unit.pos), s2.pos.dist(unit.pos)))
@@ -597,6 +631,7 @@ public class Player {
   private static boolean doOtherMoves(Site closestFree) {
     buildNewBarracks(closestFree);
     
+    // TODO reput barycenter ?
     List<Site> closestAvailableSites = getSiteByClosestDistance(me).stream()
         .filter( s -> {return s.imNotOwner() && !s.isTower();})
         .collect(Collectors.toList());
@@ -619,15 +654,15 @@ public class Player {
         .filter(s -> { return s.imOwner() && s.isTower(); })
         .collect(Collectors.toList());
     
-    if (!closestTowers.isEmpty()) {
-      System.err.println("Move back to tower and upgrade it");
-      Site towerSite = closestTowers.get(0);
-      me.action(towerSite::moveTo)
+    for (Site towerSite : closestTowers) {
+      if (!isProtectedByEnnemyTowers(towerSite)) {
+        System.err.println("Move back to tower and upgrade it");
+
+        me.action(towerSite::moveTo)
                .then(towerSite::buildTower)
                .then(towerSite::upgradeTower)
                .end();
-    } else {
-      System.err.println("No Tower to move back");
+      }
     }
   }
 
@@ -671,7 +706,21 @@ public class Player {
 
   private static boolean isProtectedByEnnemyTowers(Site site) {
     for (Tower tower : him.towers) {
-      if (tower.protects(site.pos, -site.radius)) return true;
+      if (tower.protects(site.pos, -site.radius)) {
+        // check for my creeps
+        boolean occupee = false;
+        for (Unit creep : me.creeps) {
+          if (tower.protects(creep.pos, 0)) {
+            occupee = true;
+            break;
+          }
+        }
+        if (occupee) {
+          System.err.println("Il y a du boulot pour la tour " + tower.attachedTo.id);
+        } else {
+          return true;
+        }
+      }
     }
     return false;
   }
