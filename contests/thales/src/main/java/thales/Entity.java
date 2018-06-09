@@ -141,26 +141,26 @@ public class Entity {
       nx = x - u.x;
       ny = y - u.y;
     }
-      
-      // relative velocity
-      double dvx = vx - u.vx;
-      double dvy = vy - u.vy;
 
-      double mcoeff = (mass + u.mass) / (mass * u.mass);
-      double nxny2 = nx*nx + ny*ny;
-      
-      double product = (nx*dvx + ny*dvy) / (nxny2 * mcoeff);
-      
-      double fx = nx * product;
-      double fy = ny * product;
+    // relative velocity
+    double dvx = vx - u.vx;
+    double dvy = vy - u.vy;
 
-      double m1c = 1.0 / mass;
-      double m2c = 1.0 / u.mass;
+    double mcoeff = (mass + u.mass) / (mass * u.mass);
+    double nxny2 = nx*nx + ny*ny;
+    
+    double product = (nx*dvx + ny*dvy) / (nxny2 * mcoeff);
+    
+    double fx = nx * product;
+    double fy = ny * product;
 
-      vx = -fx * m1c;
-      vy = -fy * m1c;
-      u.vx = fx * m2c;
-      u.vy = fy * m2c;
+    double m1c = 1.0 / mass;
+    double m2c = 1.0 / u.mass;
+
+    vx = -fx * m1c;
+    vy = -fy * m1c;
+    u.vx = fx * m2c;
+    u.vy = fy * m2c;
 
   }
 

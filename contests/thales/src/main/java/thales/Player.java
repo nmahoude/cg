@@ -48,11 +48,14 @@ public class Player {
       
       AGSolution evolve = ai.evolve(start + 30);
       
+      String message1 = " 1- ("+teams[0].ufos[0].boostTimer+") ";
+      String message2 = " 2- ("+teams[0].ufos[1].boostTimer+") ";
       if (Player.DEBUG_AG) {
         restore();
         evolve.debug();
         
         ai.simulate(evolve, 0);
+        
         System.err.println("WAITED VALUES : ");
         for (int i=0;i<2;i++) {
           UFO ufo = teams[0].ufos[i];
@@ -64,18 +67,32 @@ public class Player {
         teams[0].flag.debug();
         System.err.print("flag 1: ");
         teams[1].flag.debug();
+        
+        restore(); // DONT REMOVE IT
       }
       String[] output = evolve.output();
       
-      System.out.println(output[0]);
-      System.out.println(output[1]);
+      if (output[0].contains("BOOST")) {
+        teams[0].ufos[0].prepareBoostTimer();
+        message1 += "BOOST";
+      }
+      if (output[1].contains("BOOST")) {
+        teams[0].ufos[1].prepareBoostTimer();
+        message2 += "BOOST";
+      }
+      
+      System.out.println(output[0] + message1);
+      System.out.println(output[1] + message2);
     }
   }
 
   public static void readWorld(Scanner in) {
+    
     teams[0].flag.update(in.nextInt(), in.nextInt());
     teams[1].flag.update(in.nextInt(), in.nextInt());
     start = System.currentTimeMillis();
+    
+    updateUFOs();
     
     if (turn == 0) {
       initFlagDepPosition();
@@ -118,11 +135,17 @@ public class Player {
     teams[1].depY = 4000;
 
     if (teams[0].flag.x < 2000) {
-      teams[0].depX = 0;
-      teams[1].depX = 10000;
+      teams[0].depX = 1000;
+      teams[1].depX = 9000;
     } else {
-      teams[0].depX = 10000 ;
-      teams[1].depX = 0;
+      teams[0].depX = 9000;
+      teams[1].depX = 1000;
+    }
+  }
+
+  public static void updateUFOs() {
+    for (int i=0;i<4;i++) {
+      ((UFO)Player.entities[i]).decreaseBoostTimer();
     }
   }
 }

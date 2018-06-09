@@ -5,7 +5,7 @@ import thales.UFO;
 
 public class AGSolution {
   
-  public static final int DEPTH = 1;
+  public static final int DEPTH = 2;
   public static final int WIDTH = 2*DEPTH;
   
   private static final int INV_MUTATION_RATE = 100;
@@ -49,7 +49,7 @@ public class AGSolution {
     angles[depth] = Player.rand.nextDouble();  // 0->1 linear
     double rndThrust = Player.rand.nextDouble();
     if (rndThrust < 0.05) {
-      thrusts[depth] = 0; // TODO boost 
+      thrusts[depth] = -100; // TODO boost 
     } else if (rndThrust > 0.5) {
       thrusts[depth] = 1.0;
     } else {
@@ -95,14 +95,14 @@ public class AGSolution {
     double angle = (0.5 - angles[depth]) * 2; // [-1 ; 1]
     return angle * Math.PI;
   }
+  
   public double getThrust(int depth) {
-    // TODO handle shield and BOOST
     double thrust = thrusts[depth];
-    if (thrust < 0) {
-      return 0;
-    } else {
-      return thrust * 100;
+
+    if (thrust < -1 ) {
+      return 500;
     }
+    return thrust * 100;
   }
 
   public String[] output() {
@@ -111,13 +111,22 @@ public class AGSolution {
     ufo = Player.teams[0].ufos[0];
     int x = (int)(ufo.x + 1000 * Math.cos(getAngle(0)));
     int y = (int)(ufo.y + 1000 * Math.sin(getAngle(0)));
-    output[0] = ""+x+" "+y+" "+(int)(getThrust(0));
+    double thrust = getThrust(0);
+    if (thrust > 400) {
+      output[0] = ""+x+" "+y+" BOOST";
+    } else {
+      output[0] = ""+x+" "+y+" "+(int)thrust;
+    }
     
     ufo = Player.teams[0].ufos[1];
     x = (int)(ufo.x + 1000 * Math.cos(getAngle(AGSolution.DEPTH + 0)));
     y = (int)(ufo.y + 1000 * Math.sin(getAngle(AGSolution.DEPTH + 0)));
-    output[1] = ""+x+" "+y+" "+(int)(getThrust(AGSolution.DEPTH + 0));
-
+    thrust = getThrust(AGSolution.DEPTH + 0);
+    if (thrust > 400) {
+      output[1] = ""+x+" "+y+" BOOST";
+    } else {
+      output[1] = ""+x+" "+y+" "+(int)thrust;
+    }
     
     return output;
   }

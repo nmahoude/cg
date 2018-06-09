@@ -35,6 +35,8 @@ public class Simulation {
   }
 
   public void move() {
+    Player.updateUFOs();
+    
     double t=0;
     collisionsCacheFE = 0;
     collisionsFE = 0;
@@ -78,6 +80,7 @@ public class Simulation {
           if (entity.radius <= 0) continue;
           entity.move(1.0 - t);
           entity.end();
+          ((UFO)entity).score();
         }
         break;
       } 
@@ -98,6 +101,7 @@ public class Simulation {
       } else if (next.b.type == Entity.FLAG) {
         ((UFO)next.a).grabFlag();
       } else {
+        checkToRemoveFlag(((UFO)next.a), ((UFO)next.b));
         next.a.bounce(next.b);
       }
 
@@ -179,6 +183,18 @@ public class Simulation {
           }
         }     
       }
+    }
+  }
+
+  private void checkToRemoveFlag(UFO a, UFO b) {
+    if (!a.flag && !b.flag) return;
+    
+    double speed2_A = a.vx*a.vx + a.vy*a.vy;
+    double speed2_B = b.vx*b.vx + b.vy*b.vy;
+    if (speed2_A > speed2_B) {
+      if (a.flag) a.removeFlag();
+    } else {
+      if (b.flag) b.removeFlag();
     }
   }
 

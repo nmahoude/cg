@@ -30,12 +30,12 @@ public class SimulationTest {
   @Test
   public void fromScracth() throws Exception {
     Player.turn = 0;
-    String state = "1000 2374\r\n" + 
-        "9000 5626\r\n" + 
-        "4664 5325 168 268 0\r\n" + 
-        "922 2330 -447 170 0\r\n" + 
-        "1739 2407 -290 39 0\r\n" + 
-        "4615 2897 -280 -211 0";
+    String state = "-1000 -1000\r\n" + 
+        "-1000 -1000\r\n" + 
+        "1042 742 -402 -265 0\r\n" + 
+        "9110 5359 743 -190 1\r\n" + 
+        "1936 1638 162 -216 0\r\n" + 
+        "4912 7472 557 89 1";
     Scanner sc = new Scanner(state);
     Player.readWorld(sc);
     

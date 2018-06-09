@@ -10,7 +10,7 @@ public class Team {
   public int score;
   
 
-  public int _score;
+  int _score;
 
   public Team() {
   }

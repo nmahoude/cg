@@ -18,10 +18,10 @@ public class AGEvaluator {
       // TODO if defender closer to flag, inverse
     }
     
-    double total = 0.0;
+    double total = 10_000 * (Player.teams[0].score - Player.teams[1].score);
     
-    total += attacker(total);
-    total += defender(total);
+    total += attacker();
+    total += defender();
     
     for (int i=0;i<2;i++) {
       //total += opponent(total, i);
@@ -43,13 +43,16 @@ public class AGEvaluator {
     return total;
   }
 
-  private double defender(double total) {
+  private double defender() {
     double score = 0.0;
+
+    
     if (Player.teams[0].flag.onMap()) {
-      score += 10_000;
-      score -= defender.distance_2(Player.teams[0].flag);
+      score += 10.0;
+      score -= 100.0 * defender.distance_2(Player.teams[0].flag);
     } else {
-      score += speed(defender);
+      score += 0.0000001 * speed(defender);
+      
       for (int i=0;i<2;i++) {
         UFO ufo = Player.teams[1].ufos[i];
         if (ufo.flag) {
@@ -64,21 +67,21 @@ public class AGEvaluator {
     return 1.0 * ufo.vx*ufo.vx + ufo.vy+ufo.vy;
   }
 
-  private double attacker(double total) {
+  private double attacker() {
+    double score = 0.0;
+
+    score += 10.0 * speed(defender);
+    
     // attacker
     if (attacker.flag) {
-      double score = 0.0;
-      score += 10_000;
-      score -= attacker.distance_2_ToGoal();
+      score += 1000.0;
+      score -= 1.0 * attacker.distance_2_ToGoal();
       
-      total += score;
     } else {
-      double score = 0.0;
-      score -= attacker.distance_2(Player.teams[1].flag);
+      score -= 1.0 * attacker.distance_2(Player.teams[1].flag);
 
-      total += score;
     }
-    return total;
+    return score;
   }
 
   private void swap() {
