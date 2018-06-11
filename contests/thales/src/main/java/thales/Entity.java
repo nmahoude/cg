@@ -184,4 +184,22 @@ public class Entity {
     vy = (int)(vy*0.90);
   }
 
+  public double distance2(Entity other) {
+    return (other.x - x)*(other.x - x) + (other.y - y)*(other.y - y);
+  }
+  
+  public double distance(Entity other) {
+    return Math.sqrt((other.x - x)*(other.x - x) + (other.y - y)*(other.y - y));
+  }
+
+  /**
+   * score between 0 and 1
+   * @param other
+   * @return
+   */
+  public double distanceAsScore(Entity other) {
+    return distance(other) / (10000.0 + 8000.0);
+  }
+
+
 }

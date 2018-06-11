@@ -192,9 +192,9 @@ public class Simulation {
     double speed2_A = a.vx*a.vx + a.vy*a.vy;
     double speed2_B = b.vx*b.vx + b.vy*b.vy;
     if (speed2_A > speed2_B) {
-      if (a.flag) a.removeFlag();
-    } else {
       if (b.flag) b.removeFlag();
+    } else {
+      if (a.flag) a.removeFlag();
     }
   }
 

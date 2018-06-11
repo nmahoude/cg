@@ -5,12 +5,14 @@ import java.util.Scanner;
 
 import thales.ai.AGSolution;
 import thales.ai.AI;
+import thales.ai.TestEvaluator;
 
 public class Player {
   public static final double WIDTH = 10000;
   public static final double HEIGHT = 8000;
 
-  public static final boolean DEBUG_AG = true;
+  public static boolean DEBUG_AG = true;
+  public static boolean DEBUG_SIMULATION = false;
   public static boolean DEBUG_OUTPUT = true;
   
   public static int turn = 0;
@@ -48,27 +50,18 @@ public class Player {
       
       AGSolution evolve = ai.evolve(start + 30);
       
-      String message1 = " 1- ("+teams[0].ufos[0].boostTimer+") ";
-      String message2 = " 2- ("+teams[0].ufos[1].boostTimer+") ";
-      if (Player.DEBUG_AG) {
-        restore();
-        evolve.debug();
-        
-        ai.simulate(evolve, 0);
-        
-        System.err.println("WAITED VALUES : ");
-        for (int i=0;i<2;i++) {
-          UFO ufo = teams[0].ufos[i];
-          System.err.print("ufo "+i+": ");
-          ufo.debug();
-        }
-        System.err.println("flags : ");
-        System.err.print("flag 0: ");
-        teams[0].flag.debug();
-        System.err.print("flag 1: ");
-        teams[1].flag.debug();
-        
-        restore(); // DONT REMOVE IT
+      String message1 = " 1- ("+(teams[0].ufos[0] == TestEvaluator.attacker ? "ATT" : "DEF")+") ";
+      String message2 = " 2- ("+(teams[0].ufos[1] == TestEvaluator.attacker ? "ATT" : "DEF")+") ";
+
+      
+      if (Player.DEBUG_SIMULATION) {
+          restore();
+          ai.simulate(evolve, 0);
+
+          // evolve.debug();
+          debugSimulation();
+
+          restore(); // DONT REMOVE IT
       }
       String[] output = evolve.output();
       
@@ -86,6 +79,21 @@ public class Player {
     }
   }
 
+  private static void debugSimulation() {
+    System.err.println("WAITED VALUES : ");
+    for (int i=0;i<2;i++) {
+      UFO ufo = teams[0].ufos[i];
+      System.err.print("ufo "+i+": ");
+      ufo.debug();
+    }
+    System.err.println("flags : ");
+    System.err.print("flag 0: ");
+    teams[0].flag.debug();
+    System.err.print("flag 1: ");
+    teams[1].flag.debug();
+
+  }
+
   public static void readWorld(Scanner in) {
     
     teams[0].flag.update(in.nextInt(), in.nextInt());
@@ -95,7 +103,8 @@ public class Player {
     updateUFOs();
     
     if (turn == 0) {
-      initFlagDepPosition();
+      teams[0].init();
+      teams[1].init();
     }
     turn++;
     
@@ -130,22 +139,17 @@ public class Player {
     teams[1].restore();
   }
   
-  private static void initFlagDepPosition() {
-    teams[0].depY = 4000;
-    teams[1].depY = 4000;
-
-    if (teams[0].flag.x < 2000) {
-      teams[0].depX = 1000;
-      teams[1].depX = 9000;
-    } else {
-      teams[0].depX = 9000;
-      teams[1].depX = 1000;
-    }
-  }
-
   public static void updateUFOs() {
     for (int i=0;i<4;i++) {
       ((UFO)Player.entities[i]).decreaseBoostTimer();
     }
+  }
+
+  public static void initTeamRegularDirection() {
+    teams[0].flag.x = 1000;
+    teams[1].flag.x = 9000;
+    
+    teams[0].init();
+    teams[1].init();
   }
 }

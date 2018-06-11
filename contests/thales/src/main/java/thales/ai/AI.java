@@ -15,7 +15,7 @@ public class AI {
   public static final int SURVIVOR_POP_SIZE = 20;
   public AGSolution[] population = new AGSolution[POPULATION];
   AGSolution best;
-  AGEvaluator evaluator = new AGEvaluator();
+  TestEvaluator evaluator = new TestEvaluator();
   
   public AI() {
   }
@@ -25,7 +25,7 @@ public class AI {
     public AGSolution evolve(long stop) {
       this.stopTime = stop;
       
-      // setup physics engine
+      evaluator.initRound();
       // 1st step : simple random evolution
       best = new AGSolution();
       createPopulation();
@@ -37,7 +37,7 @@ public class AI {
         generations++;
       }
 
-      System.err.printf("Final best is %.3f with %d generations\n",best.energy,generations);
+      // System.err.printf("Final best is %.3f with %d generations\n",best.energy,generations);
       return best;
     }
 
@@ -52,6 +52,7 @@ public class AI {
         for (int depth = 0; depth < AGSolution.DEPTH; depth++) {
           sol.randomize(depth);
           sol.apply(depth);
+          dummyOpponent();
           simulation.move();
           
           evaluator.evaluate(sol, depth);
@@ -65,15 +66,15 @@ public class AI {
       best.copyFrom(localBest);
     }
 
-    private void dummySpeeder(UFO pod, AGSolution sol, int depth) {
-      Flag flag = pod.otherTeam.flag;
-      if (flag.x < 0) {
-        sol.angles[depth] = 0.5;
-        sol.thrusts[depth] = 0.0;
+    private void dummyOpponent() {
+      UFO attacker = evaluator.hisAttacker;
+      if (attacker.flag) {
+        attacker.applyTarget(attacker.myTeam.depX, attacker.y, 100);
       } else {
-        sol.angles[depth] = 0.5;
-        sol.thrusts[depth] = 1.0;
+        attacker.applyTarget(evaluator.myFlag.x, evaluator.myFlag.y, 100);
       }
+      
+      // TODO defense ?
     }
 
     public void nextPopulation() {
@@ -88,8 +89,6 @@ public class AI {
         
         AGSolution solution1 = population[pop++];
         AGSolution solution2 = population[pop++];
-        solution1.clear();
-        solution2.clear();
         
         AGSolution.crossOver(solution1, solution2, population[firstIndex], population[secondIndex]);
         solution1.mutate();

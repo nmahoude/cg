@@ -40,12 +40,14 @@ public class AGSolution {
   }
   
   public void randomize() {
+    clear();
     for (int i=0;i<WIDTH;i++) {
       randomize(i);
     }
   }
 
   void randomize(int depth) {
+    
     angles[depth] = Player.rand.nextDouble();  // 0->1 linear
     double rndThrust = Player.rand.nextDouble();
     if (rndThrust < 0.05) {
@@ -58,6 +60,9 @@ public class AGSolution {
   }
   
   public static void crossOver(AGSolution child1, AGSolution child2, AGSolution parent1, AGSolution parent2) {
+    child1.clear();
+    child2.clear();
+    
     double beta = Player.rand.nextDouble();
     for (int i=0;i<WIDTH;i++) {
       child1.angles[i] = getAcceptableAngle(beta, parent1.angles[i], parent2.angles[i]);
@@ -70,7 +75,7 @@ public class AGSolution {
 
   private static double getAcceptableThrust(double beta, double d, double e) {
     if (d < 0 || e < 0) {
-      return 0; // shield
+      return -100; // boost
     }
     return beta * (d-e) + e;
   }
@@ -84,6 +89,7 @@ public class AGSolution {
   }
   
   public void mutate() {
+    energy = 0.0;
     for (int i=0;i<WIDTH;i++) {
       if (Player.rand.nextInt(INV_MUTATION_RATE) == 0) {
         randomize(i);

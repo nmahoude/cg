@@ -48,7 +48,7 @@ public class UFO extends Entity {
   public void apply(double angle, double thrust) {
     if (thrust > 400) {
       if (boostTimer > 0) {
-        thrust = 0;
+        thrust = 100;
       } else {
         boostTimer = 8;
       }
@@ -60,17 +60,6 @@ public class UFO extends Entity {
   public void move(double t) {
     x = x+vx*t;
     y = y+vy*t;
-  }
-  
-  private void tryToRemoveFlag(UFO ufo1, UFO ufo2) {
-    double speed1 = ufo1.speed_2();
-    double speed2 = ufo2.speed_2();
-    if (speed1 > speed2 && ufo2.flag) {
-      ufo2.removeFlag();
-    }
-    if (speed2 > speed1 && ufo1.flag) {
-      ufo1.removeFlag();
-    }
   }
   
   public void removeFlag() {
@@ -96,19 +85,6 @@ public class UFO extends Entity {
     vy += thrust * dy / l;
   }
 
-  public double distance_2_ToGoal() {
-    // TODO sqrt ?
-    return (myTeam.depX - x)*(myTeam.depX - x) * DIST_RATIO;
-  }
-
-  public double distance_2(Flag flag) {
-    return ((flag.x - x)*(flag.x - x) + (flag.y - y)*(flag.y - y));
-  }
-
-  public double distance_2(UFO ufo) {
-    return ((ufo.x - x)*(ufo.x - x) + (ufo.y - y)*(ufo.y - y));
-  }
-
   public void score() {
     if (!flag) return;
     if (myTeam.depX < 2000 && x <= 1000 ||
@@ -127,5 +103,10 @@ public class UFO extends Entity {
     if (boostTimer > 0) {
       boostTimer--;
     }
+  }
+  
+  @Override
+  public String toString() {
+    return String.format("(%.0f,%.0f) v(%.0f,%.0f)", x, y, vx, vy);
   }
 }
