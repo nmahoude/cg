@@ -8,6 +8,15 @@ public class P {
   public int x;
   public int y;
   
+  
+  public int manhattanDistance(P p) {
+    return Math.abs(p.x-x)+Math.abs(p.y-y);
+  }
+
+  public int manhattanDistance(int x2, int y2) {
+    return Math.abs(x2-x)+Math.abs(y2-y);
+  }
+
   @Override
   public String toString() {
     return "("+x+","+y+")";
@@ -35,7 +44,5 @@ public class P {
       return false;
     return true;
   }
-  
-  
   
 }

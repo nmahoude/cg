@@ -1,22 +1,29 @@
 package uttt.mcts;
 
 import uttt.Player;
-import uttt.state.Grid;
-import uttt.state.State;
+import uttt.state.State2;
 
 public class Node {
+  private static final int LOG_CACHE_SIZE = 5_000;
+  static final double logCache[] = new double[LOG_CACHE_SIZE];
+  static {
+    logCache[0] = 0;
+    for (int i=1;i<logCache.length;i++) {
+      logCache[i] = Math.log((double)(i<<4));
+    }
+  }
+
   
+  private static final double SCORE_C = 1.1; //Math.sqrt(2);
 
-  private static final double SCORE_C = Math.sqrt(2);
-
-  static final State tempState = new State();
+  static final State2 tempState = new State2();
+  
   
   Node parent;
-  State state = new State();
+  State2 state = new State2();
 
+  Node childArray[] = new Node[81];
   int childArrayFE = -1;
-  final Node childArray[] = new Node[81];
-  final Node unexplored[] = new Node[81];
   int unexploredFE = 0;
   
   boolean player = true;
@@ -25,32 +32,43 @@ public class Node {
   private int tie; // should be able to discard it
   int totalTrials;
 
-  public int col;
-  public int row;
+  public int gDecal;
+  public int lDecal;
 
   public void release() {
-    for (int i=0;i<childArrayFE;i++) {
+    for (int i=childArrayFE-1;i>=0;i--) {
       childArray[i].release();
     }
     NodeCache.push(this);
   }
-  public void update(Node parent, boolean player, int row, int col) {
+  public void update(Node parent, boolean player, int gDecal, int lDecal) {
     this.parent = parent;
     this.player = player;
     
-    this.col = col;
-    this.row = row;
+    this.gDecal = gDecal;
+    this.lDecal = lDecal;
     reset(); 
   }
 
-  private void reset() {
+  void reset() {
     this.won = 0;
     this.lose = 0;
     this.tie = 0;
     this.totalTrials = 0;
+ }
+
+  public boolean hasDirectChildWithLose() {
+    for (int i=0;i<childArrayFE;i++) {
+      if (childArray[i].state.winner() == 1) {
+        return true;
+      }
+    }
+    return false;
   }
-  
-  void chooseChild() {
+
+  void chooseChild(boolean isParentRoot) {
+    //if (state.winner() != -1) return;
+    
     if (childArrayFE == -1) {
       // expand
       this.getAllChildren();
@@ -62,15 +80,18 @@ public class Node {
     } else {
       if (unexploredFE != 0) {
         int rand = Player.random.nextInt(unexploredFE);
-        Node toTake = unexplored[rand];
-        unexplored[rand] = unexplored[--unexploredFE]; 
+        Node toTake = childArray[rand];
+        childArray[rand] = childArray[--unexploredFE]; 
+        childArray[unexploredFE] = toTake;
+        
         toTake.runSimulation();
       } else {
         
-        Node bestChild = childArray[0];
-        double bestScore = score(bestChild);
+        Node bestChild = null;
+        double bestScore = Double.NEGATIVE_INFINITY;
         double score;
-        for (int i=0;i<childArrayFE;i++) {
+        
+        for (int i=childArrayFE-1;i>=0;i--) {
           Node child = childArray[i];
           score = score(child);
           if (score > bestScore) {
@@ -78,7 +99,9 @@ public class Node {
             bestChild = child;
           }
         }
-        bestChild.chooseChild();
+        if (bestChild != null) {
+          bestChild.chooseChild(false);
+        }
       }
     }
   }
@@ -99,82 +122,84 @@ public class Node {
       int rand = Player.random.nextInt(possibleFE);
      
       int full = possibleGrid[rand];
-      int row = full / 10;
-      int col = full - (row* 10);
-      tempState.set(currentPlayer, row, col);
+      int gDecal = full >> 16;
+      int lDecal = full - (gDecal << 16);
+      tempState.set(currentPlayer, gDecal, lDecal);
      
       currentPlayer = !currentPlayer;
     }
     return tempState.winner();
   }
 
-  private final void getPossibleMoves(final State state) {
+  private final void getPossibleMoves(final State2 state) {
     possibleFE = 0;
-    if (state.nextPlayGrid != null) {
-      getPossibleMovesForGrid(state.nextPlayGrid);
+    if (state.nextPlayGrid != -1) {
+      getPossibleMovesForGrid_New(state.nextPlayGrid, state.cells[state.nextPlayGrid]);
     } else {
-      getPossibleMovesForGrid(state.grids[0]);
-      getPossibleMovesForGrid(state.grids[1]);
-      getPossibleMovesForGrid(state.grids[2]);
-      getPossibleMovesForGrid(state.grids[3]);
-      getPossibleMovesForGrid(state.grids[4]);
-      getPossibleMovesForGrid(state.grids[5]);
-      getPossibleMovesForGrid(state.grids[6]);
-      getPossibleMovesForGrid(state.grids[7]);
-      getPossibleMovesForGrid(state.grids[8]);
+      getPossibleMovesForGrid_New(0, state.cells[0]);
+      getPossibleMovesForGrid_New(1, state.cells[1]);
+      getPossibleMovesForGrid_New(2, state.cells[2]);
+      getPossibleMovesForGrid_New(3, state.cells[3]);
+      getPossibleMovesForGrid_New(4, state.cells[4]);
+      getPossibleMovesForGrid_New(5, state.cells[5]);
+      getPossibleMovesForGrid_New(6, state.cells[6]);
+      getPossibleMovesForGrid_New(7, state.cells[7]);
+      getPossibleMovesForGrid_New(8, state.cells[8]);
     }
   }
 
-  private final void getPossibleMovesForGrid(final Grid grid) {
-    if (grid.full) return; 
+  private final void getPossibleMovesForGrid_New(int decal, int mask) {
+    int all = State2.complete(mask);
     
-    final int all = grid.getComplete();
-    final Grid.PMove moves[] = Grid.possibleMoves[all];
-    final int size = Grid.possibleMovesFE[all];
-    for (int i=size-1;i>=0;i--) {
-      Grid.PMove move = moves[i];
-      possibleGrid[possibleFE++] = 
-                    /*row*/ 10 * (grid.baseY + move.y)
-                  + /*col*/ (grid.baseX  + move.x);
+    if (all == State2.ALL_MASK) return; // no possible move  
+    
+    int baseY = decal << 16;
+    
+    for (int d=1;d<=0b100_000_000;d*=2) {
+      if ((all & d) == 0) possibleGrid[possibleFE++] = baseY + d;
     }
   }
 
+  
   void getAllChildren() {
     childArrayFE = 0;
     unexploredFE = 0;
     getPossibleMoves(state);
 
-    int full, col, row;
+    int full;
 
-    for (int i=0;i<possibleFE;i++) {
+    for (int i=possibleFE-1;i>=0;i--) {
       Node node = NodeCache.pop();
 
       node.state.copyFrom(this.state);
       
       full = possibleGrid[i];
-      row = full / 10;
-      col = full - (row * 10);
+      int gDecal = full >> 16;
+      int lDecal = full - (gDecal << 16);
+      
+      node.state.set(this.player, gDecal, lDecal);
+      node.update(this, !this.player, gDecal, lDecal);
 
-      node.state.set(this.player, row, col);
-      node.update(this, !this.player, row, col);
       childArray[childArrayFE++] = node;
-      unexplored[unexploredFE++] = node;
     }
+    unexploredFE = childArrayFE;
   }
 
   private double score(Node child) {
+    double bias = 0.0;
     
     // TODO review performance ...
     double w;
     if (player) {
-      w = child.won  + tie / 2  -  child.lose;
+      w = child.won + 0.0 * child.tie - child.lose;
     } else {
-      w = child.lose + tie / 2 -  child.won;
+      w = child.lose + 0.0 * child.tie - child.won;
     }
     int n = child.totalTrials;
-    double t = totalTrials;
-
-    return w / n ; //  +  SCORE_C * t / (n*n); //Math.sqrt(Math.log(t) / n);
+    int t = totalTrials >> 4;
+    if (t >= LOG_CACHE_SIZE) t = LOG_CACHE_SIZE-1;
+    
+    return bias + w / n +  SCORE_C * Math.sqrt(logCache[t] / n);
   }
 
   private void backPropagate(int winner) {
@@ -198,12 +223,21 @@ public class Node {
       System.err.println("Total sims = " + totalTrials);
     }
     double best = Double.NEGATIVE_INFINITY;
-    Node bestNode = null;
-    for (int i=0;i<childArrayFE;i++) {
+    Node bestNode = childArray[0];
+    for (int i=childArrayFE-1;i>=0;i--) {
       Node node = childArray[i];
-      if (Player.DEBUG) {
-        System.err.println("Node : ("+node.row+","+node.col+") => "+ node.won+"/"+node.lose+"/"+node.tie);
+      if (node.state.winner() == 0) {
+        best = Double.POSITIVE_INFINITY;
+        bestNode = node;
+        return bestNode;
       }
+      if (Player.DEBUG) {
+        int row = MCTS.getRowFromDecal(node.gDecal, node.lDecal);
+        int col = MCTS.getColFromDecal(node.gDecal, node.lDecal);
+        System.err.println("Node : ("+node.gDecal+","+Integer.numberOfTrailingZeros(node.lDecal)+") => "+ node.won+"/"+node.lose+"/"+node.tie+ " - row/col:"+row+","+col);
+        //debugNodechilds("  ", node);
+      }
+      
       double score = node.totalTrials; //1.0 * (node.won + node.tie / 2) / node.totalTrials;
       if (score > best) {
         best = score;
@@ -212,8 +246,16 @@ public class Node {
     }
     return bestNode;
   }
-  public void setState(State state) {
-    this.state.copyFrom(state);
-    this.state.nextPlayGrid = state.nextPlayGrid;
+  
+  public static void debugNodechilds(String decal, Node parent) {
+    for (int i=parent.childArrayFE-1;i>=0;i--) {
+      Node node = parent.childArray[i];
+      System.err.println(decal+(parent.player?"ME :" :"HIM:" ) + "Node : ("+node.gDecal+","+Integer.numberOfTrailingZeros(node.lDecal)+") => "+ node.won+"/"+node.lose+"/"+node.tie);
+      
+      if (node.state.winner() == 0 || node.state.winner() == 1) {
+        System.err.println("It's a win");
+      }
+      debugNodechilds(decal+"  ", node);
+    }
   }
 }

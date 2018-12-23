@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uttt.Player;
-import uttt.state.State;
+import uttt.state.State2;
 
 public class MCTSTest {
 
@@ -27,7 +27,7 @@ public class MCTSTest {
   public void twoPlys() throws Exception {
     MCTS mcts = new MCTS();
     
-    State state = mcts.getCurrentState();
+    State2 state = mcts.getCurrentState();
     state.set(true, 0, 1);
     state.set(false, 2, 3);
     
@@ -38,5 +38,63 @@ public class MCTSTest {
     mcts.output();
   }
 
+  @Test
+  public void debugSituation() throws Exception {
+    MCTS mcts = new MCTS();
+    
+    State2 state = mcts.getCurrentState();
+    // XOO
+    // XXO
+    // O
+    setState(state, 0, "X");
+    setState(state, 1, "O");
+    setState(state, 2, "O");
+    setState(state, 3, "X");
+    setState(state, 4, "X");
+    setState(state, 5, "O");
+    setState(state, 6, "O");
+    
+    setState(state, 7, "XOX"
+                     + "OOX"
+                     + "X  ");
+    
+    setState(state, 8, "XOO"
+                     + "XXO"
+                     + "OO ");
 
+    state.nextPlayGrid = 7;
+    
+    Player.start = System.currentTimeMillis(); //+1_000_000;
+    
+    mcts.think();
+    
+    mcts.output();
+  }
+  
+  private void setState(State2 state, int gDecal, String board) {
+    if (board.length() == 1) {
+      if (board.charAt(0) == 'O') makeHimWin(state, gDecal);
+      else if (board.charAt(0) == 'X') makeMeWin(state, gDecal);
+      else throw new RuntimeException("unknown player "+ board.charAt(0));
+      return;
+    }
+    for (int i=0;i<9;i++) {
+      if (board.charAt(i) == 'X') {
+        state.set(true, gDecal, 1 << i);
+      } else if (board.charAt(i) == 'O') {
+        state.set(false,  gDecal,  1 << i);
+      }
+    }
+  }
+  
+  private void makeHimWin(State2 state, int gDecal) {
+    state.set(false, gDecal,0b1);
+    state.set(false, gDecal,0b10);
+    state.set(false, gDecal,0b100);
+  }
+  private void makeMeWin(State2 state, int gDecal) {
+    state.set(true, gDecal,0b1);
+    state.set(true, gDecal,0b10);
+    state.set(true, gDecal,0b100);
+  }
 }

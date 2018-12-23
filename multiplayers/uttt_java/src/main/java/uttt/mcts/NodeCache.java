@@ -1,7 +1,9 @@
 package uttt.mcts;
 
 public class NodeCache {
-  static final Node[] nodes = new Node[200_100];
+  public static final int NODE_CACHE_SIZE = 60_000;
+  
+  static final Node[] nodes = new Node[NODE_CACHE_SIZE+1000];
   static int nodesIndex = nodes.length;
   static {
     for (int i = 0; i < nodes.length; i++) {
@@ -15,8 +17,8 @@ public class NodeCache {
 
   public static Node pop() {
     Node node = nodes[--nodesIndex];
-    node.childArrayFE = -1;
     node.parent = null;
+    node.childArrayFE = -1;
     return node;
   }
 
@@ -25,6 +27,5 @@ public class NodeCache {
   }
 
   public static void init() {
-    
   }
 }

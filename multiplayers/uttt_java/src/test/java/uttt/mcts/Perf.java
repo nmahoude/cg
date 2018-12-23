@@ -1,11 +1,9 @@
 package uttt.mcts;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import uttt.Player;
-import uttt.state.State;
 
 public class Perf {
   @Before
@@ -16,12 +14,13 @@ public class Perf {
   //@Ignore
   public void simple() throws Exception {
     Player.DEBUG = false;
-    MCTS mcts = new MCTS();
     
-    for (int i=0;i<100;i++) {
+    for (int i=0;i<10_000;i++) {
+      NodeCache.resetCache();
+      MCTS mcts = new MCTS();
       Player.start = System.currentTimeMillis();
       mcts.think();
     }
-    mcts.output();
+//    mcts.output();
   }
 }
