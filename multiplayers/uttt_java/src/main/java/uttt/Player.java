@@ -8,9 +8,9 @@ import uttt.mcts.MCTS;
 import uttt.mcts.NodeCache;
 
 public class Player {
-  static int turn = 0;
+  public static int turn = 0;
   public static long start;
-  public static Random random = new Random(0); //ThreadLocalRandom.current();
+  public static Random random = ThreadLocalRandom.current();
   public static boolean DEBUG = true;
   public static boolean DEBUG_GRID = false;
   public static boolean DEBUG_MCTS = false;
@@ -27,7 +27,7 @@ public class Player {
       Player.start = System.currentTimeMillis();
       if (turn == 0) {
         ai = new MCTS();
-        Player.start += 900;
+        Player.start += 500;
       }
       int opponentCol = in.nextInt();
       int validActionCount = in.nextInt();

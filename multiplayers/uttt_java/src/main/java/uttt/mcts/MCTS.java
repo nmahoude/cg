@@ -22,6 +22,8 @@ public class MCTS {
 //    System.err.println("Reuse " + root.totalTrials+" nodes");
     long duration = System.currentTimeMillis() - Player.start;
     int sim = 0;
+    Node.rollout = 0;
+    
     while ( NodeCache.nodesIndex > 100 &&  duration < 95) {
       root.chooseChild(true);
 
@@ -32,15 +34,24 @@ public class MCTS {
       sim++;
       if ((sim & (512-1)) == 0) {
         duration = System.currentTimeMillis() - Player.start;
-        //System.err.println("Updating duration after "+ root.totalTrials+" => "+duration+" ms");
+        // check winning condition
+        for (int i=0;i<root.childArrayFE;i++) {
+          if (root.childArray[i].Q == Integer.MAX_VALUE) {
+            duration = 95;
+          }
+        }
+        //System.err.println("Updating duration after "+ root.N+" => "+duration+" ms");
       }
     }
-
+    if (Player.DEBUG) {
+      System.err.println("Rollouts : "+Node.rollout);
+      System.err.println("finished MCTS in "+duration+" with "+NodeCache.nodesIndex+" nodes remaining");
+    }
     best = root.getBest();
   }
   
   public void output() {
-    System.err.println("On repart avec  : " + root.totalTrials);
+    System.err.println("On repart avec  : " + root.N);
     
     int row = 0;
     int col = 0;

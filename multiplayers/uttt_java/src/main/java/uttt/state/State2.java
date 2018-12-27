@@ -13,12 +13,11 @@ public class State2 {
   };
   
   public static final int ALL_MASK = 0b111111111;
-  public int cells[] = new int[9];
-  int global = 0;
-  int globalMask = 0;
-  
-  int winner = -1;
+  public int cells[] = new int[9]; // 9 cells (2*9bits)
+  public int global = 0;  // the global grid (2*9 bits)
+  public int globalMask = 0; // can we play in the bit cells (9 bits)
   public int nextPlayGrid;
+  public int winner = -1;
   
   public void copyFrom(State2 model) {
     this.global = model.global;
@@ -47,10 +46,10 @@ public class State2 {
     
     
     // return the obligated index to play
-    nextPlayGrid = nextGridDecal(setMask);
+    nextGridDecal(setMask);
   }
 
-  private void decideWinner(int decalGlobal) {
+  private final void decideWinner(final int decalGlobal) {
     int localWinner = winner(cells[decalGlobal], (cells[decalGlobal] >> 16));
     if (localWinner == 0) {
       cells[decalGlobal] = ALL_MASK; // player win all cells :)
@@ -74,7 +73,7 @@ public class State2 {
         int p1 = Integer.bitCount((global >> 16) & ALL_MASK);
         if (p0 > p1) winner = 0;
         else if (p1 > p0) winner = 1;
-        else winner = 2;
+        else winner = 2; // tie
       } else {
         winner = -1; // no winner
       }
@@ -86,13 +85,13 @@ public class State2 {
    * based on the setMask
    * 
    */
-  int nextGridDecal(int setMask) {
+  private void nextGridDecal(int setMask) {
     int decalGlobal = Integer.numberOfTrailingZeros(setMask);
-    int grid = cells[decalGlobal];
-    if (complete(grid) == ALL_MASK) {
-      return -1; // you can choose
+    int gridMask = cells[decalGlobal];
+    if (complete(gridMask) == ALL_MASK) {
+      nextPlayGrid =  -1; // you can choose
     } else {
-      return decalGlobal; // only in this one
+      nextPlayGrid = decalGlobal; // only in this one
     }
   }
   
@@ -139,6 +138,9 @@ public class State2 {
     return getCell(global);
   }
   
+  public void debugCell(int index) {
+    System.err.println(getCell(cells[index]));
+  }
   public String getCell(int mask) {
     String result = "";
     int d = 1;

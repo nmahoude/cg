@@ -1,7 +1,7 @@
 package uttt.mcts;
 
 public class NodeCache {
-  public static final int NODE_CACHE_SIZE = 60_000;
+  public static final int NODE_CACHE_SIZE = 100_000;
   
   static final Node[] nodes = new Node[NODE_CACHE_SIZE+1000];
   static int nodesIndex = nodes.length;

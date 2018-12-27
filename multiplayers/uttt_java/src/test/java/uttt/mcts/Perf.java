@@ -12,10 +12,10 @@ public class Perf {
   }
   @Test
   //@Ignore
-  public void simple() throws Exception {
+  public void perf() throws Exception {
     Player.DEBUG = false;
     
-    for (int i=0;i<10_000;i++) {
+    for (int i=0;i<400;i++) {
       NodeCache.resetCache();
       MCTS mcts = new MCTS();
       Player.start = System.currentTimeMillis();
