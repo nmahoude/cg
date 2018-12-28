@@ -1,6 +1,7 @@
 package uttt.mcts;
 
 import uttt.Player;
+import uttt.state.PossibleMoveCache;
 import uttt.state.State2;
 
 public class Node {
@@ -76,7 +77,7 @@ public class Node {
       return;
     } else {
       if (unexploredFE != 0) {
-        int rand = Player.random.nextInt(unexploredFE);
+        int rand = unexploredFE-1; //Player.random.nextInt(unexploredFE);
         Node toTake = childArray[rand];
         childArray[rand] = childArray[--unexploredFE]; 
         childArray[unexploredFE] = toTake;
@@ -289,11 +290,18 @@ public class Node {
     }
   }
 
-  private final void getPossibleMovesForGrid(int decal, int mask) {
+  private final void getPossibleMovesForGrid(int gDecal, int complete) {
+    int mask = (complete | ((complete >> 9) )) & State2.ALL_MASK;
+    for (int i=PossibleMoveCache.possibleMovesFE[mask]-1;i>=0;i--) {
+      possibleMoves[possibleMovesFE++] = PossibleMoveCache.possibleMoves[512*81*gDecal+81*mask+i];
+    }
+  }
+  
+  private final void getPossibleMovesForGrid_old(int gDecal, int mask) {
     int all = (mask | ((mask >> 9) )) & State2.ALL_MASK;
     if (all == State2.ALL_MASK) return; // no possible move  
     
-    int baseY = decal << 9;
+    int baseY = gDecal << 9;
 
     for (int d = 1; d <= 0b100_000_000; d *= 2) {
       if ((all & d) == 0) {
