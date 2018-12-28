@@ -12,6 +12,29 @@ public class State2 {
       0b001010100
   };
   
+  public static boolean winingGrid[] = new boolean[512];
+  static {
+    for (int i=0;i<512/*2^9*/;i++) {
+      winingGrid[i] = false;
+      for (int cl=0;cl<8;cl++) {
+        if ((i & completedLines[cl]) == completedLines[cl]) {
+          winingGrid[i] = true;
+          break;
+        }
+      }
+    }
+  }
+  
+//  public static int winningMove[] = new int[262_144];
+//  static {
+//    for (int me = 0;me<0b11111111;me++) {
+//      for (int him = 0;him<0b11111111;him++) {
+//        int mask = me + him << 9;
+//        winningMove[mask] = me;
+//      }
+//    }
+//  }
+  
   public static final int ALL_MASK = 0b111111111;
   public int cells[] = new int[9]; // 9 cells (2*9bits)
   public int global = 0;  // the global grid (2*9 bits)
@@ -37,40 +60,41 @@ public class State2 {
     if (player) {
       cells[decalGlobal] |= setMask;
     } else {
-      cells[decalGlobal] |= (setMask << 16);
+      cells[decalGlobal] |= (setMask << 9);
     }
     
     // check if setting the bit has made a winner
     // TODO we may optimize here as we know only the playing player can win.
-    decideWinner(decalGlobal);
+    decideWinner(player, decalGlobal);
     
     
     // return the obligated index to play
     nextGridDecal(setMask);
   }
 
-  private final void decideWinner(final int decalGlobal) {
-    int localWinner = winner(cells[decalGlobal], (cells[decalGlobal] >> 16));
+  private void decideWinner(boolean player, int decalGlobal) {
+    int localWinner = winner(cells[decalGlobal] & 0b111111111, (cells[decalGlobal] >> 9));
+    
     if (localWinner == 0) {
       cells[decalGlobal] = ALL_MASK; // player win all cells :)
       global |= (1 << decalGlobal);
     } else if (localWinner == 1) {
-      cells[decalGlobal] = ALL_MASK << 16; // player win all cells :)
-      global |= (1 << decalGlobal << 16);
+      cells[decalGlobal] = ALL_MASK << 9; // player win all cells :)
+      global |= (1 << decalGlobal << 9);
     }
 
     // check for the global win now or draw
     if (localWinner != -1) {
       globalMask |= (1 << decalGlobal);
       
-      int globalWinner = winner(global, global >> 16);
+      int globalWinner = winner(global & 0b111111111, global >> 9);
       if (globalWinner == 0) {
         winner = 0;
       } else if (globalWinner == 1) {
         winner = 1;
       } else if (globalMask == ALL_MASK || globalWinner == 2) {
         int p0 = Integer.bitCount(global & ALL_MASK);
-        int p1 = Integer.bitCount((global >> 16) & ALL_MASK);
+        int p1 = Integer.bitCount((global >> 9) & ALL_MASK);
         if (p0 > p1) winner = 0;
         else if (p1 > p0) winner = 1;
         else winner = 2; // tie
@@ -99,19 +123,18 @@ public class State2 {
    * return the mask of combined grids (p0 & p1)
    */
   public static int complete(int fullMask) {
-    return (fullMask | ((fullMask >> 16) )) & ALL_MASK;
+    return (fullMask | ((fullMask >> 9) )) & ALL_MASK;
   }
   
   /*
    * return the winner of the grid or -1 if no winner, or 2 if draw
    */
   int winner(int p0Grid, int p1Grid) {
-    int mask;
-    for (int i=8-1;i>=0;i--) {
-      mask = completedLines[i];
-      if ((mask & p0Grid) == mask) return 0;
-      if ((mask & p1Grid) == mask) return 1;
-    }
+    if (winingGrid[p0Grid])
+      return 0;
+    if (winingGrid[p1Grid])
+      return 1;
+  
     if (((p0Grid | p1Grid) & ALL_MASK) == ALL_MASK) return 2;
     return -1;
   }
@@ -147,7 +170,7 @@ public class State2 {
     for (int y=0;y<3;y++) {
       for (int x=0;x<3;x++) {
         if ((mask & d) != 0) result +="X";
-        else if ((mask & (d << 16) ) != 0) result +="O";
+        else if ((mask & (d << 9) ) != 0) result +="O";
         else result += " ";
         d*=2;
       }

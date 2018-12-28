@@ -4,18 +4,17 @@ import uttt.Player;
 import uttt.state.State2;
 
 public class Node {
-//  private static final int LOG_DECAL = 4;
-//  private static final int LOG_CACHE_SIZE = 5_000;
-//  static final double logCache[] = new double[LOG_CACHE_SIZE];
-//  static {
-//    logCache[0] = 0;
-//    for (int i=1;i<logCache.length;i++) {
-//      logCache[i] = Math.log((double)(i<<LOG_DECAL));
-//    }
-//  }
-
+  private static final int LOG_DECAL = 1;
+  private static final int LOG_CACHE_SIZE = 10_000;
+  static final double logCache[] = new double[LOG_CACHE_SIZE];
+  static {
+    logCache[0] = 0;
+    for (int i=1;i<logCache.length;i++) {
+      logCache[i] = Math.log((double)(i<<LOG_DECAL));
+    }
+  }
   
-  private static final double SCORE_C = 1.1; //Math.sqrt(2);
+  private static final double SCORE_C = 0.8; //Math.sqrt(2);
 
   static final State2 tempState = new State2();
   
@@ -169,7 +168,7 @@ public class Node {
     for (int i=0;i<possibleMovesFE;i++) {
       instaWinState.copyFrom(state);
       int full = possibleMoves[i];
-      int gDecal = full >> 16;
+      int gDecal = full >> 9;
       int lDecal = full & 0b111111111;
       instaWinState.set(true, gDecal, lDecal);
       if (instaWinState.winner == 0) {
@@ -179,7 +178,7 @@ public class Node {
     for (int i=0;i<possibleMovesFE;i++) {
       instaWinState.copyFrom(state);
       int full = possibleMoves[i];
-      int gDecal = full >> 16;
+      int gDecal = full >> 9;
       int lDecal = full & 0b111111111;
       instaWinState.set(false, gDecal, lDecal);
       if (instaWinState.winner == 1) {
@@ -194,7 +193,7 @@ public class Node {
 //    calcInstaWins(tempState);
     boolean currentPlayer = this.player;
 //    pma.build(tempState);
-    while (!tempState.terminated()) {
+    while (tempState.winner == -1) {
       getPossibleMoves(tempState);
       int full = -1;
 
@@ -206,16 +205,17 @@ public class Node {
       full = possibleMoves[rand];
       
       
-      int gDecal = full >> 16;
+      int gDecal = full >> 9;
       int lDecal = full & 0b111111111;
       tempState.set(currentPlayer, gDecal, lDecal);
      
-      if (Player.turn < 10) {
-        int cutoffWinner = evaluationCutoff(tempState);
-        if (cutoffWinner != -1) {
-          return cutoffWinner;
-        }
-      }
+//      // cutoff early if start of game
+//      if (Player.turn < 10) {
+//        int cutoffWinner = evaluationCutoff(tempState);
+//        if (cutoffWinner != -1) {
+//          return cutoffWinner;
+//        }
+//      }
       currentPlayer = !currentPlayer;
     }
     return tempState.winner();
@@ -223,7 +223,7 @@ public class Node {
   
   private int evaluationCutoff(State2 state) {
     int p0cells = Integer.bitCount(state.global & 0b111111111);
-    int p1cells = Integer.bitCount(state.global >> 16);
+    int p1cells = Integer.bitCount(state.global >> 9);
     if (p0cells - p1cells >= 2) return 0;
     if (p1cells - p0cells >= 2) return 1;
     return -1;
@@ -249,7 +249,7 @@ public class Node {
   private int instaWins(boolean currentPlayer, int full) {
     for (int i=0;(i<possibleMovesFE) ;i++) {
        int move = possibleMoves[i];
-       int gDecal = move >> 16;
+       int gDecal = move >> 9;
        int lDecal = move & 0b111111111;
 
        if (currentPlayer) {
@@ -290,11 +290,10 @@ public class Node {
   }
 
   private final void getPossibleMovesForGrid(int decal, int mask) {
-    int all = State2.complete(mask);
-    
+    int all = (mask | ((mask >> 9) )) & State2.ALL_MASK;
     if (all == State2.ALL_MASK) return; // no possible move  
     
-    int baseY = decal << 16;
+    int baseY = decal << 9;
 
     for (int d = 1; d <= 0b100_000_000; d *= 2) {
       if ((all & d) == 0) {
@@ -317,7 +316,7 @@ public class Node {
       node.state.copyFrom(this.state);
       
       full = possibleMoves[i];
-      int gDecal = full >> 16;
+      int gDecal = full >> 9;
       int lDecal = full & 0b111111111;
       
       node.state.set(this.player, gDecal, lDecal);
@@ -334,11 +333,15 @@ public class Node {
     }
     
     double n = child.N;
-    int t = this.N;
-//    >> LOG_DECAL;
-//    if (t >= LOG_CACHE_SIZE) t = LOG_CACHE_SIZE-1;
+    double log;
+    int t = this.N >> LOG_DECAL;
+    if (t >= LOG_CACHE_SIZE) {
+      log = Math.log(t); 
+    } else {
+      log = logCache[t];
+    }
     
-    return child.Q / n +  SCORE_C * Math.sqrt(Math.log(t) / n);
+    return child.Q / n +  SCORE_C * Math.sqrt(log / n);
   }
 
   private void backPropagate(int result) {
