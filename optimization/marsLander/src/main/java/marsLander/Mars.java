@@ -53,16 +53,20 @@ public class Mars {
   }
 
   public double distanceToLandingZone(MarsLander lander) {
-    if (lander.x < posxStart) {
-      return 1.0 * (posxStart - lander.x) / (posxStart-0);
-    } else if (lander.x > posxEnd) {
-      return 1.0 * (lander.x - posxEnd) / (7000 - posxEnd);
-    } else {
-      return 0.0;
-    }
+    return distanceToLandingZone(lander.getXAsInt(), lander.getYAsInt());
   }
   
   public double distanceToLand(MarsLander lander) {
     return dist[lander.getXAsInt()];
+  }
+
+  public double distanceToLandingZone(int x, int y) {
+    if (x < posxStart) {
+      return 1.0 * (posxStart - x) / (posxStart-0);
+    } else if (x > posxEnd) {
+      return 1.0 * (x - posxEnd) / (7000 - posxEnd);
+    } else {
+      return 0.0;
+    }
   }
 }

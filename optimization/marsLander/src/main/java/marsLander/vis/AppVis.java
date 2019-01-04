@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import marsLander.Mars;
@@ -20,8 +21,12 @@ import marsLander.ai.AGSolution;
 import marsLander.sim.Simulation;
 
 public class AppVis extends Application  {
-  public static final int factor = 10;
+  public static final int factor = 7;
 
+  Text fuelText = new Text("Best fuel: ");
+  Text okText = new Text("solutions : ");
+  private int ok = 0;
+  
   private Mars mars;
   private MarsLander lander;
   AG ag;
@@ -56,10 +61,19 @@ public class AppVis extends Application  {
   public void start(Stage primaryStage) throws Exception {
     primaryStage.setTitle("MarsLander Visualisation");
     Group root = new Group();
-    Canvas canvas = new Canvas(700, 500);
+    
+    fuelText.setX(0);
+    fuelText.setY(50);
+    root.getChildren().add(fuelText);
+
+    okText.setX(0);
+    okText.setY(80);
+    root.getChildren().add(okText);
+    
+    Canvas canvas = new Canvas(7000 / factor, 5000 / factor);
     gc = canvas.getGraphicsContext2D();
     gc.scale(1, -1);
-    gc.translate(0, -500);
+    gc.translate(0, -(5000/factor));
     drawMars(gc);
     
     Timeline timeline = new Timeline(new KeyFrame(
@@ -71,11 +85,15 @@ public class AppVis extends Application  {
     root.getChildren().add(canvas);
     primaryStage.setScene(new Scene(root));
     primaryStage.show();
-    
+
+    gc.clearRect(0, 0, 7000 / factor, 5000 / factor);
+    drawMars(gc);
+    int i = 0;
+    i+=1;
   }
 
   private Object update() {
-    gc.clearRect(0, 0, 700, 500);
+    gc.clearRect(0, 0, 7000 / factor, 5000 / factor);
     drawMars(gc);
 
     doOneIteration();
@@ -90,25 +108,23 @@ public class AppVis extends Application  {
     }
     ag.oneIteration();
 
-    for (int i=0;i<AG.SIZE;i++) {
+    okText.setText("Solutions : "+ok);
+    if (ag.solutions[0].score > 200) {
+      fuelText.setText("Best fuel : " + ag.solutions[0].fuel);
+    }
+
+    ok = 0;
+    for (int i=0;i<AG.POP_SIZE;i++) {
       AGSolution solution = ag.solutions[i];
       //if (Double.isInfinite(solution.score) && solution.score < 0) continue;
 
-      Color p = getColorFromScore(solution);
-      gc.setStroke(p);
-      
-      drawSolution(solution);    
+      if (solution.score > 200) {
+        ok++;
+      }
+      drawSolution(solution);
     }
 
-    if (Double.isInfinite(ag.solutions[0].score)) {
-      gc.setStroke(Color.ORANGE);
-      gc.setLineWidth(10);
-      
-    } else {
-      gc.setStroke(Color.BLUEVIOLET);
-    }
-    drawSolution(ag.solutions[0]);
-
+    
   }
 
   private void drawSolution(AGSolution solution) {
@@ -117,6 +133,9 @@ public class AppVis extends Application  {
     
     Simulation simulation = new Simulation(mars, thisLander);
     simulation.reset();
+    
+    Color p = getColorFromScore(solution);
+    gc.setStroke(p);
     
     double lastX =  thisLander.x;
     double lastY = thisLander.y;
@@ -130,21 +149,20 @@ public class AppVis extends Application  {
   }
 
   private Color getColorFromScore(AGSolution solution) {
-    double score = solution.score;
     double red = 0;
     double green = 0;
     double blue = 0;
-    if (Double.isInfinite(score)) {
-      red = 0;
+    
+    if (solution.score < 100) {
+      // crash not in the landing zone
+      red = green = 0;
+      blue = Math.max(0, solution.score) / 100.0;
+    } else if (solution.score < 200) {
+      red = (solution.score - 100.0) / 100.0;
       green = 0;
-      if (score > 0) {
-        blue = 1.0;
-      } else {
-        red = 1.0;
-      }
+      blue = 0;
     } else {
-      red = 0;
-      green = Math.max(0, Math.min((score - 100.0) / 10.0, 1.0));
+      return Color.GREEN;
     }
     Color p = new Color(red, green, blue, 1.0);
     return p;

@@ -38,6 +38,9 @@ public class Simulation {
     int angle = lander.angle + values[0];
     int thrust = lander.thrust + values[1];
     
+    double oldX = lander.x;
+    double oldY = lander.y;
+    
     lander.fuel -= thrust;
     lander.x = lander.x+lander.vx-0.5*sin[180+angle]*thrust;
     lander.y = lander.y+lander.vy+0.5*(cos[180+angle]*thrust-G);
@@ -47,7 +50,11 @@ public class Simulation {
     lander.angle  = angle;
     lander.thrust = thrust; // TODO need to keep it ?
     
-    result = checkAgainstMars();
+    result = checkAgainstMars(lander.getXAsInt(), lander.getYAsInt());
+    if (result == -1.0) {
+      lander.x = oldX;
+      lander.y = oldY;
+    }
     return true;
   }
 
@@ -56,12 +63,12 @@ public class Simulation {
    * 1 : landing safe
    * -1 : crash
    */
-  private int checkAgainstMars() {
-    if (lander.x < 0) return -1;
-    if (lander.x > 6999) return -1;
+  private int checkAgainstMars(int x, int y) {
+    if (x < 0) return -1;
+    if (x > 6999) return -1;
     
-    if (lander.y < mars.dist[lander.getXAsInt()]) {
-      if (mars.distanceToLandingZone(lander) > 0) {
+    if (y < mars.dist[x]) {
+      if (mars.distanceToLandingZone(x,y) > 0) {
         return -1;
       } else if (lander.angle == 0 && Math.abs(lander.vx) < 20 && Math.abs(lander.vy) < 40) {
         return 1;

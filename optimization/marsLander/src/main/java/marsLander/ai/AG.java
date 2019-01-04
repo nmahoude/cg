@@ -9,19 +9,20 @@ import marsLander.Player;
 import marsLander.sim.Simulation;
 
 public class AG {
-  public final static int SIZE = 50;
+  public final static int POP_SIZE = 100;
+  public final static int POP_BEST_SIZE = 10;
 
   Mars mars;
   MarsLander lander;
   private MarsLander originalLander;
 
   private Simulation simulation;
-  public AGSolution solutions[] = new AGSolution[SIZE];
+  public AGSolution solutions[] = new AGSolution[POP_SIZE];
 
   private AGSolution oldSolution;
 
   public AG(Mars mars, MarsLander originalLander) {
-    for (int i = 0; i < SIZE; i++) {
+    for (int i = 0; i < POP_SIZE; i++) {
       solutions[i] = new AGSolution();
     }
     this.mars = mars;
@@ -55,13 +56,15 @@ public class AG {
   }
 
   public void randomizePopulation() {
-    for (int i = 0; i < SIZE; i++) {
+    for (int i = 0; i < POP_SIZE; i++) {
       solutions[i].randomize();
     }
   }
 
   public void oneIteration() {
-    for (int i = 0; i < SIZE; i++) {
+    for (int i = 0; i < POP_SIZE; i++) {
+      if (solutions[i].score != 0) continue; // one of the best
+      
       lander.copyFrom(originalLander);
 
       play(solutions[i]);
@@ -145,6 +148,7 @@ public class AG {
         break;
     }
     solution.score += score(simulation, mars, lander);
+    solution.fuel = lander.fuel;
   }
 
   public void evolvePopulation() {
@@ -155,12 +159,14 @@ public class AG {
       }
     });
     
-    int ratio = 2;
-    int next = SIZE / ratio;
-    for (;next<SIZE;next++) {
-      int rand1 = Player.rand.nextInt(SIZE / ratio);
-      int rand2 = Player.rand.nextInt(SIZE / ratio);
-      solutions[next].crossover(solutions[rand1], solutions[rand2]);
+    int next = POP_BEST_SIZE;
+    for (;next<POP_SIZE;next++) {
+      int rand1 = Player.rand.nextInt(POP_BEST_SIZE);
+      int rand2;
+      do {
+        rand2 = Player.rand.nextInt(POP_BEST_SIZE);
+      } while(rand2 == rand1);
+      solutions[next].crossover2(solutions[rand1], solutions[rand2]);
     }
     
   }
