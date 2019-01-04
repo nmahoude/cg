@@ -708,6 +708,7 @@ public class KnapSackTest {
         "47.42535 2.21084\r\n" + 
         "48.89608 8.59693\r\n" + 
         "72.59366 23.69437";
+    
     Scanner in = new Scanner(input).useLocale(Locale.US);;
     Player player =new Player();
     player.play(in);

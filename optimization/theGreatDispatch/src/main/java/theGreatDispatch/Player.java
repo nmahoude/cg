@@ -45,6 +45,15 @@ public class Player {
     System.err.println("Boxes count : "+boxCount);
     System.err.println("avg weight sum = " + sum + " / " + target);
 
+    redistibution();
+    
+//    knaspsacked();
+    
+    
+    output();
+  }
+
+  private void redistibution() {
     Arrays.sort(boxes, new Comparator<Box>() {
       @Override
       public int compare(Box b1, Box b2) {
@@ -95,11 +104,6 @@ public class Player {
 //      System.err.println("new delta : "+delta());
 //      debugTrucks(highestTruck, lowestTruck);
     }
-    
-//    knaspsacked();
-    
-    
-    output();
   }
 
   private void debugTrucks(Truck highestTruck, Truck lowestTruck) {
@@ -112,6 +116,16 @@ public class Player {
   }
 
   private void knaspsacked() {
+    
+    Arrays.sort(boxes, new Comparator<Box>() {
+      @Override
+      public int compare(Box b1, Box b2) {
+        return Double.compare(b1.weight, b2.weight);
+      }
+    });
+
+    
+    
     int startIndex = boxes.length;
     int remainingBoxes = boxCount;
     int truckId = 0;
@@ -127,10 +141,10 @@ public class Player {
       //System.err.println("take main box : " + mainBox);
       //System.err.println("Disposable v="+disposableVolume+" -- dW = "+disposableWeight);
       KnapSack ks = new KnapSack();
-      double result = ks.fillPackage(disposableWeight, disposableVolume, boxes, startIndex-1);
+      double result = ks.fillPackageWithoutVolume(disposableWeight, boxes, startIndex-1);
       //System.err.println("Knapsack ended with result "+result);
       //System.err.println("Nb of boxes in the truck : "+ ks.my_pack.size());
-      if (result != KnapSack.NOT_FOUND) {
+      if (result == KnapSack.NOT_FOUND) {
         System.err.println("Can't find arrangement for truck "+truckId);
         double sumWeightAssigned = 0;
         double sumWeight = 0;
@@ -150,7 +164,7 @@ public class Player {
       }
       remainingBoxes-= (ks.my_pack.size()+1);
       System.err.println("Filled truck n° "+truckId+" with "+(ks.my_pack.size()+1)+" boxes");
-      System.err.println("Remaining boxes : "+ remainingBoxes);
+      //System.err.println("Remaining boxes : "+ remainingBoxes);
       truckId++;
     }
   }

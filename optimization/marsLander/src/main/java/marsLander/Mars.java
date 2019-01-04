@@ -1,0 +1,68 @@
+package marsLander;
+
+import java.util.Scanner;
+
+public class Mars {
+  public int[] pointsX;
+  public int[] pointsY;
+
+  int flatIndexStart = -1;
+  int posxStart, posxEnd;
+  
+  public double dist[] = new double[7000]; // all distances by x !
+  
+  public void readInput(Scanner in) {
+    int N = in.nextInt();
+
+    pointsX = new int[N];
+    pointsY = new int[N];
+
+    for (int i = 0; i < N; i++) {
+      int landX = in.nextInt();
+      int landY = in.nextInt();
+      
+      pointsX[i] = landX;
+      pointsY[i] = landY;
+      
+      if (i != 0) {
+        if (pointsY[i - 1] == pointsY[i]) {
+          flatIndexStart = i - 1;
+          posxStart = pointsX[i-1];
+          posxEnd = pointsX[i];
+        }
+      }
+      
+      if (i>0) {
+        int sx = pointsX[i-1];
+        int ex = pointsX[i];
+        int sy = pointsY[i-1];
+        int ey = pointsY[i];
+        for (int x=sx;x<ex;x++) {
+          dist[x] = sy + 1.0 * (ey-sy) * (x-sx) / (ex-sx);
+        }
+      }
+      
+    }
+    if (Player.DEBUG_OUTPUT) {
+      System.err.print(""+N+ " ");
+      for (int i = 0; i < N; i++) {
+        System.err.print(""+pointsX[i]+" "+pointsY[i]+" ");
+      }
+      System.err.println();
+    }
+  }
+
+  public double distanceToLandingZone(MarsLander lander) {
+    if (lander.x < posxStart) {
+      return 1.0 * (posxStart - lander.x) / (posxStart-0);
+    } else if (lander.x > posxEnd) {
+      return 1.0 * (lander.x - posxEnd) / (7000 - posxEnd);
+    } else {
+      return 0.0;
+    }
+  }
+  
+  public double distanceToLand(MarsLander lander) {
+    return dist[lander.getXAsInt()];
+  }
+}
