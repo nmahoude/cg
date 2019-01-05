@@ -30,31 +30,34 @@ public class Simulation {
    */
   public boolean update(int values[]) {
     if (lander.angle + values[0] < -90 || lander.angle + values[0] > 90) values[0] = 0;
+    
     if (lander.thrust + values[1] < 0 || lander.thrust + values[1] > 4) values[1] = 0;
-    if (lander.fuel == 0) {
-      values[1] = 0;
-    }
+    // NOTE : plus de verification sur le fuel vu qu'on atjs une solution avec du fuel
     
     int angle = lander.angle + values[0];
     int thrust = lander.thrust + values[1];
     
-    double oldX = lander.x;
-    double oldY = lander.y;
+//    double oldX = lander.x;
+//    double oldY = lander.y;
     
     lander.fuel -= thrust;
-    lander.x = lander.x+lander.vx-0.5*sin[180+angle]*thrust;
-    lander.y = lander.y+lander.vy+0.5*(cos[180+angle]*thrust-G);
-    lander.vx = lander.vx-1.*sin[180+angle]*thrust;
-    lander.vy = lander.vy+1.*(cos[180+angle]*thrust-G);
+    int correctedAngle = 180+angle;
+    double sinAngleThrust = sin[correctedAngle]*thrust;
+    double cosAngleThrust = cos[correctedAngle]*thrust;
+
+    lander.x = lander.x+lander.vx-0.5*sinAngleThrust;
+    lander.y = lander.y+lander.vy+0.5*(cosAngleThrust-G);
+    lander.vx = lander.vx-1.*sinAngleThrust;
+    lander.vy = lander.vy+1.*(cosAngleThrust-G);
     
     lander.angle  = angle;
-    lander.thrust = thrust; // TODO need to keep it ?
+    lander.thrust = thrust;
     
     result = checkAgainstMars(lander.getXAsInt(), lander.getYAsInt());
-    if (result == -1.0) {
-      lander.x = oldX;
-      lander.y = oldY;
-    }
+//    if (result == -1.0) {
+//      lander.x = oldX;
+//      lander.y = oldY;
+//    }
     return true;
   }
 
@@ -67,7 +70,7 @@ public class Simulation {
     if (x < 0) return -1;
     if (x > 6999) return -1;
     
-    if (y < mars.dist[x]) {
+    if (y - mars.dist[x] < 0) {
       if (mars.distanceToLandingZone(x,y) > 0) {
         return -1;
       } else if (lander.angle == 0 && Math.abs(lander.vx) < 20 && Math.abs(lander.vy) < 40) {

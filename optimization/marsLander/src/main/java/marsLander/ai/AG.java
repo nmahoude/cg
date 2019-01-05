@@ -11,6 +11,7 @@ import marsLander.sim.Simulation;
 public class AG {
   public final static int POP_SIZE = 100;
   public final static int POP_BEST_SIZE = 10;
+  private static final int RE_RANDOMIZE_SIZE = 10;
 
   Mars mars;
   MarsLander lander;
@@ -33,6 +34,8 @@ public class AG {
   }
 
   public void think() {
+    AGSolution.mutationThreshold = 0;
+    
     System.err.println("mars at x : " + mars.dist[originalLander.getXAsInt()]);
     System.err.println("Dist to landing zone : " + mars.distanceToLandingZone(originalLander));
 
@@ -75,6 +78,10 @@ public class AG {
 
     double score = 0.0;
     
+    if (simulation.result == 0) {
+      // still in the air
+      return 0;
+    }
     if (simulation.result != 1) {
       // crashed
       if (mars.distanceToLandingZone(lander) != 0.0) {
@@ -109,12 +116,9 @@ public class AG {
 
     double score = 0.0;
     if (simulation.result == -1) {
-      score -= 10_000;
+      //score -= 10_000;
     } else if (simulation.result == 1) {
       return Double.POSITIVE_INFINITY;
-    }
-    if (mars.distanceToLandingZone(lander) == 0.0) {
-      score += 1_000.0;
     }
     
     score += 10.0 * (100 - 100 * mars.distanceToLandingZone(lander));
@@ -160,7 +164,17 @@ public class AG {
     });
     
     int next = POP_BEST_SIZE;
-    for (;next<POP_SIZE;next++) {
+    
+    // si le score > 200, on a plein de bonnes solutions, on peut faire
+    // de la mutation legere
+//    if (solutions[0].score > 200) {
+//      AGSolution.mutationThreshold = 30;
+//      for (;next<POP_BEST_SIZE*2;next++) {
+//        solutions[next].mutate(solutions[next-POP_BEST_SIZE]);
+//      }
+//    }
+    
+    for (;next<POP_SIZE-RE_RANDOMIZE_SIZE;next++) {
       int rand1 = Player.rand.nextInt(POP_BEST_SIZE);
       int rand2;
       do {
@@ -168,7 +182,10 @@ public class AG {
       } while(rand2 == rand1);
       solutions[next].crossover2(solutions[rand1], solutions[rand2]);
     }
-    
+
+    for (;next<POP_SIZE;next++) {
+      solutions[next].randomize();
+    }
   }
 
   public void prepareNextSolution() {
