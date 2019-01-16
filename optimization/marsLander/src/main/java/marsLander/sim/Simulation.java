@@ -28,7 +28,7 @@ public class Simulation {
   /*
    * return false if lander is destroyed
    */
-  public boolean update(int values[]) {
+  public void update(int values[]) {
     if (lander.angle + values[0] < -90 || lander.angle + values[0] > 90) values[0] = 0;
     
     if (lander.thrust + values[1] < 0 || lander.thrust + values[1] > 4) values[1] = 0;
@@ -58,7 +58,6 @@ public class Simulation {
 //      lander.x = oldX;
 //      lander.y = oldY;
 //    }
-    return true;
   }
 
   /**

@@ -29,6 +29,7 @@ public class SimulationTest {
   }
   
   @Test
+  @Ignore
   public void freeFall() throws Exception {
     lander.readInput(new Scanner("2500 2700 0 0 550 0 0"));
     

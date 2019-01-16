@@ -164,6 +164,13 @@ public class AG {
     });
     
     int next = POP_BEST_SIZE;
+    if (solutions[0].score >= 200) {
+      for (int i=1;i<POP_BEST_SIZE;i++) {
+        if (solutions[i].score >= 200) {
+          next = i;
+        }
+      }
+    }
     
     // si le score > 200, on a plein de bonnes solutions, on peut faire
     // de la mutation legere
@@ -176,10 +183,7 @@ public class AG {
     
     for (;next<POP_SIZE-RE_RANDOMIZE_SIZE;next++) {
       int rand1 = Player.rand.nextInt(POP_BEST_SIZE);
-      int rand2;
-      do {
-        rand2 = Player.rand.nextInt(POP_BEST_SIZE);
-      } while(rand2 == rand1);
+      int rand2 = Player.rand.nextInt(POP_BEST_SIZE);
       solutions[next].crossover2(solutions[rand1], solutions[rand2]);
     }
 

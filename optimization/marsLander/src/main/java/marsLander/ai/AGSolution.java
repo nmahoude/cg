@@ -28,6 +28,8 @@ public class AGSolution {
     rand = Player.rand.nextDouble();
     if (rand < 0.2) {
       values[d][1] = 0;
+    } if (rand < 0.5) {
+      values[d][1] = 1;
     } else {
       values[d][1] = (int)(Player.rand.nextInt(3)-1);
     }

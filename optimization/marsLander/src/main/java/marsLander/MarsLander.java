@@ -27,16 +27,16 @@ public class MarsLander {
   }
   
   public int getXAsInt() {
-    return round(x);
+    return (int)x; //round(x);
   }
   public int getYAsInt() {
-    return round(y);
+    return (int)y; //round(y);
   }
   public int getVyAsInt() {
-    return round(vy);
+    return (int)vy; //round(vy);
   }
   public int getVxAsInt() {
-    return round(vx);
+    return (int)vx;//round(vx);
   }
 
   
