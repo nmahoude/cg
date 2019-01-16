@@ -113,6 +113,14 @@ public class Board {
         explode(b);
       }
     }
+    
+    // rearrange bombs
+    int current = 0;
+    for (int i=0;i<bombsFE;i++) {
+      final Bomb b = bombs[i];
+      if (b != null) bombs[current++] = b;
+    }
+    bombsFE = current;
   }
 
   public void addBomb(final Bomb bomb) {
@@ -122,11 +130,8 @@ public class Board {
   
   final Bomb bombsToExplode[] = new Bomb[MAX_BOMBS];
   int bombsToExplodeFE = 0;
-  final Bomb explodedBombs[] = new Bomb[MAX_BOMBS];
-  int explodedBombsFE = 0;
   void explode(final Bomb bomb) {
     bombsToExplodeFE = 0;
-    explodedBombsFE = 0;
     
     bombsToExplode[bombsToExplodeFE++] = bomb;
     int currentBombToExplode = 0;
@@ -156,13 +161,16 @@ public class Board {
       }
     }
 
-    for (int b=0;b<explodedBombsFE;b++) {
-      Bomb removedBombs = explodedBombs[b];
-      checkExplosion(null, removedBombs.position.x, removedBombs.position.y);
+    // clear bombs places
+    for (int b=0;b<bombsToExplodeFE;b++) {
+      Bomb removedBombs = bombsToExplode[b];
+      int x = removedBombs.position.x;
+      int y = removedBombs.position.y;
+      cells[x+WIDTH*y] = EMPTY;
     }
   }
 
-  private boolean checkExplosion(final Bomberman orginalBomberman, final int x, final int y) {
+  private boolean checkExplosion(Bomberman orginalBomberman, int x, int y) {
     if (isOnBoard(x, y)) {
       final int value = cells[x+WIDTH*y];
       if (value == WALL) {
@@ -170,22 +178,22 @@ public class Board {
       }
       
       for (final Bomberman bomberman : players) {
-        if (bomberman.position.equals(P.get(x,y))) {
+        if (bomberman.position == P.get(x,y)) {
           bomberman.isDead = true;
         }
       }
 
       switch (value) {
         case BOX:
-          updatePoints(orginalBomberman, 1, x, y);
+          updatePoints(orginalBomberman);
           cells[x+WIDTH*y] = EMPTY;
           return true;
         case BOX_1:
-          updatePoints(orginalBomberman, 1,x, y);
+          updatePoints(orginalBomberman);
           cells[x+WIDTH*y] = ITEM_1;
           return true;
         case BOX_2:
-          updatePoints(orginalBomberman, 1,x, y);
+          updatePoints(orginalBomberman);
           cells[x+WIDTH*y] = ITEM_2;
           return true;
         case ITEM_1:
@@ -208,11 +216,11 @@ public class Board {
     return false;
   }
   
-  private void updatePoints(final Bomberman orginalBomberman, final double points, int x, int y) {
+  private void updatePoints(Bomberman orginalBomberman) {
     destructedBox++;
     boxCount--;
     if (orginalBomberman != null) {
-      orginalBomberman.points+=points;
+      orginalBomberman.points++;
     }
   }
 

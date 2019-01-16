@@ -10,7 +10,8 @@ import hypersonic.entities.Item;
 import hypersonic.utils.P;
 
 public class Player {
-  private static boolean DEBUG_INPUT = true;
+  public static boolean DEBUG_INPUT = true;
+  public static boolean DEBUG_AI = false;
   public static Random rand = new Random(0);
   
   public static long startTime;
@@ -40,7 +41,7 @@ public class Player {
       
       
       final Move move = mc.bestMove;
-      outputMove(board.me, move);
+      outputMove(board.me, move, mc.message);
     }
   }
 
@@ -53,7 +54,7 @@ public class Player {
     }
   }
   
-  private void outputMove(final Bomberman me, final Move move) {
+  private void outputMove(final Bomberman me, final Move move, String message) {
     int newX = board.me.position.x;
     int newY = board.me.position.y;
     boolean dropBomb = false;
@@ -84,9 +85,9 @@ public class Player {
         newY-=1;
     }
     if (dropBomb) {
-      System.out.println("BOMB "+newX+" "+newY);
+      System.out.println("BOMB "+newX+" "+newY+ " "+message);
     } else {
-      System.out.println("MOVE "+newX+" "+newY);
+      System.out.println("MOVE "+newX+" "+newY+ " "+message);
     }
   }
   public void readGameState() {
@@ -100,7 +101,7 @@ public class Player {
     if (Player.DEBUG_INPUT) {
       System.err.println(entitiesCount);
     }
-    startTime = System.nanoTime();
+    startTime = System.currentTimeMillis();
     for (int i = 0; i < entitiesCount; i++) {
       final int entityType = in.nextInt();
       final int owner = in.nextInt();

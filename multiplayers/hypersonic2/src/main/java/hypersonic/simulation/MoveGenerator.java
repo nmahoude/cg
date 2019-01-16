@@ -32,8 +32,8 @@ public class MoveGenerator {
     return movesFE;
   }
   
-  public final boolean isMovePossible(final Move move) {
-    final Bomberman me = board.me;
+  public final boolean isMovePossible(Move move) {
+    Bomberman me = board.me;
     int x = me.position.x;
     int y = me.position.y;
     switch(move) {

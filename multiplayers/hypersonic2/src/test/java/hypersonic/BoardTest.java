@@ -160,6 +160,16 @@ public class BoardTest {
     }
     
     @Test
+    public void explodedBombsReplacedByEmptyCell() throws Exception {
+      final Board board = createBasicBoard();
+      final Bomb bomb = createBomb(board).at(0,0).withTimer(1).withRange(3).build();
+
+      board.updateBombs();
+      
+      assertThat(board.cells[0*Board.WIDTH*0], is(Board.EMPTY));
+    }
+    
+    @Test
     public void wallsBlocksBombs() throws Exception {
       final Board board = new Board();
       initBoard(board, 
@@ -200,10 +210,10 @@ public class BoardTest {
       );
       final Bomb bomb = createBomb(board).at(0,0).withTimer(1).withRange(10).build();
       
-      board.explode(bomb);
+      board.updateBombs();
       
-      assertThat(board.cells[cell(1,0)], is((int)Board.EMPTY));
-      assertThat(board.cells[cell(2,0)], is(not((int)Board.EMPTY)));
+      assertThat(board.cells[cell(1,0)], is(Board.EMPTY));
+      assertThat(board.cells[cell(2,0)], is(not(Board.EMPTY)));
     }
 
     
@@ -251,7 +261,7 @@ public class BoardTest {
       
       final Bomb bomb = createBomb(board).at(0,0).withTimer(1).withRange(10).build();
       
-      board.explode(bomb);
+      board.updateBombs();
       
       assertThat(board.cells[cell(1,0)], is((int)Board.EMPTY));
       assertThat(board.cells[cell(2,0)], is(not((int)Board.EMPTY)));
@@ -323,7 +333,7 @@ public class BoardTest {
        "............."
       );
       final Bomb bomb = createBomb(board).at(2,0).withTimer(1).withRange(10).build();
-      board.explode(bomb);
+      board.updateBombs();
       
       assertThat(board.cells[2 + Board.WIDTH * 1], is(Board.ITEM_1));
     }
@@ -345,7 +355,7 @@ public class BoardTest {
        "............."
       );
       final Bomb bomb = createBomb(board).at(2,0).withTimer(1).withRange(10).build();
-      board.explode(bomb);
+      board.updateBombs();
       
       assertThat(board.cells[2 + Board.WIDTH * 1], is(Board.ITEM_2));
     }
@@ -366,13 +376,13 @@ public class BoardTest {
        ".X.X.X.X.X.X.",
        "............."
       );
-      final Bomb bomb = createBomb(board).at(2,0).withTimer(2).withRange(50).build();
+      final Bomb bomb = createBomb(board).at(2,0).withTimer(1).withRange(50).build();
       final Bomb blockingbomb = createBomb(board).at(1,0).withTimer(8).withRange(4).build();
 
-      board.explode(bomb);
+      board.updateBombs();
       
-      assertThat(board.cells[cell(3,0)], is((int)Board.EMPTY));
-      assertThat(board.cells[cell(4,0)], is(not((int)Board.EMPTY)));
+      assertThat(board.cells[cell(3,0)], is(Board.EMPTY));
+      assertThat(board.cells[cell(4,0)], is(not(Board.EMPTY)));
     }
 
   }
