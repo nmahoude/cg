@@ -18,9 +18,9 @@ public class BoardTest {
     @Test
     public void canWalkOnEmptyCell() throws Exception {
       final Board board = createBasicBoard();
-      board.me = new Bomberman(board, 1, P.get(0,0), 1, 3);
+      board.me = new Bomberman(1, P.get(0,0), 1, 3);
       
-      board.me.move(P.get(1,0));
+      board.me.move(board, P.get(1,0));
       
       assertThat(board.me.position, is(P.get(1,0)));
     }
@@ -28,9 +28,9 @@ public class BoardTest {
     @Test
     public void playerCantMoveIntoWall() throws Exception {
       final Board board = createBasicBoard();
-      board.me = new Bomberman(board, 1, P.get(1,0), 1, 3);
+      board.me = new Bomberman(1, P.get(1,0), 1, 3);
       
-      board.me.move(P.get(1,1));
+      board.me.move(board, P.get(1,1));
       
       assertThat(board.me.position, is(P.get(1,0)));
     }
@@ -38,9 +38,9 @@ public class BoardTest {
     @Test
     public void playerCantMoveIntoBox() throws Exception {
       final Board board = createBasicBoard();
-      board.me = new Bomberman(board, 1, P.get(2,0), 1, 3);
+      board.me = new Bomberman(1, P.get(2,0), 1, 3);
       
-      board.me.move(P.get(2,1));
+      board.me.move(board, P.get(2,1));
       
       assertThat(board.me.position, is(P.get(2,0)));
     }
@@ -48,10 +48,10 @@ public class BoardTest {
     @Test
     public void playerCantMoveIntoBomb() throws Exception {
       final Board board = createBasicBoard();
-      board.me = new Bomberman(board, 1, P.get(2,0), 1, 3);
+      board.me = new Bomberman(1, P.get(2,0), 1, 3);
       createBomb(board).at(3,0).withRange(3).build();
       
-      board.me.move(P.get(3,0));
+      board.me.move(board, P.get(3,0));
       
       assertThat(board.me.position, is(P.get(2,0)));
     }
@@ -60,9 +60,9 @@ public class BoardTest {
     public void playerMoveOnItemConsumeIt() throws Exception {
       final Board board = createBasicBoard();
       board.cells[cell(3,0)] = Board.ITEM_1;
-      board.me = new Bomberman(board, 1, P.get(2,0), 1, 3);
+      board.me = new Bomberman(1, P.get(2,0), 1, 3);
       
-      board.me.move(P.get(3,0));
+      board.me.move(board, P.get(3,0));
       
       assertThat(board.me.position, is(P.get(3,0)));
       assertThat(board.cells[cell(3,0)], is((int)Board.EMPTY));
@@ -72,9 +72,9 @@ public class BoardTest {
     public void playerMoveOnRangeUpItem() throws Exception {
       final Board board = createBasicBoard();
       board.cells[cell(3,0)] = Board.ITEM_1;
-      board.me = new Bomberman(board, 1, P.get(2,0), 1, 3);
+      board.me = new Bomberman(1, P.get(2,0), 1, 3);
       
-      board.me.move(P.get(3,0));
+      board.me.move(board, P.get(3,0));
       
       assertThat(board.me.position, is(P.get(3,0)));
       assertThat(board.me.currentRange, is(4));
@@ -84,9 +84,9 @@ public class BoardTest {
     public void playerMoveOnBombUpItem() throws Exception {
       final Board board = createBasicBoard();
       board.cells[cell(3,0)] = Board.ITEM_2;
-      board.me = new Bomberman(board, 1, P.get(2,0), 1, 3);
+      board.me = new Bomberman(1, P.get(2,0), 1, 3);
       
-      board.me.move(P.get(3,0));
+      board.me.move(board, P.get(3,0));
       
       assertThat(board.me.position, is(P.get(3,0)));
       assertThat(board.me.bombsLeft, is(2));
@@ -142,7 +142,7 @@ public class BoardTest {
     }
 
     static Bomberman createBasicPlayer(final Board board) {
-      final Bomberman bomberman = new Bomberman(board, 1, P.get(0,0), 1, 3);
+      final Bomberman bomberman = new Bomberman(1, P.get(0,0), 1, 3);
       board.addPlayer(bomberman);
       return bomberman;
     }
@@ -150,7 +150,7 @@ public class BoardTest {
     @Test
     public void bombsKillsPlayers() throws Exception {
       final Board board = createBasicBoard();
-      final Bomberman bomberman = new Bomberman(board, 1, P.get(1,0), 1, 3);
+      final Bomberman bomberman = new Bomberman(1, P.get(1,0), 1, 3);
       board.addPlayer(bomberman);
       final Bomb bomb = createBomb(board).at(0,0).withTimer(1).withRange(3).build();
 

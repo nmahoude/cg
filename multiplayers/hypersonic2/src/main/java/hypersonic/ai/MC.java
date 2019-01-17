@@ -16,7 +16,7 @@ public class MC {
   static {
     patience = new double[DEPTH];
     for (int i=0;i<DEPTH;i++) {
-      patience[i] = 1.0 * (DEPTH-i) / DEPTH;
+      patience[i] =Math.pow(0.7, i);
     }
   }
   Board board = new Board();
@@ -90,7 +90,7 @@ public class MC {
   private double score() {
     double score = 0.0;
     
-    score += 100.0 * board.me.points;
+    score += 10_000.0 * board.me.points;
     score += 1.1 * board.me.bombCount;
     score += board.me.currentRange;
     score += board.me.bombsLeft;

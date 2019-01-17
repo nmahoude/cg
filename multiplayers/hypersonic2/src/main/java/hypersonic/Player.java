@@ -33,8 +33,6 @@ public class Player {
       turn++;
       readGameState();
       
-      board.updateBombs(); // pre-calculated next step first move !
-      
       // now look what I can do !
       MC mc = new MC();
       mc.think(board);
@@ -112,9 +110,12 @@ public class Player {
       if (Player.DEBUG_INPUT) {
         System.err.println(""+entityType + " "+owner+" "+x+" "+y+" "+param1+" "+param2);
       }
-      
       if (entityType == 0) {
-        final Bomberman player = new Bomberman(board, owner, P.get(x, y), param1, param2);
+        final Bomberman player = BombermanCache.pop();
+        player.owner = owner;
+        player.position = P.get(x, y);
+        player.bombsLeft =  param1;
+        player.currentRange = param2;
         board.addPlayer(player);
         if (player.owner == myId) {
           board.me = player;

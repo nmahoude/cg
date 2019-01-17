@@ -15,11 +15,15 @@ public class BoardCache {
   }
   
   public static void retrocede(final Board board) {
-    for (final Bomb b : board.bombs) {
-      BombCache.push(b); 
+    for (int b=0;b<board.bombsFE;b++) {
+      Bomb bomb = board.bombs[b];
+      if( bomb != null) {
+        BombCache.push(bomb); 
+      }
     }
-    for (final Bomberman b : board.players) {
-      Bomberman.cache.retrocede(b);
+    for (int p=0;p<board.playersFE;p++) {
+      Bomberman b = board.players[p];
+      BombermanCache.push(b);
     }
     BoardCache.cache.push(board);
   }

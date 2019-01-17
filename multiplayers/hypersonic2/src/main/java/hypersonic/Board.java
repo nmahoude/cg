@@ -75,7 +75,8 @@ public class Board {
     this.playersFE = 0;
     for (int p=0;p<model.playersFE;p++) {
       Bomberman b = model.players[p];
-      final Bomberman copy = b.duplicate(this);
+      final Bomberman copy = BombermanCache.pop();
+      copy.copyFrom(b);
       if (b == model.me) {
         this.me = copy;
       }
@@ -286,6 +287,7 @@ public class Board {
       player.currentRange+=1;
     } else if (value == ITEM_2) {
       player.bombsLeft+=1;
+      player.bombCount+=1;
     }
     player.position = p;
     cells[p.x+WIDTH*p.y] = EMPTY;

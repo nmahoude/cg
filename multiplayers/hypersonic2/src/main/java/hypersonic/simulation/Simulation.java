@@ -18,9 +18,8 @@ public class Simulation {
   }
   
   public final void simulate(final Move move) {
-    // /!\ the first updateBombs should have been done before
-    simulateMove(move);
     board.updateBombs();
+    simulateMove(move);
   }
   
   private void simulateMove(final Move move) {
