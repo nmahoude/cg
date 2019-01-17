@@ -3,7 +3,7 @@ package hypersonic.utils;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public class Cache<T> {
+public class CacheUtil<T> {
   Deque<T> available = new ArrayDeque<>();
   
   public void retrocede(final T t) {

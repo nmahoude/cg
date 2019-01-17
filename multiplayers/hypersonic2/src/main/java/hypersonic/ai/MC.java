@@ -2,7 +2,7 @@ package hypersonic.ai;
 
 import java.util.Arrays;
 
-import hypersonic.Board;
+import hypersonic.State;
 import hypersonic.Move;
 import hypersonic.Player;
 import hypersonic.entities.Bomb;
@@ -19,17 +19,17 @@ public class MC {
       patience[i] =Math.pow(0.7, i);
     }
   }
-  Board board = new Board();
+  State state = new State();
   public Move bestMove = null;
   public String message = "";
-  Simulation simulator = new Simulation(board);
-  MoveGenerator gen = new MoveGenerator(board);
+  Simulation simulator = new Simulation(state);
+  MoveGenerator gen = new MoveGenerator(state);
   
   Move[] moves = new Move[16];
   int movesFE;
   
-  public void think(Board model) {
-    this.board.copyFrom(model);
+  public void think(State model) {
+    this.state.copyFrom(model);
 
     Move allMoves[] = new Move[DEPTH];
     double bestScore = Double.NEGATIVE_INFINITY;
@@ -43,7 +43,7 @@ public class MC {
         }
       }
       
-      this.board.copyFrom(model);
+      this.state.copyFrom(model);
       
       double score = 0;
       for (int t=0;t<DEPTH;t++) {
@@ -57,7 +57,7 @@ public class MC {
         
         allMoves[t] = move;
         simulator.simulate(move);
-        if (this.board.me.isDead) {
+        if (this.state.me.isDead) {
           score = -1_000_000 + t; // die the latest
           break;
         } else {
@@ -71,13 +71,8 @@ public class MC {
 
         if(Player.DEBUG_AI) {
           System.err.println("best move : "+Arrays.asList(allMoves));
-          System.err.println("Status pos = "+this.board.me.position);
-          System.err.println("Status dead = "+this.board.me.isDead);
-          System.err.println("Bombs : ");
-          for (int b=0;b<board.bombsFE;b++) {
-            Bomb bomb = board.bombs[b];
-            System.err.println(bomb);
-          }
+          System.err.println("Status pos = "+this.state.me.position);
+          System.err.println("Status dead = "+this.state.me.isDead);
         }
       }
     }
@@ -90,10 +85,10 @@ public class MC {
   private double score() {
     double score = 0.0;
     
-    score += 10_000.0 * board.me.points;
-    score += 1.1 * board.me.bombCount;
-    score += board.me.currentRange;
-    score += board.me.bombsLeft;
+    score += 10_000.0 * state.me.points;
+    score += 1.1 * state.me.bombCount;
+    score += state.me.currentRange;
+    score += state.me.bombsLeft;
     return score;
   }
 }

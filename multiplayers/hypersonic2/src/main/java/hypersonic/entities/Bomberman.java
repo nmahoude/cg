@@ -1,6 +1,6 @@
 package hypersonic.entities;
 
-import hypersonic.Board;
+import hypersonic.State;
 import hypersonic.utils.P;
 
 public class Bomberman {
@@ -20,7 +20,7 @@ public class Bomberman {
     this.currentRange = currentRange;
   }
 
-  public void move(Board board, P p) {
+  public void move(State board, P p) {
     if (board.canWalkOn(p)) {
       board.walkOn(this, p);
     }

@@ -1,14 +1,14 @@
 package hypersonic.simulation;
 
-import hypersonic.Board;
+import hypersonic.State;
 import hypersonic.Move;
 import hypersonic.entities.Bomberman;
 
 public class MoveGenerator {
 
-  private Board board;
+  private State board;
 
-  public MoveGenerator(Board board) {
+  public MoveGenerator(State board) {
     this.board = board;
   }
 

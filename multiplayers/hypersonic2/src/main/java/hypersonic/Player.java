@@ -18,7 +18,7 @@ public class Player {
   public static int myId;
 
   
-  public Board board = new Board();
+  public State board = new State();
   private int turn = 0;
   private Scanner in;
 
@@ -111,7 +111,7 @@ public class Player {
         System.err.println(""+entityType + " "+owner+" "+x+" "+y+" "+param1+" "+param2);
       }
       if (entityType == 0) {
-        final Bomberman player = BombermanCache.pop();
+        final Bomberman player = Cache.popBomberman();
         player.owner = owner;
         player.position = P.get(x, y);
         player.bombsLeft =  param1;
@@ -122,7 +122,7 @@ public class Player {
         }
       } else if (entityType == 1) {
         int turnAtExplosion = turn + param1;
-        final Bomb bomb = BombCache.pop(owner, P.get(x, y), turnAtExplosion, param2);
+        final Bomb bomb = Cache.popBomb(owner, P.get(x, y), turnAtExplosion, param2);
         board.addBomb(bomb);
         bombsOnBoard[owner]+=1;
       } else if (entityType == 2) {

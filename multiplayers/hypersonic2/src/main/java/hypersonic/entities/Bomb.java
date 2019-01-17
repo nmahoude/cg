@@ -1,7 +1,7 @@
 package hypersonic.entities;
 
-import hypersonic.Board;
-import hypersonic.BombCache;
+import hypersonic.State;
+import hypersonic.Cache;
 import hypersonic.utils.P;
 
 public class Bomb {
@@ -22,8 +22,8 @@ public class Bomb {
     this.position = position;
   }
   
-  public Bomb duplicate(final Board board) {
-    Bomb b = BombCache.pop();
+  public Bomb duplicate(final State board) {
+    Bomb b = Cache.popBomb();
     b.owner = owner;
     b.position = position;
     b.timer = timer;

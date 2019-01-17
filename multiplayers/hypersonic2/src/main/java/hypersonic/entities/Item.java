@@ -1,11 +1,11 @@
 package hypersonic.entities;
 
-import hypersonic.Board;
-import hypersonic.utils.Cache;
+import hypersonic.State;
+import hypersonic.utils.CacheUtil;
 import hypersonic.utils.P;
 
 public class Item extends Entity {
-  public static Cache<Item> cache = new Cache<>();
+  public static CacheUtil<Item> cache = new CacheUtil<>();
   static {
     for (int i=0;i<10000;i++) {
       cache.push(new Item(null, i, null, i, i));
@@ -14,12 +14,12 @@ public class Item extends Entity {
   
   public int type;
 
-  private Item(Board board, int owner, P position, int type, int ignored) {
+  private Item(State board, int owner, P position, int type, int ignored) {
     super(board, owner, EntityType.ITEM, position);
     this.type = type;
   }
 
-  public Item duplicate(Board board) {
+  public Item duplicate(State board) {
     Item i;
     if (cache.isEmpty()) {
       i = new Item(board, owner, position, type, 0);
@@ -33,7 +33,7 @@ public class Item extends Entity {
     return i;
   }
   
-  public static Item create(Board board, int owner, P position, int type, int unused) {
+  public static Item create(State board, int owner, P position, int type, int unused) {
     Item i;
     if (cache.isEmpty()) {
       i = new Item(board, owner, position, type, 0);
