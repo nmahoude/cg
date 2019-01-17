@@ -17,7 +17,7 @@ public class P {
   final public int x;
   final public int y;
 
-  public P(final int x, final int y) {
+  private P(final int x, final int y) {
     super();
     this.x = x;
     this.y = y;

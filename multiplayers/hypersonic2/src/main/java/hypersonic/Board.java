@@ -37,7 +37,8 @@ public class Board {
   public Bomb bombs[] = new Bomb[MAX_BOMBS];
   public int bombsFE = 0;
   
-  public List<Bomberman> players = new ArrayList<>();
+  public Bomberman players[] = new Bomberman[4];
+  public int playersFE = 0;
   public Bomberman me;
 
   int destructedBox;
@@ -48,7 +49,7 @@ public class Board {
   }
   private void clean() {
     bombsFE = 0;
-    players.clear();
+    playersFE = 0;
     me = null;
     destructedBox = 0;
     boxCount = 0;
@@ -71,12 +72,14 @@ public class Board {
       }
     }
     
-    for (final Bomberman b : model.players) {
+    this.playersFE = 0;
+    for (int p=0;p<model.playersFE;p++) {
+      Bomberman b = model.players[p];
       final Bomberman copy = b.duplicate(this);
       if (b == model.me) {
         this.me = copy;
       }
-      this.players.add(copy);
+      this.players[playersFE++] = copy;
     }
     
     System.arraycopy(model.cells, 0, this.cells, 0, WIDTH*HEIGHT);
@@ -84,7 +87,7 @@ public class Board {
   
   public void init() {
     bombsFE = 0;
-    players.clear();
+    playersFE = 0;
 
     destructedBox = 0;
     boxCount = 0;
@@ -177,7 +180,8 @@ public class Board {
         return true; // stop explosion
       }
       
-      for (final Bomberman bomberman : players) {
+      for (int p=0;p<playersFE;p++) {
+        Bomberman bomberman = players[p];
         if (bomberman.position == P.get(x,y)) {
           bomberman.isDead = true;
         }
@@ -225,7 +229,8 @@ public class Board {
   }
 
   private Bomberman getBombermanWithId(final int owner) {
-    for (final Bomberman b : players) {
+    for (int p=0;p<playersFE;p++) {
+      Bomberman b = players[p];
       if (b.owner == owner) {
         return b;
       }
@@ -254,11 +259,11 @@ public class Board {
     return true;
   }
 
-  public void addPlayer(final Bomberman player) {
-    players.add(player);
+  public void addPlayer(Bomberman player) {
+    players[playersFE++] = player;
   }
 
-  public void addItem(final Item item) {
+  public void addItem(Item item) {
     if (item.type == 1) {
       cells[item.position.x+WIDTH*item.position.y] = ITEM_1;
     } else {

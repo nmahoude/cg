@@ -130,7 +130,8 @@ public class Player {
       }
     }
     // update bombsCount
-    for (final Bomberman b : board.players) {
+    for (int p=0;p<board.playersFE;p++) {
+      Bomberman b = board.players[p];
       b.bombCount = b.bombsLeft + bombsOnBoard[b.owner];
     }
     //System.err.println("ME == pos: "+board.me.position+" bLeft: "+board.me.bombsLeft+ "/"+board.me.bombCount+" - range:"+board.me.currentRange);
