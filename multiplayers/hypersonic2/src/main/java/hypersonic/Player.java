@@ -39,7 +39,7 @@ public class Player {
       
       
       final Move move = mc.bestMove;
-      outputMove(state.me, move, mc.message);
+      outputMove(state.players[myId], move, mc.message);
     }
   }
 
@@ -53,36 +53,9 @@ public class Player {
   }
   
   private void outputMove(final Bomberman me, final Move move, String message) {
-    int newX = state.me.position.x;
-    int newY = state.me.position.y;
-    boolean dropBomb = false;
-
-    switch(move) {
-      case DOWN_BOMB:
-        dropBomb = true;
-      case DOWN:
-        newY+=1;
-        break;
-      case LEFT_BOMB:
-        dropBomb = true;
-      case LEFT:
-        newX-=1;
-        break;
-      case RIGHT_BOMB:
-        dropBomb = true;
-      case RIGHT:
-        newX+=1;
-        break;
-      case STAY_BOMB:
-        dropBomb = true;
-      case STAY:
-        break;
-      case UP_BOMB:
-        dropBomb = true;
-      case UP:
-        newY-=1;
-    }
-    if (dropBomb) {
+    int newX = state.players[myId].position.x + move.dx;
+    int newY = state.players[myId].position.y + move.dy;
+    if (move.dropBomb) {
       System.out.println("BOMB "+newX+" "+newY+ " "+message);
     } else {
       System.out.println("MOVE "+newX+" "+newY+ " "+message);
@@ -117,9 +90,6 @@ public class Player {
         player.bombsLeft =  param1;
         player.currentRange = param2;
         player.isDead = false;
-        if (player.owner == myId) {
-          state.me = player;
-        }
       } else if (entityType == 1) {
         int turnAtExplosion = turn + param1;
         final Bomb bomb = Cache.popBomb(owner, P.get(x, y), turnAtExplosion, param2);

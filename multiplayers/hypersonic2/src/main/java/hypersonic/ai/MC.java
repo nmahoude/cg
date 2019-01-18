@@ -3,9 +3,11 @@ package hypersonic.ai;
 import java.util.Arrays;
 
 import hypersonic.State;
+import hypersonic.Board;
 import hypersonic.Move;
 import hypersonic.Player;
 import hypersonic.entities.Bomb;
+import hypersonic.entities.Bomberman;
 import hypersonic.simulation.MoveGenerator;
 import hypersonic.simulation.Simulation;
 
@@ -52,12 +54,11 @@ public class MC {
         } else {
           movesFE = gen.getPossibleMovesWithoutBombs(moves);
         }
-
         Move move = moves[Player.rand.nextInt(movesFE)];
         
         allMoves[t] = move;
         simulator.simulate(move);
-        if (this.state.me.isDead) {
+        if (this.state.players[Player.myId].isDead) {
           score = -1_000_000 + t; // die the latest
           break;
         } else {
@@ -71,8 +72,8 @@ public class MC {
 
         if(Player.DEBUG_AI) {
           System.err.println("best move : "+Arrays.asList(allMoves));
-          System.err.println("Status pos = "+this.state.me.position);
-          System.err.println("Status dead = "+this.state.me.isDead);
+          System.err.println("Status pos = "+this.state.players[Player.myId].position);
+          System.err.println("Status dead = "+this.state.players[Player.myId].isDead);
         }
       }
     }
@@ -85,10 +86,12 @@ public class MC {
   private double score() {
     double score = 0.0;
     
-    score += 10_000.0 * state.me.points;
-    score += 1.1 * state.me.bombCount;
-    score += state.me.currentRange;
-    score += state.me.bombsLeft;
+    Bomberman me = state.players[Player.myId];
+    
+    score += 10_000.0 * me.points;
+    score += 1.1 * me.bombCount;
+    score += me.currentRange;
+    score += me.bombsLeft;
     return score;
   }
 }

@@ -45,7 +45,7 @@ public class SimulationTest {
     sim.simulate(Move.STAY);
     
     
-    assertThat(player.state.me.isDead, is(true));
+    assertThat(player.state.players[0].isDead, is(true));
   }
   
   @Test
@@ -78,7 +78,7 @@ public class SimulationTest {
     }
     
     
-    assertThat(player.state.me.isDead, is(true));
+    assertThat(player.state.players[0].isDead, is(true));
     
   }
 
@@ -134,7 +134,7 @@ public class SimulationTest {
     }
     
     
-    assertThat(player.state.me.isDead, is(true));
+    assertThat(player.state.players[Player.myId].isDead, is(true));
 
   
   }

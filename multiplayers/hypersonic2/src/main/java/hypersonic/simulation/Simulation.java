@@ -1,9 +1,11 @@
 package hypersonic.simulation;
 
-import hypersonic.State;
 import hypersonic.Cache;
 import hypersonic.Move;
+import hypersonic.Player;
+import hypersonic.State;
 import hypersonic.entities.Bomb;
+import hypersonic.entities.Bomberman;
 import hypersonic.utils.P;
 
 public class Simulation {
@@ -23,47 +25,22 @@ public class Simulation {
   }
   
   private void simulateMove(final Move move) {
-    int newX = state.me.position.x;
-    int newY = state.me.position.y;
-    boolean dropBomb = false;
-    switch(move) {
-      case DOWN_BOMB:
-        dropBomb = true;
-      case DOWN:
-        newY+=1;
-        break;
-      case LEFT_BOMB:
-        dropBomb = true;
-      case LEFT:
-        newX-=1;
-        break;
-      case RIGHT_BOMB:
-        dropBomb = true;
-      case RIGHT:
-        newX+=1;
-        break;
-      case STAY_BOMB:
-        dropBomb = true;
-      case STAY:
-        break;
-      case UP_BOMB:
-        dropBomb = true;
-      case UP:
-        newY-=1;
-    }
-    
-    if (dropBomb) {
+    Bomberman player = state.players[Player.myId];
+
+    int newX = player.position.x + move.dx;
+    int newY = player.position.y + move.dy;
+    if (move.dropBomb) {
       Bomb newBomb = Cache.popBomb(
-          state.me.owner, 
-          state.me.position, 
+          player.owner, 
+          player.position, 
           state.turn + Bomb.DEFAULT_TIMER, 
-          state.me.currentRange);
+          player.currentRange);
       state.addBomb(newBomb);
 
-      state.me.bombsLeft-=1;
+      player.bombsLeft-=1;
     }
-    if (state.canWalkOn(P.get(newX, newY)) && (newX != state.me.position.x || newY != state.me.position.y)) {
-      state.walkOn(state.me, P.get(newX, newY));
+    if ((newX !=player.position.x || newY != player.position.y) && state.canWalkOn(P.get(newX, newY))) {
+      state.walkOn(player, P.get(newX, newY));
     }
   }
 }

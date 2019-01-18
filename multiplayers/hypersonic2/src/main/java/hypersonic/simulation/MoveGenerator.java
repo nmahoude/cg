@@ -2,6 +2,7 @@ package hypersonic.simulation;
 
 import hypersonic.State;
 import hypersonic.Move;
+import hypersonic.Player;
 import hypersonic.entities.Bomberman;
 
 public class MoveGenerator {
@@ -14,11 +15,12 @@ public class MoveGenerator {
 
   public int getPossibleMovesWithoutBombs(Move[] moves) {
     int movesFE = 0;
+    moves[movesFE++] = Move.STAY;
     if (isMovePossible(Move.UP)) moves[movesFE++] = Move.UP;
     if (isMovePossible(Move.LEFT)) moves[movesFE++] = Move.LEFT;
     if (isMovePossible(Move.RIGHT)) moves[movesFE++] = Move.RIGHT;
     if (isMovePossible(Move.DOWN)) moves[movesFE++] = Move.DOWN;
-    if (isMovePossible(Move.STAY)) moves[movesFE++] = Move.STAY;
+    
     return movesFE;
   }
   
@@ -33,37 +35,12 @@ public class MoveGenerator {
   }
   
   public final boolean isMovePossible(Move move) {
-    Bomberman me = board.me;
+    if (move == Move.STAY) return true;
+    Bomberman me = board.players[Player.myId];
     int x = me.position.x;
     int y = me.position.y;
-    switch(move) {
-      case DOWN:
-        return board.canMoveTo(x, y+1);
-      case DOWN_BOMB:
-        return me.bombsLeft > 0 && 
-            board.canMoveTo(x, y+1);
-      case LEFT:
-        return board.canMoveTo(x-1, y);
-      case LEFT_BOMB:
-        return me.bombsLeft > 0 &&
-            board.canMoveTo(x-1, y);
-      case RIGHT:
-        return board.canMoveTo(x+1, y);
-      case RIGHT_BOMB:
-        return me.bombsLeft > 0 &&
-            board.canMoveTo(x+1, y);
-      case STAY:
-        return true;
-      case STAY_BOMB:
-        return me.bombsLeft > 0 && true;
-      case UP:
-        return board.canMoveTo(x, y-1);
-      case UP_BOMB:
-        return me.bombsLeft > 0 && 
-            board.canMoveTo(x, y-1);
-      default:
-        return false;
-    }
+    if (move.dropBomb && me.bombsLeft <=0) return false;
+    return board.canMoveTo(x + move.dx , y + move.dy);
   }
 
 }

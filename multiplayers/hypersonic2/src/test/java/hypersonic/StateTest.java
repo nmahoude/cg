@@ -18,53 +18,53 @@ public class StateTest {
     @Test
     public void canWalkOnEmptyCell() throws Exception {
       final State state = createBasicstate();
-      state.me = new Bomberman(1, P.get(0,0), 1, 3);
+      state.players[0] = new Bomberman(1, P.get(0,0), 1, 3);
       
-      state.me.move(state, P.get(1,0));
+      state.players[0].move(state, P.get(1,0));
       
-      assertThat(state.me.position, is(P.get(1,0)));
+      assertThat(state.players[0].position, is(P.get(1,0)));
     }
   
     @Test
     public void playerCantMoveIntoWall() throws Exception {
       final State state = createBasicstate();
-      state.me = new Bomberman(1, P.get(1,0), 1, 3);
+      state.players[0] = new Bomberman(1, P.get(1,0), 1, 3);
       
-      state.me.move(state, P.get(1,1));
+      state.players[0].move(state, P.get(1,1));
       
-      assertThat(state.me.position, is(P.get(1,0)));
+      assertThat(state.players[0].position, is(P.get(1,0)));
     }
   
     @Test
     public void playerCantMoveIntoBox() throws Exception {
       final State state = createBasicstate();
-      state.me = new Bomberman(1, P.get(2,0), 1, 3);
+      state.players[0] = new Bomberman(1, P.get(2,0), 1, 3);
       
-      state.me.move(state, P.get(2,1));
+      state.players[0].move(state, P.get(2,1));
       
-      assertThat(state.me.position, is(P.get(2,0)));
+      assertThat(state.players[0].position, is(P.get(2,0)));
     }
 
     @Test
     public void playerCantMoveIntoBomb() throws Exception {
       final State state = createBasicstate();
-      state.me = new Bomberman(1, P.get(2,0), 1, 3);
+      state.players[0] = new Bomberman(1, P.get(2,0), 1, 3);
       createBomb(state).at(3,0).withRange(3).build();
       
-      state.me.move(state, P.get(3,0));
+      state.players[0].move(state, P.get(3,0));
       
-      assertThat(state.me.position, is(P.get(2,0)));
+      assertThat(state.players[0].position, is(P.get(2,0)));
     }
 
     @Test
     public void playerMoveOnItemConsumeIt() throws Exception {
       final State state = createBasicstate();
       state.board.cells[cell(3,0)] = Board.ITEM_1;
-      state.me = new Bomberman(1, P.get(2,0), 1, 3);
+      state.players[0] = new Bomberman(1, P.get(2,0), 1, 3);
       
-      state.me.move(state, P.get(3,0));
+      state.players[0].move(state, P.get(3,0));
       
-      assertThat(state.me.position, is(P.get(3,0)));
+      assertThat(state.players[0].position, is(P.get(3,0)));
       assertThat(state.board.cells[cell(3,0)], is(Board.EMPTY));
     }
 
@@ -72,24 +72,24 @@ public class StateTest {
     public void playerMoveOnRangeUpItem() throws Exception {
       final State state = createBasicstate();
       state.board.cells[cell(3,0)] = Board.ITEM_1;
-      state.me = new Bomberman(1, P.get(2,0), 1, 3);
+      state.players[0] = new Bomberman(1, P.get(2,0), 1, 3);
       
-      state.me.move(state, P.get(3,0));
+      state.players[0].move(state, P.get(3,0));
       
-      assertThat(state.me.position, is(P.get(3,0)));
-      assertThat(state.me.currentRange, is(4));
+      assertThat(state.players[0].position, is(P.get(3,0)));
+      assertThat(state.players[0].currentRange, is(4));
     }
 
     @Test
     public void playerMoveOnBombUpItem() throws Exception {
       final State state = createBasicstate();
       state.board.cells[cell(3,0)] = Board.ITEM_2;
-      state.me = new Bomberman(1, P.get(2,0), 1, 3);
+      state.players[0] = new Bomberman(1, P.get(2,0), 1, 3);
       
-      state.me.move(state, P.get(3,0));
+      state.players[0].move(state, P.get(3,0));
       
-      assertThat(state.me.position, is(P.get(3,0)));
-      assertThat(state.me.bombsLeft, is(2));
+      assertThat(state.players[0].position, is(P.get(3,0)));
+      assertThat(state.players[0].bombsLeft, is(2));
     }
   }
   

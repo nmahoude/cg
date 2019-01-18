@@ -9,13 +9,7 @@ import hypersonic.Player;
 
 public class Perf {
 
-  @After
-  public void teardown() {
-    Player.myId = 0;
-  }
-  
-  @Test
-  public void doNotDropTooManyBombs() throws Exception {
+  public static void main(String[] args) {
     String input = ".....01......\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
         ".............\r\n" + 

@@ -2,20 +2,26 @@ package hypersonic;
 
 
 public enum Move {
-  UP(" ↑"),
-  LEFT(" ←"),
-  RIGHT(" →"),
-  DOWN(" ↓"),
-  STAY(" •"),
-  UP_BOMB("☢↑"),
-  LEFT_BOMB("☢←"),
-  RIGHT_BOMB("☢→"),
-  DOWN_BOMB("☢↓"),
-  STAY_BOMB("☢•");
+  UP(" ↑", 0, -1, false),
+  LEFT(" ←", -1, 0, false),
+  RIGHT(" →", 1, 0, false),
+  DOWN(" ↓", 0, 1, false),
+  STAY(" •", 0, 0, false),
+  UP_BOMB("☢↑", 0 ,-1, true),
+  LEFT_BOMB("☢←", -1, 0, true),
+  RIGHT_BOMB("☢→", 1, 0, true),
+  DOWN_BOMB("☢↓", 0, 1, true),
+  STAY_BOMB("☢•", 0, 0, true);
   
-  String name;
-  Move(final String name) {
+  public final String name;
+  public final int dx;
+  public final int dy;
+  public final boolean dropBomb;
+  Move(final String name, int dx, int dy, boolean dropBomb) {
     this.name= name;
+    this.dx = dx;
+    this.dy = dy;
+    this.dropBomb = dropBomb;
   }
   @Override
   public String toString() {

@@ -6,12 +6,11 @@ import hypersonic.entities.Item;
 import hypersonic.utils.P;
 
 public class State {
-  Board board = new Board();
+  public Board board = new Board();
   
   public int turn;
   public Bomberman players[] = new Bomberman[4];
   public int playersFE = 4;
-  public Bomberman me;
   int destructedBox;
 
   public State() {
@@ -28,7 +27,6 @@ public class State {
     for (int i=0;i<4;i++) {
       players[i].isDead = true;
     }
-    me = null;
     destructedBox = 0;
     // cells will be copied later
   }
@@ -47,9 +45,6 @@ public class State {
         players[p].isDead = true;
       } else {
         players[p].copyFrom(b);
-        if (b == model.me) {
-          this.me = players[p];
-        }
       }
     }
   }

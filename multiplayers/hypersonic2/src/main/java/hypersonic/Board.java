@@ -6,8 +6,8 @@ import hypersonic.entities.Item;
 import hypersonic.utils.P;
 
 public class Board {
-  static final int HEIGHT = 11;
-  static final int WIDTH = 13;
+  public static final int HEIGHT = 11;
+  public static final int WIDTH = 13;
   private static final int MAX_BOMBS = 16; // NOTE : risk taken, only 16 bombs on the board max
   
   public static final int EMPTY = '.';
@@ -30,7 +30,7 @@ public class Board {
   static int explodesBoxMap[] = new int[WIDTH*HEIGHT];
   
   
-  int cells[];
+  public int cells[];
   Bomb bombs[] = new Bomb[MAX_BOMBS];
   int bombsFE = 0;
   int boxCount;
