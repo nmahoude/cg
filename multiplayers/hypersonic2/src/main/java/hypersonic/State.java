@@ -10,16 +10,24 @@ public class State {
   
   public int turn;
   public Bomberman players[] = new Bomberman[4];
-  public int playersFE = 0;
+  public int playersFE = 4;
   public Bomberman me;
   int destructedBox;
 
   public State() {
+    for (int i=0;i<4;i++) {
+      players[i] = new Bomberman(i, null, 0, 0);
+    }
+    clean();
   }
   
   private void clean() {
     board.clean();
-    playersFE = 0;
+    
+    playersFE = 4;
+    for (int i=0;i<4;i++) {
+      players[i].isDead = true;
+    }
     me = null;
     destructedBox = 0;
     // cells will be copied later
@@ -32,21 +40,24 @@ public class State {
     this.turn = model.turn;
     this.board.copyFrom(model.board);
     
-    this.playersFE = 0;
+    this.playersFE = 4;
     for (int p=0;p<model.playersFE;p++) {
       Bomberman b = model.players[p];
-      final Bomberman copy = Cache.popBomberman();
-      copy.copyFrom(b);
-      if (b == model.me) {
-        this.me = copy;
+      if (b.isDead) {
+        players[p].isDead = true;
+      } else {
+        players[p].copyFrom(b);
+        if (b == model.me) {
+          this.me = players[p];
+        }
       }
-      this.players[playersFE++] = copy;
     }
   }
   
   public void init() {
+    clean();
     board.init();
-    playersFE = 0;
+    playersFE = 4;
 
     destructedBox = 0;
   }
@@ -87,8 +98,8 @@ public class State {
     return board.isOnBoard(x,y);
   }
 
-  public void addPlayer(Bomberman player) {
-    players[playersFE++] = player;
+  public Bomberman getBomberman(int index) {
+    return players[index];
   }
 
   public void addItem(Item item) {
@@ -114,7 +125,9 @@ public class State {
   public void killPlayersAt(int x, int y) {
     for (int p=0;p<playersFE;p++) {
       Bomberman bomberman = players[p];
-      if (bomberman.position == P.get(x,y)) {
+      if (bomberman.isDead) continue;
+      
+      if (bomberman.position.x == x && bomberman.position.y == y) {
         bomberman.isDead = true;
       }
     }

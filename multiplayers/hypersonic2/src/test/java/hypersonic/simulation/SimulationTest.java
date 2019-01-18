@@ -41,11 +41,11 @@ public class SimulationTest {
     Player player = new Player(in);
     player.readGameState();
     
-    Simulation sim = new Simulation(player.board);
+    Simulation sim = new Simulation(player.state);
     sim.simulate(Move.STAY);
     
     
-    assertThat(player.board.me.isDead, is(true));
+    assertThat(player.state.me.isDead, is(true));
   }
   
   @Test
@@ -72,13 +72,13 @@ public class SimulationTest {
 
     Move moves[] = readMoves("☢•,  •,  •,  •,  •,  •,  •,  •,  •,  •");
     
-    Simulation sim = new Simulation(player.board);
+    Simulation sim = new Simulation(player.state);
     for (int i=0;i<moves.length;i++) {
       sim.simulate(moves[i]);
     }
     
     
-    assertThat(player.board.me.isDead, is(true));
+    assertThat(player.state.me.isDead, is(true));
     
   }
 
@@ -127,14 +127,14 @@ public class SimulationTest {
 
     Move moves[] = readMoves(" ↑,  →,  •,  ←,  ←,  ←,  ←,  •,  ←,  ←");
     
-    player.board.updateBombs();
-    Simulation sim = new Simulation(player.board);
+    player.state.updateBombs();
+    Simulation sim = new Simulation(player.state);
     for (int i=0;i<moves.length;i++) {
       sim.simulate(moves[i]);
     }
     
     
-    assertThat(player.board.me.isDead, is(true));
+    assertThat(player.state.me.isDead, is(true));
 
   
   }

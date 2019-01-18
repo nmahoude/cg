@@ -20,13 +20,16 @@ public class Board {
   public static final int ITEM_1 = 'l';
   public static final int ITEM_2 = 'k';
   public static final int BOMB = 'b';
-  static int rot[][] = {
+  static final int rot[][] = {
       { 1, 0 },
       { 0, 1 },
       { -1, 0 },
       { 0, -1 }
   };
 
+  static int explodesBoxMap[] = new int[WIDTH*HEIGHT];
+  
+  
   int cells[];
   Bomb bombs[] = new Bomb[MAX_BOMBS];
   int bombsFE = 0;
@@ -93,10 +96,13 @@ public class Board {
     bombsFE = current;
   }
 
-  final Bomb bombsToExplode[] = new Bomb[MAX_BOMBS];
+  Bomb bombsToExplode[] = new Bomb[MAX_BOMBS];
   int bombsToExplodeFE = 0;
+  static int destroyedBoxes[] = new int[WIDTH*HEIGHT];
+  static int destroyedBoxesFE;
   void explode(State state, Bomb bomb) {
     bombsToExplodeFE = 0;
+    destroyedBoxesFE = 0;
     
     bombsToExplode[bombsToExplodeFE++] = bomb;
     int currentBombToExplode = 0;
@@ -133,11 +139,43 @@ public class Board {
       int y = removedBombs.position.y;
       cells[x+WIDTH*y] = EMPTY;
     }
+    
+    // clear boxes
+    for (int b=0;b<destroyedBoxesFE;b++) {
+      int mapIndex = destroyedBoxes[b];
+      int playerMask = explodesBoxMap[mapIndex];
+      
+      if (playerMask == 0) continue; // already cleared
+      
+      explodesBoxMap[mapIndex] = 0;
+      
+      if ((playerMask & 0b1) != 0) state.updatePoints(state.players[0]);
+      if ((playerMask & 0b10) != 0) state.updatePoints(state.players[1]);
+      if ((playerMask & 0b100) != 0) state.updatePoints(state.players[2]);
+      if ((playerMask & 0b1000) != 0) state.updatePoints(state.players[3]);
+      
+      int value = cells[mapIndex];
+      switch (value) {
+      case BOX:
+        cells[mapIndex] = EMPTY;
+        boxCount--;
+        break;
+      case BOX_1:
+        cells[mapIndex] = ITEM_1;
+        boxCount--;
+        break;
+      case BOX_2:
+        cells[mapIndex] = ITEM_2;
+        boxCount--;
+        break;
+      }
+    }
   }
 
-  private boolean checkExplosion(State state, Bomberman orginalBomberman, int x, int y) {
+  private boolean checkExplosion(State state, Bomberman originalBomberman, int x, int y) {
     if (isOnBoard(x, y)) {
-      final int value = cells[x+WIDTH*y];
+      int mapIndex = x+WIDTH*y;
+      final int value = cells[mapIndex];
       if (value == WALL) {
         return true; // stop explosion
       }
@@ -146,22 +184,14 @@ public class Board {
       
       switch (value) {
         case BOX:
-          state.updatePoints(orginalBomberman);
-          boxCount--;
-
-          cells[x+WIDTH*y] = EMPTY;
-          return true;
         case BOX_1:
-          state.updatePoints(orginalBomberman);
-          boxCount--;
-
-          cells[x+WIDTH*y] = ITEM_1;
-          return true;
         case BOX_2:
-          state.updatePoints(orginalBomberman);
-          boxCount--;
-
-          cells[x+WIDTH*y] = ITEM_2;
+          if (originalBomberman != null) {
+            explodesBoxMap[mapIndex] |= (1 << originalBomberman.owner);
+          } else {
+            explodesBoxMap[mapIndex] |= (1 << 5);
+          }
+          destroyedBoxes[destroyedBoxesFE++] = mapIndex;
           return true;
         case ITEM_1:
         case ITEM_2:

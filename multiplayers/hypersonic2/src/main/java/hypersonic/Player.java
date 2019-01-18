@@ -18,7 +18,7 @@ public class Player {
   public static int myId;
 
   
-  public State board = new State();
+  public State state = new State();
   private int turn = 0;
   private Scanner in;
 
@@ -35,11 +35,11 @@ public class Player {
       
       // now look what I can do !
       MC mc = new MC();
-      mc.think(board);
+      mc.think(state);
       
       
       final Move move = mc.bestMove;
-      outputMove(board.me, move, mc.message);
+      outputMove(state.me, move, mc.message);
     }
   }
 
@@ -53,8 +53,8 @@ public class Player {
   }
   
   private void outputMove(final Bomberman me, final Move move, String message) {
-    int newX = board.me.position.x;
-    int newY = board.me.position.y;
+    int newX = state.me.position.x;
+    int newY = state.me.position.y;
     boolean dropBomb = false;
 
     switch(move) {
@@ -89,7 +89,7 @@ public class Player {
     }
   }
   public void readGameState() {
-    initBoard();
+    initState();
     initEntities();
   }
   private void initEntities() {
@@ -111,42 +111,42 @@ public class Player {
         System.err.println(""+entityType + " "+owner+" "+x+" "+y+" "+param1+" "+param2);
       }
       if (entityType == 0) {
-        final Bomberman player = Cache.popBomberman();
+        Bomberman player = state.getBomberman(owner);
         player.owner = owner;
         player.position = P.get(x, y);
         player.bombsLeft =  param1;
         player.currentRange = param2;
-        board.addPlayer(player);
+        player.isDead = false;
         if (player.owner == myId) {
-          board.me = player;
+          state.me = player;
         }
       } else if (entityType == 1) {
         int turnAtExplosion = turn + param1;
         final Bomb bomb = Cache.popBomb(owner, P.get(x, y), turnAtExplosion, param2);
-        board.addBomb(bomb);
+        state.addBomb(bomb);
         bombsOnBoard[owner]+=1;
       } else if (entityType == 2) {
-        final Item item = Item.create(board, owner, P.get(x, y), param1, param2);
-        board.addItem(item);
+        final Item item = Item.create(state, owner, P.get(x, y), param1, param2);
+        state.addItem(item);
       }
     }
     // update bombsCount
-    for (int p=0;p<board.playersFE;p++) {
-      Bomberman b = board.players[p];
+    for (int p=0;p<state.playersFE;p++) {
+      Bomberman b = state.players[p];
       b.bombCount = b.bombsLeft + bombsOnBoard[b.owner];
     }
     //System.err.println("ME == pos: "+board.me.position+" bLeft: "+board.me.bombsLeft+ "/"+board.me.bombCount+" - range:"+board.me.currentRange);
   }
 
-  private void initBoard() {
-    board.turn = this.turn;
-    board.init();
+  private void initState() {
+    state.turn = this.turn;
+    state.init();
     for (int y = 0; y < Board.HEIGHT; y++) {
       final String row = in.next();
       if (Player.DEBUG_INPUT) {
         System.err.println(row);
       }
-      board.init(y, row);
+      state.init(y, row);
     }
   }
   public static void main(final String args[]) {

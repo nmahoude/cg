@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import hypersonic.Player;
 
-public class MCTest {
+public class Perf {
 
   @After
   public void teardown() {
@@ -54,7 +54,7 @@ public class MCTest {
     
     MC mc = new MC();
     
-    Player.startTime = System.currentTimeMillis()+100;//_000;
+    Player.startTime = System.currentTimeMillis()+100_000;
     mc.think(player.state);
     
   }

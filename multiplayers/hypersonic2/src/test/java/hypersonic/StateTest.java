@@ -96,6 +96,55 @@ public class StateTest {
   
   public static class Explosions {
     @Test
+    public void twoPlayersCanHaveBoxDestroyedBonus() throws Exception {
+      final State state = createBasicstate();
+
+      state.board.cells[cell(3,0)] = Board.BOX;
+      
+      state.players[0] = new Bomberman(0, P.get(0,1), 1, 3);
+      state.players[1] = new Bomberman(1, P.get(0,1), 1, 3);
+      
+      state.addBomb(new Bomb(0, P.get(1, 0), 1, 8));
+      state.addBomb(new Bomb(1, P.get(1, 0), 1, 8));
+      
+      state.updateBombs();
+      
+      assertThat(state.players[0].points, is(1));
+      assertThat(state.players[1].points, is(1));
+    }
+    
+    @Test
+    public void twoBombsOfSamePlayerOnlyCountOnce() throws Exception {
+      final State state = createBasicstate();
+
+      state.board.cells[cell(3,0)] = Board.BOX;
+      
+      state.players[0] = new Bomberman(0, P.get(0,1), 1, 3);
+      
+      state.addBomb(new Bomb(0, P.get(1, 0), 1, 8));
+      state.addBomb(new Bomb(0, P.get(5, 0), 1, 8));
+      
+      state.updateBombs();
+      
+      assertThat(state.players[0].points, is(1));
+    }
+    
+    @Test
+    public void twoChainedBombsOfSamePlayerOnlyCountOnce() throws Exception {
+      final State state = createBasicstate();
+
+      state.board.cells[cell(12,0)] = Board.BOX;
+      
+      state.players[0] = new Bomberman(0, P.get(0,1), 1, 3);
+      
+      state.addBomb(new Bomb(0, P.get(10, 0), 1, 8));
+      state.addBomb(new Bomb(0, P.get(11, 0), 1, 8));
+      
+      state.updateBombs();
+      
+      assertThat(state.players[0].points, is(1));
+    }
+    @Test
     public void bombsExplodesAfter8turns() throws Exception {
       final State state = createBasicstate();
       createBomb(state).at(2,0).withRange(3).build();
@@ -122,7 +171,7 @@ public class StateTest {
       final State state = createBasicstate();
       final Bomb bomb = createBomb(state).at(2,2).withTimer(1).withRange(3).build();
 
-      state.board.explode(state, bomb);
+      state.updateBombs();
       
       assertThat(state.board.cells[cell(2,1)], is(Board.EMPTY));
       assertThat(state.board.cells[cell(1,2)], is(Board.EMPTY));
@@ -136,14 +185,14 @@ public class StateTest {
       createBasicPlayer(state);
       final Bomb bomb = createBomb(state).at(2,2).withTimer(1).withRange(3).build();
 
-      state.board.explode(state, bomb);
+      state.updateBombs();
 
       assertThat(state.players[0].points, is(4));
     }
 
     static Bomberman createBasicPlayer(final State state) {
-      final Bomberman bomberman = new Bomberman(1, P.get(0,0), 1, 3);
-      state.addPlayer(bomberman);
+      final Bomberman bomberman = new Bomberman(0, P.get(0,0), 1, 3);
+      state.players[0] = bomberman;
       return bomberman;
     }
 
@@ -151,7 +200,7 @@ public class StateTest {
     public void bombsKillsPlayers() throws Exception {
       final State state = createBasicstate();
       final Bomberman bomberman = new Bomberman(1, P.get(1,0), 1, 3);
-      state.addPlayer(bomberman);
+      state.players[0] = bomberman;
       final Bomb bomb = createBomb(state).at(0,0).withTimer(1).withRange(3).build();
 
       state.updateBombs();
@@ -422,7 +471,7 @@ public class StateTest {
     private int y;
     private int range = 3;
     private int timer = 8;
-    private int owner = 1;
+    private int owner = 0;
 
     public BombBuilder(final State state) {
       this.state = state;

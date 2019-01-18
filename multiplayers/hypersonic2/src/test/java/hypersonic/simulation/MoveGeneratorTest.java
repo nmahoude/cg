@@ -35,7 +35,7 @@ public class MoveGeneratorTest {
     Player player = new Player(in);
     player.readGameState();
 
-    MoveGenerator gen = new MoveGenerator(player.board);
+    MoveGenerator gen = new MoveGenerator(player.state);
     
     Move moves[] = new Move[16];
     int movesFE = gen.getPossibleMoves(moves);
