@@ -10,8 +10,8 @@ import org.junit.Test;
 
 import hypersonic.Move;
 import hypersonic.Player;
-import hypersonic.ai.MC;
 import hypersonic.ai.Score;
+import hypersonic.utils.P;
 
 public class SimulationTest {
 
@@ -139,54 +139,55 @@ public class SimulationTest {
     assertThat(player.state.players[Player.myId].isDead, is(true));
   }
   
-  
-  @Test
-  public void debug() throws Exception {
-    String input = "...201.1.....\r\n" + 
+  public static void main(String[] args) {
+    String input = ".............\r\n" + 
+        ".X1X.X.X.X.X.\r\n" + 
+        "..........0.1\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
-        ".....111.....\r\n" + 
-        ".X.X.X1X.X.X.\r\n" + 
+        ".2.........20\r\n" + 
+        "2X.X.X.X.X.X2\r\n" + 
+        ".2.........20\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        "..........0.1\r\n" + 
+        ".X1X.X.X.X.X.\r\n" + 
         ".............\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        ".............\r\n" + 
-        ".X.X.X1X.X.X.\r\n" + 
-        ".....111.....\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        "....01.1.....\r\n" + 
-        "16\r\n" + 
-        "0 0 4 8 0 4\r\n" + 
-        "0 1 10 8 3 5\r\n" + 
-        "0 2 10 9 5 4\r\n" + 
-        "0 3 4 8 0 5\r\n" + 
-        "1 0 5 4 2 3\r\n" + 
-        "1 0 6 4 3 3\r\n" + 
-        "1 3 6 4 3 4\r\n" + 
-        "1 0 6 5 4 3\r\n" + 
-        "1 3 6 6 5 4\r\n" + 
-        "1 1 9 8 8 5\r\n" + 
-        "1 2 10 8 8 4\r\n" + 
-        "1 3 4 7 8 4\r\n" + 
-        "2 0 3 8 2 2\r\n" + 
-        "2 0 9 10 2 2\r\n" + 
-        "2 0 3 10 2 2\r\n" + 
-        "2 0 4 2 1 1";
+        "15\r\n" + 
+        "0 0 0 2 1 4\r\n" + 
+        "0 1 0 9 0 4\r\n" + 
+        "0 2 0 1 0 4\r\n" + 
+        "0 3 6 9 2 4\r\n" + 
+        "1 1 2 6 3 4\r\n" + 
+        "1 2 2 4 3 4\r\n" + 
+        "1 1 2 8 6 4\r\n" + 
+        "1 2 2 2 6 4\r\n" + 
+        "1 1 0 8 8 4\r\n" + 
+        "1 2 0 2 8 4\r\n" + 
+        "2 0 8 8 1 1\r\n" + 
+        "2 0 8 2 1 1\r\n" + 
+        "2 0 10 9 1 1\r\n" + 
+        "2 0 10 1 1 1\r\n" + 
+        "2 0 6 1 2 2";
+    Player.myId = 0;
 
     Scanner in = new Scanner(input);
     Player player = new Player(in);
-    Player.myId = 0;
     player.readGameState();
 
     // • → ← ↑ ↓ ☢
 //    Move moves[] = readMoves("←,  ↓,  ↓, •");
-    Move moves[] = readMoves(" ↓,  •,  ↑, ☢←, ☢←,  ↓,  •, ☢↓, ☢→, ☢→,  •,  •,  ↑,  ↑,  •,  ↓,  ↑,  ↓");
+    Move moves[] = readMoves(" ↓,  ↓,  ↑,  •,  →, ☢→,  →,  →,  ↓,  •,  ↑,  •,  →,  •,  →,  •,  ↑,  •");
 //    Move moves[] = readMoves(" ←,  •,  →, ☢←, ☢←,  ↓,  •, ☢↓, ☢→, ☢→,  •,  •,  ↑,  ↑,  •,  ↓,  ↑,  ↓");
+//    player.state.addBomb(new Bomb(2, P.get(10, 8), 8, 4));
     
-    MC mc = new MC();
-    mc.state = player.state;
     Simulation sim = new Simulation(player.state);
     double score = 0.0;
     System.err.println("Debug score ");
     for (int i=0;i<moves.length;i++) {
+      P newPos = P.get(player.state.players[Player.myId].position.x + moves[i].dx, 
+          player.state.players[Player.myId].position.y + moves[i].dy);
+      if (!player.state.canWalkOn(newPos)) {
+        throw new RuntimeException("player can't go where it thinks it can go at "+i+" => "+moves[i]);
+      }
       sim.simulate(moves[i]);
       double tmpScore = Score.score(player.state);
       score += tmpScore;
@@ -196,7 +197,7 @@ public class SimulationTest {
     
   }
   
-  private Move[] readMoves(String movesFromArray) {
+  private static Move[] readMoves(String movesFromArray) {
     String movesAsStr[] = movesFromArray.split(", ");
     Move[] moves = new Move[movesAsStr.length];
     int i=0;

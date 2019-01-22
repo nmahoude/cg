@@ -88,7 +88,7 @@ public class Player {
   }
 
   private void initEntities() {
-    final int bombsOnBoard[] = new int[4];
+    final int bombCountOnTheBoard[] = new int[4];
     
     final int entitiesCount = in.nextInt();
     if (Player.DEBUG_INPUT) {
@@ -117,7 +117,7 @@ public class Player {
         int turnAtExplosion = turn + param1;
         final Bomb bomb = Cache.popBomb(owner, P.get(x, y), turnAtExplosion, param2);
         state.addBomb(bomb);
-        bombsOnBoard[owner]+=1;
+        bombCountOnTheBoard[owner]+=1;
       } else if (entityType == 2) {
         final Item item = Item.create(state, owner, P.get(x, y), param1, param2);
         state.addItem(item);
@@ -126,7 +126,7 @@ public class Player {
     // update bombsCount
     for (int p=0;p<state.playersFE;p++) {
       Bomberman b = state.players[p];
-      b.bombCount = b.bombsLeft + bombsOnBoard[b.owner];
+      b.bombCount = b.bombsLeft + bombCountOnTheBoard[b.owner];
     }
     //System.err.println("ME == pos: "+board.me.position+" bLeft: "+board.me.bombsLeft+ "/"+board.me.bombCount+" - range:"+board.me.currentRange);
   }

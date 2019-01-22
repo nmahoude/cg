@@ -1,5 +1,8 @@
 package hypersonic;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.entities.Item;
@@ -28,7 +31,8 @@ public class Board {
   };
 
   static int explodesBoxMap[] = new int[WIDTH*HEIGHT];
-  
+  Bomb localBombs[] = new Bomb[24];
+  int localBombsFE = 0;
   
   public int cells[];
   Bomb bombs[] = new Bomb[MAX_BOMBS];
@@ -40,8 +44,11 @@ public class Board {
     cells = new int[WIDTH*HEIGHT];
   }
 
-
   public void clean() {
+    for (int i=0;i<localBombsFE;i++) {
+      Cache.pushBomb(localBombs[i]);
+    }
+    localBombsFE = 0;
     bombsFE = 0;
     boxCount = 0;
   }
@@ -71,7 +78,6 @@ public class Board {
       }
     }
     System.arraycopy(model.cells, 0, this.cells, 0, WIDTH*HEIGHT);
-
   }
 
 
@@ -96,8 +102,8 @@ public class Board {
     bombsFE = current;
   }
 
-  Bomb bombsToExplode[] = new Bomb[MAX_BOMBS];
-  int bombsToExplodeFE = 0;
+  static Bomb bombsToExplode[] = new Bomb[MAX_BOMBS];
+  static int bombsToExplodeFE = 0;
   static int destroyedBoxes[] = new int[WIDTH*HEIGHT];
   static int destroyedBoxesFE;
   void explode(State state, Bomb bomb) {
@@ -108,28 +114,48 @@ public class Board {
     int currentBombToExplode = 0;
     while (currentBombToExplode != bombsToExplodeFE) {
       final Bomb b = bombsToExplode[currentBombToExplode++];
-      if (b == null) continue; // already exploded
       
-      final Bomberman orginalBomberman = state.getBombermanWithId(b.owner);
+      final Bomberman orginalBomberman = state.players[b.owner];
       orginalBomberman.bombsLeft+=1; // he may be dead, but yolo
       
-      int range = b.range;
       P p = b.position;
       
-      checkExplosion(state, orginalBomberman, p.x, p.y); // at (0,0)
-      int x;
-      int y;
-      int dx;
-      int dy;
-      for (int r = 0; r < 4; r++) {
-        dx = rot[r][0];
-        dy = rot[r][1];
-        for (int d = 1; d < range; d++) {
-          x = p.x + d*dx;
-          y = p.y + d*dy;
-          if (checkExplosion(state, orginalBomberman, x, y)) {
-            break;
-          }
+      checkExplosion(state, b.owner, p.x, p.y); // at (0,0)
+      int x = p.x;
+      int y = p.y;
+      int correctedRange;
+      correctedRange = Math.min(b.range-1, WIDTH-1-p.x);
+      for (int d = 0; d < correctedRange; d++) {
+        x++;
+        if (checkExplosion(state, b.owner, x, y)) {
+          break;
+        }
+      }
+      
+      x = p.x;
+      correctedRange = Math.min(b.range-1, p.x);
+      for (int d = 0; d < correctedRange; d++) {
+        x--;
+        if (checkExplosion(state, b.owner, x, y)) {
+          break;
+        }
+      }
+      
+      x = p.x;
+      correctedRange = Math.min(b.range-1, HEIGHT-1-p.y);
+      for (int d = 0; d < correctedRange; d++) {
+        y++;
+        if (checkExplosion(state, b.owner, x, y)) {
+          break;
+        }
+      }
+      
+      y = p.y;
+      correctedRange = Math.min(b.range-1, p.y);
+      for (int d = 0; d < correctedRange; d++) {
+        y--;
+        if (checkExplosion(state, b.owner, x, y)) {
+          break;
         }
       }
     }
@@ -174,23 +200,19 @@ public class Board {
     }
   }
 
-  private boolean checkExplosion(State state, Bomberman originalBomberman, int x, int y) {
+  private boolean checkExplosion(State state, int bombOwner, int x, int y) {
     if ((x & 0b1) != 0 && (y & 0b1) != 0) return true; // fast wall
     
-    if (!isOnBoard(x, y)) {
-      return true;
-    }
-    
     int mapIndex = x+WIDTH*y;
-    final int value = cells[mapIndex];
+    int cellValue = cells[mapIndex];
     
     state.killPlayersAt(x,y);
     
-    switch (value) {
+    switch (cellValue) {
       case BOX:
       case BOX_1:
       case BOX_2:
-        explodesBoxMap[mapIndex] |= (1 << originalBomberman.owner);
+        explodesBoxMap[mapIndex] |= (1 << bombOwner);
         destroyedBoxes[destroyedBoxesFE++] = mapIndex;
         return true;
       case ITEM_1:
@@ -223,6 +245,7 @@ public class Board {
 
   
   public void addBomb(Bomb bomb) {
+    localBombs[localBombsFE++] = bomb;
     bombs[bombsFE++] = bomb;
     cells[bomb.position.x+WIDTH*bomb.position.y] = BOMB;
   }

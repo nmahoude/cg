@@ -49,7 +49,7 @@ public class MC {
     boolean dropEnnemyBombs = true;
     while (true) {
       simu++;
-      if ((simu & 255) == 0 ) {
+      if ((simu & 0b11111) == 0 ) {
         long duration = System.currentTimeMillis() - Player.startTime;
         if (duration > 95) {
           break;
@@ -97,17 +97,21 @@ public class MC {
         allMoves = tmp;
 
         if(Player.DEBUG_AI) {
+          System.err.println("New best score : "+bestScore);
           System.err.println("best move : "+Arrays.asList(allMoves));
           System.err.println("Status pos = "+this.state.players[Player.myId].position);
           System.err.println("Status dead = "+this.state.players[Player.myId].isDead);
+          System.err.println("Drop bombs ? "+dropEnnemyBombs);
         }
       }
     }
     if (Player.DEBUG_AI) {
       System.err.println("Simulations : " + simu);
+      System.err.println("Still drop bombs? : "+dropEnnemyBombs);
     }
-    System.err.println("Best : "+Arrays.asList(bestMoves));
-    message = ""+simu + " / "+(System.currentTimeMillis()-Player.startTime);
+    System.err.println("Best (db:"+dropEnnemyBombs+"): "+Arrays.asList(bestMoves)+ " => "+bestScore);
+    
+    message = ""+simu + " / "+(System.currentTimeMillis()-Player.startTime)+ " db:"+dropEnnemyBombs;
   }
 
   private void startWithLastBestMove(State model) {

@@ -15,23 +15,41 @@ public class MoveGenerator {
   }
 
   public int getPossibleMovesWithoutBombs(Move[] moves) {
-    int movesFE = 0;
-    moves[movesFE++] = Move.STAY;
-    if (isMovePossible(Move.UP)) moves[movesFE++] = Move.UP;
-    if (isMovePossible(Move.LEFT)) moves[movesFE++] = Move.LEFT;
-    if (isMovePossible(Move.RIGHT)) moves[movesFE++] = Move.RIGHT;
-    if (isMovePossible(Move.DOWN)) moves[movesFE++] = Move.DOWN;
-    
-    return movesFE;
+    return getPossibleMoves(moves, false);
   }
   
+  // with bombs
   public int getPossibleMoves(Move[] moves) {
+    boolean canBomb = state.players[Player.myId].bombsLeft > 0;
+    return getPossibleMoves(moves, canBomb);
+  }
+  
+  private int getPossibleMoves(Move[] moves, boolean canBomb) {
+    Bomberman me = state.players[Player.myId];
+    int x = me.position.x;
+    int y = me.position.y;
+    
     int movesFE = 0;
-    for (final Move move : Move.values()) {
-      if (isMovePossible(move)) {
-        moves[movesFE++] = move;
-      }
+    moves[movesFE++] = Move.STAY;
+    boolean canMoveUp = (x & 0b1) == 0 && isMovePossible(Move.UP);
+    boolean canMoveDown = (x & 0b1) == 0 && isMovePossible(Move.DOWN);
+    boolean canMoveLeft = (y & 0b1) == 0 && isMovePossible(Move.LEFT);
+    boolean canMoveRight = (y & 0b1) == 0 && isMovePossible(Move.RIGHT);
+
+    
+    if (canMoveUp) moves[movesFE++] = Move.UP;
+    if (canMoveDown) moves[movesFE++] = Move.DOWN;
+    if (canMoveLeft) moves[movesFE++] = Move.LEFT;
+    if (canMoveRight) moves[movesFE++] = Move.RIGHT;
+    
+    if (canBomb) {
+      moves[movesFE++] = Move.STAY_BOMB;
+      if (canMoveUp) moves[movesFE++] = Move.UP_BOMB;
+      if (canMoveDown) moves[movesFE++] = Move.DOWN_BOMB;
+      if (canMoveLeft) moves[movesFE++] = Move.LEFT_BOMB;
+      if (canMoveRight) moves[movesFE++] = Move.RIGHT_BOMB;
     }
+    
     return movesFE;
   }
   
