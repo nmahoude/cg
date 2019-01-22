@@ -2,17 +2,20 @@ package hypersonic;
 
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
 
 import hypersonic.ai.MC;
+import hypersonic.ai.sa.PseudoSA;
 import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.entities.Item;
 import hypersonic.utils.P;
 
 public class Player {
+  public static int NUMBER_OF_PLAYER = 4;
   public static boolean DEBUG_INPUT = true;
   public static boolean DEBUG_AI = false;
-  public static Random rand = new Random(0);
+  public static Random rand = ThreadLocalRandom.current(); //new Random(0);
   
   public static long startTime;
   public static int myId;
@@ -21,6 +24,7 @@ public class Player {
   public State state = new State();
   private int turn = 0;
   private Scanner in;
+  public static P goal;
 
   public Player(Scanner in) {
     this.in = in;
@@ -28,18 +32,16 @@ public class Player {
 
   void play() {
     readInitialData();
+    MC ai = new MC();
     
     while (true) {
       turn++;
       readGameState();
       
       // now look what I can do !
-      MC mc = new MC();
-      mc.think(state);
+      ai.think(state);
       
-      
-      final Move move = mc.bestMove;
-      outputMove(state.players[myId], move, mc.message);
+      ai.ouput(state);
     }
   }
 
@@ -52,19 +54,39 @@ public class Player {
     }
   }
   
-  private void outputMove(final Bomberman me, final Move move, String message) {
-    int newX = state.players[myId].position.x + move.dx;
-    int newY = state.players[myId].position.y + move.dy;
-    if (move.dropBomb) {
-      System.out.println("BOMB "+newX+" "+newY+ " "+message);
-    } else {
-      System.out.println("MOVE "+newX+" "+newY+ " "+message);
-    }
-  }
   public void readGameState() {
     initState();
     initEntities();
+    
+    initGoal();
   }
+  private void initGoal() {
+    // find the closest box
+    int px = state.players[myId].position.x;
+    int py = state.players[myId].position.y;
+    
+    double best = Double.POSITIVE_INFINITY;
+    P bestPos = null;
+    for (int y=0;y<Board.HEIGHT;y++) {
+      for (int x=0;x<Board.WIDTH;x++) {
+        int value = state.board.cells[x+Board.WIDTH*y];
+        if (value == Board.BOX || value == Board.BOX_1 || value == Board.BOX_2) {
+          double dist = Math.abs(px-x)+Math.abs(py-y);
+          if (value == Board.BOX_1) {
+            dist -= 0.1;
+          } else if (value == Board.BOX_2) {
+            dist -= 0.5;
+          }
+          if ( dist < best) {
+            best = dist;
+            bestPos = P.get(x, y);
+          }
+        }
+      }
+    }
+    goal = bestPos;
+  }
+
   private void initEntities() {
     final int bombsOnBoard[] = new int[4];
     
@@ -86,6 +108,7 @@ public class Player {
       if (entityType == 0) {
         Bomberman player = state.getBomberman(owner);
         player.owner = owner;
+        NUMBER_OF_PLAYER = owner+1;
         player.position = P.get(x, y);
         player.bombsLeft =  param1;
         player.currentRange = param2;

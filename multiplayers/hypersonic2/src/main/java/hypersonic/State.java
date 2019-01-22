@@ -79,14 +79,8 @@ public class State {
     }
   }
 
-  Bomberman getBombermanWithId(final int owner) {
-    for (int p=0;p<playersFE;p++) {
-      Bomberman b = players[p];
-      if (b.owner == owner) {
-        return b;
-      }
-    }
-    return null;
+  Bomberman getBombermanWithId(int owner) {
+    return players[owner];
   }
 
   boolean isOnBoard(int x, int y) {
@@ -99,10 +93,6 @@ public class State {
 
   public void addItem(Item item) {
     board.addItem(item);
-  }
-
-  public boolean canMoveTo(int x, int y) {
-    return board.canMoveTo(x,y);
   }
 
   public void walkOn(final Bomberman player, final P p) {
@@ -118,7 +108,7 @@ public class State {
   }
 
   public void killPlayersAt(int x, int y) {
-    for (int p=0;p<playersFE;p++) {
+    for (int p=0;p<Player.NUMBER_OF_PLAYER;p++) {
       Bomberman bomberman = players[p];
       if (bomberman.isDead) continue;
       

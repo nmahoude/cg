@@ -39,7 +39,7 @@ public class Simulation {
 
       player.bombsLeft-=1;
     }
-    if ((newX !=player.position.x || newY != player.position.y) && state.canWalkOn(P.get(newX, newY))) {
+    if ((newX !=player.position.x || newY != player.position.y) /** && state.canWalkOn(P.get(newX, newY)) dont check move, it has been done before...*/) {
       state.walkOn(player, P.get(newX, newY));
     }
   }

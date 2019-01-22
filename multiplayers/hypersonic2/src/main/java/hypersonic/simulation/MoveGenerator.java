@@ -1,16 +1,17 @@
 package hypersonic.simulation;
 
 import hypersonic.State;
+import hypersonic.Board;
 import hypersonic.Move;
 import hypersonic.Player;
 import hypersonic.entities.Bomberman;
 
 public class MoveGenerator {
 
-  private State board;
+  private State state;
 
   public MoveGenerator(State board) {
-    this.board = board;
+    this.state = board;
   }
 
   public int getPossibleMovesWithoutBombs(Move[] moves) {
@@ -36,11 +37,12 @@ public class MoveGenerator {
   
   public final boolean isMovePossible(Move move) {
     if (move == Move.STAY) return true;
-    Bomberman me = board.players[Player.myId];
+    Bomberman me = state.players[Player.myId];
     int x = me.position.x;
     int y = me.position.y;
     if (move.dropBomb && me.bombsLeft <=0) return false;
-    return board.canMoveTo(x + move.dx , y + move.dy);
+    if (move.dropBomb && state.board.cells[x+Board.WIDTH*y] == Board.BOMB) return false;
+    return state.board.canMoveTo(x + move.dx , y + move.dy);
   }
 
 }

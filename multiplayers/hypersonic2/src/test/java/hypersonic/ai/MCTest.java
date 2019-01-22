@@ -1,10 +1,16 @@
 package hypersonic.ai;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.Arrays;
 import java.util.Scanner;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import hypersonic.Move;
 import hypersonic.Player;
 
 public class MCTest {
@@ -57,5 +63,85 @@ public class MCTest {
     Player.startTime = System.currentTimeMillis()+100;//_000;
     mc.think(player.state);
     
+  }
+  
+  @Test
+  public void goGrabTheBonus() throws Exception {
+    String input =  
+        "..00.....00..\r\n" + 
+        ".X1X2X2X2X1X.\r\n" + 
+        "1.02.....20.1\r\n" + 
+        "2X.X.X.X.X.X2\r\n" + 
+        "01.211.112.10\r\n" + 
+        ".X.X0X.X0X.X.\r\n" + 
+        "01.211.112.10\r\n" + 
+        "2X.X.X.X.X.X2\r\n" + 
+        "1.02.....20.1\r\n" + 
+        ".X1X2X2X2X1X.\r\n" + 
+        "..00.....00..\r\n" + 
+        "2\r\n" + 
+        "0 0 0 0 1 3\r\n" + 
+        "0 1 12 10 1 3";
+    Scanner in = new Scanner(input);
+    Player.myId = 0;
+    
+    Player player = new Player(in);
+    player.readGameState();
+    
+    MC mc = new MC();
+    
+    Player.startTime = System.currentTimeMillis()+100;//_000;
+    mc.think(player.state);
+    
+    System.err.println(Arrays.asList(MC.bestMoves));
+    assertThat(MC.bestMoves[0], is(Move.DOWN));
+  }
+  
+  
+  @Test
+  @Ignore
+  public void debug() throws Exception {
+    String input  ="...201.1.....\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        ".....111.....\r\n" + 
+        ".X.X.X1X.X.X.\r\n" + 
+        ".............\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        ".............\r\n" + 
+        ".X.X.X1X.X.X.\r\n" + 
+        ".....111.....\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        "....01.1.....\r\n" + 
+        "16\r\n" + 
+        "0 0 4 8 0 4\r\n" + 
+        "0 1 10 8 3 5\r\n" + 
+        "0 2 10 9 5 4\r\n" + 
+        "0 3 4 8 0 5\r\n" + 
+        "1 0 5 4 2 3\r\n" + 
+        "1 0 6 4 3 3\r\n" + 
+        "1 3 6 4 3 4\r\n" + 
+        "1 0 6 5 4 3\r\n" + 
+        "1 3 6 6 5 4\r\n" + 
+        "1 1 9 8 8 5\r\n" + 
+        "1 2 10 8 8 4\r\n" + 
+        "1 3 4 7 8 4\r\n" + 
+        "2 0 3 8 2 2\r\n" + 
+        "2 0 9 10 2 2\r\n" + 
+        "2 0 3 10 2 2\r\n" + 
+        "2 0 4 2 1 1";
+    
+    Scanner in = new Scanner(input);
+    Player.myId = 0;
+    
+    Player player = new Player(in);
+    player.readGameState();
+    
+    MC mc = new MC();
+    
+    Player.startTime = System.currentTimeMillis()+100_0; //00;
+    mc.think(player.state);
+    
+    System.err.println(Arrays.asList(MC.bestMoves));
+    assertThat(MC.bestMoves[0], is(Move.LEFT));
   }
 }

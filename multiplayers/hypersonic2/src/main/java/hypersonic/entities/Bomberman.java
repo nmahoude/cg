@@ -5,7 +5,7 @@ import hypersonic.utils.P;
 
 public class Bomberman {
   
-  public P position;
+  public P position = P.get(0, 0);
   public int owner;
   public int bombsLeft;
   public int currentRange;

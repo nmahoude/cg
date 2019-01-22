@@ -49,14 +49,14 @@ public class MoveGeneratorWithCache {
   }
 
   
-  private State board;
+  private State state;
 
   public MoveGeneratorWithCache(State board) {
-    this.board = board;
+    this.state = board;
   }
 
   public int getPossibleMovesWithoutBombs(Move[] moves) {
-    Bomberman me = board.players[Player.myId];
+    Bomberman me = state.players[Player.myId];
     int x = me.position.x;
     int y = me.position.y;
 
@@ -71,7 +71,7 @@ public class MoveGeneratorWithCache {
   }
   
   public int getPossibleMoves(Move[] moves) {
-    Bomberman me = board.players[Player.myId];
+    Bomberman me = state.players[Player.myId];
     int x = me.position.x;
     int y = me.position.y;
 
@@ -86,34 +86,34 @@ public class MoveGeneratorWithCache {
   }
   
   public final boolean isMovePossible(Move move) {
-    Bomberman me = board.players[Player.myId];
+    Bomberman me = state.players[Player.myId];
     int x = me.position.x;
     int y = me.position.y;
     switch(move) {
       case DOWN:
-        return board.canMoveTo(x, y+1);
+        return state.board.canMoveTo(x, y+1);
       case DOWN_BOMB:
         return me.bombsLeft > 0 && 
-            board.canMoveTo(x, y+1);
+            state.board.canMoveTo(x, y+1);
       case LEFT:
-        return board.canMoveTo(x-1, y);
+        return state.board.canMoveTo(x-1, y);
       case LEFT_BOMB:
         return me.bombsLeft > 0 &&
-            board.canMoveTo(x-1, y);
+            state.board.canMoveTo(x-1, y);
       case RIGHT:
-        return board.canMoveTo(x+1, y);
+        return state.board.canMoveTo(x+1, y);
       case RIGHT_BOMB:
         return me.bombsLeft > 0 &&
-            board.canMoveTo(x+1, y);
+            state.board.canMoveTo(x+1, y);
       case STAY:
         return true;
       case STAY_BOMB:
         return me.bombsLeft > 0 && true;
       case UP:
-        return board.canMoveTo(x, y-1);
+        return state.board.canMoveTo(x, y-1);
       case UP_BOMB:
         return me.bombsLeft > 0 && 
-            board.canMoveTo(x, y-1);
+            state.board.canMoveTo(x, y-1);
       default:
         return false;
     }

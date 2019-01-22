@@ -2,73 +2,99 @@ package hypersonic.ai;
 
 import java.util.Arrays;
 
-import hypersonic.State;
-import hypersonic.Board;
+import hypersonic.Cache;
 import hypersonic.Move;
 import hypersonic.Player;
+import hypersonic.State;
 import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.simulation.MoveGenerator;
 import hypersonic.simulation.Simulation;
 
 public class MC {
-  private static final int DEPTH = 20;
+  private static final int DEPTH = 18;
   
-  static double patience[];
+  public static double patience[];
   static {
-    patience = new double[DEPTH];
-    for (int i=0;i<DEPTH;i++) {
-      patience[i] =Math.pow(0.7, i);
+    patience = new double[100];
+    for (int i=0;i<100;i++) {
+      patience[i] =Math.pow(0.99, i);
     }
   }
-  State state = new State();
-  public Move bestMove = null;
+  public State state = new State();
   public String message = "";
   Simulation simulator = new Simulation(state);
   MoveGenerator gen = new MoveGenerator(state);
   
-  Move[] moves = new Move[16];
+  public static Move[] bestMoves = new Move[DEPTH];
+  Move[] allowedMoves = new Move[16];
   int movesFE;
+
+  private double bestScore;
   
   public void think(State model) {
     this.state.copyFrom(model);
 
     Move allMoves[] = new Move[DEPTH];
-    double bestScore = Double.NEGATIVE_INFINITY;
+    bestScore = Double.NEGATIVE_INFINITY;
+
+    // TODO timeout because P.get(-1, -1) ! Need to investigate
+//    if (bestMoves[0] != null) {
+//      startWithLastBestMove(model);
+//    }
+
+    
     
     int simu = 0;
+    boolean dropEnnemyBombs = true;
     while (true) {
       simu++;
       if ((simu & 255) == 0 ) {
-        if (System.currentTimeMillis() - Player.startTime > 95) {
+        long duration = System.currentTimeMillis() - Player.startTime;
+        if (duration > 95) {
           break;
+        } else if (duration > 20) {
+          if (bestScore < 0) {
+            // we did'nt find any safe routes until now, 
+            // so stop dropping ennemy bombs to try to find a safe route now
+            dropEnnemyBombs = false;
+          }
         }
       }
-      
-      this.state.copyFrom(model);
       
       double score = 0;
+      this.state.copyFrom(model);
       for (int t=0;t<DEPTH;t++) {
         if (t <= DEPTH - Bomb.DEFAULT_TIMER - 1 ) {
-          movesFE = gen.getPossibleMoves(moves);
+          movesFE = gen.getPossibleMoves(allowedMoves);
         } else {
-          movesFE = gen.getPossibleMovesWithoutBombs(moves);
+          movesFE = gen.getPossibleMovesWithoutBombs(allowedMoves);
         }
-        Move move = moves[Player.rand.nextInt(movesFE)];
-        
+
+        Move move = allowedMoves[Player.rand.nextInt(movesFE)];
+        if (dropEnnemyBombs && t == 0) {
+          // for all players different than me and who can, drop a bomb at first one
+          for (int i=0;i<4;i++) {
+            if (i == Player.myId) continue;
+            Bomberman b = state.players[i];
+            if (b.isDead || b.bombsLeft == 0) continue;
+            state.addBomb(Cache.popBomb(i, b.position, 8, b.currentRange));
+          }
+        }
         allMoves[t] = move;
         simulator.simulate(move);
+        score += patience[t] * Score.score(state);
+
         if (this.state.players[Player.myId].isDead) {
-          score = -1_000_000 + t; // die the latest
           break;
-        } else {
-          score += patience[t] * score();
         }
       }
-    
+   
       if (score > bestScore) {
         bestScore = score;
-        bestMove = allMoves[0];
+        Move tmp[] = bestMoves;
+        bestMoves = allMoves;
+        allMoves = tmp;
 
         if(Player.DEBUG_AI) {
           System.err.println("best move : "+Arrays.asList(allMoves));
@@ -80,18 +106,48 @@ public class MC {
     if (Player.DEBUG_AI) {
       System.err.println("Simulations : " + simu);
     }
+    System.err.println("Best : "+Arrays.asList(bestMoves));
     message = ""+simu + " / "+(System.currentTimeMillis()-Player.startTime);
   }
 
-  private double score() {
-    double score = 0.0;
+  private void startWithLastBestMove(State model) {
+    //System.err.println("Restaring for old best !");
+    //System.err.println(Arrays.toString(bestMoves));
+    for (int i=0;i<DEPTH-1;i++) {
+      bestMoves[i] = bestMoves[i+1];
+    }
+    bestMoves[DEPTH-1] = Move.STAY;
+    //System.err.println(Arrays.toString(bestMoves));
     
-    Bomberman me = state.players[Player.myId];
+    this.state.copyFrom(model);
     
-    score += 10_000.0 * me.points;
-    score += 1.1 * me.bombCount;
-    score += me.currentRange;
-    score += me.bombsLeft;
-    return score;
+    double score = 0;
+    for (int t=0;t<DEPTH;t++) {
+      if (bestMoves[t] == null) break;
+      simulator.simulate(bestMoves[t]);
+      if (this.state.players[Player.myId].isDead) {
+        score = -1_000_000 + t; // die the latest
+        break;
+      } else {
+        score += patience[t] * Score.score(state);
+      }
+    }
+    bestScore = score;
   }
+
+  public void ouput(State currentState) {
+    final Move move = bestMoves[0];
+    outputMove(currentState.players[Player.myId], move, message);
+  }
+  
+  private void outputMove(final Bomberman me, final Move move, String message) {
+    int newX = me.position.x + move.dx;
+    int newY = me.position.y + move.dy;
+    if (move.dropBomb) {
+      System.out.println("BOMB "+newX+" "+newY+ " "+message);
+    } else {
+      System.out.println("MOVE "+newX+" "+newY+ " "+message);
+    }
+  }
+
 }

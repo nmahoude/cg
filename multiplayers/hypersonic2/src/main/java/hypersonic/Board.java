@@ -8,7 +8,7 @@ import hypersonic.utils.P;
 public class Board {
   public static final int HEIGHT = 11;
   public static final int WIDTH = 13;
-  private static final int MAX_BOMBS = 16; // NOTE : risk taken, only 16 bombs on the board max
+  private static final int MAX_BOMBS = 20; // NOTE : risk taken, only 16 bombs on the board max
   
   public static final int EMPTY = '.';
   public static final int WALL = 'X';
@@ -33,7 +33,7 @@ public class Board {
   public int cells[];
   Bomb bombs[] = new Bomb[MAX_BOMBS];
   int bombsFE = 0;
-  int boxCount;
+  public int boxCount;
   
   
   Board() {
@@ -111,21 +111,23 @@ public class Board {
       if (b == null) continue; // already exploded
       
       final Bomberman orginalBomberman = state.getBombermanWithId(b.owner);
-      if (orginalBomberman != null) {
-        orginalBomberman.bombsLeft+=1;
-      }
-      final int range = b.range;
-      final P p = b.position;
+      orginalBomberman.bombsLeft+=1; // he may be dead, but yolo
+      
+      int range = b.range;
+      P p = b.position;
       
       checkExplosion(state, orginalBomberman, p.x, p.y); // at (0,0)
+      int x;
+      int y;
+      int dx;
+      int dy;
       for (int r = 0; r < 4; r++) {
-        final int dx = rot[r][0];
-        final int dy = rot[r][1];
+        dx = rot[r][0];
+        dy = rot[r][1];
         for (int d = 1; d < range; d++) {
-          final int x = p.x + d*dx;
-          final int y = p.y + d*dy;
-          final boolean shouldStopExplosion = checkExplosion(state, orginalBomberman, x, y);
-          if (shouldStopExplosion) {
+          x = p.x + d*dx;
+          y = p.y + d*dy;
+          if (checkExplosion(state, orginalBomberman, x, y)) {
             break;
           }
         }
@@ -173,42 +175,37 @@ public class Board {
   }
 
   private boolean checkExplosion(State state, Bomberman originalBomberman, int x, int y) {
-    if (isOnBoard(x, y)) {
-      int mapIndex = x+WIDTH*y;
-      final int value = cells[mapIndex];
-      if (value == WALL) {
+    if ((x & 0b1) != 0 && (y & 0b1) != 0) return true; // fast wall
+    
+    if (!isOnBoard(x, y)) {
+      return true;
+    }
+    
+    int mapIndex = x+WIDTH*y;
+    final int value = cells[mapIndex];
+    
+    state.killPlayersAt(x,y);
+    
+    switch (value) {
+      case BOX:
+      case BOX_1:
+      case BOX_2:
+        explodesBoxMap[mapIndex] |= (1 << originalBomberman.owner);
+        destroyedBoxes[destroyedBoxesFE++] = mapIndex;
+        return true;
+      case ITEM_1:
+      case ITEM_2:
+        cells[x+WIDTH*y] = EMPTY;
         return true; // stop explosion
-      }
-      
-      state.killPlayersAt(x,y);
-      
-      switch (value) {
-        case BOX:
-        case BOX_1:
-        case BOX_2:
-          if (originalBomberman != null) {
-            explodesBoxMap[mapIndex] |= (1 << originalBomberman.owner);
-          } else {
-            explodesBoxMap[mapIndex] |= (1 << 5);
-          }
-          destroyedBoxes[destroyedBoxesFE++] = mapIndex;
-          return true;
-        case ITEM_1:
-        case ITEM_2:
-          cells[x+WIDTH*y] = EMPTY;
-          return true; // stop explosion
-        case BOMB:
-          int bombIndex = getBombIndexAt(x, y);
-          if (bombIndex != -1) {
-            Bomb newBombToExplode = bombs[bombIndex];
-            // this bomb will explode and will not be here anymore (can't change state of bomb anymore
-            bombs[bombIndex] = null; 
-            bombsToExplode[bombsToExplodeFE++] = newBombToExplode;
-          }
-          return true; // stop explosion
-      }
-    } else {
-      return true; // not on board
+      case BOMB:
+        int bombIndex = getBombIndexAt(x, y);
+        if (bombIndex != -1) {
+          Bomb newBombToExplode = bombs[bombIndex];
+          // this bomb will explode and will not be here anymore (can't change state of bomb anymore
+          bombs[bombIndex] = null; 
+          bombsToExplode[bombsToExplodeFE++] = newBombToExplode;
+        }
+        return true; // stop explosion
     }
     return false;
   }

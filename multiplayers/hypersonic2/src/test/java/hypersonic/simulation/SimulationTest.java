@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import hypersonic.Move;
 import hypersonic.Player;
+import hypersonic.ai.MC;
+import hypersonic.ai.Score;
 
 public class SimulationTest {
 
@@ -135,10 +137,64 @@ public class SimulationTest {
     
     
     assertThat(player.state.players[Player.myId].isDead, is(true));
-
-  
   }
   
+  
+  @Test
+  public void debug() throws Exception {
+    String input = "...201.1.....\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        ".....111.....\r\n" + 
+        ".X.X.X1X.X.X.\r\n" + 
+        ".............\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        ".............\r\n" + 
+        ".X.X.X1X.X.X.\r\n" + 
+        ".....111.....\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        "....01.1.....\r\n" + 
+        "16\r\n" + 
+        "0 0 4 8 0 4\r\n" + 
+        "0 1 10 8 3 5\r\n" + 
+        "0 2 10 9 5 4\r\n" + 
+        "0 3 4 8 0 5\r\n" + 
+        "1 0 5 4 2 3\r\n" + 
+        "1 0 6 4 3 3\r\n" + 
+        "1 3 6 4 3 4\r\n" + 
+        "1 0 6 5 4 3\r\n" + 
+        "1 3 6 6 5 4\r\n" + 
+        "1 1 9 8 8 5\r\n" + 
+        "1 2 10 8 8 4\r\n" + 
+        "1 3 4 7 8 4\r\n" + 
+        "2 0 3 8 2 2\r\n" + 
+        "2 0 9 10 2 2\r\n" + 
+        "2 0 3 10 2 2\r\n" + 
+        "2 0 4 2 1 1";
+
+    Scanner in = new Scanner(input);
+    Player player = new Player(in);
+    Player.myId = 0;
+    player.readGameState();
+
+    // • → ← ↑ ↓ ☢
+//    Move moves[] = readMoves("←,  ↓,  ↓, •");
+    Move moves[] = readMoves(" ↓,  •,  ↑, ☢←, ☢←,  ↓,  •, ☢↓, ☢→, ☢→,  •,  •,  ↑,  ↑,  •,  ↓,  ↑,  ↓");
+//    Move moves[] = readMoves(" ←,  •,  →, ☢←, ☢←,  ↓,  •, ☢↓, ☢→, ☢→,  •,  •,  ↑,  ↑,  •,  ↓,  ↑,  ↓");
+    
+    MC mc = new MC();
+    mc.state = player.state;
+    Simulation sim = new Simulation(player.state);
+    double score = 0.0;
+    System.err.println("Debug score ");
+    for (int i=0;i<moves.length;i++) {
+      sim.simulate(moves[i]);
+      double tmpScore = Score.score(player.state);
+      score += tmpScore;
+      System.err.println(tmpScore);
+    }
+    System.err.println("Score  = "+score);
+    
+  }
   
   private Move[] readMoves(String movesFromArray) {
     String movesAsStr[] = movesFromArray.split(", ");
