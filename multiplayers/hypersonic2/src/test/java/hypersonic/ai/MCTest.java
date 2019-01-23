@@ -99,42 +99,37 @@ public class MCTest {
   
   
   @Test
-  @Ignore
+//  @Ignore
   public void debug() throws Exception {
-    String input  ="......02.....\r\n" + 
-        ".X.X.X.X1X.X.\r\n" + 
-        ".....2.2.....\r\n" + 
-        "1X.X0X.X0X.X1\r\n" + 
-        ".....1.1.....\r\n" + 
-        ".X.X0X.X0X.X.\r\n" + 
-        ".....1.1.....\r\n" + 
-        "1X.X0X.X0X.X1\r\n" + 
-        ".....2.2.....\r\n" + 
-        ".X.X1X.X.X.X.\r\n" + 
-        "......0......\r\n" + 
-        "21\r\n" + 
-        "0 0 0 6 2 5\r\n" + 
-        "0 1 8 8 3 4\r\n" + 
-        "0 2 10 4 0 5\r\n" + 
-        "0 3 1 6 1 4\r\n" + 
-        "1 3 2 9 1 4\r\n" + 
-        "1 2 12 4 3 4\r\n" + 
-        "1 0 4 6 4 5\r\n" + 
-        "1 3 4 8 4 4\r\n" + 
-        "1 3 2 8 6 4\r\n" + 
-        "1 1 10 8 7 4\r\n" + 
-        "1 2 8 4 7 5\r\n" + 
-        "1 2 9 4 8 5\r\n" + 
-        "2 0 5 0 2 2\r\n" + 
-        "2 0 4 1 1 1\r\n" + 
-        "2 0 8 6 1 1\r\n" + 
-        "2 0 8 2 2 2\r\n" + 
-        "2 0 4 4 1 1\r\n" + 
-        "2 0 4 2 2 2\r\n" + 
-        "2 0 5 10 2 2\r\n" + 
-        "2 0 8 9 1 1\r\n" + 
-        "2 0 7 10 2 2";
-    Player.myId = 3;
+    String input  =".....010.0...\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        ".............\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        ".............\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        ".....0.......\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        "......2......\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        ".....010.0...\r\n" + 
+        "16\r\n" + 
+        "0 0 4 10 1 5\r\n" + 
+        "0 1 6 2 5 4\r\n" + 
+        "0 2 6 3 0 5\r\n" + 
+        "0 3 1 10 0 8\r\n" + 
+        "1 0 3 6 4 5\r\n" + 
+        "1 2 8 6 4 5\r\n" + 
+        "1 3 0 6 4 8\r\n" + 
+        "1 0 4 6 5 5\r\n" + 
+        "1 1 8 0 5 4\r\n" + 
+        "1 3 0 8 6 8\r\n" + 
+        "1 0 4 8 7 5\r\n" + 
+        "1 2 6 4 8 5\r\n" + 
+        "1 3 0 10 8 8\r\n" + 
+        "2 0 12 7 1 1\r\n" + 
+        "2 0 10 10 1 1\r\n" + 
+        "2 0 8 8 2 2";
+    Player.myId = 2;
     Player.DEBUG_AI = true;
     
     Scanner in = new Scanner(input);
@@ -143,10 +138,10 @@ public class MCTest {
     
     MC mc = new MC();
     
-    Player.startTime = System.currentTimeMillis()+100_0; //00;
+    Player.startTime = System.currentTimeMillis()+100; //_000;
     mc.think(player.state);
     
     System.err.println(Arrays.asList(MC.bestMoves));
-    assertThat(MC.bestMoves[0], is(Move.LEFT));
+    assertThat(MC.bestMoves[0], is(Move.UP));
   }
 }

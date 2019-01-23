@@ -8,6 +8,9 @@ import hypersonic.State;
 import hypersonic.entities.Bomberman;
 
 public class Score {
+  private static final double BOX_DESTROYED_BONUS = 10_000.0;
+  private static final double DEAD_MALUS = -1_000_000;
+  public static final double WALK_OVER_MALUS = -50_000;
 
   
   public static double new_score(State state) {
@@ -24,14 +27,26 @@ public class Score {
   }
 
   
-  public static double score(State state) {
+  public static double score(State state, int depth) {
     double score = 0.0;
     if (state.players[Player.myId].isDead) {
-      return -1_000_000;
+      return DEAD_MALUS;
     }
     Bomberman me = state.players[Player.myId];
 
-    score += 10_000.0 * me.points;
+    if (depth == 0) {
+      // on first step, big malus for stepping over a opponent (means we follow him)
+      for (int i=0;i<4;i++) {
+        if (i == Player.myId) continue;
+        Bomberman p = state.players[i];
+        if (p.isDead) continue;
+        if (p.position.x == me.position.x && p.position.y == me.position.y) {
+          score += WALK_OVER_MALUS;
+        }
+      }
+    }
+    
+    score += BOX_DESTROYED_BONUS * me.points;
     if (me.bombCount < 5) {
       score += 10.0 * me.bombCount;
     } else {

@@ -1,8 +1,5 @@
 package hypersonic;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.entities.Item;
@@ -23,6 +20,9 @@ public class Board {
   public static final int ITEM_1 = 'l';
   public static final int ITEM_2 = 'k';
   public static final int BOMB = 'b';
+  public static final int EXPLODED_BOMB = 'B';
+  private static final int EXPLODED_ITEM = 'I';
+  
   static final int rot[][] = {
       { 1, 0 },
       { 0, 1 },
@@ -31,6 +31,8 @@ public class Board {
   };
 
   static int explodesBoxMap[] = new int[WIDTH*HEIGHT];
+  static int playersMap[] = new int[WIDTH*HEIGHT];
+  
   Bomb localBombs[] = new Bomb[24];
   int localBombsFE = 0;
   
@@ -82,6 +84,14 @@ public class Board {
 
 
   public void updateBombs(State state) {
+    // update players map
+    for (int i=0;i<4;i++) {
+      Bomberman p = state.players[i];
+      if (p.isDead) continue;
+      playersMap[p.position.x + WIDTH*p.position.y] = 1;
+    }
+    
+    
     // simulate one turn
     for (int i=0;i<bombsFE;i++) {
       final Bomb b = bombs[i];
@@ -100,15 +110,27 @@ public class Board {
       if (b != null) bombs[current++] = b;
     }
     bombsFE = current;
+    
+    // clean players map
+    for (int i=0;i<4;i++) {
+      Bomberman p = state.players[i];
+      // dont check players state as layer may have died
+      // if (p.isDead) continue;
+      playersMap[p.position.x + WIDTH*p.position.y] = 0;
+    }
+
   }
 
   static Bomb bombsToExplode[] = new Bomb[MAX_BOMBS];
   static int bombsToExplodeFE = 0;
   static int destroyedBoxes[] = new int[WIDTH*HEIGHT];
   static int destroyedBoxesFE;
+  static int destroyedItems[] = new int[WIDTH*HEIGHT];
+  static int destroyedItemsFE;
   void explode(State state, Bomb bomb) {
     bombsToExplodeFE = 0;
     destroyedBoxesFE = 0;
+    destroyedItemsFE = 0;
     
     bombsToExplode[bombsToExplodeFE++] = bomb;
     int currentBombToExplode = 0;
@@ -168,6 +190,12 @@ public class Board {
       cells[x+WIDTH*y] = EMPTY;
     }
     
+    // clear items 
+    for (int i=0;i<destroyedItemsFE;i++) {
+      int mapIndex = destroyedItems[i];
+      cells[mapIndex] = EMPTY;
+    }
+    
     // clear boxes
     for (int b=0;b<destroyedBoxesFE;b++) {
       int mapIndex = destroyedBoxes[b];
@@ -206,28 +234,39 @@ public class Board {
     int mapIndex = x+WIDTH*y;
     int cellValue = cells[mapIndex];
     
-    state.killPlayersAt(x,y);
+    if (playersMap[mapIndex] != 0) {
+      state.killPlayersAt(x,y);
+      playersMap[mapIndex] = 0;
+    }
     
     switch (cellValue) {
       case BOX:
       case BOX_1:
       case BOX_2:
+        if (explodesBoxMap[mapIndex] == 0) {
+          destroyedBoxes[destroyedBoxesFE++] = mapIndex;
+        }
         explodesBoxMap[mapIndex] |= (1 << bombOwner);
-        destroyedBoxes[destroyedBoxesFE++] = mapIndex;
         return true;
       case ITEM_1:
       case ITEM_2:
-        cells[x+WIDTH*y] = EMPTY;
+        cells[mapIndex] = EXPLODED_ITEM;
+        destroyedItems[destroyedItemsFE++] = mapIndex;
         return true; // stop explosion
+      case EXPLODED_ITEM:
+        return true;
       case BOMB:
-        int bombIndex = getBombIndexAt(x, y);
-        if (bombIndex != -1) {
-          Bomb newBombToExplode = bombs[bombIndex];
-          // this bomb will explode and will not be here anymore (can't change state of bomb anymore
-          bombs[bombIndex] = null; 
-          bombsToExplode[bombsToExplodeFE++] = newBombToExplode;
+        cells[mapIndex] = EXPLODED_BOMB;
+        for (int bombIndex=0;bombIndex<bombsFE;bombIndex++) {
+          Bomb b = bombs[bombIndex];
+          if (b != null && b.position.x == x && b.position.y == y) {
+            bombs[bombIndex] = null; 
+            bombsToExplode[bombsToExplodeFE++] = b;
+          }
         }
         return true; // stop explosion
+      case EXPLODED_BOMB:
+        return true;
     }
     return false;
   }

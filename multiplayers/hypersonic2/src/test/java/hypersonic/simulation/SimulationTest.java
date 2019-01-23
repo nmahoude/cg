@@ -140,33 +140,41 @@ public class SimulationTest {
   }
   
   public static void main(String[] args) {
-    String input = ".............\r\n" + 
-        ".X1X.X.X.X.X.\r\n" + 
-        "..........0.1\r\n" + 
+    String input = "....10.01....\r\n" + 
+        ".X.X2X1X2X.X.\r\n" + 
+        "............2\r\n" + 
+        ".X.X.X.X1X.X1\r\n" + 
+        "......21....0\r\n" + 
+        ".X.X.X2X.X.X.\r\n" + 
+        "......2.....0\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
-        ".2.........20\r\n" + 
-        "2X.X.X.X.X.X2\r\n" + 
-        ".2.........20\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        "..........0.1\r\n" + 
-        ".X1X.X.X.X.X.\r\n" + 
         ".............\r\n" + 
-        "15\r\n" + 
-        "0 0 0 2 1 4\r\n" + 
-        "0 1 0 9 0 4\r\n" + 
-        "0 2 0 1 0 4\r\n" + 
-        "0 3 6 9 2 4\r\n" + 
-        "1 1 2 6 3 4\r\n" + 
-        "1 2 2 4 3 4\r\n" + 
-        "1 1 2 8 6 4\r\n" + 
-        "1 2 2 2 6 4\r\n" + 
-        "1 1 0 8 8 4\r\n" + 
-        "1 2 0 2 8 4\r\n" + 
-        "2 0 8 8 1 1\r\n" + 
-        "2 0 8 2 1 1\r\n" + 
-        "2 0 10 9 1 1\r\n" + 
-        "2 0 10 1 1 1\r\n" + 
-        "2 0 6 1 2 2";
+        ".X.X2X1X2X.X.\r\n" + 
+        "...010.01....\r\n" + 
+        "23\r\n" + 
+        "0 0 3 2 3 5\r\n" + 
+        "0 1 6 2 3 4\r\n" + 
+        "0 2 6 2 1 4\r\n" + 
+        "0 3 7 8 2 3\r\n" + 
+        "1 1 10 4 2 4\r\n" + 
+        "1 2 10 4 2 4\r\n" + 
+        "1 2 10 2 4 4\r\n" + 
+        "1 3 4 8 4 3\r\n" + 
+        "1 0 3 2 7 5\r\n" + 
+        "1 1 8 2 7 4\r\n" + 
+        "1 3 6 8 8 3\r\n" + 
+        "2 0 0 7 1 1\r\n" + 
+        "2 0 12 7 1 1\r\n" + 
+        "2 0 2 10 1 1\r\n" + 
+        "2 0 9 8 2 2\r\n" + 
+        "2 0 11 2 2 2\r\n" + 
+        "2 0 5 4 1 1\r\n" + 
+        "2 0 4 3 1 1\r\n" + 
+        "2 0 7 6 1 1\r\n" + 
+        "2 0 8 7 1 1\r\n" + 
+        "2 0 8 5 2 2\r\n" + 
+        "2 0 5 6 1 1\r\n" + 
+        "2 0 4 7 1 1";
     Player.myId = 0;
 
     Scanner in = new Scanner(input);
@@ -175,7 +183,7 @@ public class SimulationTest {
 
     // • → ← ↑ ↓ ☢
 //    Move moves[] = readMoves("←,  ↓,  ↓, •");
-    Move moves[] = readMoves(" ↓,  ↓,  ↑,  •,  →, ☢→,  →,  →,  ↓,  •,  ↑,  •,  →,  •,  →,  •,  ↑,  •");
+    Move moves[] = readMoves(" →, ☢•, ☢→, ☢→, ☢→,  →,  ↑, ☢•, ☢•,  ↓,  ←,  ←,  •,  •,  →,  •,  •,  →");
 //    Move moves[] = readMoves(" ←,  •,  →, ☢←, ☢←,  ↓,  •, ☢↓, ☢→, ☢→,  •,  •,  ↑,  ↑,  •,  ↓,  ↑,  ↓");
 //    player.state.addBomb(new Bomb(2, P.get(10, 8), 8, 4));
     
@@ -189,7 +197,7 @@ public class SimulationTest {
         throw new RuntimeException("player can't go where it thinks it can go at "+i+" => "+moves[i]);
       }
       sim.simulate(moves[i]);
-      double tmpScore = Score.score(player.state);
+      double tmpScore = Score.score(player.state, i);
       score += tmpScore;
       System.err.println(tmpScore);
     }

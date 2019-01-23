@@ -15,7 +15,8 @@ public class State {
 
   public State() {
     for (int i=0;i<4;i++) {
-      players[i] = new Bomberman(i, null, 0, 0);
+      players[i] = new Bomberman(i, P.get(0, 0), 0, 0);
+      players[i].isDead = true;
     }
     clean();
   }

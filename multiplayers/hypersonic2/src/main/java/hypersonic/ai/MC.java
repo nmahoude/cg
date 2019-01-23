@@ -13,7 +13,7 @@ import hypersonic.simulation.Simulation;
 
 public class MC {
   private static final int DEPTH = 18;
-  
+
   public static double patience[];
   static {
     patience = new double[100];
@@ -47,6 +47,7 @@ public class MC {
     
     int simu = 0;
     boolean dropEnnemyBombs = true;
+    boolean survivableSituation = false;
     while (true) {
       simu++;
       if ((simu & 0b11111) == 0 ) {
@@ -54,7 +55,7 @@ public class MC {
         if (duration > 95) {
           break;
         } else if (duration > 20) {
-          if (bestScore < 0) {
+          if (!survivableSituation) {
             // we did'nt find any safe routes until now, 
             // so stop dropping ennemy bombs to try to find a safe route now
             dropEnnemyBombs = false;
@@ -65,6 +66,8 @@ public class MC {
       double score = 0;
       this.state.copyFrom(model);
       for (int t=0;t<DEPTH;t++) {
+        //this.state.players[Player.myId].points = 0;
+
         if (t <= DEPTH - Bomb.DEFAULT_TIMER - 1 ) {
           movesFE = gen.getPossibleMoves(allowedMoves);
         } else {
@@ -83,7 +86,7 @@ public class MC {
         }
         allMoves[t] = move;
         simulator.simulate(move);
-        score += patience[t] * Score.score(state);
+        score += patience[t] * Score.score(state, t);
 
         if (this.state.players[Player.myId].isDead) {
           break;
@@ -95,7 +98,7 @@ public class MC {
         Move tmp[] = bestMoves;
         bestMoves = allMoves;
         allMoves = tmp;
-
+        survivableSituation |= !this.state.players[Player.myId].isDead;
         if(Player.DEBUG_AI) {
           System.err.println("New best score : "+bestScore);
           System.err.println("best move : "+Arrays.asList(allMoves));
@@ -133,7 +136,7 @@ public class MC {
         score = -1_000_000 + t; // die the latest
         break;
       } else {
-        score += patience[t] * Score.score(state);
+        score += patience[t] * Score.score(state, t);
       }
     }
     bestScore = score;
