@@ -5,7 +5,6 @@ import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
 import hypersonic.ai.MC;
-import hypersonic.ai.sa.PseudoSA;
 import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.entities.Item;
@@ -37,7 +36,9 @@ public class Player {
     while (true) {
       turn++;
       readGameState();
-      
+      if (turn == 1) {
+        startTime+= 500;
+      }
       // now look what I can do !
       ai.think(state);
       

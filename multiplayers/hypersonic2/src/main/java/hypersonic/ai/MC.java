@@ -12,6 +12,8 @@ import hypersonic.simulation.MoveGenerator;
 import hypersonic.simulation.Simulation;
 
 public class MC {
+  private static final int TIME_LIMIT = 50;
+
   private static final int DEPTH = 18;
 
   public static double patience[];
@@ -52,7 +54,7 @@ public class MC {
       simu++;
       if ((simu & 0b11111) == 0 ) {
         long duration = System.currentTimeMillis() - Player.startTime;
-        if (duration > 95) {
+        if (duration > TIME_LIMIT) {
           break;
         } else if (duration > 20) {
           if (!survivableSituation) {
@@ -66,7 +68,7 @@ public class MC {
       double score = 0;
       this.state.copyFrom(model);
       for (int t=0;t<DEPTH;t++) {
-        //this.state.players[Player.myId].points = 0;
+        this.state.players[Player.myId].points = 0;
 
         if (t <= DEPTH - Bomb.DEFAULT_TIMER - 1 ) {
           movesFE = gen.getPossibleMoves(allowedMoves);

@@ -99,37 +99,25 @@ public class MCTest {
   
   
   @Test
-//  @Ignore
+  @Ignore
   public void debug() throws Exception {
-    String input  =".....010.0...\r\n" + 
+    String input  ="..2.2...2.2..\r\n" + 
+        ".X.X1X.X1X.X.\r\n" + 
+        "....0...0....\r\n" + 
+        ".X0X1X.X1X0X.\r\n" + 
+        ".2..1...1..2.\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
-        ".............\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        ".............\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        ".....0.......\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        "......2......\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        ".....010.0...\r\n" + 
-        "16\r\n" + 
-        "0 0 4 10 1 5\r\n" + 
-        "0 1 6 2 5 4\r\n" + 
-        "0 2 6 3 0 5\r\n" + 
-        "0 3 1 10 0 8\r\n" + 
-        "1 0 3 6 4 5\r\n" + 
-        "1 2 8 6 4 5\r\n" + 
-        "1 3 0 6 4 8\r\n" + 
-        "1 0 4 6 5 5\r\n" + 
-        "1 1 8 0 5 4\r\n" + 
-        "1 3 0 8 6 8\r\n" + 
-        "1 0 4 8 7 5\r\n" + 
-        "1 2 6 4 8 5\r\n" + 
-        "1 3 0 10 8 8\r\n" + 
-        "2 0 12 7 1 1\r\n" + 
-        "2 0 10 10 1 1\r\n" + 
-        "2 0 8 8 2 2";
-    Player.myId = 2;
+        ".2..1...1..2.\r\n" + 
+        ".X0X1X.X1X0X.\r\n" + 
+        "....0...0....\r\n" + 
+        ".X.X1X.X1X.X.\r\n" + 
+        "..2.2...2.2..\r\n" + 
+        "4\r\n" + 
+        "0 0 0 0 1 3\r\n" + 
+        "0 1 12 10 1 3\r\n" + 
+        "0 2 12 0 1 3\r\n" + 
+        "0 3 0 10 1 3";
+    Player.myId = 1;
     Player.DEBUG_AI = true;
     
     Scanner in = new Scanner(input);
@@ -142,6 +130,6 @@ public class MCTest {
     mc.think(player.state);
     
     System.err.println(Arrays.asList(MC.bestMoves));
-    assertThat(MC.bestMoves[0], is(Move.UP));
+    assertThat(MC.bestMoves[0], is(Move.UP_BOMB));
   }
 }
