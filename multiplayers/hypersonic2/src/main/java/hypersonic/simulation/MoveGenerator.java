@@ -31,10 +31,10 @@ public class MoveGenerator {
     
     int movesFE = 0;
     moves[movesFE++] = Move.STAY;
-    boolean canMoveUp = (x & 0b1) == 0 && isMovePossible(Move.UP);
-    boolean canMoveDown = (x & 0b1) == 0 && isMovePossible(Move.DOWN);
-    boolean canMoveLeft = (y & 0b1) == 0 && isMovePossible(Move.LEFT);
-    boolean canMoveRight = (y & 0b1) == 0 && isMovePossible(Move.RIGHT);
+    boolean canMoveUp = (y != 0) && (x & 0b1) == 0 && isMovePossible(Move.UP);
+    boolean canMoveDown = (y != Board.HEIGHT-1) && (x & 0b1) == 0 && isMovePossible(Move.DOWN);
+    boolean canMoveLeft = (x != 0) && (y & 0b1) == 0 && isMovePossible(Move.LEFT);
+    boolean canMoveRight = (x != Board.WIDTH-1) && (y & 0b1) == 0 && isMovePossible(Move.RIGHT);
 
     
     if (canMoveUp) moves[movesFE++] = Move.UP;

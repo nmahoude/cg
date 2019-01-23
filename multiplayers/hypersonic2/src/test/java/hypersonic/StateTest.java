@@ -236,7 +236,7 @@ public class StateTest {
       );
       final Bomb bomb = createBomb(state).at(0,2).withTimer(1).withRange(3).build();
 
-      state.board.explode(state, bomb);
+      state.updateBombs();
       
       assertThat(state.board.cells[cell(2,1)], is(not(Board.EMPTY)));
     }
@@ -335,7 +335,7 @@ public class StateTest {
       final Bomb bomb = createBomb(state).at(12,0).withTimer(1).withRange(100).build();
       final Bomb blockingbomb = createBomb(state).at(6,0).withTimer(1).withRange(2).build();
 
-      state.board.explode(state, bomb);
+      state.updateBombs();
       
       assertThat(state.board.cells[cell(2,0)], is(not(Board.EMPTY)));
     }
@@ -360,7 +360,7 @@ public class StateTest {
       final Bomb chainedBomb = createBomb(state).at(2,0).withTimer(10).withRange(10).build();
       
       // bomb should chain with chainedBomb and destroy the box 
-      state.board.explode(state, bomb);
+      state.updateBombs();
       
       assertThat(state.board.cells[cell(2,1)], is(Board.EMPTY));
     }

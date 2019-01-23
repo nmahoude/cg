@@ -141,32 +141,44 @@ public class SimulationTest {
   
   public static void main(String[] args) {
     String input =
-        "..2.2...2.2..\r\n" + 
-        ".X.X1X.X1X.X.\r\n" + 
-        "....0...0....\r\n" + 
-        ".X0X1X.X1X0X.\r\n" + 
-        ".2..1...1..2.\r\n" + 
+        "....20.021...\r\n" + 
+        ".X.X0X2X0X.X.\r\n" + 
+        "....2...2....\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
-        ".2..1...1..2.\r\n" + 
-        ".X0X1X.X1X0X.\r\n" + 
-        "....0...0....\r\n" + 
-        ".X.X1X.X1X.X.\r\n" + 
-        "..2.2...2.2..\r\n" + 
-        "4\r\n" + 
-        "0 0 0 0 1 3\r\n" + 
-        "0 1 12 10 1 3\r\n" + 
-        "0 2 12 0 1 3\r\n" + 
-        "0 3 0 10 1 3";
-    Player.myId = 1;
+        "....0.0......\r\n" + 
+        ".X.X2X2X2X.X.\r\n" + 
+        ".1..0.0.....1\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        "...22...22.21\r\n" + 
+        ".X.X0X2X.X.X.\r\n" + 
+        ".....0.......\r\n" + 
+        "19\r\n" + 
+        "0 0 2 8 0 5\r\n" + 
+        "0 1 11 10 2 5\r\n" + 
+        "0 2 10 4 1 5\r\n" + 
+        "0 3 1 8 1 6\r\n" + 
+        "1 3 4 10 4 6\r\n" + 
+        "1 0 2 4 5 5\r\n" + 
+        "1 2 9 2 5 5\r\n" + 
+        "1 0 2 6 7 5\r\n" + 
+        "1 2 10 2 7 5\r\n" + 
+        "1 3 2 8 8 6\r\n" + 
+        "2 0 2 1 1 1\r\n" + 
+        "2 0 3 0 1 1\r\n" + 
+        "2 0 12 5 1 1\r\n" + 
+        "2 0 3 2 2 2\r\n" + 
+        "2 0 1 4 1 1\r\n" + 
+        "2 0 0 5 1 1\r\n" + 
+        "2 0 0 6 1 1\r\n" + 
+        "2 0 10 1 1 1\r\n" + 
+        "2 0 11 6 1 1";
+    Player.myId = 0;
 
     Scanner in = new Scanner(input);
     Player player = new Player(in);
     player.readGameState();
 
-    // • → ← ↑ ↓ ☢
-//    Move moves[] = readMoves("←,  ↓,  ↓, •");
-    Move moves[] = readMoves("☢↑,  ↑,  ←,  ←,  ↓,  ↑,  •,  ↓,  ↑, ☢↓,  ↓,  ↑,  ↓,  ↑,  ↓,  ←,  •,  →");
-//    Move moves[] = readMoves(" ←,  •,  →, ☢←, ☢←,  ↓,  •, ☢↓, ☢→, ☢→,  •,  •,  ↑,  ↑,  •,  ↓,  ↑,  ↓");
+    Move moves[] = readMoves("↑,  •,  •,  •,  •,  •, ☢•,  →, ☢→,  ↓,  ↑,  •,  ↓,  •,  ↑,  ←,  ←,  ↑");
 //    player.state.addBomb(new Bomb(2, P.get(10, 8), 8, 4));
     
     Simulation sim = new Simulation(player.state);

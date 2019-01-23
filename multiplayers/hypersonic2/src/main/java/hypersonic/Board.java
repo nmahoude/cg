@@ -23,13 +23,6 @@ public class Board {
   public static final int EXPLODED_BOMB = 'B';
   private static final int EXPLODED_ITEM = 'I';
   
-  static final int rot[][] = {
-      { 1, 0 },
-      { 0, 1 },
-      { -1, 0 },
-      { 0, -1 }
-  };
-
   static int explodesBoxMap[] = new int[WIDTH*HEIGHT];
   static int playersMap[] = new int[WIDTH*HEIGHT];
   
@@ -84,41 +77,50 @@ public class Board {
 
 
   public void updateBombs(State state) {
-    // update players map
-    for (int i=0;i<4;i++) {
-      Bomberman p = state.players[i];
-      if (p.isDead) continue;
-      playersMap[p.position.x + WIDTH*p.position.y] = 1;
-    }
-    
+    initPlayersMap(state);
     
     // simulate one turn
+    bombsToExplodeFE = 0;
     for (int i=0;i<bombsFE;i++) {
-      final Bomb b = bombs[i];
-      if (b == null) continue;
-      
+      Bomb b = bombs[i];
       if (b.timer == state.turn) {
+        bombsToExplode[bombsToExplodeFE++] = b;
         bombs[i] = null; // not in this board anymore !
-        explode(state, b);
       }
     }
+    if (bombsToExplodeFE != 0) {
+      explode(state);
+    }
     
-    // rearrange bombs
+    rearrangeBombs();
+    cleanPlayerMap(state);
+
+  }
+
+  private void rearrangeBombs() {
     int current = 0;
     for (int i=0;i<bombsFE;i++) {
       final Bomb b = bombs[i];
       if (b != null) bombs[current++] = b;
     }
     bombsFE = current;
-    
-    // clean players map
+  }
+
+  private void cleanPlayerMap(State state) {
     for (int i=0;i<4;i++) {
       Bomberman p = state.players[i];
       // dont check players state as layer may have died
       // if (p.isDead) continue;
       playersMap[p.position.x + WIDTH*p.position.y] = 0;
     }
+  }
 
+  private void initPlayersMap(State state) {
+    for (int i=0;i<4;i++) {
+      Bomberman p = state.players[i];
+      if (p.isDead) continue;
+      playersMap[p.position.x + WIDTH*p.position.y] = 1;
+    }
   }
 
   static Bomb bombsToExplode[] = new Bomb[MAX_BOMBS];
@@ -127,17 +129,15 @@ public class Board {
   static int destroyedBoxesFE;
   static int destroyedItems[] = new int[WIDTH*HEIGHT];
   static int destroyedItemsFE;
-  void explode(State state, Bomb bomb) {
-    bombsToExplodeFE = 0;
+  void explode(State state) {
     destroyedBoxesFE = 0;
     destroyedItemsFE = 0;
     
-    bombsToExplode[bombsToExplodeFE++] = bomb;
     int currentBombToExplode = 0;
     while (currentBombToExplode != bombsToExplodeFE) {
-      final Bomb b = bombsToExplode[currentBombToExplode++];
+      Bomb b = bombsToExplode[currentBombToExplode++];
       
-      final Bomberman orginalBomberman = state.players[b.owner];
+      Bomberman orginalBomberman = state.players[b.owner];
       orginalBomberman.bombsLeft+=1; // he may be dead, but yolo
       
       P p = b.position;
@@ -146,7 +146,8 @@ public class Board {
       int x = p.x;
       int y = p.y;
       int correctedRange;
-      correctedRange = Math.min(b.range-1, WIDTH-1-p.x);
+      
+      correctedRange = Math.min(b.range-1, WIDTH-1-x);
       for (int d = 0; d < correctedRange; d++) {
         x++;
         if (checkExplosion(state, b.owner, x, y)) {
@@ -155,7 +156,7 @@ public class Board {
       }
       
       x = p.x;
-      correctedRange = Math.min(b.range-1, p.x);
+      correctedRange = Math.min(b.range-1, x);
       for (int d = 0; d < correctedRange; d++) {
         x--;
         if (checkExplosion(state, b.owner, x, y)) {
@@ -164,7 +165,7 @@ public class Board {
       }
       
       x = p.x;
-      correctedRange = Math.min(b.range-1, HEIGHT-1-p.y);
+      correctedRange = Math.min(b.range-1, HEIGHT-1-y);
       for (int d = 0; d < correctedRange; d++) {
         y++;
         if (checkExplosion(state, b.owner, x, y)) {
@@ -173,7 +174,7 @@ public class Board {
       }
       
       y = p.y;
-      correctedRange = Math.min(b.range-1, p.y);
+      correctedRange = Math.min(b.range-1, y);
       for (int d = 0; d < correctedRange; d++) {
         y--;
         if (checkExplosion(state, b.owner, x, y)) {
@@ -196,7 +197,7 @@ public class Board {
       cells[mapIndex] = EMPTY;
     }
     
-    // clear boxes
+    // clear boxes with points
     for (int b=0;b<destroyedBoxesFE;b++) {
       int mapIndex = destroyedBoxes[b];
       int playerMask = explodesBoxMap[mapIndex];
@@ -229,16 +230,20 @@ public class Board {
   }
 
   private boolean checkExplosion(State state, int bombOwner, int x, int y) {
-    if ((x & 0b1) != 0 && (y & 0b1) != 0) return true; // fast wall
+    if ((x & 0b1) != 0 && (y & 0b1) != 0) return true;
     
     int mapIndex = x+WIDTH*y;
     int cellValue = cells[mapIndex];
-    
     if (playersMap[mapIndex] != 0) {
       state.killPlayersAt(x,y);
       playersMap[mapIndex] = 0;
     }
+    if (cellValue == EMPTY) return false;
     
+    return checkCellExplosition(bombOwner, mapIndex, x, y, cellValue);
+  }
+
+  private boolean checkCellExplosition(int bombOwner, int mapIndex, int x, int y, int cellValue) {
     switch (cellValue) {
       case BOX:
       case BOX_1:
@@ -271,35 +276,11 @@ public class Board {
     return false;
   }
 
-  private int getBombIndexAt(final int x, final int y) {
-    for (int i=0;i<bombsFE;i++) {
-      Bomb b = bombs[i];
-      
-      if (b != null && b.position.x == x && b.position.y == y) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  
   public void addBomb(Bomb bomb) {
     localBombs[localBombsFE++] = bomb;
     bombs[bombsFE++] = bomb;
     cells[bomb.position.x+WIDTH*bomb.position.y] = BOMB;
   }
-
-
-  public boolean isOnBoard(int x, int y) {
-    if (x < 0 || x > WIDTH-1) {
-      return false;
-    }
-    if (y < 0 || y > HEIGHT-1) {
-      return false;
-    }
-    return true;
-  }
-
 
   public void addItem(Item item) {
     if (item.type == 1) {
@@ -320,11 +301,7 @@ public class Board {
   }
 
   public boolean canMoveTo(int x, int y) {
-    if (!isOnBoard(x, y)) {
-      return false;
-    }
-    
-    final int value = cells[x+WIDTH*y];
+    int value = cells[x+WIDTH*y];
     return value == EMPTY || value == ITEM_1 || value == ITEM_2;
   }
   

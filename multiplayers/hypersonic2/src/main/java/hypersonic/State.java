@@ -84,10 +84,6 @@ public class State {
     return players[owner];
   }
 
-  boolean isOnBoard(int x, int y) {
-    return board.isOnBoard(x,y);
-  }
-
   public Bomberman getBomberman(int index) {
     return players[index];
   }
