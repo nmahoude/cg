@@ -3,6 +3,7 @@ package hypersonic.simulation;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 import org.junit.Before;
@@ -10,6 +11,8 @@ import org.junit.Test;
 
 import hypersonic.Move;
 import hypersonic.Player;
+import hypersonic.State;
+import hypersonic.ai.MC;
 import hypersonic.ai.Score;
 import hypersonic.utils.P;
 
@@ -141,63 +144,82 @@ public class SimulationTest {
   
   public static void main(String[] args) {
     String input =
-        "....20.021...\r\n" + 
-        ".X.X0X2X0X.X.\r\n" + 
-        "....2...2....\r\n" + 
+        "........111..\r\n" + 
+        ".X.X.X.X.X2X.\r\n" + 
+        "............0\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
-        "....0.0......\r\n" + 
-        ".X.X2X2X2X.X.\r\n" + 
-        ".1..0.0.....1\r\n" + 
+        ".............\r\n" + 
+        ".X.X.X2X.X.X.\r\n" + 
+        ".............\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
-        "...22...22.21\r\n" + 
-        ".X.X0X2X.X.X.\r\n" + 
-        ".....0.......\r\n" + 
-        "19\r\n" + 
-        "0 0 2 8 0 5\r\n" + 
-        "0 1 11 10 2 5\r\n" + 
-        "0 2 10 4 1 5\r\n" + 
-        "0 3 1 8 1 6\r\n" + 
-        "1 3 4 10 4 6\r\n" + 
-        "1 0 2 4 5 5\r\n" + 
-        "1 2 9 2 5 5\r\n" + 
-        "1 0 2 6 7 5\r\n" + 
-        "1 2 10 2 7 5\r\n" + 
-        "1 3 2 8 8 6\r\n" + 
-        "2 0 2 1 1 1\r\n" + 
-        "2 0 3 0 1 1\r\n" + 
-        "2 0 12 5 1 1\r\n" + 
-        "2 0 3 2 2 2\r\n" + 
-        "2 0 1 4 1 1\r\n" + 
-        "2 0 0 5 1 1\r\n" + 
-        "2 0 0 6 1 1\r\n" + 
-        "2 0 10 1 1 1\r\n" + 
-        "2 0 11 6 1 1";
+        ".............\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        "..111...11...\r\n" + 
+        "21\r\n" + 
+        "0 0 8 2 4 8\r\n" + 
+        "0 1 6 7 2 7\r\n" + 
+        "1 1 4 7 3 6\r\n" + 
+        "1 0 10 3 4 8\r\n" + 
+        "1 1 4 9 5 6\r\n" + 
+        "1 1 4 8 6 6\r\n" + 
+        "1 0 10 2 7 8\r\n" + 
+        "1 1 5 8 7 6\r\n" + 
+        "2 0 10 10 1 1\r\n" + 
+        "2 0 10 9 2 2\r\n" + 
+        "2 0 4 0 1 1\r\n" + 
+        "2 0 8 9 2 2\r\n" + 
+        "2 0 7 10 1 1\r\n" + 
+        "2 0 5 10 1 1\r\n" + 
+        "2 0 1 8 2 2\r\n" + 
+        "2 0 4 1 2 2\r\n" + 
+        "2 0 2 9 2 2\r\n" + 
+        "2 0 7 0 1 1\r\n" + 
+        "2 0 8 1 2 2\r\n" + 
+        "2 0 5 0 1 1\r\n" + 
+        "2 0 6 3 1 1";
     Player.myId = 0;
 
     Scanner in = new Scanner(input);
     Player player = new Player(in);
     player.readGameState();
-
-    Move moves[] = readMoves("↑,  •,  •,  •,  •,  •, ☢•,  →, ☢→,  ↓,  ↑,  •,  ↓,  •,  ↑,  ←,  ←,  ↑");
+    // ← ↑ → ↓ ☢
+    Move moves[];
 //    player.state.addBomb(new Bomb(2, P.get(10, 8), 8, 4));
-    
-    Simulation sim = new Simulation(player.state);
+    /* me */ moves = readMoves("☢←, ☢←,  ←,  →,  ↑, ☢•");
+    doSimulationOfMoves(moves, player.state);
+
+    MoveGenerator gen = new MoveGenerator(simState);
+    Move[] possibleMoves = new Move[10];
+    int count = gen.getPossibleMoves(possibleMoves);
+    System.err.println("Possible moves : "+Arrays.asList(possibleMoves));
+  }
+
+  static State simState = new State();
+  private static void doSimulationOfMoves(Move[] moves, State model) {
+    simState.copyFrom(model);
+    Simulation sim = new Simulation(simState);
     double score = 0.0;
     System.err.println("Debug score ");
+    int initBoxCount = simState.board.boxCount;
+    
     for (int i=0;i<moves.length;i++) {
-      player.state.players[Player.myId].points = 0;
-      P newPos = P.get(player.state.players[Player.myId].position.x + moves[i].dx, 
-          player.state.players[Player.myId].position.y + moves[i].dy);
-      if (!player.state.canWalkOn(newPos)) {
+      simState.players[0].points = 0;
+      simState.players[1].points = 0;
+      simState.players[2].points = 0;
+      simState.players[3].points = 0;
+      P newPos = P.get(simState.players[Player.myId].position.x + moves[i].dx, 
+          simState.players[Player.myId].position.y + moves[i].dy);
+      if (moves[i] != Move.STAY && moves[i] != Move.STAY_BOMB && !simState.canWalkOn(newPos)) {
         throw new RuntimeException("player can't go where it thinks it can go at "+i+" => "+moves[i]);
       }
       sim.simulate(moves[i]);
-      double tmpScore = Score.score(player.state, i);
-      score += tmpScore;
-      System.err.println(tmpScore);
+      double tmpScore = Score.score(simState, i, moves[i]);
+      score += MC.patience[i] * tmpScore;
+      System.err.print("("+i+")"+tmpScore+" , ");
     }
+    System.err.println();
     System.err.println("Score  = "+score);
-    
+    System.err.println("Delta box : "+(simState.board.boxCount - initBoxCount));
   }
   
   private static Move[] readMoves(String movesFromArray) {

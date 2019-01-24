@@ -11,6 +11,9 @@ import hypersonic.utils.P;
 public class Simulation {
   public State state;
   
+  public static int deltaRange = 0;
+  public static int deltaBomb = 0;
+  
   public Simulation(State board) {
     this.state = board;
   }
@@ -20,6 +23,9 @@ public class Simulation {
   }
   
   public final void simulate(final Move move) {
+    deltaRange = 0;
+    deltaBomb = 0;
+    
     state.updateBombs();
     simulateMove(move);
   }

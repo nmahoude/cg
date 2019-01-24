@@ -24,7 +24,7 @@ public class MoveGenerator {
     return getPossibleMoves(moves, canBomb);
   }
   
-  private int getPossibleMoves(Move[] moves, boolean canBomb) {
+  private int getPossibleMoves(Move[] moves, boolean wantToBomb) {
     Bomberman me = state.players[Player.myId];
     int x = me.position.x;
     int y = me.position.y;
@@ -42,7 +42,7 @@ public class MoveGenerator {
     if (canMoveLeft) moves[movesFE++] = Move.LEFT;
     if (canMoveRight) moves[movesFE++] = Move.RIGHT;
     
-    if (canBomb) {
+    if (wantToBomb && state.board.cells[x+Board.WIDTH*y] != Board.BOMB) {
       moves[movesFE++] = Move.STAY_BOMB;
       if (canMoveUp) moves[movesFE++] = Move.UP_BOMB;
       if (canMoveDown) moves[movesFE++] = Move.DOWN_BOMB;
@@ -58,8 +58,6 @@ public class MoveGenerator {
     Bomberman me = state.players[Player.myId];
     int x = me.position.x;
     int y = me.position.y;
-    if (move.dropBomb && me.bombsLeft <=0) return false;
-    if (move.dropBomb && state.board.cells[x+Board.WIDTH*y] == Board.BOMB) return false;
     return state.board.canMoveTo(x + move.dx , y + move.dy);
   }
 

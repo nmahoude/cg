@@ -4,10 +4,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Scanner;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import hypersonic.Move;
@@ -98,39 +98,44 @@ public class MCTest {
   }
   
   
-  @Test
-  @Ignore
-  public void debug() throws Exception {
-    String input  ="....20.021...\r\n" + 
-        ".X.X0X2X0X.X.\r\n" + 
-        "....2...2....\r\n" + 
+  public static void main(String[] args) {
+    Player.rand = new Random(0);
+    
+    String input  =".............\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
-        "....0.0......\r\n" + 
-        ".X.X2X2X2X.X.\r\n" + 
-        ".1..0.0.....1\r\n" + 
+        "............0\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
-        "...22...22.21\r\n" + 
-        ".X.X0X2X.X.X.\r\n" + 
-        ".....0.......\r\n" + 
-        "18\r\n" + 
-        "0 0 3 6 1 5\r\n" + 
-        "0 1 11 10 2 5\r\n" + 
-        "0 2 10 4 1 5\r\n" + 
-        "0 3 2 7 1 6\r\n" + 
-        "1 3 4 10 4 6\r\n" + 
-        "1 0 2 4 5 5\r\n" + 
-        "1 2 11 2 5 5\r\n" + 
-        "1 2 10 2 7 5\r\n" + 
+        "..........200\r\n" + 
+        ".X.X.X.X.X.X1\r\n" + 
+        "..2.......20.\r\n" + 
+        ".X.X.X.X.X1X.\r\n" + 
+        ".............\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        "..2..1.......\r\n" + 
+        "23\r\n" + 
+        "0 0 1 4 4 5\r\n" + 
+        "0 1 6 7 1 7\r\n" + 
+        "1 1 4 10 1 6\r\n" + 
+        "1 1 4 9 2 6\r\n" + 
+        "1 1 4 8 3 6\r\n" + 
+        "1 1 4 7 4 7\r\n" + 
+        "1 1 4 6 5 7\r\n" + 
+        "1 1 5 6 6 7\r\n" + 
+        "2 0 7 10 1 1\r\n" + 
+        "2 0 10 9 1 1\r\n" + 
+        "2 0 6 0 2 2\r\n" + 
         "2 0 2 1 1 1\r\n" + 
-        "2 0 3 0 1 1\r\n" + 
-        "2 0 12 5 1 1\r\n" + 
-        "2 0 3 2 2 2\r\n" + 
-        "2 0 1 4 1 1\r\n" + 
-        "2 0 0 5 1 1\r\n" + 
-        "2 0 0 6 1 1\r\n" + 
-        "2 0 1 8 2 2\r\n" + 
+        "2 0 2 3 1 1\r\n" + 
         "2 0 10 1 1 1\r\n" + 
-        "2 0 11 6 1 1";
+        "2 0 10 3 1 1\r\n" + 
+        "2 0 10 0 2 2\r\n" + 
+        "2 0 7 0 1 1\r\n" + 
+        "2 0 9 4 2 2\r\n" + 
+        "2 0 3 6 2 2\r\n" + 
+        "2 0 9 6 2 2\r\n" + 
+        "2 0 2 7 1 1\r\n" + 
+        "2 0 2 9 1 1\r\n" + 
+        "2 0 2 4 2 2";
     Player.myId = 0;
     Player.DEBUG_AI = true;
     

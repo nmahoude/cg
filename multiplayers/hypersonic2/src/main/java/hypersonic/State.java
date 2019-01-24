@@ -3,6 +3,7 @@ package hypersonic;
 import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.entities.Item;
+import hypersonic.simulation.Simulation;
 import hypersonic.utils.P;
 
 public class State {
@@ -96,10 +97,12 @@ public class State {
     final int value = board.cells[p.x+Board.WIDTH*p.y];
     if ( value == Board.ITEM_1) {
       player.currentRange+=1;
+      Simulation.deltaRange+=1;
       board.cells[p.x+Board.WIDTH*p.y] = Board.EMPTY;
     } else if (value == Board.ITEM_2) {
       player.bombsLeft+=1;
       player.bombCount+=1;
+      Simulation.deltaBomb+=1;
       board.cells[p.x+Board.WIDTH*p.y] = Board.EMPTY;
     }
     player.position = p;

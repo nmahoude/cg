@@ -13,14 +13,14 @@ import hypersonic.simulation.Simulation;
 
 public class MC {
   private static final int TIME_LIMIT = 50;
-
-  private static final int DEPTH = 18;
+  private static final int DROP_BOMB_TIME_LIMIT = 25;
+  private static final int DEPTH = 20;
 
   public static double patience[];
   static {
     patience = new double[100];
     for (int i=0;i<100;i++) {
-      patience[i] =Math.pow(0.99, i);
+      patience[i] =Math.pow(0.9, i);
     }
   }
   public State state = new State();
@@ -29,7 +29,7 @@ public class MC {
   MoveGenerator gen = new MoveGenerator(state);
   
   public static Move[] bestMoves = new Move[DEPTH];
-  Move[] allowedMoves = new Move[16];
+  Move[] allowedMoves = new Move[10];
   int movesFE;
 
   private double bestScore;
@@ -56,7 +56,7 @@ public class MC {
         long duration = System.currentTimeMillis() - Player.startTime;
         if (duration > TIME_LIMIT) {
           break;
-        } else if (duration > 20) {
+        } else if (duration > DROP_BOMB_TIME_LIMIT) {
           if (!survivableSituation) {
             // we did'nt find any safe routes until now, 
             // so stop dropping ennemy bombs to try to find a safe route now
@@ -68,27 +68,23 @@ public class MC {
       double score = 0;
       this.state.copyFrom(model);
       for (int t=0;t<DEPTH;t++) {
-        this.state.players[Player.myId].points = 0;
-
-        if (t <= DEPTH - Bomb.DEFAULT_TIMER - 1 ) {
+        this.state.players[0].points = 0;
+        this.state.players[1].points = 0;
+        this.state.players[2].points = 0;
+        this.state.players[3].points = 0;
+        
+        
+        if (t <= 1000 + DEPTH - Bomb.DEFAULT_TIMER - 1 ) {
           movesFE = gen.getPossibleMoves(allowedMoves);
         } else {
           movesFE = gen.getPossibleMovesWithoutBombs(allowedMoves);
         }
 
         Move move = allowedMoves[Player.rand.nextInt(movesFE)];
-        if (dropEnnemyBombs && t == 0) {
-          // for all players different than me and who can, drop a bomb at first one
-          for (int i=0;i<4;i++) {
-            if (i == Player.myId) continue;
-            Bomberman b = state.players[i];
-            if (b.isDead || b.bombsLeft == 0) continue;
-            state.addBomb(Cache.popBomb(i, b.position, 8, b.currentRange));
-          }
-        }
+        dropEnnemiesBombIfNeeded(dropEnnemyBombs, t);
         allMoves[t] = move;
         simulator.simulate(move);
-        score += patience[t] * Score.score(state, t);
+        score += patience[t] * Score.score(state, t, move);
 
         if (this.state.players[Player.myId].isDead) {
           break;
@@ -103,20 +99,70 @@ public class MC {
         survivableSituation |= !this.state.players[Player.myId].isDead;
         if(Player.DEBUG_AI) {
           System.err.println("New best score : "+bestScore);
-          System.err.println("best move : "+Arrays.asList(allMoves));
+          System.err.println("best move : "+Arrays.asList(bestMoves));
           System.err.println("Status pos = "+this.state.players[Player.myId].position);
           System.err.println("Status dead = "+this.state.players[Player.myId].isDead);
           System.err.println("Drop bombs ? "+dropEnnemyBombs);
         }
       }
     }
+    
+    message = ""+simu + " / "+(System.currentTimeMillis()-Player.startTime)+ " db:"+dropEnnemyBombs;
+    if (bestMoves[0] != null && bestMoves[0].dropBomb) {
+      // do one last test with the same moves, but do not bomb the 1st move !
+      switch(bestMoves[0]) {
+      case STAY_BOMB: allMoves[0] = Move.STAY; break;
+      case RIGHT_BOMB: allMoves[0] = Move.RIGHT; break;
+      case LEFT_BOMB: allMoves[0] = Move.LEFT; break;
+      case UP_BOMB: allMoves[0] = Move.UP; break;
+      case DOWN_BOMB: allMoves[0] = Move.DOWN; break;
+      }
+      for (int i=1;i<DEPTH;i++) {
+        allMoves[i]=bestMoves[i];
+      }
+      double score = 0;
+      this.state.copyFrom(model);
+      for (int t=0;t<DEPTH;t++) {
+        this.state.players[0].points = 0;
+        this.state.players[1].points = 0;
+        this.state.players[2].points = 0;
+        this.state.players[3].points = 0;
+        dropEnnemiesBombIfNeeded(dropEnnemyBombs, t);
+        simulator.simulate(allMoves[t]);
+        score += patience[t] * Score.score(state, t, allMoves[t]);
+
+        if (this.state.players[Player.myId].isDead) {
+          break;
+        }
+      }      
+      if (score > bestScore) {
+        System.err.println("Solutions without bomb at 0 is better ! "+score+" > "+bestScore);
+        bestScore = score;
+        Move tmp[] = bestMoves;
+        bestMoves = allMoves;
+        allMoves = tmp;
+        message = "!";
+      }
+    }
+    
     if (Player.DEBUG_AI) {
       System.err.println("Simulations : " + simu);
       System.err.println("Still drop bombs? : "+dropEnnemyBombs);
     }
     System.err.println("Best (db:"+dropEnnemyBombs+"): "+Arrays.asList(bestMoves)+ " => "+bestScore);
     
-    message = ""+simu + " / "+(System.currentTimeMillis()-Player.startTime)+ " db:"+dropEnnemyBombs;
+  }
+
+  private void dropEnnemiesBombIfNeeded(boolean dropEnnemyBombs, int t) {
+    if (dropEnnemyBombs && t == 0) {
+      // for all players different than me and who can, drop a bomb at first one
+      for (int i=0;i<4;i++) {
+        if (i == Player.myId) continue;
+        Bomberman b = state.players[i];
+        if (b.isDead || b.bombsLeft == 0) continue;
+        state.addBomb(Cache.popBomb(i, b.position, 8, b.currentRange));
+      }
+    }
   }
 
   private void startWithLastBestMove(State model) {
@@ -138,7 +184,7 @@ public class MC {
         score = -1_000_000 + t; // die the latest
         break;
       } else {
-        score += patience[t] * Score.score(state, t);
+        score += patience[t] * Score.score(state, t, bestMoves[t]);
       }
     }
     bestScore = score;

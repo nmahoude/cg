@@ -4,10 +4,12 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
+import hypersonic.ai.HeatMap;
 import hypersonic.ai.MC;
 import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.entities.Item;
+import hypersonic.simulation.Simulation;
 import hypersonic.utils.P;
 
 public class Player {
@@ -24,7 +26,7 @@ public class Player {
   private int turn = 0;
   private Scanner in;
   public static P goal;
-
+  
   public Player(Scanner in) {
     this.in = in;
   }
@@ -58,34 +60,8 @@ public class Player {
   public void readGameState() {
     initState();
     initEntities();
-    
-    initGoal();
-  }
-  private void initGoal() {
-    // find the closest box
-    int px = state.players[myId].position.x;
-    int py = state.players[myId].position.y;
-    
-    double best = Double.POSITIVE_INFINITY;
-    P bestPos = null;
-    for (int y=0;y<Board.HEIGHT;y++) {
-      for (int x=0;x<Board.WIDTH;x++) {
-        int value = state.board.cells[x+Board.WIDTH*y];
-        if (value == Board.BOX || value == Board.BOX_1 || value == Board.BOX_2) {
-          double dist = Math.abs(px-x)+Math.abs(py-y);
-          if (value == Board.BOX_1) {
-            dist -= 0.1;
-          } else if (value == Board.BOX_2) {
-            dist -= 0.5;
-          }
-          if ( dist < best) {
-            best = dist;
-            bestPos = P.get(x, y);
-          }
-        }
-      }
-    }
-    goal = bestPos;
+
+    HeatMap.calculate(this.state);
   }
 
   private void initEntities() {
