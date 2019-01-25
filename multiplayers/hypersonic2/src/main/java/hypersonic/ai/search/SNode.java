@@ -19,12 +19,13 @@ public class SNode {
 
   SNode parent;
   Move moveToHere = Move.STAY;
-  SNode children[] = new SNode[10];
-  Move moves[] = new Move[10];
+  int firstChildIndex = -1;
+  Move moves[] = new Move[10]; // TODO use a cache of possible moves ? 2^10 = 1024 only ?
   int movesFE = 0;
   
   public State state = new State();
   double score;
+  int visits = 0;
   
   public void reset() {
     state.clean();
@@ -37,7 +38,15 @@ public class SNode {
     if (movesFE == -1) {
       generateChildren(depth, dropEnnemyBombs);
     }
-    return children[Player.rand.nextInt(movesFE)];
+    
+    SNode sNode = choseChild();
+    sNode.visits++;
+    return sNode;
+  }
+
+  private SNode choseChild() {
+    // random for now
+    return SNodeCache.nodes[firstChildIndex + Player.rand.nextInt(movesFE)];
   }
 
   
@@ -49,8 +58,9 @@ public class SNode {
     } else {
       movesFE = gen.getPossibleMovesWithoutBombs(moves);
     }
+    firstChildIndex = SNodeCache.reserve(movesFE);
     for (int i=0;i<movesFE;i++) {
-      SNode node = SNodeCache.pop();
+      SNode node = SNodeCache.nodes[firstChildIndex+i];
       node.parent = this;
       node.state.copyFrom(this.state);
       node.moveToHere = moves[i];
@@ -60,7 +70,8 @@ public class SNode {
       sim.state = node.state;
       sim.simulate(moves[i]);
       node.score = Score.score(node.state, depth, moves[i]);
-      children[i] = node;
+      node.visits = 0;
+      SNodeCache.nodes[firstChildIndex + i] = node;
     }
   }
 
