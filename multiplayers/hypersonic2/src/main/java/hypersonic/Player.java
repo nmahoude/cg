@@ -5,11 +5,11 @@ import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
 import hypersonic.ai.HeatMap;
-import hypersonic.ai.MC;
+import hypersonic.ai.search.SNodeCache;
+import hypersonic.ai.search.Search;
 import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.entities.Item;
-import hypersonic.simulation.Simulation;
 import hypersonic.utils.P;
 
 public class Player {
@@ -33,7 +33,7 @@ public class Player {
 
   void play() {
     readInitialData();
-    MC ai = new MC();
+    Search ai = new Search();
     
     while (true) {
       turn++;
@@ -58,6 +58,7 @@ public class Player {
   }
   
   public void readGameState() {
+    SNodeCache.reset();
     initState();
     initEntities();
 

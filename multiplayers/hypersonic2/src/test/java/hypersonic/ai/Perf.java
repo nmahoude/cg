@@ -2,10 +2,8 @@ package hypersonic.ai;
 
 import java.util.Scanner;
 
-import org.junit.After;
-import org.junit.Test;
-
 import hypersonic.Player;
+import hypersonic.ai.search.Search;
 
 public class Perf {
 
@@ -46,7 +44,7 @@ public class Perf {
     Player player = new Player(in);
     player.readGameState();
     
-    MC mc = new MC();
+    Search mc = new Search();
     
     Player.startTime = System.currentTimeMillis()+100_000;
     mc.think(player.state);

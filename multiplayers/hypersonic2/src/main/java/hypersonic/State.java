@@ -22,7 +22,7 @@ public class State {
     clean();
   }
   
-  private void clean() {
+  public void clean() {
     board.clean();
     
     playersFE = 4;
@@ -121,5 +121,12 @@ public class State {
 
   public boolean canWalkOn(P p) {
     return board.canWalkOn(p);
+  }
+
+  public void resetPlayerPoints() {
+    players[0].points = 0;
+    players[1].points = 0;
+    players[2].points = 0;
+    players[3].points = 0;
   }
 }

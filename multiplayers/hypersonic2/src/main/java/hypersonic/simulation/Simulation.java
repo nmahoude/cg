@@ -25,6 +25,7 @@ public class Simulation {
   public final void simulate(final Move move) {
     deltaRange = 0;
     deltaBomb = 0;
+    state.resetPlayerPoints();
     
     state.updateBombs();
     simulateMove(move);

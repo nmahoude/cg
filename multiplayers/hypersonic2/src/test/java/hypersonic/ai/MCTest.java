@@ -101,41 +101,20 @@ public class MCTest {
   public static void main(String[] args) {
     Player.rand = new Random(0);
     
-    String input  =".............\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        "............0\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        "..........200\r\n" + 
-        ".X.X.X.X.X.X1\r\n" + 
-        "..2.......20.\r\n" + 
-        ".X.X.X.X.X1X.\r\n" + 
-        ".............\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        "..2..1.......\r\n" + 
-        "23\r\n" + 
-        "0 0 1 4 4 5\r\n" + 
-        "0 1 6 7 1 7\r\n" + 
-        "1 1 4 10 1 6\r\n" + 
-        "1 1 4 9 2 6\r\n" + 
-        "1 1 4 8 3 6\r\n" + 
-        "1 1 4 7 4 7\r\n" + 
-        "1 1 4 6 5 7\r\n" + 
-        "1 1 5 6 6 7\r\n" + 
-        "2 0 7 10 1 1\r\n" + 
-        "2 0 10 9 1 1\r\n" + 
-        "2 0 6 0 2 2\r\n" + 
-        "2 0 2 1 1 1\r\n" + 
-        "2 0 2 3 1 1\r\n" + 
-        "2 0 10 1 1 1\r\n" + 
-        "2 0 10 3 1 1\r\n" + 
-        "2 0 10 0 2 2\r\n" + 
-        "2 0 7 0 1 1\r\n" + 
-        "2 0 9 4 2 2\r\n" + 
-        "2 0 3 6 2 2\r\n" + 
-        "2 0 9 6 2 2\r\n" + 
-        "2 0 2 7 1 1\r\n" + 
-        "2 0 2 9 1 1\r\n" + 
-        "2 0 2 4 2 2";
+    String input  ="..1210.0121..\r\n" + 
+        ".X1X0X.X0X1X.\r\n" + 
+        "1.2..212..2.1\r\n" + 
+        "2X1X.X0X.X1X2\r\n" + 
+        ".0.0.2.2.0.0.\r\n" + 
+        ".X.X2X.X2X.X.\r\n" + 
+        ".0.0.2.2.0.0.\r\n" + 
+        "2X1X.X0X.X1X2\r\n" + 
+        "1.2..212..2.1\r\n" + 
+        ".X1X0X.X0X1X.\r\n" + 
+        "..1210.0121..\r\n" + 
+        "2\r\n" + 
+        "0 0 0 0 1 3\r\n" + 
+        "0 1 12 10 1 3";
     Player.myId = 0;
     Player.DEBUG_AI = true;
     
@@ -149,6 +128,5 @@ public class MCTest {
     mc.think(player.state);
     
     System.err.println(Arrays.asList(MC.bestMoves));
-    assertThat(MC.bestMoves[0], is(Move.UP_BOMB));
   }
 }

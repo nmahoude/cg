@@ -11,7 +11,14 @@ public class Score {
   private static final double BOX_DESTROYED_BONUS = 10_000.0;
   private static final double DEAD_MALUS = -1_000_000;
   public static final double WALK_OVER_MALUS = -50_000;
-
+  public static double patience[];
+  static {
+    patience = new double[100];
+    for (int i=0;i<100;i++) {
+      patience[i] =Math.pow(0.9, i);
+    }
+  }
+  
   public static double score(State state, int depth, Move move) {
     double score = 0.0;
     Bomberman me = state.players[Player.myId];
@@ -21,42 +28,38 @@ public class Score {
     }
 
     if (depth == 0) {
-      // on first step, big malus for stepping over a opponent (means we follow him)
+      // on first step, big malus for stepping over a opponent that has bomb (means we follow him)
       for (int i=0;i<4;i++) {
         if (i == Player.myId) continue;
         Bomberman p = state.players[i];
         if (p.isDead) continue;
-        if (p.position.x == me.position.x && p.position.y == me.position.y) {
+        if (p.bombsLeft > 0 && p.position.x == me.position.x && p.position.y == me.position.y) {
           score += WALK_OVER_MALUS;
         }
       }
     }
     
     score += BOX_DESTROYED_BONUS * me.points;
-    for (int i=0;i<4;i++) {
-      if (i == Player.myId) continue;
-      if (state.players[i].isDead) continue;
-      score -= BOX_DESTROYED_BONUS * state.players[i].points; 
-    }
     
     if (me.bombCount < 5) {
-      score += 10_000 * Simulation.deltaBomb;
+      score += BOX_DESTROYED_BONUS * Simulation.deltaBomb;
     } else {
       score += 1.1 * Simulation.deltaBomb;
     }
     if (me.currentRange < 5) {
-      score += 3.0 * Simulation.deltaRange;
+      score += 5.0 * Simulation.deltaRange;
     } else {
       score += Simulation.deltaRange;
     }
-    if (move.dropBomb) {
-      score -= 1.0;
+    if (!move.dropBomb) {
+      score += 5.0;
     }
 
+    
 //    score -= 0.001 * Math.abs(me.position.x - Board.WIDTH/2.);
 //    score -= 0.001 * Math.abs(me.position.y - Board.HEIGHT/2.);
-
-      score += 100.0 * HeatMap.score[me.position.x+Board.WIDTH*me.position.y];
+    
+      score += 1.0 * HeatMap.score[me.position.x+Board.WIDTH*me.position.y];
     
     // TODO : if we are losing, better go next to our rivals and bomb them 
 //    if (state.board.boxCount == 0) {
@@ -69,6 +72,6 @@ public class Score {
 //      }
 //    }
     
-    return score;
+    return patience[depth] * score;
   }
 }

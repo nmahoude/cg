@@ -51,7 +51,7 @@ public class SANode {
         score = -1_000_000;
         return;
       } else {
-        scores[step] = MC.patience[step] * Score.score(state, step, move); 
+        scores[step] = Score.score(state, step, move); 
         score += scores[step];
       }
     }

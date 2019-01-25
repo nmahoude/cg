@@ -8,7 +8,7 @@ import hypersonic.entities.Bomberman;
 
 public class MoveGenerator {
 
-  private State state;
+  public State state;
 
   public MoveGenerator(State board) {
     this.state = board;

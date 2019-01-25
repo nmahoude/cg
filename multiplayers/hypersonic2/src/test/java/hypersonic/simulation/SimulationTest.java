@@ -12,8 +12,8 @@ import org.junit.Test;
 import hypersonic.Move;
 import hypersonic.Player;
 import hypersonic.State;
-import hypersonic.ai.MC;
 import hypersonic.ai.Score;
+import hypersonic.entities.Bomb;
 import hypersonic.utils.P;
 
 public class SimulationTest {
@@ -144,39 +144,29 @@ public class SimulationTest {
   
   public static void main(String[] args) {
     String input =
-        "........111..\r\n" + 
-        ".X.X.X.X.X2X.\r\n" + 
-        "............0\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        ".............\r\n" + 
-        ".X.X.X2X.X.X.\r\n" + 
-        ".............\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        ".............\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        "..111...11...\r\n" + 
-        "21\r\n" + 
-        "0 0 8 2 4 8\r\n" + 
-        "0 1 6 7 2 7\r\n" + 
-        "1 1 4 7 3 6\r\n" + 
-        "1 0 10 3 4 8\r\n" + 
-        "1 1 4 9 5 6\r\n" + 
-        "1 1 4 8 6 6\r\n" + 
-        "1 0 10 2 7 8\r\n" + 
-        "1 1 5 8 7 6\r\n" + 
-        "2 0 10 10 1 1\r\n" + 
-        "2 0 10 9 2 2\r\n" + 
+        ".....2121....\r\n" + 
+        ".X.X2X.X2X0X.\r\n" + 
+        ".10002020001.\r\n" + 
+        ".X1X1X0X1X1X.\r\n" + 
+        "...1.0.0.1...\r\n" + 
+        ".X2X.X.X.X2X.\r\n" + 
+        "...1.0.0.1...\r\n" + 
+        ".X1X1X0X1X1X.\r\n" + 
+        ".1000202000..\r\n" + 
+        ".X0X2X.X2X.X.\r\n" + 
+        "....1212.....\r\n" + 
+        "11\r\n" + 
+        "0 0 0 4 2 3\r\n" + 
+        "0 1 11 4 2 3\r\n" + 
+        "1 1 10 6 1 3\r\n" + 
+        "1 0 2 4 7 3\r\n" + 
+        "1 1 12 5 7 3\r\n" + 
+        "2 0 8 10 1 1\r\n" + 
         "2 0 4 0 1 1\r\n" + 
-        "2 0 8 9 2 2\r\n" + 
-        "2 0 7 10 1 1\r\n" + 
-        "2 0 5 10 1 1\r\n" + 
-        "2 0 1 8 2 2\r\n" + 
-        "2 0 4 1 2 2\r\n" + 
-        "2 0 2 9 2 2\r\n" + 
-        "2 0 7 0 1 1\r\n" + 
-        "2 0 8 1 2 2\r\n" + 
-        "2 0 5 0 1 1\r\n" + 
-        "2 0 6 3 1 1";
+        "2 0 11 8 1 1\r\n" + 
+        "2 0 12 2 2 2\r\n" + 
+        "2 0 1 6 2 2\r\n" + 
+        "2 0 0 8 2 2";
     Player.myId = 0;
 
     Scanner in = new Scanner(input);
@@ -184,10 +174,17 @@ public class SimulationTest {
     player.readGameState();
     // ← ↑ → ↓ ☢
     Move moves[];
-//    player.state.addBomb(new Bomb(2, P.get(10, 8), 8, 4));
-    /* me */ moves = readMoves("☢←, ☢←,  ←,  →,  ↑, ☢•");
+//    player.state.addBomb(new Bomb(2, P.get(4, 4), 8, 4));
+    /* me */ moves = readMoves("☢↓, ☢•,  •,  ↓,  →, ☢→,  •, ☢•,  •,  •,  ↑, ☢↑,  →,  •,  →,  ↓,  ↑,  •,  ←,  •");
     doSimulationOfMoves(moves, player.state);
 
+    /* me */ moves = readMoves("↓, ☢•,  •,  ↓,  →, ☢→,  •, ☢•,  •,  •,  ↑, ☢↑,  →,  •,  →,  ↓,  ↑,  •,  ←,  •");
+    doSimulationOfMoves(moves, player.state);
+
+    displayPossibleMoves();
+  }
+
+  private static void displayPossibleMoves() {
     MoveGenerator gen = new MoveGenerator(simState);
     Move[] possibleMoves = new Move[10];
     int count = gen.getPossibleMoves(possibleMoves);
@@ -203,10 +200,7 @@ public class SimulationTest {
     int initBoxCount = simState.board.boxCount;
     
     for (int i=0;i<moves.length;i++) {
-      simState.players[0].points = 0;
-      simState.players[1].points = 0;
-      simState.players[2].points = 0;
-      simState.players[3].points = 0;
+      simState.resetPlayerPoints();
       P newPos = P.get(simState.players[Player.myId].position.x + moves[i].dx, 
           simState.players[Player.myId].position.y + moves[i].dy);
       if (moves[i] != Move.STAY && moves[i] != Move.STAY_BOMB && !simState.canWalkOn(newPos)) {
@@ -214,11 +208,12 @@ public class SimulationTest {
       }
       sim.simulate(moves[i]);
       double tmpScore = Score.score(simState, i, moves[i]);
-      score += MC.patience[i] * tmpScore;
+      score += tmpScore;
       System.err.print("("+i+")"+tmpScore+" , ");
     }
     System.err.println();
     System.err.println("Score  = "+score);
+    System.err.println("Dead ? "+simState.players[Player.myId].isDead);
     System.err.println("Delta box : "+(simState.board.boxCount - initBoxCount));
   }
   
