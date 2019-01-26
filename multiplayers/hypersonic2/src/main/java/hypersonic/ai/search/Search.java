@@ -10,20 +10,20 @@ import hypersonic.entities.Bomberman;
 
 public class Search {
   public static final int DEPTH = 20;
-  private static final int MAX_BRUTE_DEPTH = 5; // depth where we keep all nodes
+  static final int MAX_BRUTE_DEPTH = 5; // depth where we keep all nodes
 
   private static final long TIME_LIMIT = 50;
   private static final long DROP_BOMB_TIME_LIMIT = 10;
 
   
   private SNode root;
-  public static Move[] bestMoves = new Move[DEPTH];
-  private static Move allMoves[] = new Move[DEPTH];
+  private static Move[] bestMoves = new Move[DEPTH];
+  public static Move allMoves[] = new Move[DEPTH];
   private double bestScore;
   
   
-  private boolean dropEnnemyBombs = true;
-  private boolean survivableSituation = false;
+  static boolean dropEnnemyBombs = true;
+  static boolean survivableSituation = false;
   private String message = "";
   
   public void think(State model) {
@@ -60,7 +60,7 @@ public class Search {
     
     message  = ""+simu + " / "+(System.currentTimeMillis()-Player.startTime)+ " db:"+dropEnnemyBombs;
     
-    BombOptimizer.optimizeBombs(bestMoves, bestScore, DEPTH, model, dropEnnemyBombs);
+    //BombOptimizer.optimizeBombs(bestMoves, bestScore, DEPTH, model, dropEnnemyBombs);
     if (Player.DEBUG_AI) {
       System.err.println("Simulations : " + simu);
       System.err.println("Still drop bombs? : "+dropEnnemyBombs);
@@ -74,34 +74,15 @@ public class Search {
   private int simu;
   private void doOnePly() {
     // reset state
-    int depth = 0;
-    double score = 0.0;
     
-    SNode node = root;
-    while (depth < DEPTH) {
-      if (depth < MAX_BRUTE_DEPTH) {
-        node = node.chooseChild(depth, dropEnnemyBombs);
-      } else if (depth == MAX_BRUTE_DEPTH){
-        node = node.expand1stMC(depth, dropEnnemyBombs);
-      } else {
-        node.expandMC(depth, dropEnnemyBombs);
-      }
-
-      allMoves[depth] = node.moveToHere;
-      intermediateScores[depth] = node.score;
-      score += node.score;
-      if (node.state.players[Player.myId].isDead) {
-        break; // stop here
-      }
-      depth++;
-    }
+    
+    double score = root.choose(0, dropEnnemyBombs);
     
     if (score > bestScore) {
       bestScore = score;
       Move tmp[] = bestMoves;
       bestMoves = allMoves;
       allMoves = tmp;
-      survivableSituation |= !node.state.players[Player.myId].isDead;
       if(Player.DEBUG_AI) {
         System.err.println("@simu :"+ simu);
         System.err.println("IntScores : ");
@@ -110,8 +91,8 @@ public class Search {
         }
         System.err.println("New best score : "+bestScore);
         System.err.println("best move : "+Arrays.asList(bestMoves));
-        System.err.println("Status pos = "+node.state.players[Player.myId].position);
-        System.err.println("Status dead = "+node.state.players[Player.myId].isDead);
+        System.err.println("Status pos = "+SNode.tmpState.players[Player.myId].position);
+        System.err.println("Status dead = "+SNode.tmpState.players[Player.myId].isDead);
         System.err.println("Drop bombs ? "+dropEnnemyBombs);
       }
     }

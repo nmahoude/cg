@@ -1,7 +1,5 @@
 package hypersonic.ai;
 
-import java.util.Arrays;
-
 import hypersonic.Cache;
 import hypersonic.Move;
 import hypersonic.Player;

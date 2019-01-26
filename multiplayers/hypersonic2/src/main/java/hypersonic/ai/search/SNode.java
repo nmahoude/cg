@@ -11,7 +11,7 @@ import hypersonic.simulation.MoveGenerator;
 import hypersonic.simulation.Simulation;
 
 public class SNode {
-  private static SNode tmpNode = new SNode(); // for mc
+  public static State tmpState = new State(); // for rollout
   private static Simulation sim = new Simulation(null);
   private static MoveGenerator gen = new MoveGenerator(null);
   private static Move allowedMoves[] = new Move[10];
@@ -25,31 +25,13 @@ public class SNode {
   
   public State state = new State();
   double score;
+  double bestScore = Double.NEGATIVE_INFINITY; // me + childs
   int visits = 0;
   
-  public void reset() {
-    state.clean();
-    score = Double.NEGATIVE_INFINITY;
-    movesFE = -1;
-    moveToHere = null;
-  }
-
-  public SNode chooseChild(int depth, boolean dropEnnemyBombs) {
-    if (movesFE == -1) {
-      generateChildren(depth, dropEnnemyBombs);
-    }
-    
-    SNode sNode = choseChild();
-    sNode.visits++;
-    return sNode;
-  }
-
-  private SNode choseChild() {
+  private SNode chooseChild() {
     // random for now
     return SNodeCache.nodes[firstChildIndex + Player.rand.nextInt(movesFE)];
   }
-
-  
   
   private void generateChildren(int depth, boolean dropEnnemyBombs) {
     gen.state = this.state;
@@ -71,34 +53,9 @@ public class SNode {
       sim.simulate(moves[i]);
       node.score = Score.score(node.state, depth, moves[i]);
       node.visits = 0;
-      SNodeCache.nodes[firstChildIndex + i] = node;
     }
   }
 
-  public SNode expand1stMC(int depth, boolean dropEnnemyBombs) {
-    tmpNode.state.copyFrom(state);
-    expandMC(depth, dropEnnemyBombs);
-    return tmpNode;
-  }
-  
-  public  void expandMC(int depth, boolean dropEnnemyBombs) {
-    sim.state = tmpNode.state;
-    gen.state = tmpNode.state;
-    
-    if (depth <= Search.DEPTH - Bomb.DEFAULT_TIMER - 1 ) {
-      allowedMovesFE = gen.getPossibleMoves(allowedMoves);
-    } else {
-      allowedMovesFE = gen.getPossibleMovesWithoutBombs(allowedMoves);
-    }
-    tmpNode.moveToHere = allowedMoves[Player.rand.nextInt(allowedMovesFE)];
-    if (depth == 0 && dropEnnemyBombs) {
-      dropEnnemyBombs(tmpNode.state);
-    }
-    sim.simulate(tmpNode.moveToHere);
-    
-    tmpNode.score = Score.score(tmpNode.state, depth, tmpNode.moveToHere);
-  }
-  
   private static void dropEnnemyBombs(State state) {
     // for all players different than me and who can, drop a bomb at first one
     for (int i=0;i<4;i++) {
@@ -114,4 +71,52 @@ public class SNode {
     return ""+moveToHere+" d:"+state.players[Player.myId].isDead;
   }
 
+  public double choose(int depth, boolean dropEnnemyBombs) {
+    if (state.players[Player.myId].isDead) {
+      return score;
+    }
+    double accumulatedScore;
+    if (depth < Search.MAX_BRUTE_DEPTH) {
+      if (movesFE == -1) {
+        generateChildren(depth, dropEnnemyBombs);
+      }
+      SNode child = chooseChild();
+      Search.allMoves[depth] = child.moveToHere;
+      accumulatedScore = this.score + child.choose(depth+1, false);
+    } else {
+      accumulatedScore = this.score + rollout(depth);
+    }
+
+    if (accumulatedScore > bestScore) {
+      bestScore = accumulatedScore;
+    }
+    return accumulatedScore;
+  }
+
+  private double rollout(int depth) {
+    tmpState.copyFrom(state);
+    sim.state = tmpState;
+    gen.state = tmpState;
+
+    double score = 0.0;
+    while (depth < Search.DEPTH) {
+      if (depth <= Search.DEPTH - Bomb.DEFAULT_TIMER - 1 ) {
+        allowedMovesFE = gen.getPossibleMoves(allowedMoves);
+      } else {
+        allowedMovesFE = gen.getPossibleMovesWithoutBombs(allowedMoves);
+      }
+      Move move = allowedMoves[Player.rand.nextInt(allowedMovesFE)];
+      Search.allMoves[depth] = move;
+
+      sim.simulate(move);
+      score += Score.score(tmpState, depth, move);
+      if (tmpState.players[Player.myId].isDead) {
+        break;
+      }
+      depth++;
+    }
+    // end of rollout, if we are still alive, say it !
+    Search.survivableSituation = Search.survivableSituation || !tmpState.players[Player.myId].isDead;
+    return score;
+  }  
 }

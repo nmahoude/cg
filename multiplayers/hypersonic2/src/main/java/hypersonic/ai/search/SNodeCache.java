@@ -28,7 +28,7 @@ public class SNodeCache {
     for (int i=0;i<size;i++) {
       SNode node = nodes[nodesFE++];
       node.movesFE = -1;
-      node.score = 0;
+      node.bestScore = Double.NEGATIVE_INFINITY;
     }
     nodesFE+=size;
     return start;
