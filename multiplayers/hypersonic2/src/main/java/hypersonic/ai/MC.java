@@ -102,7 +102,7 @@ public class MC {
     
     message = ""+simu + " / "+(System.currentTimeMillis()-Player.startTime)+ " db:"+dropEnnemyBombs;
     
-    BombOptimizer.optimizeBombs(bestMoves, bestScore, DEPTH, model, dropEnnemyBombs);
+    Optimizer.optimizeBombs(bestMoves, bestScore, DEPTH, model, dropEnnemyBombs);
 
     
     if (Player.DEBUG_AI) {

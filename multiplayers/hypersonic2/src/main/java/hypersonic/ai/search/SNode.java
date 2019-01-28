@@ -29,8 +29,20 @@ public class SNode {
   int visits = 0;
   
   private SNode chooseChild() {
+    SNode best = SNodeCache.nodes[firstChildIndex];
+    double bestScore = Double.NEGATIVE_INFINITY;
+    for (int i=0;i<movesFE;i++) {
+      SNode node = SNodeCache.nodes[firstChildIndex + i];
+      if (node.state.players[Player.myId].isDead) continue;
+      double score = 1.0 * this.visits / node.visits;
+      if (score > bestScore) {
+        bestScore = score;
+        best = node;
+      }
+    }
     // random for now
-    return SNodeCache.nodes[firstChildIndex + Player.rand.nextInt(movesFE)];
+    //return SNodeCache.nodes[firstChildIndex + Player.rand.nextInt(movesFE)];
+    return best;
   }
   
   private void generateChildren(int depth, boolean dropEnnemyBombs) {
@@ -52,7 +64,8 @@ public class SNode {
       sim.state = node.state;
       sim.simulate(moves[i]);
       node.score = Score.score(node.state, depth, moves[i]);
-      node.visits = 0;
+      node.bestScore = node.score + node.rollout(depth+1);
+      node.visits = 1;
     }
   }
 
@@ -72,6 +85,8 @@ public class SNode {
   }
 
   public double choose(int depth, boolean dropEnnemyBombs) {
+    visits++;
+    
     if (state.players[Player.myId].isDead) {
       return score;
     }
@@ -88,7 +103,7 @@ public class SNode {
     }
 
     if (accumulatedScore > bestScore) {
-      bestScore = accumulatedScore;
+      bestScore = Math.max(score, accumulatedScore);
     }
     return accumulatedScore;
   }
@@ -119,4 +134,15 @@ public class SNode {
     Search.survivableSituation = Search.survivableSituation || !tmpState.players[Player.myId].isDead;
     return score;
   }  
+  
+  
+  public void debug() {
+    System.err.println("Best score : " + this.bestScore);
+    for (int i=0;i<movesFE;i++) {
+      SNode node = SNodeCache.nodes[firstChildIndex + i];
+      double score = node.bestScore + Math.sqrt(2.0 * Math.log(this.visits) / node.visits); //- 1.0 * node.visits / this.visits;
+      System.err.println("Node "+node.moveToHere+" "+node.bestScore);
+      System.err.println("Current UCT value : " + score);
+    }
+  }
 }

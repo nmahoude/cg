@@ -1,14 +1,16 @@
-package hypersonic.ai.search;
+package hypersonic.ai.beamSearch;
 
-public class SNodeCache {
+import hypersonic.ai.search.SNode;
+
+public class BeamNodeCache {
 
   private static final int SIZE = 50_000;
-  public static SNode nodes[] = new SNode[SIZE];
+  public static BeamNode nodes[] = new BeamNode[SIZE];
   private static int nodesFE = SIZE-1;
 
   static {
     for (int i=0;i<SIZE;i++) {
-      nodes[i] = new SNode();
+      nodes[i] = new BeamNode();
     }
   }
   
@@ -16,8 +18,8 @@ public class SNodeCache {
     nodesFE = 0;
   }
   
-  public static SNode pop() {
-    SNode node = nodes[nodesFE++];
+  public static BeamNode pop() {
+    BeamNode node = nodes[nodesFE++];
     node.movesFE = -1;
     return node;
   }
@@ -26,9 +28,9 @@ public class SNodeCache {
   public static int reserve(int size) {
     int start = nodesFE;
     for (int i=0;i<size;i++) {
-      SNode node = nodes[nodesFE++];
+      BeamNode node = nodes[nodesFE++];
       node.movesFE = -1;
-      node.bestScore = 0;
+      node.cumulativeScore = 0;
     }
     nodesFE+=size;
     return start;

@@ -9,7 +9,7 @@ public class P {
       }
     }
   }
-  public static P get(final int x,final int y) {
+  public static P get(int x,int y) {
     return ps[x][y];
   }
   

@@ -5,15 +5,15 @@ import java.util.Arrays;
 import hypersonic.Move;
 import hypersonic.Player;
 import hypersonic.State;
-import hypersonic.ai.BombOptimizer;
+import hypersonic.ai.Optimizer;
 import hypersonic.entities.Bomberman;
 
 public class Search {
-  public static final int DEPTH = 20;
+  public static final int DEPTH = 16;
   static final int MAX_BRUTE_DEPTH = 5; // depth where we keep all nodes
 
   private static final long TIME_LIMIT = 50;
-  private static final long DROP_BOMB_TIME_LIMIT = 10;
+  private static final long DROP_BOMB_TIME_LIMIT = 20;
 
   
   private SNode root;
@@ -57,10 +57,13 @@ public class Search {
       
       doOnePly();
     }
-    
+
+    root.debug();
     message  = ""+simu + " / "+(System.currentTimeMillis()-Player.startTime)+ " db:"+dropEnnemyBombs;
     
-    //BombOptimizer.optimizeBombs(bestMoves, bestScore, DEPTH, model, dropEnnemyBombs);
+    bestScore = Optimizer.optimizeBombs(bestMoves, bestScore, DEPTH, model, dropEnnemyBombs);
+    bestScore = Optimizer.optimizeMoves(bestMoves, bestScore, DEPTH, model, dropEnnemyBombs);
+    
     if (Player.DEBUG_AI) {
       System.err.println("Simulations : " + simu);
       System.err.println("Still drop bombs? : "+dropEnnemyBombs);
