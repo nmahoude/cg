@@ -145,7 +145,7 @@ public class Board {
       
       P p = b.position;
       
-      checkExplosion(state, b.owner, p.x, p.y); // at (0,0)
+      checkExplosion(state, b.owner, p); // at (0,0)
       int x = p.x;
       int y = p.y;
       int correctedRange;
@@ -153,7 +153,7 @@ public class Board {
       correctedRange = Math.min(b.range-1, WIDTH-1-x);
       for (int d = 0; d < correctedRange; d++) {
         x++;
-        if (checkExplosion(state, b.owner, x, y)) {
+        if (checkExplosion(state, b.owner, P.get(x, y))) {
           break;
         }
       }
@@ -162,7 +162,7 @@ public class Board {
       correctedRange = Math.min(b.range-1, x);
       for (int d = 0; d < correctedRange; d++) {
         x--;
-        if (checkExplosion(state, b.owner, x, y)) {
+        if (checkExplosion(state, b.owner, P.get(x, y))) {
           break;
         }
       }
@@ -171,7 +171,7 @@ public class Board {
       correctedRange = Math.min(b.range-1, HEIGHT-1-y);
       for (int d = 0; d < correctedRange; d++) {
         y++;
-        if (checkExplosion(state, b.owner, x, y)) {
+        if (checkExplosion(state, b.owner, P.get(x, y))) {
           break;
         }
       }
@@ -180,7 +180,7 @@ public class Board {
       correctedRange = Math.min(b.range-1, y);
       for (int d = 0; d < correctedRange; d++) {
         y--;
-        if (checkExplosion(state, b.owner, x, y)) {
+        if (checkExplosion(state, b.owner, P.get(x, y))) {
           break;
         }
       }
@@ -230,21 +230,21 @@ public class Board {
     }
   }
 
-  private boolean checkExplosion(State state, int bombOwner, int x, int y) {
-    if ((x & 0b1) != 0 && (y & 0b1) != 0) return true;
+  private boolean checkExplosion(State state, int bombOwner, P p) {
+    if ((p.x & 0b1) != 0 && (p.y & 0b1) != 0) return true;
     
-    int mapIndex = P.get(x, y).offset;
+    int mapIndex = p.offset;
     int cellValue = cells[mapIndex];
     if (playersMap[mapIndex] != 0) {
-      state.killPlayersAt(x,y);
+      state.killPlayersAt(p);
       playersMap[mapIndex] = 0;
     }
     if (cellValue == EMPTY) return false;
     
-    return checkCellExplosition(bombOwner, mapIndex, x, y, cellValue);
+    return checkCellExplosition(bombOwner, mapIndex, p, cellValue);
   }
 
-  private boolean checkCellExplosition(int bombOwner, int mapIndex, int x, int y, int cellValue) {
+  private boolean checkCellExplosition(int bombOwner, int mapIndex, P p, int cellValue) {
     switch (cellValue) {
       case BOX:
       case BOX_1:
@@ -265,7 +265,7 @@ public class Board {
         cells[mapIndex] = EXPLODED_BOMB;
         for (int bombIndex=0;bombIndex<bombsFE;bombIndex++) {
           Bomb b = bombs[bombIndex];
-          if (b != null && b.position.x == x && b.position.y == y) {
+          if (b != null && b.position.offset == p.offset) {
             bombs[bombIndex] = null; 
             bombsToExplode[bombsToExplodeFE++] = b;
           }

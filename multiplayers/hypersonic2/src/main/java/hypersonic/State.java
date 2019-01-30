@@ -108,12 +108,12 @@ public class State {
     player.position = p;
   }
 
-  public void killPlayersAt(int x, int y) {
+  public void killPlayersAt(P pos) {
     for (int p=0;p<Player.NUMBER_OF_PLAYER;p++) {
       Bomberman bomberman = players[p];
       if (bomberman.isDead) continue;
       
-      if (bomberman.position.x == x && bomberman.position.y == y) {
+      if (bomberman.position.offset == pos.offset) {
         bomberman.isDead = true;
       }
     }

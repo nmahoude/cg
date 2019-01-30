@@ -122,12 +122,12 @@ public class Optimizer {
     double score = 0;
     state.copyFrom(model);
     for (int t = 0; t < depth; t++) {
+      if (allMoves[t] == null) break;
       state.players[0].points = 0;
       state.players[1].points = 0;
       state.players[2].points = 0;
       state.players[3].points = 0;
-      P newPos = P.get(state.players[Player.myId].position.x +  allMoves[t].dx, 
-          state.players[Player.myId].position.y +  allMoves[t].dy);
+      P newPos = state.players[Player.myId].position.move(allMoves[t]);
       if (!state.canWalkOn(newPos)) {
         return bestScore;
       }

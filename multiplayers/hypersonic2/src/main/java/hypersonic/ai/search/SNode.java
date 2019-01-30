@@ -141,6 +141,28 @@ public class SNode {
     return accScore;
   }
 
+  /**
+   * bump turn by 8 to see all bombs explode & look at score without player death account
+   * @param depth
+   * @return
+   */
+  private double fastRollout(int depth) {
+    tmpState.copyFrom(state);
+    sim.state = tmpState;
+    gen.state = tmpState;
+
+    double score = 0.0;
+    tmpState.turn += 10;
+    sim.simulate(Move.STAY);
+    tmpState.players[Player.myId].isDead = false; // force so we are not dead
+    score = Score.score(tmpState, depth, Move.STAY);
+    for (;depth<Search.DEPTH;depth++) {
+      Search.allMoves[depth] = Move.STAY;
+    }
+    Search.survivableSituation = true;
+    return score;
+  }
+  
   private double rollout(int depth) {
     tmpState.copyFrom(state);
     sim.state = tmpState;

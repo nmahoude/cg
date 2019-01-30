@@ -1,7 +1,5 @@
 package hypersonic.ai.search;
 
-import static org.junit.Assert.*;
-
 import java.util.Random;
 import java.util.Scanner;
 
@@ -66,23 +64,20 @@ public class SearchTest {
   public void doNotDropTooManyBombs() throws Exception {
     Player.rand = new Random(0);
     Player.DEBUG_AI = true;
-    String input = "...122.221...\r\n" + 
-        ".X.X.X0X.X.X.\r\n" + 
-        "..02.0.0.201.\r\n" + 
-        ".X1X0X1X0X1X.\r\n" + 
-        ".10.22122.010\r\n" + 
-        ".X.X0X0X0X.X.\r\n" + 
-        "010.22122.010\r\n" + 
-        ".X1X0X1X0X1X.\r\n" + 
-        ".102.0.0.2.1.\r\n" + 
-        ".X.X.X0X.X.X.\r\n" + 
-        "...122.22....\r\n" + 
-        "5\r\n" + 
-        "0 0 2 0 1 3\r\n" + 
-        "0 1 12 10 0 3\r\n" + 
-        "1 1 12 8 7 3\r\n" + 
-        "2 0 1 2 1 1\r\n" + 
-        "2 0 9 10 1 1";
+    String input = "....1...1....\r\n" + 
+        ".X2X.X.X.X2X.\r\n" + 
+        "..0.1...1.0..\r\n" + 
+        "0X.X2X.X2X.X0\r\n" + 
+        "2012.....2102\r\n" + 
+        ".X.X.X1X.X.X.\r\n" + 
+        "2012.....2102\r\n" + 
+        "0X.X2X.X2X.X0\r\n" + 
+        "..0.1...1.0..\r\n" + 
+        ".X2X.X.X.X2X.\r\n" + 
+        "....1...1....\r\n" + 
+        "2\r\n" + 
+        "0 0 0 0 1 3\r\n" + 
+        "0 1 12 10 1 3";
     Scanner in = new Scanner(input);
     Player.myId = 0;
     SNodeCache.reset();
