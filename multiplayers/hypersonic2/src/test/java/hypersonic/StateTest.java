@@ -3,7 +3,7 @@ package hypersonic;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
@@ -384,7 +384,7 @@ public class StateTest {
       final Bomb bomb = createBomb(state).at(2,0).withTimer(1).withRange(10).build();
       state.updateBombs();
       
-      assertThat(state.board.cells[2 + Board.WIDTH * 1], is(Board.ITEM_1));
+      assertThat(state.board.cells[P.get(2,1).offset], is(Board.ITEM_1));
     }
 
     @Test
@@ -406,7 +406,7 @@ public class StateTest {
       final Bomb bomb = createBomb(state).at(2,0).withTimer(1).withRange(10).build();
       state.updateBombs();
       
-      assertThat(state.board.cells[2 + Board.WIDTH * 1], is(Board.ITEM_2));
+      assertThat(state.board.cells[P.get(2,1).offset], is(Board.ITEM_2));
     }
     
     @Test
@@ -543,7 +543,7 @@ public class StateTest {
     }
   };
   static int cell(final int x, final int y) {
-    return x+13*y;
+    return P.get(x, y).offset;
   }
 
 

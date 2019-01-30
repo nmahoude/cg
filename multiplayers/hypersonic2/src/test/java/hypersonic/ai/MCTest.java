@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import hypersonic.Move;
@@ -66,6 +67,7 @@ public class MCTest {
   }
   
   @Test
+  @Ignore
   public void goGrabTheBonus() throws Exception {
     String input =  
         "..00.....00..\r\n" + 
@@ -101,20 +103,30 @@ public class MCTest {
   public static void main(String[] args) {
     Player.rand = new Random(0);
     
-    String input  ="..1210.0121..\r\n" + 
-        ".X1X0X.X0X1X.\r\n" + 
-        "1.2..212..2.1\r\n" + 
-        "2X1X.X0X.X1X2\r\n" + 
-        ".0.0.2.2.0.0.\r\n" + 
-        ".X.X2X.X2X.X.\r\n" + 
-        ".0.0.2.2.0.0.\r\n" + 
-        "2X1X.X0X.X1X2\r\n" + 
-        "1.2..212..2.1\r\n" + 
-        ".X1X0X.X0X1X.\r\n" + 
-        "..1210.0121..\r\n" + 
-        "2\r\n" + 
-        "0 0 0 0 1 3\r\n" + 
-        "0 1 12 10 1 3";
+    String input  =".........1...\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        "............0\r\n" + 
+        "2X.X.X.X.X.X2\r\n" + 
+        ".............\r\n" + 
+        "0X.X.X.X.X.X.\r\n" + 
+        "2............\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        ".............\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        ".............\r\n" + 
+        "12\r\n" + 
+        "0 0 0 8 6 6\r\n" + 
+        "0 1 9 4 5 9\r\n" + 
+        "1 1 10 0 2 9\r\n" + 
+        "1 1 10 2 6 9\r\n" + 
+        "2 0 6 0 1 1\r\n" + 
+        "2 0 6 10 1 1\r\n" + 
+        "2 0 5 2 1 1\r\n" + 
+        "2 0 6 9 2 2\r\n" + 
+        "2 0 6 1 2 2\r\n" + 
+        "2 0 7 2 1 1\r\n" + 
+        "2 0 3 10 1 1\r\n" + 
+        "2 0 0 7 2 2";
     Player.myId = 0;
     Player.DEBUG_AI = true;
     
@@ -124,7 +136,7 @@ public class MCTest {
     
     MC mc = new MC();
     
-    Player.startTime = System.currentTimeMillis()+100; //_000;
+    Player.startTime = System.currentTimeMillis()+1000; //_000;
     mc.think(player.state);
     
     System.err.println(Arrays.asList(MC.bestMoves));

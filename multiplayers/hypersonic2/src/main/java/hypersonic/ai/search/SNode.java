@@ -1,5 +1,7 @@
 package hypersonic.ai.search;
 
+import java.util.Arrays;
+
 import hypersonic.Cache;
 import hypersonic.Move;
 import hypersonic.Player;
@@ -9,6 +11,7 @@ import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.simulation.MoveGenerator;
 import hypersonic.simulation.Simulation;
+import hypersonic.utils.P;
 
 public class SNode {
   public static State tmpState = new State(); // for rollout
@@ -29,20 +32,20 @@ public class SNode {
   int visits = 0;
   
   private SNode chooseChild() {
-    SNode best = SNodeCache.nodes[firstChildIndex];
-    double bestScore = Double.NEGATIVE_INFINITY;
-    for (int i=0;i<movesFE;i++) {
-      SNode node = SNodeCache.nodes[firstChildIndex + i];
-      if (node.state.players[Player.myId].isDead) continue;
-      double score = 1.0 * this.visits / node.visits;
-      if (score > bestScore) {
-        bestScore = score;
-        best = node;
-      }
-    }
+//    SNode best = SNodeCache.nodes[firstChildIndex];
+//    double bestScore = Double.NEGATIVE_INFINITY;
+//    for (int i=0;i<movesFE;i++) {
+//      SNode node = SNodeCache.nodes[firstChildIndex + i];
+//      if (node.state.players[Player.myId].isDead) continue;
+//      double score = 1.0 * this.visits / node.visits;
+//      if (score > bestScore) {
+//        bestScore = score;
+//        best = node;
+//      }
+//    }
     // random for now
-    //return SNodeCache.nodes[firstChildIndex + Player.rand.nextInt(movesFE)];
-    return best;
+//    return best;
+    return SNodeCache.nodes[firstChildIndex + Player.rand.nextInt(movesFE)];
   }
   
   private void generateChildren(int depth, boolean dropEnnemyBombs) {
@@ -63,9 +66,16 @@ public class SNode {
       }
       sim.state = node.state;
       sim.simulate(moves[i]);
-      node.score = Score.score(node.state, depth, moves[i]);
-      node.bestScore = node.score + node.rollout(depth+1);
-      node.visits = 1;
+      if (node.state.players[Player.myId].isDead) {
+        node.score = Score.DEAD_MALUS;
+        moves[i] = moves[movesFE-1];
+        movesFE--;
+        i--;
+      } else {
+        node.score = Score.score(node.state, depth, moves[i]);
+        node.bestScore = node.score + node.rollout(depth+1);
+        node.visits = 1;
+      }
     }
   }
 
@@ -84,28 +94,51 @@ public class SNode {
     return ""+moveToHere+" d:"+state.players[Player.myId].isDead;
   }
 
-  public double choose(int depth, boolean dropEnnemyBombs) {
-    visits++;
-    
-    if (state.players[Player.myId].isDead) {
-      return score;
+  public double chooseWithoutRecursion(int depth, boolean dropEnnemyBombs) {
+    SNode current = this;
+    double accScore = 0;
+
+    while (depth < Search.MAX_BRUTE_DEPTH) {
+      if (current.movesFE == -1) {
+        current.generateChildren(depth, dropEnnemyBombs);
+      }
+      if (current.movesFE == 0) {
+        return Score.DEAD_MALUS;
+      }
+      current = SNodeCache.nodes[current.firstChildIndex + Player.rand.nextInt(current.movesFE)];
+      Search.allMoves[depth] = current.moveToHere;
+      accScore += current.score;
+      depth++;
     }
-    double accumulatedScore;
+    accScore+= current.rollout(depth);
+    bestScore = Math.max(bestScore, accScore);
+    
+    return accScore;
+  }
+  
+  public double choose(int depth, boolean dropEnnemyBombs) {
+    if (state.players[Player.myId].isDead) {
+      return Score.DEAD_MALUS;
+    }
+    
+    double accScore = 0;
     if (depth < Search.MAX_BRUTE_DEPTH) {
       if (movesFE == -1) {
         generateChildren(depth, dropEnnemyBombs);
       }
-      SNode child = chooseChild();
+      if (movesFE == 0) {
+        return Score.DEAD_MALUS;
+      }
+      SNode child = SNodeCache.nodes[firstChildIndex + Player.rand.nextInt(movesFE)];
       Search.allMoves[depth] = child.moveToHere;
-      accumulatedScore = this.score + child.choose(depth+1, false);
+      accScore = this.score + child.choose(depth+1, false);
+      bestScore = Math.max(bestScore, accScore);
     } else {
-      accumulatedScore = this.score + rollout(depth);
+      accScore = this.score + rollout(depth);
+      bestScore = Math.max(bestScore, accScore);
     }
 
-    if (accumulatedScore > bestScore) {
-      bestScore = Math.max(score, accumulatedScore);
-    }
-    return accumulatedScore;
+    return accScore;
   }
 
   private double rollout(int depth) {
@@ -126,23 +159,59 @@ public class SNode {
       sim.simulate(move);
       score += Score.score(tmpState, depth, move);
       if (tmpState.players[Player.myId].isDead) {
-        break;
+        return Score.DEAD_MALUS;
       }
       depth++;
     }
     // end of rollout, if we are still alive, say it !
-    Search.survivableSituation = Search.survivableSituation || !tmpState.players[Player.myId].isDead;
+    Search.survivableSituation = true;
     return score;
   }  
   
   
   public void debug() {
-    System.err.println("Best score : " + this.bestScore);
+    System.err.println("Root ->Best score : " + this.bestScore);
     for (int i=0;i<movesFE;i++) {
       SNode node = SNodeCache.nodes[firstChildIndex + i];
       double score = node.bestScore + Math.sqrt(2.0 * Math.log(this.visits) / node.visits); //- 1.0 * node.visits / this.visits;
-      System.err.println("Node "+node.moveToHere+" "+node.bestScore);
-      System.err.println("Current UCT value : " + score);
+      System.err.println("   Node "+node.moveToHere+" "+node.bestScore);
     }
+  }
+
+  /**
+   * A kind of directed rollout
+   */
+  public double recalculate(Move[] nextTurnMoves) {
+    System.err.println("Recalculate last best path : "+Arrays.toString(nextTurnMoves));
+    int depth = 0;
+    tmpState.copyFrom(state);
+    sim.state = tmpState;
+    gen.state = tmpState;
+
+    double score = 0.0;
+    while (depth < Search.DEPTH) {
+      Move move = nextTurnMoves[depth];
+      if (move == null) {
+        return Score.DEAD_MALUS;
+      }
+
+      P newPos = tmpState.players[Player.myId].position.move(move);
+      if (move != Move.STAY && move != Move.STAY_BOMB && !tmpState.canWalkOn(newPos)) {
+        System.err.println("Path is not valid anymore, aborting");
+        return Score.DEAD_MALUS;
+      }
+      sim.simulate(move);
+      score += Score.score(tmpState, depth, move);
+      if (tmpState.players[Player.myId].isDead) {
+        return Score.DEAD_MALUS;
+      }
+      depth++;
+    }
+    // end of rollout, if we are still alive, say it !
+    Search.survivableSituation = true;
+    for(int i=0;i<Search.DEPTH;i++) {
+      Search.bestMoves[i] = nextTurnMoves[i];
+    }
+    return score;
   }
 }

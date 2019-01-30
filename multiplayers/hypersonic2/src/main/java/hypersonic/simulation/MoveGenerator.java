@@ -1,9 +1,9 @@
 package hypersonic.simulation;
 
-import hypersonic.State;
 import hypersonic.Board;
 import hypersonic.Move;
 import hypersonic.Player;
+import hypersonic.State;
 import hypersonic.entities.Bomberman;
 
 public class MoveGenerator {
@@ -42,7 +42,7 @@ public class MoveGenerator {
     if (canMoveLeft) moves[movesFE++] = Move.LEFT;
     if (canMoveRight) moves[movesFE++] = Move.RIGHT;
     
-    if (wantToBomb && state.board.cells[x+Board.WIDTH*y] != Board.BOMB) {
+    if (wantToBomb && state.board.cells[me.position.offset] != Board.BOMB) {
       moves[movesFE++] = Move.STAY_BOMB;
       if (canMoveUp) moves[movesFE++] = Move.UP_BOMB;
       if (canMoveDown) moves[movesFE++] = Move.DOWN_BOMB;
@@ -56,9 +56,7 @@ public class MoveGenerator {
   public final boolean isMovePossible(Move move) {
     if (move == Move.STAY) return true;
     Bomberman me = state.players[Player.myId];
-    int x = me.position.x;
-    int y = me.position.y;
-    return state.board.canMoveTo(x + move.dx , y + move.dy);
+    return state.board.canMoveTo(me.position.move(move));
   }
 
 }

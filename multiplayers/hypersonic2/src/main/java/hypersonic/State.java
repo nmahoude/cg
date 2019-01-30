@@ -94,16 +94,16 @@ public class State {
   }
 
   public void walkOn(final Bomberman player, final P p) {
-    final int value = board.cells[p.x+Board.WIDTH*p.y];
+    final int value = board.cells[p.offset];
     if ( value == Board.ITEM_1) {
       player.currentRange+=1;
       Simulation.deltaRange+=1;
-      board.cells[p.x+Board.WIDTH*p.y] = Board.EMPTY;
+      board.cells[p.offset] = Board.EMPTY;
     } else if (value == Board.ITEM_2) {
       player.bombsLeft+=1;
       player.bombCount+=1;
       Simulation.deltaBomb+=1;
-      board.cells[p.x+Board.WIDTH*p.y] = Board.EMPTY;
+      board.cells[p.offset] = Board.EMPTY;
     }
     player.position = p;
   }

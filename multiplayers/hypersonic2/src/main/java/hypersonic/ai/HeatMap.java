@@ -4,6 +4,7 @@ import hypersonic.Board;
 import hypersonic.Move;
 import hypersonic.State;
 import hypersonic.simulation.Simulation;
+import hypersonic.utils.P;
 
 /**
  * For a current state, for each coordinates (x,y) get a score if the position is near boxes (manhattan)
@@ -24,7 +25,9 @@ public class HeatMap {
     
     for (int y=0;y<Board.HEIGHT;y++) {
       for (int x=0;x<Board.WIDTH;x++) {
-        int value = state.board.cells[x + Board.WIDTH*y];
+        if ((x & 0b1) == 0b1 && (y &0b1) == 0b1)  continue;
+        
+        int value = state.board.cells[P.get(x, y).offset];
         if (value == Board.BOX) {
           fillFrom(x,y, 1);
         } else if (value == Board.BOX_1) {

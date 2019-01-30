@@ -1,5 +1,7 @@
 package hypersonic.ai;
 
+import java.util.Arrays;
+
 import hypersonic.Cache;
 import hypersonic.Move;
 import hypersonic.Player;
@@ -22,6 +24,7 @@ public class Optimizer {
       System.err.println("Not a bomb, early exit");
       return bestScore;
     }
+    System.err.println("current moves : " + Arrays.toString(bestMoves));
     // do one last test with the same moves, but do not bomb the 1st move !
     switch (bestMoves[0]) {
     case STAY_BOMB:
@@ -59,11 +62,6 @@ public class Optimizer {
         break;
       }
     }
-    System.err.println("IntScore : ");
-    for (int i=0;i<Search.DEPTH;i++) {
-      System.err.print(intermediateScores[i]+" , ");
-    }
-
     if (score > bestScore) {
       System.err.println("Solutions without bomb at 0 is better ! " + score + " > " + bestScore);
       bestScore = score;
@@ -80,15 +78,18 @@ public class Optimizer {
       System.err.println("Not a STAY, early exit");
       return bestScore;
     }
-    
+    System.err.println("current moves : " + Arrays.toString(bestMoves));
     int newDepth = 0;
     boolean needBombNext = false;
+    boolean squash = true;
+    
     for (int i = 0; i < depth; i++) {
-      if (bestMoves[i] == Move.STAY) continue;
-      if (bestMoves[i] == Move.STAY_BOMB) {
+      if (squash && bestMoves[i] == Move.STAY) continue;
+      if (squash && bestMoves[i] == Move.STAY_BOMB) {
         needBombNext = true;
         continue;
       }
+      squash = false;
       Move nextMove = bestMoves[i];
       if (needBombNext) {
         switch (nextMove) {
@@ -113,8 +114,10 @@ public class Optimizer {
       allMoves[newDepth++] = nextMove;
       needBombNext = false;
     }
-    
-    depth = newDepth;
+    System.err.println("new current moves : " + Arrays.toString(allMoves));
+    for (;newDepth<depth;newDepth++) {
+      allMoves[newDepth] = Move.STAY;
+    }
     
     double score = 0;
     state.copyFrom(model);
@@ -139,15 +142,13 @@ public class Optimizer {
         break;
       }
     }
-    System.err.println("IntScore : ");
-    for (int i=0;i<depth;i++) {
-      System.err.print(intermediateScores[i]+" , ");
-    }
 
     if (score > bestScore) {
       System.err.println("Solutions with move optimization is better ! " + score + " > " + bestScore);
       bestScore = score;
-      bestMoves[0] = allMoves[0];
+      for (int i=0;i<depth;i++) {
+        Search.bestMoves[i] = allMoves[i];
+      }
     } else {
       System.err.println("Solution cannot be optimize with moves " +score);
     }

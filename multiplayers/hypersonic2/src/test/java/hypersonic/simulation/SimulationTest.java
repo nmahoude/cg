@@ -13,7 +13,6 @@ import hypersonic.Move;
 import hypersonic.Player;
 import hypersonic.State;
 import hypersonic.ai.Score;
-import hypersonic.entities.Bomb;
 import hypersonic.utils.P;
 
 public class SimulationTest {
@@ -144,24 +143,42 @@ public class SimulationTest {
   
   public static void main(String[] args) {
     String input =
-        "...02.2.200..\r\n" + 
-        ".X.X1X2X1X.X.\r\n" + 
-        "1...21.121.01\r\n" + 
+        ".........1...\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
-        "12.212.212021\r\n" + 
-        ".X.X0X.X0X.X.\r\n" + 
-        "120212.21202.\r\n" + 
+        ".............\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
-        "10.121.121...\r\n" + 
-        ".X.X1X2X1X.X.\r\n" + 
-        "..002.2.200..\r\n" + 
-        "5\r\n" + 
-        "0 0 2 4 1 3\r\n" + 
-        "0 1 10 8 0 4\r\n" + 
-        "1 1 10 8 7 4\r\n" + 
-        "2 0 12 6 1 1\r\n" + 
-        "2 0 3 2 1 1";
-    Player.myId = 1;
+        ".............\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        ".10..2.......\r\n" + 
+        ".X1X.X.X.X.X.\r\n" + 
+        ".............\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        ".............\r\n" + 
+        "22\r\n" + 
+        "0 0 2 4 7 9\r\n" + 
+        "0 1 10 4 6 8\r\n" + 
+        "1 1 7 6 4 8\r\n" + 
+        "1 1 8 6 5 8\r\n" + 
+        "1 1 9 6 6 8\r\n" + 
+        "2 0 1 4 1 1\r\n" + 
+        "2 0 7 10 1 1\r\n" + 
+        "2 0 11 4 1 1\r\n" + 
+        "2 0 10 3 1 1\r\n" + 
+        "2 0 11 6 1 1\r\n" + 
+        "2 0 8 4 2 2\r\n" + 
+        "2 0 8 5 2 2\r\n" + 
+        "2 0 7 0 1 1\r\n" + 
+        "2 0 8 0 2 2\r\n" + 
+        "2 0 4 6 2 2\r\n" + 
+        "2 0 5 10 1 1\r\n" + 
+        "2 0 3 10 1 1\r\n" + 
+        "2 0 1 8 1 1\r\n" + 
+        "2 0 5 4 2 2\r\n" + 
+        "2 0 4 5 2 2\r\n" + 
+        "2 0 11 2 1 1\r\n" + 
+        "2 0 7 4 2 2" + 
+        "";
+    Player.myId = 0;
 
     Scanner in = new Scanner(input);
     Player player = new Player(in);
@@ -169,13 +186,13 @@ public class SimulationTest {
     // ← ↑ → ↓ ☢
     Move moves[];
 //    player.state.addBomb(new Bomb(2, P.get(4, 4), 8, 4));
-    /* me */ moves = readMoves("•,  •,  →,  →,  ↑,  •,  ↑, ☢↓,  ↓,  •,  ←,  ←,  ↑,  ↑,  ↑,  ↓");
+    /* me */ moves = readMoves("☢←, ☢←, ☢↓,  •,  •,  ↓,  ↓,  •, •");
     doSimulationOfMoves(moves, player.state);
 
-    /* me */ moves = readMoves("→,  →,  ↑,  •,  ↑, ☢↓,  ↓,  •,  ←,  ←,  ↑,  ↑,  ↑,  ↓");
-    doSimulationOfMoves(moves, player.state);
+//    /* me */ moves = readMoves("→,  →,  ↑,  •,  ↑, ☢↓,  ↓,  •,  ←,  ←,  ↑,  ↑,  ↑,  ↓");
+//    doSimulationOfMoves(moves, player.state);
 
-    displayPossibleMoves();
+//    displayPossibleMoves();
   }
 
   private static void displayPossibleMoves() {
@@ -195,8 +212,7 @@ public class SimulationTest {
     
     for (int i=0;i<moves.length;i++) {
       simState.resetPlayerPoints();
-      P newPos = P.get(simState.players[Player.myId].position.x + moves[i].dx, 
-          simState.players[Player.myId].position.y + moves[i].dy);
+      P newPos = simState.players[Player.myId].position.move(moves[i]);
       if (moves[i] != Move.STAY && moves[i] != Move.STAY_BOMB && !simState.canWalkOn(newPos)) {
         throw new RuntimeException("player can't go where it thinks it can go at "+i+" => "+moves[i]);
       }
@@ -211,7 +227,7 @@ public class SimulationTest {
     System.err.println("Delta box : "+(simState.board.boxCount - initBoxCount));
   }
   
-  private static Move[] readMoves(String movesFromArray) {
+  public static Move[] readMoves(String movesFromArray) {
     String movesAsStr[] = movesFromArray.split(", ");
     Move[] moves = new Move[movesAsStr.length];
     int i=0;

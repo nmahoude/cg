@@ -9,7 +9,7 @@ import hypersonic.simulation.Simulation;
 
 public class Score {
   private static final double BOX_DESTROYED_BONUS = 10_000.0;
-  private static final double DEAD_MALUS = -1_000_000;
+  public static final double DEAD_MALUS = -100_000_000;
   public static final double WALK_OVER_MALUS = -50_000;
   public static double patience[];
   static {
@@ -51,13 +51,16 @@ public class Score {
     } else {
       score += Simulation.deltaRange;
     }
-    if (!move.dropBomb) {
-      score += 0.1;
-    }
+//    if (!move.dropBomb) {
+//      score += 0.1;
+//    }
 
+    if (move == Move.STAY || move == Move.STAY_BOMB) {
+      score -= 1.0;
+    }
     
-    score -= 0.1 * Math.abs(me.position.x - Board.WIDTH/2.);
-    score -= 0.1 * Math.abs(me.position.y - Board.HEIGHT/2.);
+//    score -= 0.1 * Math.abs(me.position.x - Board.WIDTH/2.);
+//    score -= 0.1 * Math.abs(me.position.y - Board.HEIGHT/2.);
     
       score += 1.0 * HeatMap.score[me.position.x+Board.WIDTH*me.position.y];
     

@@ -15,23 +15,24 @@ public class SANode {
   
   Move moves[] = new Move[PseudoSA.DEPTH];
   double scores[] = new double[PseudoSA.DEPTH];
-  double score;
+  double accumulatedScore;
   
   public void copyFrom(SANode model) {
     for (int i=0;i<PseudoSA.DEPTH;i++) {
       this.moves[i] = model.moves[i];
       this.scores[i] = model.scores[i];
     }
+    this.accumulatedScore = model.accumulatedScore;
   }
   
   void build(boolean dropBombs, State state, int from) {
-    score = 0.0;
+    accumulatedScore = 0.0;
     
     for (int step=0;step<from;step++) {
       PseudoSA.simulator.simulate(moves[step]);
-      score += scores[step];
+      accumulatedScore += scores[step];
       if (state.players[Player.myId].isDead) {
-        score = -1_000_000 + step;
+        accumulatedScore = -1_000_000 + step;
         return;
       }
     }
@@ -48,13 +49,14 @@ public class SANode {
       PseudoSA.simulator.simulate(move);
       if (state.players[Player.myId].isDead) {
         scores[step] = -1_000_000 + step; // die the latest
-        score = -1_000_000;
+        accumulatedScore = -1_000_000;
         return;
       } else {
         scores[step] = Score.score(state, step, move); 
-        score += scores[step];
+        accumulatedScore += scores[step];
       }
     }
+    PseudoSA.survivableSituation = true;
   }
 
   private void allPlayersExceptMeDropBombs(State state) {

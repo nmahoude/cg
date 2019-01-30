@@ -165,4 +165,7 @@ public class MC {
     }
   }
 
+  public void reset() {
+  }
+
 }

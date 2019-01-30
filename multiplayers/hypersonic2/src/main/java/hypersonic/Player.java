@@ -5,7 +5,6 @@ import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
 import hypersonic.ai.HeatMap;
-import hypersonic.ai.search.SNodeCache;
 import hypersonic.ai.search.Search;
 import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
@@ -34,9 +33,12 @@ public class Player {
   void play() {
     readInitialData();
     Search ai = new Search();
+    ai.reset();
     
     while (true) {
       turn++;
+      ai.reset();
+
       readGameState();
       if (turn == 1) {
         startTime+= 500;
@@ -58,7 +60,6 @@ public class Player {
   }
   
   public void readGameState() {
-    SNodeCache.reset();
     initState();
     initEntities();
 
@@ -122,8 +123,11 @@ public class Player {
   }
   public static void main(final String args[]) {
     Scanner in = new Scanner(System.in);
-    
-    final Player p = new Player(in);
-    p.play();
+    try {
+      Player p = new Player(in);
+      p.play();
+    } catch(Error er) {
+      System.err.println(er);
+    }
   }
 }

@@ -1,9 +1,5 @@
 package hypersonic.ai.beamSearch;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import hypersonic.Move;
 import hypersonic.Player;
 import hypersonic.State;

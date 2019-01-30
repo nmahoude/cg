@@ -1,7 +1,5 @@
 package hypersonic.ai.beamSearch;
 
-import hypersonic.ai.search.SNode;
-
 public class BeamNodeCache {
 
   private static final int SIZE = 50_000;

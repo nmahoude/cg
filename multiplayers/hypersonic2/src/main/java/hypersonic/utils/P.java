@@ -1,5 +1,8 @@
 package hypersonic.utils;
 
+import hypersonic.Board;
+import hypersonic.Move;
+
 public class P {
   static P[][] ps = new P[20][20]; // maximum board
   static {
@@ -16,11 +19,21 @@ public class P {
   
   final public int x;
   final public int y;
-
+  final public int offset;
+  
   private P(final int x, final int y) {
     super();
     this.x = x;
     this.y = y;
+    if ((x & 0b1) == 0b1 && (y &0b1) == 0b1) {
+      offset = Board.WALL_OFFSET;
+    } else {
+      if (y % 2 == 0) {
+        offset = 20*(y/2) + x; 
+      } else {
+        offset = 20*(y/2) + 13 + x / 2;
+      }
+    }
   }
 
   public int squareDistance(final P p) {
@@ -55,6 +68,10 @@ public class P {
       return false;
     final P other = (P) obj;
     return x == other.x && y == other.y;
+  }
+
+  public P move(Move move) {
+    return ps[x+move.dx][y+move.dy];
   }
 }
 

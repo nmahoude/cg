@@ -21,6 +21,7 @@ public class PseudoSA {
   private static final int FULL_POP = 2 * HALF_POP;
 
   static final int DEPTH = 20;
+  static boolean survivableSituation = false;
   static public State state = new State();
   static Simulation simulator = new Simulation(state);
   static MoveGenerator gen = new MoveGenerator(state);
@@ -36,7 +37,8 @@ public class PseudoSA {
 
   public void think(State model) {
     PseudoSA.state.copyFrom(model);
-   
+    survivableSituation = false;
+    
     init1stPopulation(model);
     
     double bestScore = Double.NEGATIVE_INFINITY;
@@ -50,7 +52,7 @@ public class PseudoSA {
         if (duration > 95) {
           break;
         } else if (duration > 20) {
-          if (bestScore < -900_000) {
+          if (!survivableSituation) {
             // we did'nt find any safe routes until now, 
             // so stop dropping ennemy bombs to try to find a safe route now
             invT = 0;
@@ -65,10 +67,11 @@ public class PseudoSA {
         nodes[i].build(dropEnnemyBombs, PseudoSA.state, invT);
       }
       sortPopulation();
-      invT++;
-      if (invT > DEPTH - 5) {
-        invT = 0;
-      }
+
+//      invT++;
+//      if (invT > DEPTH - 5) {
+//        invT = 0;
+//      }
     }
 
     message = ""+(simu/1000)+"k";
@@ -103,9 +106,13 @@ public class PseudoSA {
 
       @Override
       public int compare(SANode o1, SANode o2) {
-        return Double.compare(o2.score, o1.score);
+        return Double.compare(o2.accumulatedScore, o1.accumulatedScore);
       }
     });
+  }
+
+  public void reset() {
+    // no cache to clean ?
   }
 
 }
