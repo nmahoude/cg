@@ -94,7 +94,7 @@ public class SNode {
     return ""+moveToHere+" d:"+state.players[Player.myId].isDead;
   }
 
-  public double chooseWithoutRecursion(int depth, boolean dropEnnemyBombs) {
+  public double choose(int depth, boolean dropEnnemyBombs) {
     SNode current = this;
     double accScore = 0;
 
@@ -116,7 +116,7 @@ public class SNode {
     return accScore;
   }
   
-  public double choose(int depth, boolean dropEnnemyBombs) {
+  public double chooseWithRecursion(int depth, boolean dropEnnemyBombs) {
     if (state.players[Player.myId].isDead) {
       return Score.DEAD_MALUS;
     }
@@ -183,6 +183,10 @@ public class SNode {
    */
   public double recalculate(Move[] nextTurnMoves) {
     System.err.println("Recalculate last best path : "+Arrays.toString(nextTurnMoves));
+    if (nextTurnMoves[0].dropBomb) {
+      System.err.println("Desactive last best path due to bombing");
+      return Double.NEGATIVE_INFINITY;
+    }
     int depth = 0;
     tmpState.copyFrom(state);
     sim.state = tmpState;

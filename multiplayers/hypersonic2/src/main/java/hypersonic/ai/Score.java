@@ -18,7 +18,7 @@ public class Score {
       patience[i] =Math.pow(0.9, i);
     }
   }
-  
+   
   public static double score(State state, int depth, Move move) {
     double score = 0.0;
     Bomberman me = state.players[Player.myId];

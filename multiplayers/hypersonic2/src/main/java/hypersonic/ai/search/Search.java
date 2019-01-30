@@ -12,7 +12,7 @@ public class Search {
   public static final int DEPTH = 20;
   static final int MAX_BRUTE_DEPTH = 5; // depth where we keep all nodes
 
-  private static final long TIME_LIMIT = 95;
+  private static final long TIME_LIMIT = 50;
   private static final long DROP_BOMB_TIME_LIMIT = 20;
 
   
@@ -69,11 +69,11 @@ public class Search {
     }
 
     root.debug();
-    message  = ""+simu + " / "+(System.currentTimeMillis()-Player.startTime)+ " db:"+dropEnnemyBombs;
     
     bestScore = Optimizer.optimizeBombs(bestMoves, bestScore, DEPTH, model, dropEnnemyBombs);
     bestScore = Optimizer.optimizeMoves(bestMoves, bestScore, DEPTH, model, dropEnnemyBombs);
     
+    message  = bestMoves[0]+" "+(simu/1000)+"k" + " / "+(System.currentTimeMillis()-Player.startTime)+ " db:"+dropEnnemyBombs;
     if (Player.DEBUG_AI) {
       System.err.println("Simulations : " + simu);
       System.err.println("Still drop bombs? : "+dropEnnemyBombs);
