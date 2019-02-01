@@ -40,15 +40,18 @@ public class Score {
     
     score += BOX_DESTROYED_BONUS * me.points;
     
-    if (me.bombCount < 5) {
+    if (me.bombCount < 4) {
       score += BOX_DESTROYED_BONUS * Simulation.deltaBomb;
     } else {
-      score += 1.1 * Simulation.deltaBomb;
+      // 0
+//      score += 1.1 * Simulation.deltaBomb;
     }
     if (me.currentRange < 5) {
       score += 5.0 * Simulation.deltaRange;
-    } else {
+    } else if (me.currentRange < 5) {
       score += Simulation.deltaRange;
+    } else {
+      // 0
     }
 //    if (!move.dropBomb) {
 //      score += 0.1;

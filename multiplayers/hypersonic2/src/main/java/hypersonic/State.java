@@ -8,6 +8,7 @@ import hypersonic.utils.P;
 
 public class State {
   public Board board = new Board();
+  public long hash; // zobrist hash
   
   public int turn;
   public Bomberman players[] = new Bomberman[4];
@@ -23,6 +24,7 @@ public class State {
   }
   
   public void clean() {
+    hash = 0L;
     board.clean();
     
     playersFE = 4;
@@ -37,6 +39,7 @@ public class State {
   public void copyFrom(State model) {
     this.clean();
 
+    this.hash = model.hash;
     this.turn = model.turn;
     this.board.copyFrom(model.board);
     
@@ -70,6 +73,9 @@ public class State {
   }
 
   public void addBomb(final Bomb bomb) {
+    if (bomb.owner == Player.myId) {
+      hash = -1; // zobrist du pauvre :)
+    }
     board.addBomb(bomb);
   }
   
@@ -96,10 +102,12 @@ public class State {
   public void walkOn(final Bomberman player, final P p) {
     final int value = board.cells[p.offset];
     if ( value == Board.ITEM_1) {
+      hash = -1; // zobrist du pauvre :)
       player.currentRange+=1;
       Simulation.deltaRange+=1;
       board.cells[p.offset] = Board.EMPTY;
     } else if (value == Board.ITEM_2) {
+      hash = -1; // zobrist du pauvre :)
       player.bombsLeft+=1;
       player.bombCount+=1;
       Simulation.deltaBomb+=1;
@@ -115,6 +123,9 @@ public class State {
       
       if (bomberman.position.offset == pos.offset) {
         bomberman.isDead = true;
+        if (p == Player.myId) {
+          hash = -1; // zobrist du pauvre :)
+        }
       }
     }
   }

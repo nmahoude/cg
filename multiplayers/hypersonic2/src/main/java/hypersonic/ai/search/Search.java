@@ -5,6 +5,7 @@ import java.util.Arrays;
 import hypersonic.Move;
 import hypersonic.Player;
 import hypersonic.State;
+import hypersonic.ZobristLayer;
 import hypersonic.ai.Optimizer;
 import hypersonic.entities.Bomberman;
 
@@ -12,10 +13,15 @@ public class Search {
   public static final int DEPTH = 20;
   static final int MAX_BRUTE_DEPTH = 5; // depth where we keep all nodes
 
-  private static final long TIME_LIMIT = 50;
-  private static final long DROP_BOMB_TIME_LIMIT = 20;
+  private static final long TIME_LIMIT = 90;
+  private static final long DROP_BOMB_TIME_LIMIT = 10;
 
-  
+  public static ZobristLayer zobrists[] = new ZobristLayer[DEPTH];
+  static {
+    for (int i=0;i<DEPTH;i++) {
+      zobrists[i] = new ZobristLayer();
+    }
+  }
   private SNode root;
   private static Move[] nextTurnMoves = new Move[DEPTH];
   public static Move[] bestMoves = new Move[DEPTH];
@@ -24,7 +30,9 @@ public class Search {
   
   
   static boolean dropEnnemyBombs = true;
-  static boolean survivableSituation = false;
+  static boolean checkForSurvivableSituation = false;
+  public static int collisions;
+  public static int generatedNodes;
   private String message = "";
   
   public void reset() {
@@ -34,34 +42,28 @@ public class Search {
     simu = 0;
     this.bestScore = Double.NEGATIVE_INFINITY;
     
-    SNodeCache.reset();
+    initSimulationFromModel(model);
     
-    root = SNodeCache.pop();
-    root.state.copyFrom(model);
-
-    if (nextTurnMoves[0] != null) {
-      bestScore = root.recalculate(nextTurnMoves);
-      System.err.println("From last move, new bestScore is "+bestScore);
-    }
+//    if (nextTurnMoves[0] != null) {
+//      bestScore = root.recalculate(nextTurnMoves);
+//      System.err.println("From last move, new bestScore is "+bestScore);
+//    }
     
     
     dropEnnemyBombs = true;
-    survivableSituation = false;
+    checkForSurvivableSituation = true;
     while (true) {
       simu++;
       if ((simu & 0b1111) == 0 ) {
         long duration = System.currentTimeMillis() - Player.startTime;
         if (duration > TIME_LIMIT) {
           break;
-        } else if (duration > DROP_BOMB_TIME_LIMIT) {
-          if (!survivableSituation) {
-            // we did'nt find any safe routes until now, 
-            // so stop dropping ennemy bombs to try to find a safe route now
-            dropEnnemyBombs = false;
-            SNodeCache.reset();
-            root = SNodeCache.pop(); // restart from fresh tree
-            root.state.copyFrom(model);
-          }
+        } else if (checkForSurvivableSituation && duration > DROP_BOMB_TIME_LIMIT) {
+          // we did'nt find any safe routes until now, 
+          // so stop dropping ennemy bombs to try to find a safe route now
+          checkForSurvivableSituation = false;
+          dropEnnemyBombs = false;
+          initSimulationFromModel(model);
         }
       }
       
@@ -73,13 +75,33 @@ public class Search {
     bestScore = Optimizer.optimizeBombs(bestMoves, bestScore, DEPTH, model, dropEnnemyBombs);
     bestScore = Optimizer.optimizeMoves(bestMoves, bestScore, DEPTH, model, dropEnnemyBombs);
     
-    message  = bestMoves[0]+" "+(simu/1000)+"k" + " / "+(System.currentTimeMillis()-Player.startTime)+ " db:"+dropEnnemyBombs;
+    message  = bestMoves[0]+" "+(simu/1000)+"k" 
+              //+ " / "+(System.currentTimeMillis()-Player.startTime)
+              +(dropEnnemyBombs?"":"(☢☠)")
+              +" (c:"+collisions+")";
+    System.err.println("Generated nodes : "+generatedNodes+", collisions : "+collisions);
+    
     if (Player.DEBUG_AI) {
       System.err.println("Simulations : " + simu);
       System.err.println("Still drop bombs? : "+dropEnnemyBombs);
     }
-    System.err.println("Best (db:"+dropEnnemyBombs+"): "+Arrays.asList(bestMoves)+ " => "+bestScore);
+    System.err.println("Best: "+(dropEnnemyBombs?"(☠)":"")+Arrays.asList(bestMoves)+ " => "+bestScore);
 
+  }
+  private void initSimulationFromModel(State model) {
+    SNodeCache.reset();
+    resetZobrists();
+    root = SNodeCache.pop(); // restart from fresh tree
+    root.state.copyFrom(model);
+    root.state.hash = 0;
+  }
+
+  private void resetZobrists() {
+    collisions = 0;
+    generatedNodes = 0;
+    for (int d=0;d<DEPTH;d++) {
+      zobrists[d].reset();
+    }
   }
 
   SNode tmpNode = new SNode();

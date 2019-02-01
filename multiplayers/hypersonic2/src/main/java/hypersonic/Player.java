@@ -40,6 +40,7 @@ public class Player {
       ai.reset();
 
       readGameState();
+      state.hash = 0;
       if (turn == 1) {
         startTime+= 500;
       }

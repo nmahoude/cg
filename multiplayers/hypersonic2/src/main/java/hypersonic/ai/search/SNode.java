@@ -66,17 +66,30 @@ public class SNode {
       }
       sim.state = node.state;
       sim.simulate(moves[i]);
+      Search.generatedNodes ++;
       if (node.state.players[Player.myId].isDead) {
         node.score = Score.DEAD_MALUS;
-        moves[i] = moves[movesFE-1];
-        movesFE--;
-        i--;
+        i = removeChildNode(i);
       } else {
+        if (node.state.hash != -1) {
+          if (!Search.zobrists[depth].setState(node.state)) {
+            // already a state with same ... state
+            i = removeChildNode(i);
+            Search.collisions++;
+            continue;
+          }
+        }
         node.score = Score.score(node.state, depth, moves[i]);
         node.bestScore = node.score + node.rollout(depth+1);
         node.visits = 1;
       }
     }
+  }
+
+  private int removeChildNode(int i) {
+    moves[i] = moves[movesFE-1];
+    movesFE--;
+    return i-1;
   }
 
   private static void dropEnnemyBombs(State state) {
@@ -94,7 +107,7 @@ public class SNode {
     return ""+moveToHere+" d:"+state.players[Player.myId].isDead;
   }
 
-  public double choose(int depth, boolean dropEnnemyBombs) {
+  public double chooseFlat(int depth, boolean dropEnnemyBombs) {
     SNode current = this;
     double accScore = 0;
 
@@ -116,7 +129,7 @@ public class SNode {
     return accScore;
   }
   
-  public double chooseWithRecursion(int depth, boolean dropEnnemyBombs) {
+  public double choose(int depth, boolean dropEnnemyBombs) {
     if (state.players[Player.myId].isDead) {
       return Score.DEAD_MALUS;
     }
@@ -159,7 +172,7 @@ public class SNode {
     for (;depth<Search.DEPTH;depth++) {
       Search.allMoves[depth] = Move.STAY;
     }
-    Search.survivableSituation = true;
+    Search.checkForSurvivableSituation = false;
     return score;
   }
   
@@ -170,11 +183,7 @@ public class SNode {
 
     double score = 0.0;
     while (depth < Search.DEPTH) {
-      if (depth <= Search.DEPTH - Bomb.DEFAULT_TIMER - 1 ) {
-        allowedMovesFE = gen.getPossibleMoves(allowedMoves);
-      } else {
-        allowedMovesFE = gen.getPossibleMovesWithoutBombs(allowedMoves);
-      }
+      allowedMovesFE = gen.getPossibleMoves(allowedMoves);
       Move move = allowedMoves[Player.rand.nextInt(allowedMovesFE)];
       Search.allMoves[depth] = move;
 
@@ -185,9 +194,20 @@ public class SNode {
       }
       depth++;
     }
+    
+    // score += finishMove(depth);
+    
     // end of rollout, if we are still alive, say it !
-    Search.survivableSituation = true;
+    Search.checkForSurvivableSituation = false;
     return score;
+  }
+
+  private double finishMove(int depth) {
+    // last depth we go forward in future to know bombs effect
+    tmpState.turn += 10;
+    sim.simulate(Move.STAY);
+    tmpState.players[Player.myId].isDead = false; // force so we are not dead
+    return Score.score(tmpState, depth, Move.STAY);
   }  
   
   
@@ -234,7 +254,6 @@ public class SNode {
       depth++;
     }
     // end of rollout, if we are still alive, say it !
-    Search.survivableSituation = true;
     for(int i=0;i<Search.DEPTH;i++) {
       Search.bestMoves[i] = nextTurnMoves[i];
     }
