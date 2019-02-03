@@ -2,12 +2,9 @@ package bttc;
 
 import java.util.Scanner;
 
-import org.junit.Test;
-
 public class PlayerTest {
 
-  @Test
-  public void simple() throws Exception {
+  public static void main(String[] args) {
     String input =
         "23\r\n" + 
         "26 8 1\r\n" + 
@@ -32,13 +29,16 @@ public class PlayerTest {
         "......1111111111...................\r\n" + 
         "...................................\r\n" + 
         "...................................";
-    Scanner in = new Scanner(input);
-    
-    Player p = new Player();
-    Player.DEBUG_OUTPUT = false;
-    Player.roundStart = System.currentTimeMillis()+1_000;
-    Player.nbPlayers = 2;
-    p.readOneTurn(in);
+    for (int i=0;i<10_000;i++) {
+      Scanner in = new Scanner(input);
+      
+      Player p = new Player();
+      Player.DEBUG_OUTPUT = false;
+      Player.roundStart = System.currentTimeMillis()+100;
+      Player.nbPlayers = 2;
+      p.readOneTurn(in);
+      in.close();
+    }
     
   }
 }

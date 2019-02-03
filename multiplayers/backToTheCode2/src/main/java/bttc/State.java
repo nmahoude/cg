@@ -51,8 +51,11 @@ public class State {
     return players[p].score;
   }
 
+  static int score[] = new int[4];
   void computeScore() {
-    int score[] = new int[4];
+    for (int i = 0; i < 4; i++) {
+      score[i] = 0;
+    }
     for (int y = 0; y < 20; y++) {
       for (int x = 0; x < 35; x++) {
         if (cells[x + 35 * y] >= 0) {
@@ -283,9 +286,9 @@ public class State {
     }
   }
 
-  List<State> nextSteps() {
-    List<State> steps = new ArrayList<>();
-    boolean isDeadEnd = true;
+  int nextSteps(State[] nextSteps) {
+    int nextStepsFE = 0;
+    nextStepsFE = 0;
     countExpansions++;
 
     if ((countExpansions & 0b11111) == 0) {
@@ -311,12 +314,11 @@ public class State {
               break;
             }
           }
-          steps.add(nextGrid);
-          isDeadEnd = false;
+          nextSteps[nextStepsFE++] = nextGrid;
         }
       }
     }
-    if (isDeadEnd) {
+    if (nextStepsFE == 0 /* dead end*/) {
       // There is no Neutral cell around, go away from here
       Position pos;
       if (moveAwayPattern == null) {
@@ -340,14 +342,14 @@ public class State {
             nextGrid.copyFrom(this);
             nextGrid.previousGrid = this;
             nextGrid.moveMe(dir);
-            steps.add(nextGrid);
+            nextSteps[nextStepsFE++] = nextGrid;
           }
         }
       }
     } else {
       moveAwayPattern = null;
     }
-    return steps;
+    return nextStepsFE;
   }
 
   State(char trace[]) {
@@ -469,7 +471,9 @@ public class State {
       path.add(0, grid.players[0].pos);
       grid = grid.previousGrid;
     }
-    System.err.println("Path : " + path);
+    if (Player.DEBUG_AI) {
+      System.err.println("Path : " + path);
+    }
     return path.get(i);
   }
 }

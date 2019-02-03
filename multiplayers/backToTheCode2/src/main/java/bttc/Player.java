@@ -1,11 +1,12 @@
 package bttc;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Player {
-  static boolean DEBUG_OUTPUT = true;
-  static final int TIMEOUT = 40;
+  static boolean DEBUG_OUTPUT = false;
+  static boolean DEBUG_AI = false;
+  static final int TIMEOUT = 20;
   
   static Strategy strategy = Strategy.AssumeNoAgression;
   static int nbPlayers;
@@ -36,6 +37,9 @@ public class Player {
       readOneTurn(in);
     }
   }
+  
+  static State[] nextSteps = new State[4];
+  static List<State> states = new LinkedList<>();
   public void readOneTurn(Scanner in) {
     // game loop
     {
@@ -74,8 +78,12 @@ public class Player {
         if (DEBUG_OUTPUT) {
           System.err.println(""+x+" "+y+" "+backInTimeLeft);
         }
-        currentGrid.players[i].pos = Position.get(x, y);
-        currentGrid.players[i].backInTimeLeft = backInTimeLeft;
+        if (x == -1) {
+          currentGrid.players[i].pos = Position.WALL;
+        } else {
+          currentGrid.players[i].pos = Position.get(x, y);
+          currentGrid.players[i].backInTimeLeft = backInTimeLeft;
+        }
       }
       for (int y = 0; y < 20; y++) {
         String line;
@@ -151,11 +159,11 @@ public class Player {
       State bestGrid = currentGrid;
       double bestScorePerStep = 0;
  
-      System.err.println("Reset cache");
       State.stateFactory.reset();
 
       for (stepSize = 3; stepSize >= 1; stepSize--) {
-        List<State> states = new ArrayList<>();
+        states.clear();
+        
         State newGrid = State.stateFactory.getNewGrid();
         newGrid.copyFrom(currentGrid);
         newGrid.previousGrid = null;
@@ -167,27 +175,32 @@ public class Player {
         int currentLen = 1;
         State.countExpansions = 0;
 
-        while (states.size() > 0) {
+        while (!states.isEmpty()) {
+          
           workingGrid = states.remove(0);
-          List<State> nextSteps = workingGrid.nextSteps();
-          states.addAll(nextSteps);
+          int nextStepsFE = workingGrid.nextSteps(nextSteps);
+          for (int i=0;i<nextStepsFE;i++) {
+            State nextState = nextSteps[i];
+            // add to next steps to handle
+            
+            states.add(nextState);
 
-          for (State nextGrid : nextSteps) {
-            int nextScore = nextGrid.score(0);
+            // check if this step is good
+            int nextScore = nextState.score(0);
             if (nextScore > bestScore) {
-              int nextPathLen = nextGrid.pathLen();
+              int nextPathLen = nextState.pathLen();
 
               double selectionCriteria;
               selectionCriteria = (1.0 * (nextScore - currentScore + 20)) / (nextPathLen + 20);
               if (selectionCriteria > bestScorePerStep) {
                 bestScore = nextScore;
-                bestGrid = nextGrid;
+                bestGrid = nextState;
                 bestScorePerStep = selectionCriteria;
               }
             }
           }
 
-          nextLenCount += nextSteps.size();
+          nextLenCount += nextStepsFE;
           currentLenCount--;
           if (currentLenCount == 0) {
             currentLenCount = nextLenCount;
@@ -196,7 +209,9 @@ public class Player {
           }
 
           if (timeout) {
-            System.err.println("TIMEOUT!!");
+            if (DEBUG_AI) {
+              System.err.println("TIMEOUT!!");
+            }
             break;
           }
         }
@@ -209,12 +224,16 @@ public class Player {
 
       Position nextPos;
 
-      System.err.println("Reconstitute path");
-      System.err.println("Best score is "+bestScore);
+      if (DEBUG_AI) {
+        System.err.println("Reconstitute path");
+        System.err.println("Best score is "+bestScore);
+      }
       if (bestGrid.pathLen() > 0) {
         nextPos = bestGrid.pathAt(1);
       } else {
-        System.err.println("No path, Go to the closest free cell");
+        if (DEBUG_AI) {
+          System.err.println("No path, Go to the closest free cell");
+        }
         nextPos = currentGrid.closestNeutral(currentGrid.players[0].pos);
       }
 
