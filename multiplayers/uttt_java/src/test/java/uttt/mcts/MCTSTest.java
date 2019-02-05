@@ -2,9 +2,10 @@ package uttt.mcts;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import uttt.Player;
@@ -45,6 +46,7 @@ public class MCTSTest {
   }
 
   @Test
+  @Ignore
   public void debugSituation() throws Exception {
     MCTS mcts = new MCTS();
     
@@ -70,7 +72,7 @@ public class MCTSTest {
 
     state.nextPlayGrid = 7;
     
-    Player.start = System.currentTimeMillis()+DEBUG_TIME;
+    Player.start = System.currentTimeMillis(); //+DEBUG_TIME;
     
     mcts.think();
     
@@ -104,6 +106,7 @@ public class MCTSTest {
   }
   
   @Test
+  @Ignore
   public void findProvenWin() throws Exception {
     MCTS mcts = new MCTS();
     State2 state = mcts.getCurrentState();

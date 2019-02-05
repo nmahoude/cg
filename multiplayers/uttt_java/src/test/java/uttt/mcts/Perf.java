@@ -10,9 +10,8 @@ public class Perf {
   public void setup() {
     NodeCache.init();
   }
-  @Test
-  //@Ignore
-  public void perf() throws Exception {
+ 
+  public static void main(String[] args) {
     Player.DEBUG = false;
     
     for (int i=0;i<400;i++) {
