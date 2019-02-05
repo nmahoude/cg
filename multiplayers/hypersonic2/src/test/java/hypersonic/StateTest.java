@@ -180,6 +180,24 @@ public class StateTest {
     }
     
     @Test
+    public void fakeBombsDONTExplodesBoxes() throws Exception {
+      final State state = createBasicstate();
+      final Bomb bomb = createBomb(state)
+          .at(2,2)
+          .withTimer(1)
+          .withRange(3)
+          .asFake()
+          .build();
+
+      state.updateBombs();
+      
+      assertThat(state.board.cells[cell(2,1)], is(Board.BOX));
+      assertThat(state.board.cells[cell(1,2)], is(Board.BOX));
+      assertThat(state.board.cells[cell(2,3)], is(Board.BOX));
+      assertThat(state.board.cells[cell(3,2)], is(Board.BOX));
+    }
+    
+    @Test
     public void explodedBoxesGivePointsToPlayer() throws Exception {
       final State state = createBasicstate();
       createBasicPlayer(state);
@@ -472,6 +490,7 @@ public class StateTest {
     private int range = 3;
     private int timer = 8;
     private int owner = 0;
+    private boolean fake = false;
 
     public BombBuilder(final State state) {
       this.state = state;
@@ -497,9 +516,14 @@ public class StateTest {
       this.owner  = owner;
       return this;
     }
-    
+
+    public BombBuilder asFake() {
+      this.fake = true;
+      return this;
+    }
+
     public Bomb build() {
-      final Bomb bomb = Cache.popBomb(owner, P.get(x,y), timer, range);
+      final Bomb bomb = Cache.popBomb(owner, P.get(x,y), timer, range, fake);
       state.addBomb(bomb);
       return bomb;
     }

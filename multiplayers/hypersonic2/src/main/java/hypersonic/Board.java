@@ -132,55 +132,56 @@ public class Board {
   static int destroyedBoxesFE;
   static int destroyedItems[] = new int[MAPSIZE];
   static int destroyedItemsFE;
+  private Bomb currentBomb;
   void explode(State state) {
     destroyedBoxesFE = 0;
     destroyedItemsFE = 0;
     
     int currentBombToExplode = 0;
     while (currentBombToExplode != bombsToExplodeFE) {
-      Bomb b = bombsToExplode[currentBombToExplode++];
+      currentBomb = bombsToExplode[currentBombToExplode++];
       
-      Bomberman orginalBomberman = state.players[b.owner];
+      Bomberman orginalBomberman = state.players[currentBomb.owner];
       orginalBomberman.bombsLeft+=1; // he may be dead, but yolo
       
-      P p = b.position;
+      P p = currentBomb.position;
       
-      checkExplosion(state, b.owner, p); // at (0,0)
+      checkExplosion(state, currentBomb.owner, p); // at (0,0)
       int x = p.x;
       int y = p.y;
       int correctedRange;
       
-      correctedRange = Math.min(b.range-1, WIDTH-1-x);
+      correctedRange = Math.min(currentBomb.range-1, WIDTH-1-x);
       for (int d = 0; d < correctedRange; d++) {
         x++;
-        if (checkExplosion(state, b.owner, P.get(x, y))) {
+        if (checkExplosion(state, currentBomb.owner, P.get(x, y))) {
           break;
         }
       }
       
       x = p.x;
-      correctedRange = Math.min(b.range-1, x);
+      correctedRange = Math.min(currentBomb.range-1, x);
       for (int d = 0; d < correctedRange; d++) {
         x--;
-        if (checkExplosion(state, b.owner, P.get(x, y))) {
+        if (checkExplosion(state, currentBomb.owner, P.get(x, y))) {
           break;
         }
       }
       
       x = p.x;
-      correctedRange = Math.min(b.range-1, HEIGHT-1-y);
+      correctedRange = Math.min(currentBomb.range-1, HEIGHT-1-y);
       for (int d = 0; d < correctedRange; d++) {
         y++;
-        if (checkExplosion(state, b.owner, P.get(x, y))) {
+        if (checkExplosion(state, currentBomb.owner, P.get(x, y))) {
           break;
         }
       }
       
       y = p.y;
-      correctedRange = Math.min(b.range-1, y);
+      correctedRange = Math.min(currentBomb.range-1, y);
       for (int d = 0; d < correctedRange; d++) {
         y--;
-        if (checkExplosion(state, b.owner, P.get(x, y))) {
+        if (checkExplosion(state, currentBomb.owner, P.get(x, y))) {
           break;
         }
       }
@@ -249,6 +250,7 @@ public class Board {
       case BOX:
       case BOX_1:
       case BOX_2:
+        if (currentBomb.fake) return true;
         if (explodesBoxMap[mapIndex] == 0) {
           destroyedBoxes[destroyedBoxesFE++] = mapIndex;
         }
@@ -256,12 +258,14 @@ public class Board {
         return true;
       case ITEM_1:
       case ITEM_2:
+        if (currentBomb.fake) return true;
         cells[mapIndex] = EXPLODED_ITEM;
         destroyedItems[destroyedItemsFE++] = mapIndex;
         return true; // stop explosion
       case EXPLODED_ITEM:
         return true;
       case BOMB:
+        if (currentBomb.fake) return false;
         cells[mapIndex] = EXPLODED_BOMB;
         for (int bombIndex=0;bombIndex<bombsFE;bombIndex++) {
           Bomb b = bombs[bombIndex];

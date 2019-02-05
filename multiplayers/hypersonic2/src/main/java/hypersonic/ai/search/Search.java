@@ -11,7 +11,7 @@ import hypersonic.entities.Bomberman;
 
 public class Search {
   static final int DEPTH = 20;
-  static final int MAX_BRUTE_DEPTH = 6; // depth where we keep all nodes
+  static final int MAX_BRUTE_DEPTH = 5; // depth where we keep all nodes
 
   private static final long TIME_LIMIT = 90;
   private static final long DROP_BOMB_TIME_LIMIT = 10;

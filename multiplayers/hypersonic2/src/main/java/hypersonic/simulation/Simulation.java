@@ -41,7 +41,8 @@ public class Simulation {
           player.owner, 
           player.position, 
           state.turn + Bomb.DEFAULT_TIMER, 
-          player.currentRange);
+          player.currentRange, 
+          false);
       state.addBomb(newBomb);
 
       player.bombsLeft-=1;
@@ -57,7 +58,7 @@ public class Simulation {
       if (i == Player.myId) continue;
       Bomberman b = state.players[i];
       if (b.isDead || b.bombsLeft == 0) continue;
-      state.addBomb(Cache.popBomb(i, b.position, 8, b.currentRange));
+      state.addBomb(Cache.popBomb(i, b.position, 8, b.currentRange, true));
     }
   }
 }

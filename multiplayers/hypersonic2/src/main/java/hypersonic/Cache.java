@@ -22,12 +22,13 @@ public class Cache {
   public static void pushBomb(Bomb b) {
     bombCache.retrocede(b);
   }
-  public static Bomb popBomb(int owner, P p, int param1, int param2) {
+  public static Bomb popBomb(int owner, P p, int param1, int param2, boolean fake) {
     Bomb bomb = popBomb();
     bomb.owner = owner;
     bomb.position = p;
     bomb.timer = param1;
     bomb.range = param2;
+    bomb.fake = fake;
     return bomb;
   }
 

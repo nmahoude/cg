@@ -5,7 +5,7 @@ import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
 import hypersonic.ai.HeatMap;
-import hypersonic.ai.bfsmc.BFSMC;
+import hypersonic.ai.search.Search;
 import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.entities.Item;
@@ -13,10 +13,10 @@ import hypersonic.utils.P;
 
 public class Player {
   public static final int DEPTH = 20;
-  public static final boolean DEBUG_SCORE = true;
+  public static final boolean DEBUG_SCORE = false;
   public static int NUMBER_OF_PLAYER = 4;
   public static boolean DEBUG_INPUT = true;
-  public static boolean DEBUG_AI = true;
+  public static boolean DEBUG_AI = false;
   public static boolean DEBUG_OPTIMIZE = false;
   public static boolean DEBUG_LASTBEST = false;
   public static Random rand = ThreadLocalRandom.current(); //new Random(0);
@@ -36,7 +36,7 @@ public class Player {
 
   void play() {
     readInitialData();
-    BFSMC ai = new BFSMC();
+    Search ai = new Search();
     ai.reset();
     
     while (true) {
@@ -99,7 +99,7 @@ public class Player {
         player.isDead = false;
       } else if (entityType == 1) {
         int turnAtExplosion = turn + param1;
-        final Bomb bomb = Cache.popBomb(owner, P.get(x, y), turnAtExplosion, param2);
+        final Bomb bomb = Cache.popBomb(owner, P.get(x, y), turnAtExplosion, param2, false);
         state.addBomb(bomb);
         bombCountOnTheBoard[owner]+=1;
       } else if (entityType == 2) {

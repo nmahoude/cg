@@ -4,7 +4,6 @@ import hypersonic.Cache;
 import hypersonic.Move;
 import hypersonic.Player;
 import hypersonic.State;
-import hypersonic.ai.MC;
 import hypersonic.ai.Score;
 import hypersonic.entities.Bomberman;
 
@@ -64,7 +63,7 @@ public class SANode {
       if (i == Player.myId) continue;
       Bomberman b = state.players[i];
       if (b.isDead || b.bombsLeft == 0) continue;
-      state.addBomb(Cache.popBomb(i, b.position, 8, b.currentRange));
+      state.addBomb(Cache.popBomb(i, b.position, 8, b.currentRange, true));
     }
   }
 }

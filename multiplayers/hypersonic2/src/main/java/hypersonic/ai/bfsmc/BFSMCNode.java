@@ -164,14 +164,7 @@ public class BFSMCNode {
       if (move == null) {
         return Score.DEAD_MALUS;
       }
-      BFSMCNode next = null;
-      for (int i=0;i<current.movesFE;i++) {
-        if (current.moves[i] == move) {
-          next = BFSMCNodeCache.nodes[current.firstChildIndex + i];
-          break;
-        }
-      }
-      current = next;
+      current = current.navigate(move);
       current.visits++;
       score = current.score; // only = as the node keeps the sum of all preceding parents
       depth++;

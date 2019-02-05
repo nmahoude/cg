@@ -69,6 +69,8 @@ public class BFSMC {
       double score = root.rollout(allMoves, 8);
       if (score > Score.DEAD_MALUS) {
         System.err.println("We survive!");
+        System.err.println(Arrays.asList(allMoves));
+        root.rolloutMoves(allMoves, 8);
         checkForSurvivableSituation = true;
         break;
       }
