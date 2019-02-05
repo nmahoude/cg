@@ -5,16 +5,20 @@ import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
 import hypersonic.ai.HeatMap;
-import hypersonic.ai.search.Search;
+import hypersonic.ai.bfsmc.BFSMC;
 import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.entities.Item;
 import hypersonic.utils.P;
 
 public class Player {
+  public static final int DEPTH = 20;
+  public static final boolean DEBUG_SCORE = true;
   public static int NUMBER_OF_PLAYER = 4;
   public static boolean DEBUG_INPUT = true;
-  public static boolean DEBUG_AI = false;
+  public static boolean DEBUG_AI = true;
+  public static boolean DEBUG_OPTIMIZE = false;
+  public static boolean DEBUG_LASTBEST = false;
   public static Random rand = ThreadLocalRandom.current(); //new Random(0);
   
   public static long startTime;
@@ -32,7 +36,7 @@ public class Player {
 
   void play() {
     readInitialData();
-    Search ai = new Search();
+    BFSMC ai = new BFSMC();
     ai.reset();
     
     while (true) {

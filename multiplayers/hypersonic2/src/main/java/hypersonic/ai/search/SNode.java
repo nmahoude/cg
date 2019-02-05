@@ -2,13 +2,11 @@ package hypersonic.ai.search;
 
 import java.util.Arrays;
 
-import hypersonic.Cache;
 import hypersonic.Move;
 import hypersonic.Player;
 import hypersonic.State;
 import hypersonic.ai.Score;
 import hypersonic.entities.Bomb;
-import hypersonic.entities.Bomberman;
 import hypersonic.simulation.MoveGenerator;
 import hypersonic.simulation.Simulation;
 import hypersonic.utils.P;
@@ -62,7 +60,7 @@ public class SNode {
       node.state.copyFrom(this.state);
       node.moveToHere = moves[i];
       if (depth == 0 && dropEnnemyBombs) {
-        dropEnnemyBombs(node.state);
+        Simulation.dropEnnemyBombs(node.state);
       }
       sim.state = node.state;
       sim.simulate(moves[i]);
@@ -90,16 +88,6 @@ public class SNode {
     moves[i] = moves[movesFE-1];
     movesFE--;
     return i-1;
-  }
-
-  private static void dropEnnemyBombs(State state) {
-    // for all players different than me and who can, drop a bomb at first one
-    for (int i=0;i<4;i++) {
-      if (i == Player.myId) continue;
-      Bomberman b = state.players[i];
-      if (b.isDead || b.bombsLeft == 0) continue;
-      state.addBomb(Cache.popBomb(i, b.position, 8, b.currentRange));
-    }
   }
 
   @Override
@@ -224,9 +212,13 @@ public class SNode {
    * A kind of directed rollout
    */
   public double recalculate(Move[] nextTurnMoves) {
-    System.err.println("Recalculate last best path : "+Arrays.toString(nextTurnMoves));
+    if (Player.DEBUG_LASTBEST) {
+      System.err.println("Recalculate last best path : "+Arrays.toString(nextTurnMoves));
+    }
     if (nextTurnMoves[0].dropBomb) {
-      System.err.println("Desactive last best path due to bombing");
+      if (Player.DEBUG_LASTBEST) {
+        System.err.println("Desactive last best path due to bombing");
+      }
       return Double.NEGATIVE_INFINITY;
     }
     int depth = 0;
@@ -245,6 +237,9 @@ public class SNode {
       if (move != Move.STAY && move != Move.STAY_BOMB && !tmpState.canWalkOn(newPos)) {
         System.err.println("Path is not valid anymore, aborting");
         return Score.DEAD_MALUS;
+      }
+      if (depth == 0) {
+        Simulation.dropEnnemyBombs(tmpState);
       }
       sim.simulate(move);
       score += Score.score(tmpState, depth, move);

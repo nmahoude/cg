@@ -143,31 +143,26 @@ public class SimulationTest {
   
   public static void main(String[] args) {
     String input =
-        ".............\r\n" + 
+        ".....212.2...\r\n" + 
+        ".X0X.X.X.X0X.\r\n" + 
+        "..2001.100202\r\n" + 
+        ".X.X.X.X.X.X1\r\n" + 
+        "1..12.0.21..1\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
-        ".............\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        ".............\r\n" + 
-        ".X.X.X.X.X2X.\r\n" + 
-        "1............\r\n" + 
-        "2X0X1X.X.X.X.\r\n" + 
-        ".0...........\r\n" + 
-        ".X.X1X.X.X.X.\r\n" + 
-        ".............\r\n" + 
-        "13\r\n" + 
-        "0 0 6 8 4 6\r\n" + 
-        "0 1 2 8 2 7\r\n" + 
-        "0 2 3 6 3 7\r\n" + 
-        "1 1 5 10 4 6\r\n" + 
-        "1 1 4 10 5 6\r\n" + 
-        "1 2 4 5 5 7\r\n" + 
-        "1 0 8 8 7 6\r\n" + 
-        "1 1 2 10 7 7\r\n" + 
-        "1 2 4 6 8 7\r\n" + 
-        "2 0 12 4 1 1\r\n" + 
-        "2 0 12 6 1 1\r\n" + 
-        "2 0 8 5 1 1\r\n" + 
-        "2 0 2 5 2 2";
+        "1..12.0.21..1\r\n" + 
+        "1X.X.X.X.X.X1\r\n" + 
+        "202001.100.0.\r\n" + 
+        ".X0X.X.X.X.X.\r\n" + 
+        "...2.212.....\r\n" + 
+        "8\r\n" + 
+        "0 0 3 0 1 3\r\n" + 
+        "0 1 10 7 1 3\r\n" + 
+        "1 0 1 0 4 3\r\n" + 
+        "1 1 8 10 4 3\r\n" + 
+        "1 0 2 0 7 3\r\n" + 
+        "1 1 10 8 8 3\r\n" + 
+        "2 0 12 8 2 2\r\n" + 
+        "2 0 0 3 1 1";
     Player.myId = 0;
 
     Scanner in = new Scanner(input);
@@ -176,10 +171,10 @@ public class SimulationTest {
     // ← ↑ → ↓ ☢
     Move moves[];
 //    player.state.addBomb(new Bomb(2, P.get(4, 4), 8, 4));
-    /* me */ moves = readMoves("←, ☢→,  ↑, ☢↓, ☢→, ☢→, ☢→,  →, ☢↑,  ↑,  →,  ←,  ↑,  •, ☢•,  ↓,  →, ☢→,  ↑, ☢•");
+    /* me */ moves = readMoves("☢•,  →,  ↓,  •,  •,   •,  •,  •,  •,  •,   •,  •,  •,  •,  •,  •");
     doSimulationOfMoves(moves, player.state);
 
-    /* me */ moves = readMoves("←,  ←,  ☢→, →•,  ↑, ↑, ↑, ↑, ↑, ↑ ");
+    /* me */ moves = readMoves(" →,  ↓,  •,  •,  •,  •,  •,  •,  •, •,  •,  •,  •,  •,  •, •,  •,  •,  •,  •,  •");
     doSimulationOfMoves(moves, player.state);
 
 //    displayPossibleMoves();

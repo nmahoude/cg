@@ -69,27 +69,23 @@ public class SearchTest {
         ".X.X.X.X.X.X.\r\n" + 
         ".............\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
-        ".............\r\n" + 
-        ".X.X.X.X.X2X.\r\n" + 
-        "1............\r\n" + 
-        "2X0X1X.X.X.X.\r\n" + 
-        ".0...........\r\n" + 
-        ".X.X1X.X.X.X.\r\n" + 
-        ".............\r\n" + 
-        "13\r\n" + 
-        "0 0 6 8 4 6\r\n" + 
-        "0 1 2 8 2 7\r\n" + 
-        "0 2 3 6 3 7\r\n" + 
-        "1 1 5 10 4 6\r\n" + 
-        "1 1 4 10 5 6\r\n" + 
-        "1 2 4 5 5 7\r\n" + 
-        "1 0 8 8 7 6\r\n" + 
-        "1 1 2 10 7 7\r\n" + 
-        "1 2 4 6 8 7\r\n" + 
-        "2 0 12 4 1 1\r\n" + 
-        "2 0 12 6 1 1\r\n" + 
-        "2 0 8 5 1 1\r\n" + 
-        "2 0 2 5 2 2";
+        "....1...1....\r\n" + 
+        "1X.X.X.X.X.X1\r\n" + 
+        "..0.1...1.0..\r\n" + 
+        "0X2X.X.X.X.X.\r\n" + 
+        "2..11...1....\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        ".....2.......\r\n" + 
+        "9\r\n" + 
+        "0 0 8 2 4 6\r\n" + 
+        "0 1 10 8 1 4\r\n" + 
+        "0 2 10 4 2 3\r\n" + 
+        "1 1 9 8 3 4\r\n" + 
+        "1 0 5 0 4 5\r\n" + 
+        "1 1 10 7 6 4\r\n" + 
+        "1 2 12 4 7 3\r\n" + 
+        "2 0 9 2 1 1\r\n" + 
+        "2 0 7 10 2 2";
     Scanner in = new Scanner(input);
     Player.myId = 0;
     SNodeCache.reset();
@@ -99,7 +95,7 @@ public class SearchTest {
     
     Search ai = new Search();
     
-    Player.startTime = System.currentTimeMillis()+10000;//_000;
+    Player.startTime = System.currentTimeMillis()+100;//_000;
     ai.think(player.state);
     
   }
