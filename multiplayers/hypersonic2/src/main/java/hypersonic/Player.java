@@ -99,7 +99,7 @@ public class Player {
         player.isDead = false;
       } else if (entityType == 1) {
         int turnAtExplosion = turn + param1;
-        final Bomb bomb = Cache.popBomb(owner, P.get(x, y), turnAtExplosion, param2, false);
+        final Bomb bomb = Cache.popBomb(owner, P.get(x, y), turnAtExplosion, param2);
         state.addBomb(bomb);
         bombCountOnTheBoard[owner]+=1;
       } else if (entityType == 2) {
