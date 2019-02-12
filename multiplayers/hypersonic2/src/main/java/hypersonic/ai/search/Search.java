@@ -10,10 +10,10 @@ import hypersonic.ai.Optimizer;
 import hypersonic.entities.Bomberman;
 
 public class Search {
-  static final int DEPTH = 20;
-  static final int MAX_BRUTE_DEPTH = 5; // depth where we keep all nodes
+  static final int DEPTH = Player.DEPTH;
+  static final int MAX_BRUTE_DEPTH = 6; // depth where we keep all nodes
 
-  private static final long TIME_LIMIT = 90;
+  private static final long TIME_LIMIT = 95;
   private static final long DROP_BOMB_TIME_LIMIT = 10;
 
   public static ZobristLayer zobrists[] = new ZobristLayer[DEPTH];
@@ -137,8 +137,11 @@ public class Search {
   }
   
   public void ouput(State currentState) {
-    final Move move = bestMoves[0];
-    prepareForNextTurn();
+    Move move = bestMoves[0];
+    //prepareForNextTurn();
+    if (move == null) {
+      move = Move.STAY;
+    }
     outputMove(currentState.players[Player.myId], move, message);
   }
   

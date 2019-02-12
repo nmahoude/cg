@@ -69,6 +69,7 @@ public class Board {
     
     // copy des bombes non explosées (timer atteint ou chain-exploded ie ==null) 
     bombsFE = 0;
+    localBombsFE =0;
     for (int i=0;i<model.bombsFE;i++) {
       Bomb b = model.bombs[i];
       if (b != null) {
@@ -139,49 +140,49 @@ public class Board {
     
     int currentBombToExplode = 0;
     while (currentBombToExplode != bombsToExplodeFE) {
-      Bomb currentBomb = bombsToExplode[currentBombToExplode++];
+      Bomb b = bombsToExplode[currentBombToExplode++];
       
-      Bomberman orginalBomberman = state.players[currentBomb.owner];
+      Bomberman orginalBomberman = state.players[b.owner];
       orginalBomberman.bombsLeft+=1; // he may be dead, but yolo
       
-      P p = currentBomb.position;
+      P p = b.position;
       
-      checkExplosion(state, currentBomb.owner, p); // at (0,0)
+      checkExplosion(state, b.owner, p); // at (0,0)
       int x = p.x;
       int y = p.y;
       int correctedRange;
       
-      correctedRange = Math.min(currentBomb.range-1, WIDTH-1-x);
+      correctedRange = Math.min(b.range-1, WIDTH-1-x);
       for (int d = 0; d < correctedRange; d++) {
         x++;
-        if (checkExplosion(state, currentBomb.owner, P.get(x, y))) {
+        if (checkExplosion(state, b.owner, P.get(x, y))) {
           break;
         }
       }
       
       x = p.x;
-      correctedRange = Math.min(currentBomb.range-1, x);
+      correctedRange = Math.min(b.range-1, x);
       for (int d = 0; d < correctedRange; d++) {
         x--;
-        if (checkExplosion(state, currentBomb.owner, P.get(x, y))) {
+        if (checkExplosion(state, b.owner, P.get(x, y))) {
           break;
         }
       }
       
       x = p.x;
-      correctedRange = Math.min(currentBomb.range-1, HEIGHT-1-y);
+      correctedRange = Math.min(b.range-1, HEIGHT-1-y);
       for (int d = 0; d < correctedRange; d++) {
         y++;
-        if (checkExplosion(state, currentBomb.owner, P.get(x, y))) {
+        if (checkExplosion(state, b.owner, P.get(x, y))) {
           break;
         }
       }
       
       y = p.y;
-      correctedRange = Math.min(currentBomb.range-1, y);
+      correctedRange = Math.min(b.range-1, y);
       for (int d = 0; d < correctedRange; d++) {
         y--;
-        if (checkExplosion(state, currentBomb.owner, P.get(x, y))) {
+        if (checkExplosion(state, b.owner, P.get(x, y))) {
           break;
         }
       }

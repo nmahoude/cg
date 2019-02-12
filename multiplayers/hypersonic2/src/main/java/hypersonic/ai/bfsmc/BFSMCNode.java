@@ -81,14 +81,6 @@ public class BFSMCNode {
         node.score = Score.DEAD_MALUS;
         i = removeChildNode(i);
       } else {
-        if (node.state.hash != -1) {
-          if (!BFSMC.zobrists[depth].setState(node.state)) {
-            // already a state with same ... state
-            i = removeChildNode(i);
-            BFSMC.collisions++;
-            continue;
-          }
-        }
         node.score = this.score + Score.score(node.state, depth, moves[i]);
         node.visits = 1;
       }

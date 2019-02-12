@@ -143,26 +143,24 @@ public class SimulationTest {
   
   public static void main(String[] args) {
     String input =
-        ".....212.2...\r\n" + 
-        ".X0X.X.X.X0X.\r\n" + 
-        "..2001.100202\r\n" + 
-        ".X.X.X.X.X.X1\r\n" + 
-        "1..12.0.21..1\r\n" + 
-        ".X.X.X.X.X.X.\r\n" + 
-        "1..12.0.21..1\r\n" + 
-        "1X.X.X.X.X.X1\r\n" + 
-        "202001.100.0.\r\n" + 
-        ".X0X.X.X.X.X.\r\n" + 
-        "...2.212.....\r\n" + 
-        "8\r\n" + 
-        "0 0 3 0 1 3\r\n" + 
-        "0 1 10 7 1 3\r\n" + 
-        "1 0 1 0 4 3\r\n" + 
-        "1 1 8 10 4 3\r\n" + 
-        "1 0 2 0 7 3\r\n" + 
-        "1 1 10 8 8 3\r\n" + 
-        "2 0 12 8 2 2\r\n" + 
-        "2 0 0 3 1 1";
+        "..0112.2110..\r\n" + 
+        ".X.X1X1X1X.X.\r\n" + 
+        "..2.02220.22.\r\n" + 
+        ".X0X.X2X.X0X1\r\n" + 
+        "..01.....10..\r\n" + 
+        "0X0X.X.X.X0X0\r\n" + 
+        "..01.....10..\r\n" + 
+        "1X0X.X2X.X0X.\r\n" + 
+        ".22.02220.2..\r\n" + 
+        ".X.X1X1X1X.X.\r\n" + 
+        "..0112.2110..\r\n" + 
+        "6\r\n" + 
+        "0 0 1 2 1 3\r\n" + 
+        "0 1 11 8 1 3\r\n" + 
+        "1 0 0 0 6 3\r\n" + 
+        "1 1 12 10 6 3\r\n" + 
+        "2 0 0 3 1 1\r\n" + 
+        "2 0 12 7 1 1";
     Player.myId = 0;
 
     Scanner in = new Scanner(input);
@@ -171,10 +169,10 @@ public class SimulationTest {
     // ← ↑ → ↓ ☢
     Move moves[];
 //    player.state.addBomb(new Bomb(2, P.get(4, 4), 8, 4));
-    /* me */ moves = readMoves("☢•,  →,  ↓,  •,  •,   •,  •,  •,  •,  •,   •,  •,  •,  •,  •,  •");
+    /* me */ moves = readMoves("☢←,  •,  ↓,  ↓, →,  •,  •,  •, •,  •,  •");
     doSimulationOfMoves(moves, player.state);
 
-    /* me */ moves = readMoves(" →,  ↓,  •,  •,  •,  •,  •,  •,  •, •,  •,  •,  •,  •,  •, •,  •,  •,  •,  •,  •");
+    /* me */ moves = readMoves("←,  ☢•,  ↓,  ↓, →,  •,  •,  •, •,  •,  •");
     doSimulationOfMoves(moves, player.state);
 
 //    displayPossibleMoves();

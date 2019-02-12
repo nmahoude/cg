@@ -23,12 +23,14 @@ public class Player {
   
   public static long startTime;
   public static int myId;
+  Board copyOfBoard = new Board();
 
   
   public State state = new State();
   private int turn = 0;
   private Scanner in;
   public static P goal;
+  public static int KILLERBOMB_BONUS;
   
   public Player(Scanner in) {
     this.in = in;
@@ -44,10 +46,34 @@ public class Player {
       ai.reset();
 
       readGameState();
+      
+      
       state.hash = 0;
       if (turn == 1) {
         startTime+= 500;
       }
+
+      Player.KILLERBOMB_BONUS = 0;
+      if (state.players[myId].bombsLeft > 0) {
+        copyOfBoard.copyFrom(state.board);
+        Bomberman me = state.players[myId];
+        copyOfBoard.addBomb(Cache.popBomb(myId, me.position, Bomb.DEFAULT_TIMER, me.currentRange));
+
+        for (int i=0;i<NUMBER_OF_PLAYER;i++) {
+          if (i == myId) continue;
+          Bomberman bomberman = state.players[i];
+          if (bomberman.isDead) continue;
+          int cells = new BoardBFS().movements(state.board, state.players[i].position);
+          int cellsWithBombs = new BoardBFS().movements(copyOfBoard, state.players[i].position);
+          if (cellsWithBombs < 5 && cells > 5) {
+            Player.KILLERBOMB_BONUS = 20_000;
+            System.err.println("Can reduce player "+i+" cells !!!! ");
+          } else {
+            System.err.println("Player "+i+"reduction => "+cells+" => "+cellsWithBombs);
+          }
+        }
+      }
+      
       // now look what I can do !
       ai.think(state);
       
@@ -98,7 +124,7 @@ public class Player {
         player.currentRange = param2;
         player.isDead = false;
       } else if (entityType == 1) {
-        int turnAtExplosion = turn + param1;
+        int turnAtExplosion = param1;
         final Bomb bomb = Cache.popBomb(owner, P.get(x, y), turnAtExplosion, param2);
         state.addBomb(bomb);
         bombCountOnTheBoard[owner]+=1;
@@ -116,7 +142,7 @@ public class Player {
   }
 
   private void initState() {
-    state.turn = this.turn;
+    state.turn = 0;
     state.init();
     for (int y = 0; y < Board.HEIGHT; y++) {
       final String row = in.next();

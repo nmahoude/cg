@@ -27,6 +27,8 @@ public class Score {
     }
 
     if (depth == 0) {
+      score += Player.KILLERBOMB_BONUS; // if we can reduce heavily the player movability (and maybe by kill him)
+      
       // on first step, big malus for stepping over a opponent that has bomb (means we follow him)
       for (int i=0;i<4;i++) {
         if (i == Player.myId) continue;
@@ -41,7 +43,7 @@ public class Score {
     score += BOX_DESTROYED_BONUS * me.points;
     
     if (me.bombCount < 4) {
-      score += BOX_DESTROYED_BONUS * Simulation.deltaBomb;
+      score += 5000 * Simulation.deltaBomb;
     } else {
       // 0
 //      score += 1.1 * Simulation.deltaBomb;
@@ -53,9 +55,10 @@ public class Score {
     } else {
       // 0
     }
-//    if (!move.dropBomb) {
-//      score += 0.1;
-//    }
+
+    if (!move.dropBomb) {
+      score += 0.01;
+    }
 
     if (move == Move.STAY || move == Move.STAY_BOMB) {
       score -= 1.0;

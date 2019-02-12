@@ -6,7 +6,7 @@ import hypersonic.State;
 import hypersonic.entities.Bomberman;
 
 public class BeamSearch {
-  final static int DEPTH = 18;
+  final static int DEPTH = Player.DEPTH;
   
   private String message;
   private static Move[] bestMoves = new Move[DEPTH];

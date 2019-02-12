@@ -14,7 +14,7 @@ import hypersonic.simulation.Simulation;
 public class MC {
   private static final int TIME_LIMIT = 50;
   private static final int DROP_BOMB_TIME_LIMIT = 25;
-  private static final int DEPTH = 20;
+  private static final int DEPTH = Player.DEPTH;
 
   public State state = new State();
   public String message = "";
