@@ -44,10 +44,10 @@ public class Score {
       score += BOX_DESTROYED_BONUS * Simulation.deltaBomb;
     } else {
       // 0
-//      score += 1.1 * Simulation.deltaBomb;
+      score += 1.1 * Simulation.deltaBomb;
     }
-    if (me.currentRange < 5) {
-      score += 5.0 * Simulation.deltaRange;
+    if (me.currentRange < 8) {
+      score += 500.0 * Simulation.deltaRange;
     } else if (me.currentRange < 5) {
       score += Simulation.deltaRange;
     } else {
@@ -61,8 +61,8 @@ public class Score {
       score -= 1.0;
     }
     
-//    score -= 0.1 * Math.abs(me.position.x - Board.WIDTH/2.);
-//    score -= 0.1 * Math.abs(me.position.y - Board.HEIGHT/2.);
+    score -= 10.0 * Math.abs(me.position.x - Board.WIDTH/2.);
+    score -= 10.0 * Math.abs(me.position.y - Board.HEIGHT/2.);
     
       score += 1.0 * HeatMap.score[me.position.x+Board.WIDTH*me.position.y];
     

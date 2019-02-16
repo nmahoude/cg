@@ -147,27 +147,30 @@ public class SimulationTest {
         ".X.X.X.X.X.X.\r\n" + 
         ".............\r\n" + 
         ".X.X.X.X.X.X.\r\n" + 
+        "11..........1\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        "11...........\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
+        "2............\r\n" + 
+        ".X.X.X.X.X.X.\r\n" + 
         ".............\r\n" + 
-        ".X.X.X.X.X2X.\r\n" + 
-        "1............\r\n" + 
-        "2X0X1X.X.X.X.\r\n" + 
-        ".0...........\r\n" + 
-        ".X.X1X.X.X.X.\r\n" + 
-        ".............\r\n" + 
-        "13\r\n" + 
-        "0 0 6 8 4 6\r\n" + 
-        "0 1 2 8 2 7\r\n" + 
-        "0 2 3 6 3 7\r\n" + 
-        "1 1 5 10 4 6\r\n" + 
-        "1 1 4 10 5 6\r\n" + 
-        "1 2 4 5 5 7\r\n" + 
-        "1 0 8 8 7 6\r\n" + 
-        "1 1 2 10 7 7\r\n" + 
-        "1 2 4 6 8 7\r\n" + 
-        "2 0 12 4 1 1\r\n" + 
+        "16\r\n" + 
+        "0 0 4 4 5 7\r\n" + 
+        "0 1 2 7 3 7\r\n" + 
+        "1 0 8 5 4 7\r\n" + 
+        "1 1 0 10 4 7\r\n" + 
+        "1 0 8 4 5 7\r\n" + 
+        "1 1 1 10 5 7\r\n" + 
+        "1 1 2 10 6 7\r\n" + 
+        "1 1 2 9 7 7\r\n" + 
+        "1 1 2 8 8 7\r\n" + 
+        "2 0 0 2 2 2\r\n" + 
+        "2 0 8 7 2 2\r\n" + 
         "2 0 12 6 1 1\r\n" + 
-        "2 0 8 5 1 1\r\n" + 
-        "2 0 2 5 2 2";
+        "2 0 12 2 2 2\r\n" + 
+        "2 0 2 4 1 1\r\n" + 
+        "2 0 2 6 1 1\r\n" + 
+        "2 0 11 6 1 1";
     Player.myId = 0;
 
     Scanner in = new Scanner(input);
@@ -175,12 +178,12 @@ public class SimulationTest {
     player.readGameState();
     // ← ↑ → ↓ ☢
     Move moves[];
-//    player.state.addBomb(new Bomb(2, P.get(4, 4), 8, 4));
-    /* me */ moves = readMoves("←, ☢→,  ↑, ☢↓, ☢→, ☢→, ☢→,  →, ☢↑,  ↑,  →,  ←,  ↑,  •, ☢•,  ↓,  →, ☢→,  ↑, ☢•");
+    //player.state.addBomb(new Bomb(2, P.get(8,4), 8, 4));
+    /* me */ moves = readMoves("☢←, ☢←,  ↓, ☢↓,  •, ☢↓, ☢•,  ↓, ☢←,  ←,  ↑, ☢•,  ↓,  •, ☢→, ☢•,  •,  →,  ↓,  •");
     doSimulationOfMoves(moves, player.state);
 
-    /* me */ moves = readMoves("←,  ←,  ☢→, →•,  ↑, ↑, ↑, ↑, ↑, ↑ ");
-    doSimulationOfMoves(moves, player.state);
+    /* me */ moves = readMoves("←,  ←,  ☢→, •,  ↑, ↑, ↑, ↑, ↑, ↑ ");
+    //doSimulationOfMoves(moves, player.state);
 
 //    displayPossibleMoves();
   }
