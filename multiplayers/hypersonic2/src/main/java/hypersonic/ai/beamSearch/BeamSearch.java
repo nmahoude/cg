@@ -22,6 +22,10 @@ public class BeamSearch {
       layers[i] = new BeamLayer(10000);
     }
   }
+
+  public void reset() {
+    
+  }
   
   public void think(State model) {
     dropEnnemyBombs = true;
@@ -32,6 +36,11 @@ public class BeamSearch {
     
     int depth;
     for (depth = 1;depth<DEPTH;depth++) {
+      if (layers[depth-1].nodesFE == 0) {
+        // all nodes are death
+        depth--;
+        break;
+      }
       layers[depth].buildFromParent(layers[depth-1]);
       if (System.currentTimeMillis() - Player.startTime > 90) {
         break;
@@ -67,5 +76,6 @@ public class BeamSearch {
       System.out.println("MOVE "+newX+" "+newY+ " "+message);
     }
   }
+
 
 }

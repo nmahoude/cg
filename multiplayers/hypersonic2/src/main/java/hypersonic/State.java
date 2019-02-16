@@ -100,6 +100,9 @@ public class State {
   }
 
   public void walkOn(final Bomberman player, final P p) {
+    hash = hash ^ ZobristValues.fromPosition(player.position, turn);
+    hash = hash ^ ZobristValues.fromPosition(p, turn);
+    
     final int value = board.cells[p.offset];
     if ( value == Board.ITEM_1) {
       hash = hash ^ ZobristValues.fromItem(p, turn);

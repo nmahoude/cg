@@ -46,28 +46,28 @@ public class Score {
       score += 5000 * Simulation.deltaBomb;
     } else {
       // 0
-//      score += 1.1 * Simulation.deltaBomb;
+      score += 0.1 * Simulation.deltaBomb;
     }
     if (me.currentRange < 5) {
       score += 5.0 * Simulation.deltaRange;
     } else if (me.currentRange < 5) {
-      score += Simulation.deltaRange;
+      score += 0.1*Simulation.deltaRange;
     } else {
       // 0
     }
 
     if (!move.dropBomb) {
-      score += 0.01;
+      score += 1000;
     }
 
     if (move == Move.STAY || move == Move.STAY_BOMB) {
       score -= 1.0;
     }
     
-//    score -= 0.1 * Math.abs(me.position.x - Board.WIDTH/2.);
-//    score -= 0.1 * Math.abs(me.position.y - Board.HEIGHT/2.);
+    score -= 0.1 * Math.abs(me.position.x - Board.WIDTH/2.);
+    score -= 0.1 * Math.abs(me.position.y - Board.HEIGHT/2.);
     
-      score += 1.0 * HeatMap.score[me.position.x+Board.WIDTH*me.position.y];
+//      score += 1.0 * HeatMap.score[me.position.x+Board.WIDTH*me.position.y];
     
     // TODO : if we are losing, better go next to our rivals and bomb them 
 //    if (state.board.boxCount == 0) {

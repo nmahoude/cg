@@ -87,7 +87,7 @@ public class Board {
     bombsToExplodeFE = 0;
     for (int i=0;i<bombsFE;i++) {
       Bomb b = bombs[i];
-      if (b.timer == state.turn) {
+      if (b.timer <= state.turn) {
         bombsToExplode[bombsToExplodeFE++] = b;
         bombs[i] = null; // not in this board anymore !
       }

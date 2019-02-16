@@ -8,7 +8,6 @@ import hypersonic.Move;
 import hypersonic.Player;
 import hypersonic.State;
 import hypersonic.ai.Score;
-import hypersonic.entities.Bomb;
 import hypersonic.entities.Bomberman;
 import hypersonic.simulation.MoveGenerator;
 import hypersonic.simulation.Simulation;
@@ -16,10 +15,12 @@ import hypersonic.simulation.Simulation;
 public class BeamLayer {
   private static Simulation sim = new Simulation(null);
   private static MoveGenerator gen = new MoveGenerator(null);
+  private static State tmpState = new State();
+  
   static Move moves[] = new Move[10]; // TODO use a cache of possible moves ? 2^10 = 1024 only ?
   static int movesFE = 0;
   
-  static final int WIDTH = 500;
+  static final int WIDTH = 1000;
   BeamNode nodes[];
   int nodesFE = 0;
   int depth;
@@ -53,11 +54,7 @@ public class BeamLayer {
         continue; // we're dead, don't treat this parent node
       }
       gen.state = parent.state;
-      if (depth <= BeamSearch.DEPTH - Bomb.DEFAULT_TIMER - 1 ) {
-        movesFE = gen.getPossibleMoves(moves);
-      } else {
-        movesFE = gen.getPossibleMovesWithoutBombs(moves);
-      }
+      movesFE = gen.getPossibleMoves(moves);
       
       for (int m=0;m<movesFE;m++) {
         BeamNode node = nodes[nodesFE++];
@@ -72,10 +69,24 @@ public class BeamLayer {
         sim.state = node.state;
         sim.simulate(move);
         node.cumulativeScore = parent.cumulativeScore + Score.score(node.state, depth, move);
+        
+        // for 10 turns in future to know bombs explosions
+        tmpState.copyFrom(node.state);
+        sim.state = tmpState;
+        tmpState.turn+=10;
+        sim.simulate(Move.STAY);
+        tmpState.players[Player.myId].isDead = false;
+        node.cumulativeScore += Score.score(tmpState, depth+10, Move.STAY);
       }
     }
     Arrays.sort(nodes, 0, nodesFE, sorter);
-    
+    System.err.println("End of layer :");
+    System.err.println("nodes in this layer : " + nodesFE);
+    if (nodesFE != 0) {
+      System.err.println("Best score : "+nodes[0].cumulativeScore+" worse  : "+nodes[nodesFE-1].cumulativeScore);
+    } else {
+      System.err.println("All nodes are death");
+    }
   }
   
   private static void dropEnnemyBombs(State state) {
