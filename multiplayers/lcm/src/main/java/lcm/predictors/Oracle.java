@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import lcm.Player;
+import lcm.PlayerOld;
 import lcm.State;
 import lcm.cards.Card;
 import lcm.cards.CardTriplet;
@@ -123,7 +123,7 @@ public class Oracle {
       }
     }
 
-    if (Player.DEBUG_ORACLE) {
+    if (PlayerOld.DEBUG_ORACLE) {
       System.err.println("Cards remaining in my deck (size = "+myDeck.size()+")");
       for (Card card : myDeck) {
         System.err.print(card);

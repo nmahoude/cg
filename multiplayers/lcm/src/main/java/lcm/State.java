@@ -73,7 +73,7 @@ public class State {
     
     int cardToReadCount = in.nextInt();
     
-    if (Player.DEBUG_INPUT) {
+    if (PlayerOld.DEBUG_INPUT) {
       System.err.println(String.format("\"%d %d\"+NL+", opp.handCardsCount, cardToReadCount));
     }
 
@@ -96,7 +96,7 @@ public class State {
     if (turn == 1) {
       determineSide();
     }
-    if (Player.DEBUG_INPUT) {
+    if (PlayerOld.DEBUG_INPUT) {
       System.err.println();
       System.err.println("\"\";");
       System.err.println("    state.read(new Scanner(input));");

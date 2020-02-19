@@ -3,9 +3,10 @@ package lcm.ai.beam;
 import java.util.List;
 
 import lcm.State;
+import lcm.ai.AI;
 import lcm.sim.Action;
 
-public interface IBeamSearch {
+public interface IBeamSearch extends AI {
 
   int CHILD_SIZE = 1024;
 

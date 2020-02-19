@@ -3,7 +3,7 @@ package lcm.cards;
 import java.util.Scanner;
 
 import lcm.Agent;
-import lcm.Player;
+import lcm.PlayerOld;
 
 public class Card {
   public static Card opponent = new Card() {
@@ -67,7 +67,7 @@ public class Card {
     cardDraw = in.nextInt();
 
     initTurn();
-    if (Player.DEBUG_INPUT) {
+    if (PlayerOld.DEBUG_INPUT) {
       debugInput();
     }
   }
@@ -200,14 +200,14 @@ public class Card {
     cardZobrist = new long[200];
     zobrist = new long[2][32][32][64][2];
     for (int i = 0; i < 200; i++) {
-      cardZobrist[i] = Player.random.nextLong();
+      cardZobrist[i] = PlayerOld.random.nextLong();
     }
     for (int l=0;l<2;l++) {
       for (int hp = 0; hp < 32; hp++) {
         for (int att = 0; att < 32; att++) {
           for (int abilities = 0; abilities < 0b111111; abilities++) {
             for (int canAttack = 0; canAttack < 2; canAttack++) {
-              zobrist[l][hp][att][abilities][canAttack] = Player.random.nextLong();
+              zobrist[l][hp][att][abilities][canAttack] = PlayerOld.random.nextLong();
             }
           }
         }

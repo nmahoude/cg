@@ -3,7 +3,7 @@ package direct_ai;
 import java.util.List;
 
 import lcm.Agent;
-import lcm.Player;
+import lcm.PlayerOld;
 import lcm.State;
 import lcm.cards.Card;
 import lcm.cards.CardTriplet;
@@ -71,7 +71,7 @@ public class CardPickerV6 implements Picker {
     
     int score = faceValue + bucketMalus + itemMalus;
 
-    if (Player.DEBUG_PICKER) {
+    if (PlayerOld.DEBUG_PICKER) {
     System.err.println(String.format("(Card %d): ["+card.cost+"]  "
           + " fv: %d bmalus: %d imalus: %d => %d",
           card.instanceId,

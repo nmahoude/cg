@@ -5,16 +5,20 @@ import java.util.SplittableRandom;
 
 import direct_ai.CardPickerV6;
 import direct_ai.Picker;
-import lcm.ai.beam.BeamSearch;
-import lcm.ai.beam.IBeamSearch;
+import lcm.ai.AI;
 import lcm.ai.eval.Eval8;
 import lcm.ai.eval.IEval;
+import lcm.ai.mc.MCAI;
 import lcm.cards.Card;
 import lcm.predictors.AggressorDetector;
 import lcm.predictors.Oracle;
 import lcm.sim.Cache;
-
-public class Player {
+/**
+ * test de valeur pour vérifier que c'est en italique ...
+ * @author nmahoude
+ *
+ */
+public class PlayerOld {
   public static boolean USE_CUTOFF = true;
 
   public static boolean DEBUG_MINIMIZATION = false;
@@ -41,7 +45,7 @@ public class Player {
   public static int MMNODE_CACHE = 0;
 
   public Scanner in;
-  public IBeamSearch ai;
+  public AI ai;
   public final State state = new State();
   protected IEval eval;
   protected GameMetric metric = new GameMetric();
@@ -49,13 +53,13 @@ public class Player {
 
   public Picker picker;
 
-  public Player() {
+  public PlayerOld() {
     picker = new CardPickerV6();
     in = new Scanner(System.in);
   }
 
   public static void main(String args[]) throws InterruptedException {
-    Player p = new Player();
+    PlayerOld p = new PlayerOld();
 
     p.init();
 
@@ -63,7 +67,7 @@ public class Player {
       p.state.read(p.in);
 
       if (p.state.turn == 0 || p.state.turn == 31) {
-        Player.start += 900; // 1st turn of battle let more time
+        PlayerOld.start += 900; // 1st & 32th turn of battle let more time
       }
 
       if (p.state.isInDraft()) {
@@ -84,9 +88,9 @@ public class Player {
       }
     }
   }
-
+  
   private static void hide() throws InterruptedException {
-    while (System.currentTimeMillis() - Player.start < 80) {
+    while (System.currentTimeMillis() - PlayerOld.start < 80) {
       Thread.sleep(5);
     }
     if (DEBUG_PERF) {
@@ -113,7 +117,7 @@ public class Player {
 
     chooseStyleOfPlay();
 
-    ai = new BeamSearch(oracle, eval);
+    ai = new MCAI(oracle, eval);
     ai.think(state);
 
     if (DEBUG_PERF) {

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import lcm.Player;
+import lcm.PlayerOld;
 import lcm.State;
 import lcm.ai.eval.IEval;
 import lcm.cards.Card;
@@ -99,7 +99,7 @@ public class BeamSearch implements IBeamSearch {
    */
   private BSNode minimizedMyScores(boolean maximizer, int tryIndex, List<Card> handCards, BSLayer previouslayer, BSLayer layers[]) {
     BSNode best;
-    if (Player.DEBUG_MINIMIZATION) {
+    if (PlayerOld.DEBUG_MINIMIZATION) {
       if (maximizer) {
         System.err.println("Minimization : Trying with hand cards : ");
       } else {
@@ -115,20 +115,20 @@ public class BeamSearch implements IBeamSearch {
     double bestScore = Double.NEGATIVE_INFINITY;
     int i = 0;
     for (i = 0; i < previouslayer.nodesFE; i++) {
-      long elapsedTime = System.currentTimeMillis() - Player.start;
-      if (!Player.DEBUG_CUT_BEAM && elapsedTime > 90) {
+      long elapsedTime = System.currentTimeMillis() - PlayerOld.start;
+      if (!PlayerOld.DEBUG_CUT_BEAM && elapsedTime > 50) {
         break;
       }
       BSLayer.initZobrist();
       BSNode n = previouslayer.nodes[i];
-      if (Player.DEBUG_BEAM) {
+      if (PlayerOld.DEBUG_BEAM) {
         debugMaximizer(i, n);
       }
       State base = prepareNextTurn(n.state, maximizer, handCards);
-      int currentMaximumLayer = expand(base, layers, maximizer, Player.USE_CUTOFF ? bestScore : Double.NEGATIVE_INFINITY, eval);
+      int currentMaximumLayer = expand(base, layers, maximizer, PlayerOld.USE_CUTOFF ? bestScore : Double.NEGATIVE_INFINITY, eval);
       if (currentMaximumLayer == -1) {
         minimizedScores[tryIndex][i] = Double.NEGATIVE_INFINITY;
-        if (Player.DEBUG_BEAM) {
+        if (PlayerOld.DEBUG_BEAM) {
           System.err.println("Score is worse for me, won't take this action");
         }
         continue;
@@ -138,13 +138,13 @@ public class BeamSearch implements IBeamSearch {
       hisBest = layers[currentMaximumLayer].worstNode();
       double score = hisBest.score;
       minimizedScores[tryIndex][i] = score;
-      if (Player.DEBUG_BEAM) {
+      if (PlayerOld.DEBUG_BEAM) {
         System.err.println("TOTAL SCORE : " + score);
         debugMinimizer(n, layers[currentMaximumLayer], score);
       }
       // si le score minimizé est meilleur que le best, on change
       if (score > bestScore) {
-        if (Player.DEBUG_BEAM) {
+        if (PlayerOld.DEBUG_BEAM) {
           System.err.println("%%%% CHANGING BEST %%%%");
         }
         bestScore = score;
@@ -254,7 +254,7 @@ public class BeamSearch implements IBeamSearch {
    */
   @Override
   public void output(State state) {
-    if (Player.DEBUG_BEAM_RESULT) {
+    if (PlayerOld.DEBUG_BEAM_RESULT) {
       System.err.println("--------------- RESULTS ----------------");
       debugOutput(state);
     }

@@ -1,6 +1,7 @@
-package lcm.cards;
+package lcm2;
 
 public enum CardType {
+	PLAYER(-1),
   CREATURE(0),
   ITEM_GREEN(1),
   ITEM_RED(2),

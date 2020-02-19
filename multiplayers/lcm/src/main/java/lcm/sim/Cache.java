@@ -1,15 +1,15 @@
 package lcm.sim;
 
-import lcm.Player;
+import lcm.PlayerOld;
 import lcm.State;
 import lcm.cards.Card;
 
 public class Cache {
 
-  static final State states[] = new State[Player.STATE_CACHE];
+  static final State states[] = new State[PlayerOld.STATE_CACHE];
   static int statesFE = 0;
 
-  static final Card cards[] = new Card[Player.CARD_CACHE];
+  static final Card cards[] = new Card[PlayerOld.CARD_CACHE];
   static int cardsFE = 0;
 
   static {
