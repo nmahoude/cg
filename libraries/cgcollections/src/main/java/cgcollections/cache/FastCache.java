@@ -2,6 +2,10 @@ package cgcollections.cache;
 
 import java.lang.reflect.Array;
 
+/**
+ * Implementation of an object cache
+ * that is not managed
+ */
 public class FastCache <T> {
   final T elements[];
   final int size;
@@ -10,10 +14,6 @@ public class FastCache <T> {
   @SuppressWarnings("unchecked")
   /**
    * T need an empty constructor
-   * @param c
-   * @param size
-   * @throws InstantiationException
-   * @throws IllegalAccessException
    */
   public FastCache(Class<T> c,int size)  {
     this.size = size;
@@ -26,6 +26,18 @@ public class FastCache <T> {
       throw new RuntimeException("T needs an empty constructor");
     }
     currentFreeIndex = size;
+  }
+
+  /**
+   * potentially faster way to instantiate the fastCache by passing the elements
+   * already filled
+   * 
+   * @param providedElements : the array already filled with objects
+   */
+  public FastCache(T providedElements[])  {
+    this.size = providedElements.length;
+    this.currentFreeIndex = size;
+    this.elements = providedElements;
   }
   
   public T get() {

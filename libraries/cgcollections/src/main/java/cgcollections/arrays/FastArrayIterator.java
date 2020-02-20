@@ -18,4 +18,7 @@ public class FastArrayIterator<T> implements Iterator<T> {
     return array.elements[current++];
   }
   
+  public void reset() {
+    current = 0;
+  }
 }

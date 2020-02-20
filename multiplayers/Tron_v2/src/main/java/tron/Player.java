@@ -1,6 +1,5 @@
 package tron;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 import tron.algorithms.MultiBFS;
@@ -111,10 +110,11 @@ public class Player {
       //score -= 0.01*floodFillPerAgent[i];
     }
     
-    // bonus if we have a lot of non-empty neighbors (what ?)
+    // bonus if we have a lot of non-empty neighbors
     int neighbors = 0;
     for (int tdir=0;tdir<4;tdir++) {
-      if (me.currentCell.neighbors[tdir].owner >=0) neighbors++;
+      if (me.currentCell.neighbors[tdir] == Cell.invalid 
+          || me.currentCell.neighbors[tdir].owner >=0) neighbors++;
     }
     score += (neighbors >= 2 ? 0.1 : 0);
     

@@ -18,5 +18,6 @@
 		<module>cgcollections</module>
 		<module>cgalgorithms</module>
 		<module>cgutils</module>
+		<module>fast</module>
 	</modules>
 </project>

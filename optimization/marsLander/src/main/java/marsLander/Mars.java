@@ -41,8 +41,11 @@ public class Mars {
           dist[x] = sy + 1.0 * (ey-sy) * (x-sx) / (ex-sx);
         }
       }
-      
     }
+    
+    
+    
+    
     if (Player.DEBUG_OUTPUT) {
       System.err.print(""+N+ " ");
       for (int i = 0; i < N; i++) {
@@ -68,5 +71,14 @@ public class Mars {
     } else {
       return 0.0;
     }
+  }
+
+  public int findCurrentSegment(double x) {
+      for (int s = 0;s<this.pointsX.length;s++) {
+        if (x >= this.pointsX[s] && x < this.pointsX[s+1]) {
+          return s;
+        }
+      }
+      return -1;
   }
 }

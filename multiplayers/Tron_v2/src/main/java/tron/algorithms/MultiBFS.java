@@ -17,8 +17,8 @@ public class MultiBFS {
   
   static {
     for (int i=0;i<4;i++) {
-      cellsToCheckByAgent[i] = new FastArray<>(Cell.class, 600);
-      nextCellsToCheckByAgent[i] = new FastArray<>(Cell.class, 600);
+      cellsToCheckByAgent[i] = new FastArray<>(Cell.class, 30*20);
+      nextCellsToCheckByAgent[i] = new FastArray<>(Cell.class, 30*20);
     }
   }
   

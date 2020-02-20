@@ -6,6 +6,7 @@ import java.util.Comparator;
 import marsLander.Mars;
 import marsLander.MarsLander;
 import marsLander.Player;
+import marsLander.TrajectoryOptimizer;
 import marsLander.sim.Simulation;
 
 public class AG {
@@ -21,6 +22,7 @@ public class AG {
   public AGSolution solutions[] = new AGSolution[POP_SIZE];
 
   private AGSolution oldSolution;
+  public static TrajectoryOptimizer to;
 
   public AG(Mars mars, MarsLander originalLander) {
     for (int i = 0; i < POP_SIZE; i++) {
@@ -33,7 +35,8 @@ public class AG {
     this.simulation = new Simulation(mars, this.lander);
   }
 
-  public void think() {
+  public void think(TrajectoryOptimizer to) {
+    this.to = to;
     AGSolution.mutationThreshold = 0;
     
     System.err.println("mars at x : " + mars.dist[originalLander.getXAsInt()]);
@@ -79,8 +82,9 @@ public class AG {
     double score = 0.0;
     
     if (simulation.result == 0) {
-      // still in the air
-      return 0;
+      // still in the air, check with best trajectory
+      score = 150-150 * to.getYDistance(lander) / 3000.0;
+      return score;
     }
     if (simulation.result != 1) {
       // crashed

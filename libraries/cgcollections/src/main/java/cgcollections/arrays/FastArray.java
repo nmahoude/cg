@@ -28,6 +28,9 @@ public class FastArray<T> implements Iterable<T> {
     return true;
   }
 
+  /**
+   * slow
+   */
   public int indexOf(Object t) {
     for (int i=0;i<length;i++) {
       if (elements[i] == t) {

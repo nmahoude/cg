@@ -35,9 +35,11 @@ public class Player {
     AG ag = new AG(mars, lander);
     while (true) {
       lander.readInput(in);
+      TrajectoryOptimizer to = new TrajectoryOptimizer();
+      to.calculate(mars, lander);
       start = System.currentTimeMillis();
 
-      ag.think();
+      ag.think(to);
       
       System.out.println(""+(lander.angle + ag.solutions[0].values[0][0])+" "+(lander.thrust + ag.solutions[0].values[0][1]));
       ag.prepareNextSolution();

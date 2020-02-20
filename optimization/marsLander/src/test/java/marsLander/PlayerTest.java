@@ -1,7 +1,5 @@
 package marsLander;
 
-import static org.junit.Assert.*;
-
 import java.util.Scanner;
 
 import org.junit.Before;
@@ -28,6 +26,8 @@ public class PlayerTest {
     lander.readInput(new Scanner("2500 2700 0 0 550 0 0"));
     
     AG ag = new AG(mars, lander);
-    ag.think();
+    TrajectoryOptimizer to = new TrajectoryOptimizer();
+    to.calculate(mars, lander);
+    ag.think(to);
   }
 }
