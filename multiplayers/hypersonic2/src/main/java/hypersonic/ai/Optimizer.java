@@ -15,16 +15,22 @@ public class Optimizer {
   private static Move allMoves[] = new Move[100];
   private static State state = new State();
   private static Simulation simulator = new Simulation(state);
-  static double intermediateScores[] = new double[Search.DEPTH];
+  static double intermediateScores[] = new double[Player.DEPTH];
 
   
   public static double optimizeBombs(Move bestMoves[], double bestScore, int depth, State model, boolean dropEnnemyBombs) {
-    System.err.println("Bomb optimizer - current bestScore is "+bestScore);
+    if (Player.DEBUG_OPTIMIZE) {
+      System.err.println("Bomb optimizer - current bestScore is "+bestScore);
+    }
     if (bestMoves[0] == null || !bestMoves[0].dropBomb) {
-      System.err.println("Not a bomb, early exit");
+      if (Player.DEBUG_OPTIMIZE) {
+        System.err.println("Not a bomb, early exit");
+      }
       return bestScore;
     }
-    System.err.println("current moves : " + Arrays.toString(bestMoves));
+    if (Player.DEBUG_OPTIMIZE) {
+      System.err.println("current moves : " + Arrays.toString(bestMoves));
+    }
     // do one last test with the same moves, but do not bomb the 1st move !
     switch (bestMoves[0]) {
     case STAY_BOMB:
@@ -63,22 +69,32 @@ public class Optimizer {
       }
     }
     if (score > bestScore) {
-      System.err.println("Solutions without bomb at 0 is better ! " + score + " > " + bestScore);
+      if (Player.DEBUG_OPTIMIZE) {
+        System.err.println("Solutions without bomb at 0 is better ! " + score + " > " + bestScore);
+      }
       bestScore = score;
       bestMoves[0] = allMoves[0];
     } else {
-      System.err.println("Solution without a bomb is worse " +score);
+      if (Player.DEBUG_OPTIMIZE) {
+        System.err.println("Solution without a bomb is worse " +score);
+      }
     }
     return bestScore;
   }
 
   public static double optimizeMoves(Move bestMoves[], double bestScore, int depth, State model, boolean dropEnnemyBombs) {
-    System.err.println("Move optimizer - current bestScore is "+bestScore);
+    if (Player.DEBUG_OPTIMIZE) {
+      System.err.println("Move optimizer - current bestScore is "+bestScore);
+    }
     if (bestMoves[0] == null && bestMoves[0] != Move.STAY && bestMoves[0] != Move.STAY_BOMB) {
-      System.err.println("Not a STAY, early exit");
+      if (Player.DEBUG_OPTIMIZE) {
+        System.err.println("Not a STAY, early exit");
+      }
       return bestScore;
     }
-    System.err.println("current moves : " + Arrays.toString(bestMoves));
+    if (Player.DEBUG_OPTIMIZE) {
+      System.err.println("current moves : " + Arrays.toString(bestMoves));
+    }
     int newDepth = 0;
     boolean needBombNext = false;
     boolean squash = true;
@@ -114,7 +130,9 @@ public class Optimizer {
       allMoves[newDepth++] = nextMove;
       needBombNext = false;
     }
-    System.err.println("new current moves : " + Arrays.toString(allMoves));
+    if (Player.DEBUG_OPTIMIZE) {
+      System.err.println("new current moves : " + Arrays.toString(allMoves));
+    }
     for (;newDepth<depth;newDepth++) {
       allMoves[newDepth] = Move.STAY;
     }
@@ -144,13 +162,17 @@ public class Optimizer {
     }
 
     if (score > bestScore) {
-      System.err.println("Solutions with move optimization is better ! " + score + " > " + bestScore);
+      if (Player.DEBUG_OPTIMIZE) {
+        System.err.println("Solutions with move optimization is better ! " + score + " > " + bestScore);
+      }
       bestScore = score;
       for (int i=0;i<depth;i++) {
         Search.bestMoves[i] = allMoves[i];
       }
     } else {
-      System.err.println("Solution cannot be optimize with moves " +score);
+      if (Player.DEBUG_OPTIMIZE) {
+        System.err.println("Solution cannot be optimize with moves " +score);
+      }
     }
     return bestScore;
   }

@@ -3,7 +3,7 @@ package direct_ai;
 import java.util.List;
 
 import lcm.Agent;
-import lcm.Player;
+import lcm.PlayerOld;
 import lcm.cards.Card;
 import lcm.cards.CardTriplet;
 import lcm.cards.CardType;
@@ -60,7 +60,7 @@ public class CardPickerV3 implements Picker {
         + itemsWeight * itemsValue;
 
     
-    if (Player.DEBUG_PICKER) {
+    if (PlayerOld.DEBUG_PICKER) {
     System.err.println(String.format("(Card %d): ["+card.cost+"]  "
         + "fv( %.3f * %.3f = %.3f ) "
         + "bv( %.3f * %.3f = %.3f ) "

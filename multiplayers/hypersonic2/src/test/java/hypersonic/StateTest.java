@@ -472,6 +472,7 @@ public class StateTest {
     private int range = 3;
     private int timer = 8;
     private int owner = 0;
+    private boolean fake = false;
 
     public BombBuilder(final State state) {
       this.state = state;
@@ -497,7 +498,7 @@ public class StateTest {
       this.owner  = owner;
       return this;
     }
-    
+
     public Bomb build() {
       final Bomb bomb = Cache.popBomb(owner, P.get(x,y), timer, range);
       state.addBomb(bomb);

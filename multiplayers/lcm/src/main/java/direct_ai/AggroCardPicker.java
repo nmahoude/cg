@@ -3,7 +3,7 @@ package direct_ai;
 import java.util.List;
 
 import lcm.Agent;
-import lcm.Player;
+import lcm.PlayerOld;
 import lcm.cards.Card;
 import lcm.cards.CardTriplet;
 import lcm.cards.CardType;
@@ -47,7 +47,7 @@ public class AggroCardPicker {
           + bucketWeight * bucketValue
           + itemsValue;
       
-      if (Player.DEBUG_PICKER) {
+      if (PlayerOld.DEBUG_PICKER) {
         System.err.println(String.format("(Card %d): ["+getBucketIndex(card)+"]"
           + "fv( %.3f * %.3f = %.3f ) "
           + "bv( %.3f * %.3f = %.3f ) "
@@ -57,9 +57,9 @@ public class AggroCardPicker {
             faceValueWeight, faceValue, faceValueWeight * faceValue,
             bucketWeight,bucketValue, bucketWeight * bucketValue,
             itemsValue,
-//            itemsWeight, itemsValue, itemsWeight * itemsValue,
+            // itemsWeight, itemsValue, itemsWeight * itemsValue,
             score
-          ));
+        ));
       }
       
       if (score > bestScore) {

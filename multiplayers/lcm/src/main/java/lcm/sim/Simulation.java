@@ -4,7 +4,7 @@ package lcm.sim;
 import java.util.List;
 
 import lcm.Agent;
-import lcm.Player;
+import lcm.PlayerOld;
 import lcm.State;
 import lcm.cards.Abilities;
 import lcm.cards.Card;
@@ -120,8 +120,8 @@ public class Simulation {
     
     Card target = targetIndex == -1 ? Card.opponent : state.cards[targetIndex];
     
-    if (Player.SIM_CHECK_LEGAL_ACTIONS && !checkLegalUse(item, target)) {
-      if (Player.ILLEGAL_ACTION_CRASH) {
+    if (PlayerOld.SIM_CHECK_LEGAL_ACTIONS && !checkLegalUse(item, target)) {
+      if (PlayerOld.ILLEGAL_ACTION_CRASH) {
         throw new RuntimeException("Illegal use " + item.id + " on "+target.id);
       }
       return;
@@ -162,8 +162,8 @@ public class Simulation {
   private void resolveAttack(int index, int ocIndex) {
     final Card card = state.cards[index];
     final Card target = ocIndex == -1 ? Card.opponent : state.cards[ocIndex];
-    if (Player.SIM_CHECK_LEGAL_ACTIONS && !checkLegalAttack(card, target)) {
-      if (Player.ILLEGAL_ACTION_CRASH) {
+    if (PlayerOld.SIM_CHECK_LEGAL_ACTIONS && !checkLegalAttack(card, target)) {
+      if (PlayerOld.ILLEGAL_ACTION_CRASH) {
         throw new RuntimeException("Illegal attack " + card.id + " on "+target.id);
       }
       return;
@@ -248,8 +248,8 @@ public class Simulation {
 
   private void summon(int index) {
     Card card = state.cards[index];
-    if (Player.SIM_CHECK_LEGAL_ACTIONS && !checkLegalSummon(card)) {
-      if (Player.ILLEGAL_ACTION_CRASH) {
+    if (PlayerOld.SIM_CHECK_LEGAL_ACTIONS && !checkLegalSummon(card)) {
+      if (PlayerOld.ILLEGAL_ACTION_CRASH) {
         throw new RuntimeException("Illegal summon " + card.id );
       }
 
@@ -280,15 +280,15 @@ public class Simulation {
 
   private boolean checkLegalSummon(Card card) {
     if (me.getBoardCardsCount() == Constants.MAX_CREATURES_ON_BOARD) {
-      if (Player.DEBUG_SIM) System.err.println("Too many creature, can't summon another");
+      if (PlayerOld.DEBUG_SIM) System.err.println("Too many creature, can't summon another");
       return false;
     }
     if (card.cost > me.mana) {
-      if (Player.DEBUG_SIM) System.err.println("Can't summon card " + card.id + " cost : " + card.cost + " vs " + me.mana);
+      if (PlayerOld.DEBUG_SIM) System.err.println("Can't summon card " + card.id + " cost : " + card.cost + " vs " + me.mana);
       return false;
     }
     if (card.type != CardType.CREATURE) {
-      if (Player.DEBUG_SIM) System.err.println("Can't summon items, use USE instead");
+      if (PlayerOld.DEBUG_SIM) System.err.println("Can't summon items, use USE instead");
       return false;
     }
     return true;

@@ -69,6 +69,7 @@ public class Board {
     
     // copy des bombes non explosées (timer atteint ou chain-exploded ie ==null) 
     bombsFE = 0;
+    localBombsFE =0;
     for (int i=0;i<model.bombsFE;i++) {
       Bomb b = model.bombs[i];
       if (b != null) {
@@ -86,7 +87,7 @@ public class Board {
     bombsToExplodeFE = 0;
     for (int i=0;i<bombsFE;i++) {
       Bomb b = bombs[i];
-      if (b.timer == state.turn) {
+      if (b.timer <= state.turn) {
         bombsToExplode[bombsToExplodeFE++] = b;
         bombs[i] = null; // not in this board anymore !
       }
@@ -133,6 +134,7 @@ public class Board {
   static int destroyedItems[] = new int[MAPSIZE];
   static int destroyedItemsFE;
   void explode(State state) {
+    
     destroyedBoxesFE = 0;
     destroyedItemsFE = 0;
     

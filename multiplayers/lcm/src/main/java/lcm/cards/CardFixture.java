@@ -2,7 +2,7 @@ package lcm.cards;
 
 import java.util.Scanner;
 
-import lcm.Player;
+import lcm.PlayerOld;
 import lcm.ai.eval.Eval8;
 import lcm.cards.Card;
 import lcm.cards.Location;
@@ -12,7 +12,7 @@ public class CardFixture {
   private static Card[] cards = new Card[512];
 
   static {
-    Player.DEBUG_INPUT = false;
+    PlayerOld.DEBUG_INPUT = false;
     String input = "" +
         "1   -1 0 0 1 2 1 -      1 0 0" + NL +
         "2   -1 0 0 1 1 2 -      0 -1 0" + NL +

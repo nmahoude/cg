@@ -50,4 +50,14 @@ public class Simulation {
       state.walkOn(player, P.get(newX, newY));
     }
   }
+  
+  public static void dropEnnemyBombs(State state) {
+    // for all players different than me and who can, drop a bomb at first one
+    for (int i=0;i<4;i++) {
+      if (i == Player.myId) continue;
+      Bomberman b = state.players[i];
+      if (b.isDead || b.bombsLeft == 0) continue;
+      state.addBomb(Cache.popBomb(i, b.position, 8, b.currentRange));
+    }
+  }
 }

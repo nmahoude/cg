@@ -1,6 +1,6 @@
 package lcm.ai.beam;
 
-import lcm.Player;
+import lcm.PlayerOld;
 import lcm.ai.eval.IEval;
 import lcm.sim.Action;
 import lcm.sim.LegalActionGenerator;
@@ -64,7 +64,7 @@ public class BSLayer {
         child.score = eval.eval(child.state, false);
         if (!maximizer && child.score < limit) {
           childLayer.nodesFE = 0;
-          if (Player.DEBUG_BEAM) {
+          if (PlayerOld.DEBUG_BEAM) {
             System.err.println("**CUTOFF** . Limit was "+limit);
           }
           return -1;

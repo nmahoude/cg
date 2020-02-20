@@ -1,0 +1,80 @@
+The Goal
+The game is played on a continent that is shaped using hexagonal zones. Links between zones are provided at the start of a game as a graph.
+
+When the game starts, all zones are neutral. Platinum-beds are located on a given number of zones. They produce 1 to 6 bars of Platinum per game round (the amount of platinum bars produced is displayed with white bars on the zone). Taking ownership of zones allow you to win more Platinum and get more PODs. You get ownership of a neutral zone by placing or moving a POD on it. Your goal is to conquer the enemy HQ using PODs.
+
+Due to an intense fog, units can only see the Platinum and units located on tiles adjacent to or under themselves. The general layout of the map will however be given: the fog will only affect Platinum and enemy PODs. The HQ of both players is always visible, which will let you detect the enemy base on the very first turn.
+ 	Rules
+You start a game with 10 PODs but no Platinum bars. Each time you have accumulated enough Platinum to buy one or more PODs, the PODs will be automatically bought and placed on your base during the "buying" step. A POD costs 20 platinum bars.
+
+At each game round, the following actions are executed sequentially :
+First step: moving. Each player moves as many troops as they want on the map.
+Second step: buying. New PODs are automatically bought if enough platinum is available.
+Third step: distributing. Each player receives a number of Platinum bars related to the number of Platinum available on their owned zones.
+Fourth step: fighting. Once both players have completed steps 1, 2 and 3, fights are triggered on zones.
+Fifth step: owning. Ownership of zones changes.
+Rules for distributing:
+Each player receives as many Platinum bars as the number of bars available on the zones that belongs to the player.
+These bars add up to the number of bars already mined by the player and not yet converted to PODs.
+Rules for moving:
+A POD (or group of PODs) can only make one move per game round.
+A POD can only move from one zone to a contiguous zone – either neutral, already owned or owned by an enemy.
+A POD located on a zone where a fight is ongoing – meaning a zone with enemy PODs on it – can only move to a neutral zone or a zone he/she owns. Simply put, a POD that flees a fight can only retreat on a zone which does not belong to an enemy.
+Rules for fighting:
+A fight is triggered on every zone having PODs from 2 different players.
+For each fight zone, a POD from each player is first destroyed. If PODs from different players are still present on the zone after this destruction, an additional POD from each player still present is destroyed. This phase reproduces itself one more time. For each fight zone, a player loses a maximum of 3 PODs per game round.
+Rules for owning:
+A zone with only one player's PODs on it is won – or kept – by this player.
+A zone with no PODs on it or with PODs from multiple players on it does not change ownership: it remains neutral or kept by its previous owner.
+ 
+Victory Conditions
+You've captured the base of your opponent – or you have conquered the most zones after 250 game turns.
+ 	Note
+You can navigate within the map in the same way you would on google maps: zoom/unzoom with the mouse wheel and move using drag'n drop. Debug mode is available from the settings panel (the dented wheel).
+ 	Game Input
+Your program must first read the initialization data from standard input, then, in an infinite loop, read the contextual data of the game (ownership of zones and location of PODs) and write to standard output the actions for your PODs.
+Initialization input
+Line 1: 4 integers:
+
+playerCount: number of players
+myId: id of your player (0 or 1)
+zoneCount: number of hexagonal zones on the map. Zones are identified with a unique id ranging from 0 to (zoneCount - 1)
+linkCount: number of links between zones – i.e. number of frontiers between zones.
+ 
+
+zoneCount following lines: for each zone, two integers zoneId platinumSource These values are always equal to 0 because of the fog war rule (must be read but discarded).
+
+linkCount following lines: two integers zone1 zone2 providing the ids of two connected zones – meaning a movement is possible from zone1 to zone2 and vice-versa.
+
+Input for one game turn
+Line 1: an integer platinum providing the number of platinum you have in stock.
+
+zoneCount following lines: for each zone, six integers:
+
+zId: id of the zone
+ownerId: player id of the zone owner (-1 for a neutral zone)
+podsP0: number of PODs for player with id 0 on the zone
+podsP1: number of PODs for player with id 1 on the zone
+visible: 1 if the zone is visible for your PODs, 0 otherwise
+platinum: number of Platinum bars on the zone (0 for a non-visible zone)
+ 
+
+Output for one game turn
+Line 1: a series of movement commands. A movement command is composed of 3 integers podsCount zoneOrigin zoneDestination that indicate the number of PODs to move from one zone to another.
+For example 4 2 1 3 2 6 = two commands: moving four PODs from zone 2 to zone 1 and moving three PODs from zone 2 to 6.
+Just write WAIT if you do not wish to make any movements.
+
+ 
+Line 2: due to a change of rules, you must always output WAIT.
+
+Constraints
+playerCount = 2
+0 ≤ myId, ownerId < playerCount
+50 < zoneCount < 500
+0 < linkCount < 1000
+0 ≤ podsP0, podsP1 < 2000
+visible = 0 or 1
+0 ≤ platinum ≤ 6
+0 < podsCount < 2000
+0 ≤ zone1, zone2, zoneOrigin, zoneDestination < zoneCount
+Duration for a game round: 100ms

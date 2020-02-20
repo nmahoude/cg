@@ -1,7 +1,7 @@
 package direct_ai;
 
 import lcm.Agent;
-import lcm.Player;
+import lcm.PlayerOld;
 import lcm.cards.Card;
 import lcm.cards.CardTriplet;
 

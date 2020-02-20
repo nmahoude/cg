@@ -1,0 +1,153 @@
+== Redo (ww2)
+
+=TODO  : 
+* poids aux cells en fonction de leur interet ? (hauteur, goulot, ..)
+* deepening = 1000 & fin de partie, ca marche comment ?
+* Le score est bien calculé ? x20 ou x1000 ne change rien
+* Gerer le cas du pushed (by opp)
+* Gerer le cas du push pas reussi
+* Ajouter des patterns pour les bons coups (principalement les blocage)
+* Tester le cas où, si on ne connait pas l'advesaire, on s'arrete à depth = 1 ?
+
+= DONE
+	* transposition tables BOF ou buggées :)
+	* Si on voit les 2 opp, ne pas limiter l'A/B
+	* ordoner les coups apres la depth 1 ! (uniquement pour la depth 1 !)
+	* Eloigner les agents pour couvrir plus de terrain (detection des opp agents)
+	* Je marque vraiment pas assez de points (passer le coeff score à 1000 ne change rien)
+	* Supprimer le AccessibleCellsCalculator (remplacé par voronoi)
+	* supprimer l'ancien cache des agent & cells
+	* changer le nb de cases accessibles par un 'voronoi like' (zones d'influence)
+	* Tester le minimax à plus de profondeur >= ~ +10 places
+	* prendre les coups valides donnés par CG
+
+
+
+= 20170702
+* 14h00 : coef à 18
+* 14h00 : KO coeff à 30
+* 13h24 : 22.3 coef à 20
+* 12h54 : 21.16 retest à 10
+* 12h28 - 21.37 coeff à 12
+* 12h03 - 21.64 coeff à 15
+* 11h38 - 20.75 coeff à 20
+* 11h11 - 22.36 : coeff à 10
+* 02h30 - 20 / 20.86 : ?? pdt la nuit
+* 01h52 - 19 / 21.30: Amelioration des perfs sur score
+* 01h35 - : amelioration des perfs sur le cliff --> OK
+* 01h11 - 18 / 21.04 : sensiblement identique à 18h48
+* 00h47 27 / 17.90 - voronoi 4, mais scorer en fonction de l'élévation
+* marche pas - voronoi, mais sans check elevation ?
+* 00h05 21 / 20.20 - voronoi4, poids 300
+
+
+= 20170701 (legend)
+* 23h58 - voronoi 2 , poids 50
+* 23h46 - KO passer du voronoi 4 au 2 (poids 300) 
+* 23h28 - influence : scoring des celulles = 1.0
+* 23h17 - not good: Ajout de 1.0 * influenceMapScore
+* 22h40 - 22 / 18.73 : code de 20h06
+* 22h30 - 22 / 19.00 : voronoi 350
+* 20h44 - 22 / 18.95 : voronoi 350
+* 20h02 - 21 / 21.83 : vironoi 300
+* 19h18 - 22 / 19.47 : encore augmentation voronoi : 500
+* 18h48 - 16 / 20.45 : augmentation du voronoi (200)
+* 18h21 - 19 / 19.47 : remis ene place 14h37 pour confirmation
+* 17h31 - 20 / 18.82 : remise en place du CLIFF avec coeff x 2
+* 16h10 - 19 / 18.xx : retour arriere sur distance + coefficient *2 car ca semble jouer
+* 15h01 - 17 / 17.61 : modification scoring elevation + position / au centre 
+* 14h37 - 14 / 19.46 : utilisation FastArray dans le voronoi + perf sur neighbouring
+* 14h14 - 16 : retour arriere + augmentation de la depth (100, 100, 100)
+* 13h21 - 27 : 100 * accessible cells
+* 12h56 - 18 
+* 11h45 - 25 : modif param de profondeur (10, 50, 100)
+* 24 : arrivée
+= 20170630 (gold)
+20h13 : elevation 50 -> 10, tuning sur la profondeur (10, 20, 1000)
+
+* : division du voronoi par la taille de la grille au carré
+* 14h20 - 26 : voronoi à 1
+* 14h00 - 26 : changement complet des coeff (sauf voronoi)
+* 13h39 - 25 / 30.97: remise en place des accessibleCells (Lirkin en parle, ca marche p-e)
+* 13h20 - 23 / 31.32: suppression des transposition tables, return plus rapide pour eviter timeout
+* 13h07 - ?? : transposition + plus de limite au deepening
+* 13h00 - 34 : utilisation des transpositions
+* 11h30 - 26 : code idem 7h58
+* 09h30 - 21 : code de 7h58
+* 09h02 - 23 : deepening tout au max 
+* 07h58 - : ne pas limiter le deepening si on voit les 2 enemis
+* 02h41 - 26 : move ordering (uniquement à depth = 1, pas pour 'iterative)
+* 02h04 - 27 : repush avec code à jour, identique fonctionnellement à 22h22
+* 01h31 - 23 : repush du 22h22
+* 00h30 - 34 : suppression distance de manhattan
+* 00h12 - 49 : distance de manhattan avec coeff 5*
+
+= 20170629 (gold)
+* 23h21 - 31 : Ajout de la distance de manhattan entre les 2 agents * 50
+* 22h52 - 31 : Augmentation du coeff (20 -> 1000) scoring, pour marquer plus de point
+* 22h22 - 27 : ajout de la detection de push subie
+* 21h09 - 31 : rematch
+* 20h45 - 35 : suppression de Accessible
+* 19h46 - 32: relance voronoi à 100 + suppression backup/restore
+* 19h31 - 31 : relance code 17h33 pour confirmation
+* 18h02 - : Reactivation divinition pour confirmation
+* 17h52 - 80 : Desactiver la divination pour vérifier que ca sert, si oui (classement <) -> coder les push dans la divination
+* 17h33 - 25 : voronoi à 4, poids 10_000
+* 16h37 - 43 : relancer avec le bug pour etre sur -> si ~ ou > : il faut faire le voronoi sur les 4 agents en meme temps !
+* 16h20 - 30 : ajout du voronoi * 1000 avec la correction du bug, 0 - i, mais c'est p-e pas plus mal ?
+* 13h36 - 30 : minimax non bridé + correction bug dans le minimax
+* 13h07 - 40 : utilisation du cache CG
+* 12h07 - 39 : relance code 9h49
+* 11h52 - 48 : relance code de 10h25
+* 11h40 - 44 : relance pour confirmation
+* 11h15 - 44: petit bug ? copy sur le bestMove plutot que =
+* 10h25 - 30 / 27.63 : relance pour confirmation :)
+* 10h11 - 40 : relance pour confirmation
+* 9h52 - 33: minimax depth 3 max
+* 8h35 - 60 : minimax corrigé, depth=1 bloquée
+* 8h00 - 56 : reclance code hier soir
+
+= 20170628 (gold)
+* 02h53 - 59 : remise en place divination + ancien think()
+* 02h45 - dernier: Desactiviation de l'application dela divination
+* 02h35 - 55 : relance du code de 23h38
+* 02h22 - 64 : correction bug sur coup final (NPE sur le bestMove)
+* 02h12 - 73 : bug de simulation trouvé ! (position n'etait pas mise à jour en meme temps que cellule) + suppression des logs
+* 01h50 - 49 : relance du code de 23h38
+* 01h36 - 58 : desactivation divination sur construction 
+* 01h24 - 150: correction d'un bug dans la nouvelle divination
+* 01h16 - 60 : repush code std
+* 01h00 - 58 : code de 13h31
+* 00h40 - 57 : code de 11h30
+* 00h03 - 72 : rejoue du code hier 22h00
+-- recherche de la regression (up)
+
+* 23h38 - 50 : (passage en gold) + utilisation du minimax en depth = 1 bloquée  (à priori meme resultat que old.think)
+* ----- Bcp (trop) de changements ici
+
+= 20170628 (silver)
+* 13h31 - 40 : Correction d'un bug sur la divination
+* 11h30 - 32 : suite passe de perf (p-e une modification impactante sur le calcul des possibleActions
+
+= 20170627 (silver)
+* 00h27 - 42 : divination activï¿½e
+* 23h51 - 45 : derniere version de Divination (pas d'autres changement normalemnt, divination pas appliquï¿½e)
+* 22h00 - 40 : on reste ï¿½ 20, mais on repasse sur l'evaluation des cases atteignable en situation
+* 21h32 - 51 : on repasse a 20
+* 21h17 - 63 : relance avec 10 pour voir la variance
+* 21h01 - 38 : tentative ï¿½ 10 ?
+* 20h28 - 33 : tentative ï¿½ 20 !
+* 20h16 - 45 : passage du point de marquer ï¿½ 200
+* 19h47 - 52 : passage du point de marquer ï¿½ +50
+* 18h23 - 45 : passage du point de marquer ï¿½ +100 au lieu de 1000
+* 18h07 - 80 : on repasse le coeff ï¿½  1.0 ... (pas trop de diffï¿½rence avec 17h30 ou on comptait uniquement les accessibles)
+* 17h59 - 218 : verifier qu'on peut build avant de checker que les cases (ï¿½ l'arrache)
+* 17h45 - 151 : on check les case mais plus leur hauteur * 5000 ...
+* 17h30 - 84  : ajout nombre de case accessible (coef 1)
+* 16h54 - 108 : apres nouvelle relance ....
+* 16h44 - 150 : relance code de 16h18 pour confirmer :(
+* 16h20 - 136 : avec code du 26/07 -> 136 !
+* 16h18 - 106 / 25.21 : ajout de la hauteur des cotï¿½s
+* 16h02 - 137  : Augmenter le poids de la hauteur agent et diminuer le nb d'actions possibles
+* 2eme push : 272 avec le score ï¿½ 1000. Gros probleme detectï¿½, on ne 'monte' pas des murs
+* 1er push : 294

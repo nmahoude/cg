@@ -74,7 +74,7 @@ public class State {
 
   public void addBomb(final Bomb bomb) {
     if (bomb.owner == Player.myId) {
-      hash = -1; // zobrist du pauvre :)
+      hash = hash ^ ZobristValues.fromBomb(bomb, turn);
     }
     board.addBomb(bomb);
   }
@@ -100,14 +100,17 @@ public class State {
   }
 
   public void walkOn(final Bomberman player, final P p) {
+    hash = hash ^ ZobristValues.fromPosition(player.position, turn);
+    hash = hash ^ ZobristValues.fromPosition(p, turn);
+    
     final int value = board.cells[p.offset];
     if ( value == Board.ITEM_1) {
-      hash = -1; // zobrist du pauvre :)
+      hash = hash ^ ZobristValues.fromItem(p, turn);
       player.currentRange+=1;
       Simulation.deltaRange+=1;
       board.cells[p.offset] = Board.EMPTY;
     } else if (value == Board.ITEM_2) {
-      hash = -1; // zobrist du pauvre :)
+      hash = hash ^ ZobristValues.fromItem(p, turn);
       player.bombsLeft+=1;
       player.bombCount+=1;
       Simulation.deltaBomb+=1;

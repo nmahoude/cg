@@ -2,9 +2,10 @@ package hypersonic.ai.search;
 
 public class SNodeCache {
 
-  private static final int SIZE = 60_000;
+  private static final int SIZE = 40_000;
   public static SNode nodes[] = new SNode[SIZE];
   private static int nodesFE = SIZE-1;
+  public static boolean full = false;
 
   static {
     for (int i=0;i<SIZE;i++) {
@@ -14,6 +15,7 @@ public class SNodeCache {
   
   public static void reset() {
     nodesFE = 0;
+    full = false;
   }
   
   public static SNode pop() {
@@ -25,13 +27,20 @@ public class SNodeCache {
   
   
   public static int reserve(int size) {
-    int start = nodesFE;
-    for (int i=0;i<size;i++) {
-      SNode node = nodes[nodesFE++];
-      node.movesFE = -1;
-      node.bestScore = Double.NEGATIVE_INFINITY;
+    if (full) {
+      return -1;
+    } else if (nodesFE + size >= SIZE) {
+      full = true;
+      return -1;
+    } else {
+      int start = nodesFE;
+      for (int i=0;i<size;i++) {
+        SNode node = nodes[nodesFE++];
+        node.movesFE = -1;
+        node.bestScore = Double.NEGATIVE_INFINITY;
+      }
+      nodesFE+=size;
+      return start;
     }
-    nodesFE+=size;
-    return start;
   }
 }

@@ -13,7 +13,7 @@ public enum CardType {
   public int intValue() {
     return index;
   }
-  static CardType fromValue(int value) {
+  public static CardType fromValue(int value) {
     for (CardType ct : CardType.values()) {
       if (ct.index == value) {
         return ct;

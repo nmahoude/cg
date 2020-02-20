@@ -62,7 +62,7 @@ public:
   }
 
   int dist2(Person *other) {
-    return (other->x-x)*(other->x-x) + (other->y-y)*(other->y-y);
+    return (other->x - x) * (other->x - x) + (other->y - y) * (other->y - y);
   }
 
   void acquireTarget() {
@@ -81,8 +81,8 @@ public:
   }
 
   void move(int tx, int ty, int radius) {
-    int dist = (int)sqrt((x-tx)*(x-tx) + (y-ty)*(y-ty));
-    if (dist < radius*radius) {
+    int dist = (int) sqrt((x - tx) * (x - tx) + (y - ty) * (y - ty));
+    if (dist < radius * radius) {
       x = tx;
       y = ty;
     } else {
@@ -100,11 +100,12 @@ Person* getClosestHuman(Person *base) {
 
   for (int h = 0; h < humanCount; h++) {
     Person* p = humans[h];
-    if (!p->alive) continue;
+    if (!p->alive)
+      continue;
 
     double distBaseToHuman = sqrt(base->dist2(p));
     if (distBaseToHuman < bestDist) {
-      bestDist= distBaseToHuman;
+      bestDist = distBaseToHuman;
       best = p;
     }
   }
@@ -116,7 +117,8 @@ private:
   void zombiesMove() {
     for (int i = 0; i < zombieCount; i++) {
       Zombie* zombie = zombies[i];
-      if (!zombie->alive) continue;
+      if (!zombie->alive)
+        continue;
 
       zombie->acquireTarget();
       zombie->zombieMove();
@@ -132,7 +134,8 @@ private:
     int score = 0;
     for (int i = 0; i < zombieCount; i++) {
       Zombie* zombie = zombies[i];
-      if (!zombie->alive) continue;
+      if (!zombie->alive)
+        continue;
       if (ash->dist2(zombie) < ASH_KILLZONE_2) {
         score += nbHumansALive * 10 * fib(bonus);
         bonus++;
@@ -154,10 +157,10 @@ public:
     int deadHuman = 0;
     for (int i = 0; i < zombieCount; i++) {
       Zombie* zombie = zombies[i];
-      if (!zombie->alive) continue;
+      if (!zombie->alive)
+        continue;
 
-      if (zombie->target != NULL
-          && zombie->target->alive) {
+      if (zombie->target != NULL && zombie->target->alive) {
         /* ash may have move, not humans*/
         if (zombie->dist2(zombie->target) < zombie->dist2(ash)) {
           zombie->target = ash;
@@ -168,7 +171,8 @@ public:
 
       for (int h = 0; h < humanCount; h++) {
         Human* human = humans[h];
-        if (!human->alive) continue;
+        if (!human->alive)
+          continue;
         if (zombie->dist2(human) < ZOMBIE_MOVE_RADIUS * ZOMBIE_MOVE_RADIUS) {
           human->alive = false;
           deadHuman++;

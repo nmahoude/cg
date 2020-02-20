@@ -10,10 +10,10 @@ import hypersonic.ai.Optimizer;
 import hypersonic.entities.Bomberman;
 
 public class Search {
-  public static final int DEPTH = 20;
-  static final int MAX_BRUTE_DEPTH = 5; // depth where we keep all nodes
+  static final int DEPTH = Player.DEPTH;
+  static final int MAX_BRUTE_DEPTH = 6; // depth where we keep all nodes
 
-  private static final long TIME_LIMIT = 90;
+  private static final long TIME_LIMIT = 95;
   private static final long DROP_BOMB_TIME_LIMIT = 10;
 
   public static ZobristLayer zobrists[] = new ZobristLayer[DEPTH];
@@ -46,7 +46,6 @@ public class Search {
     
 //    if (nextTurnMoves[0] != null) {
 //      bestScore = root.recalculate(nextTurnMoves);
-//      System.err.println("From last move, new bestScore is "+bestScore);
 //    }
     
     
@@ -70,7 +69,9 @@ public class Search {
       doOnePly();
     }
 
-    root.debug();
+    if (Player.DEBUG_AI) {
+      root.debug();
+    }
     
     bestScore = Optimizer.optimizeBombs(bestMoves, bestScore, DEPTH, model, dropEnnemyBombs);
     bestScore = Optimizer.optimizeMoves(bestMoves, bestScore, DEPTH, model, dropEnnemyBombs);
@@ -79,13 +80,13 @@ public class Search {
               //+ " / "+(System.currentTimeMillis()-Player.startTime)
               +(dropEnnemyBombs?"":"(☢☠)")
               +" (c:"+collisions+")";
-    System.err.println("Generated nodes : "+generatedNodes+", collisions : "+collisions);
     
     if (Player.DEBUG_AI) {
+      System.err.println("Generated nodes : "+generatedNodes+", collisions : "+collisions);
       System.err.println("Simulations : " + simu);
       System.err.println("Still drop bombs? : "+dropEnnemyBombs);
+      System.err.println("Best: "+(dropEnnemyBombs?"(☠)":"")+Arrays.asList(bestMoves)+ " => "+bestScore);
     }
-    System.err.println("Best: "+(dropEnnemyBombs?"(☠)":"")+Arrays.asList(bestMoves)+ " => "+bestScore);
 
   }
   private void initSimulationFromModel(State model) {
@@ -136,8 +137,11 @@ public class Search {
   }
   
   public void ouput(State currentState) {
-    final Move move = bestMoves[0];
-    prepareForNextTurn();
+    Move move = bestMoves[0];
+    //prepareForNextTurn();
+    if (move == null) {
+      move = Move.STAY;
+    }
     outputMove(currentState.players[Player.myId], move, message);
   }
   

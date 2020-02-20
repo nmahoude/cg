@@ -27,6 +27,8 @@ public class Score {
     }
 
     if (depth == 0) {
+      score += Player.KILLERBOMB_BONUS; // if we can reduce heavily the player movability (and maybe by kill him)
+      
       // on first step, big malus for stepping over a opponent that has bomb (means we follow him)
       for (int i=0;i<4;i++) {
         if (i == Player.myId) continue;
@@ -41,30 +43,40 @@ public class Score {
     score += BOX_DESTROYED_BONUS * me.points;
     
     if (me.bombCount < 4) {
-      score += BOX_DESTROYED_BONUS * Simulation.deltaBomb;
+      score += 5000 * Simulation.deltaBomb;
     } else {
       // 0
+<<<<<<< HEAD
       score += 1.1 * Simulation.deltaBomb;
+=======
+      score += 0.1 * Simulation.deltaBomb;
+>>>>>>> d37f6ab40a249ec03f6e2a9f432a954e486fea81
     }
     if (me.currentRange < 8) {
       score += 500.0 * Simulation.deltaRange;
     } else if (me.currentRange < 5) {
-      score += Simulation.deltaRange;
+      score += 0.1*Simulation.deltaRange;
     } else {
       // 0
     }
-//    if (!move.dropBomb) {
-//      score += 0.1;
-//    }
+
+    if (!move.dropBomb) {
+      score += 1000;
+    }
 
     if (move == Move.STAY || move == Move.STAY_BOMB) {
       score -= 1.0;
     }
     
+<<<<<<< HEAD
     score -= 10.0 * Math.abs(me.position.x - Board.WIDTH/2.);
     score -= 10.0 * Math.abs(me.position.y - Board.HEIGHT/2.);
+=======
+    score -= 0.1 * Math.abs(me.position.x - Board.WIDTH/2.);
+    score -= 0.1 * Math.abs(me.position.y - Board.HEIGHT/2.);
+>>>>>>> d37f6ab40a249ec03f6e2a9f432a954e486fea81
     
-      score += 1.0 * HeatMap.score[me.position.x+Board.WIDTH*me.position.y];
+//      score += 1.0 * HeatMap.score[me.position.x+Board.WIDTH*me.position.y];
     
     // TODO : if we are losing, better go next to our rivals and bomb them 
 //    if (state.board.boxCount == 0) {

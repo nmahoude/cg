@@ -64,7 +64,7 @@ public class Agent {
 
   public void read(Scanner in) {
     health = in.nextInt();
-    Player.start = System.currentTimeMillis(); // will read it 2 times (me & opp), but that should not matter
+    PlayerOld.start = System.currentTimeMillis(); // will read it 2 times (me & opp), but that should not matter
     mana = in.nextInt();
     maxMana = mana;
     deck = in.nextInt();
@@ -74,7 +74,7 @@ public class Agent {
     handCardsCount = 0;
     guardsCardsCount = 0;
     
-    if (Player.DEBUG_INPUT) {
+    if (PlayerOld.DEBUG_INPUT) {
       System.err.print(String.format("\"%d %d %d %d\"+NL+",
           health,
           mana,
@@ -163,7 +163,7 @@ public class Agent {
     for (int deck=0;deck<31;deck++) {
       for (int hp = 0;hp<256;hp++) {
         for (int mana=0;mana<13;mana++) {
-          zobrist[deck][13 * hp + mana] = Player.random.nextLong();
+          zobrist[deck][13 * hp + mana] = PlayerOld.random.nextLong();
         }
       }
     }

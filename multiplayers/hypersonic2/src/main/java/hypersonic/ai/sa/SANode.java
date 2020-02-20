@@ -4,7 +4,6 @@ import hypersonic.Cache;
 import hypersonic.Move;
 import hypersonic.Player;
 import hypersonic.State;
-import hypersonic.ai.MC;
 import hypersonic.ai.Score;
 import hypersonic.entities.Bomberman;
 
