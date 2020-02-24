@@ -28,7 +28,7 @@ public class Card {
   }
 
   public void debug() {
-    System.err.println(String.format("  Card id(%d) n°(%d) %s att(%d) def(%d) %s %d %d %d %d ", 
+    System.err.println(String.format("  Card id(%d) nÂ°(%d) %s att(%d) def(%d) %s %d %d %d %d ", 
 	        model.instanceId, model.cardNumber,
 	    		model.type.toString(),
           attack, defense,
@@ -43,15 +43,18 @@ public class Card {
   public boolean isGuard() {
     return (abilities & Abilities.GUARD) != 0;
   }
-  private boolean isLethal() {
+  public boolean isCharge() {
+    return (abilities & Abilities.CHARGE) != 0;
+  }
+  public boolean isLethal() {
     return (abilities & Abilities.LETHAL) != 0;
   }
 
-  private boolean isWarded() {
+  public boolean isWarded() {
     return (abilities & Abilities.WARD) != 0;
   }
 
-  private boolean isBreakthrough() {
+  public boolean isBreakthrough() {
     return (abilities & Abilities.BREAKTHROUGH) != 0;
   }
 

@@ -7,12 +7,12 @@ import lcm2.cards.Card;
 public class Player {
   int turn = 0;
   Agent agents[] = new Agent[2];
-  SimpleAI ai;
+  SimpleAI2 ai;
   SimplePickerAI picker;
   Player() {
     agents[0] = new Agent(0);
     agents[1] = new Agent(1);
-    ai = new SimpleAI(agents[0], agents[1]);
+    ai = new SimpleAI2(agents[0], agents[1]);
     picker = new SimplePickerAI(agents[0]);
   }
 

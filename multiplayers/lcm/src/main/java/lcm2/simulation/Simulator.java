@@ -25,13 +25,17 @@ public class Simulator {
 
   private void resolveAttack(Action action) {
     Card card = me.boardCards[action.from];
-    Card oppCard = action.target == - 1 ? null : opp.boardCards[action.target];
+    Card oppCard = opp.boardCards[action.target];
 
-    if (oppCard == null) {
-      attackFace(card);
+    if (action.target == 0) {
+      attackFace(card, oppCard);
     } else {
       attackCreature(card, oppCard);
     }
+  }
+
+  private void attackFace(Card card, Card oppCard) {
+    oppCard.defense -= card.attack;
   }
 
   private void useCard(int index, int targetIndex) {
@@ -85,14 +89,6 @@ public class Simulator {
     opp.oppSummon(card);
   }
   
-  private void attackFace(Card card) {
-    if (opp.guardsCount > 0) {
-      simError("impossible d'attaquer FACE, il y a des guards");
-    } else {
-      opp.decreaseLife(card.attack);
-    }
-  }
-
   private void simError(String message) {
     System.err.print("******** ");
     System.err.println(message);

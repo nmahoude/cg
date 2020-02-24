@@ -11,7 +11,7 @@ public class Agent {
   public Card handCards[] = new Card[8];
   int handCardsFE = 0;
   
-  Card me;
+  public Card face;
   int mana;
   int deck;
   int rune;
@@ -19,8 +19,8 @@ public class Agent {
   public int guardsCount;
 
   public Agent(int index) {
-  	me = new Card(-1-index, -1, -1, 0, 0, 30, "", 0, 0, 0);
-  	boardCards[0] = me;
+  	face = new Card(-1-index, -1, -1, 0, 0, 30, "", 0, 0, 0);
+  	boardCards[0] = face;
 	}
   
   public void copyFrom(Agent model) {
@@ -42,7 +42,7 @@ public class Agent {
   }
   
   public void read(Scanner in) {
-    me.defense = in.nextInt();
+    face.defense = in.nextInt();
     mana = in.nextInt();
     deck = in.nextInt();
     rune = in.nextInt();
@@ -90,17 +90,17 @@ public class Agent {
   }
 
   public void decreaseLife(int life) {
-    me.defense -= life;
+    face.defense -= life;
     if (life < 0) life = 0;
   }
 
 	public void modifyHealth(int mod) {
-    me.defense += mod;
+    face.defense += mod;
 
     if (mod >= 0) return;
-    if (me.defense < 0) me.defense = 0;
+    if (face.defense < 0) face.defense = 0;
     
-    int h2r = me.defense / 5;
+    int h2r = face.defense / 5;
     if (h2r <= rune) {
       nextTurnDraw += (rune-h2r);
       rune = h2r;

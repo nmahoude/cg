@@ -32,6 +32,10 @@ public class SimpleAI {
       Card current = me.boardCards[i];
     	boolean attack = false;
 
+    	if (current.attack == 0) {
+    	  continue;
+    	}
+    	
     	// kill guards
     	if (opp.guardsCount > 0) {
       	System.err.println("Opp number of guards : "+opp.guardsCount);
@@ -49,6 +53,24 @@ public class SimpleAI {
         attack = true;
     	}
 
+    	// check if we can go for the face kill
+    	if (!attack) {
+      	int attackSum = 0;
+      	for (int r = i;r<me.boardCardsFE;r++) {
+      	  Card remaining = me.boardCards[r];
+      	  attackSum += remaining.attack;
+      	}
+      	if (attackSum >= opp.boardCards[0].defense) {
+          // go for faces
+          Action action = Action.attack(i, 0);
+          sim.run(me, opp, action);
+
+          System.err.println("Go for the kill "+current.model.instanceId);
+          actions.add("ATTACK "+me.boardCards[i].model.instanceId+ " " + opp.boardCards[0].model.instanceId);
+          attack = true;
+      	}
+    	}
+    	
     	// kill without being killed => go for it
     	if (!attack) {
       	for (int o=1;o<opp.boardCardsFE;o++) {
@@ -58,7 +80,7 @@ public class SimpleAI {
             Action action = Action.attack(i, o);
             sim.run(me, opp, action);
             
-            System.err.println("Kill without being killed, go for it");
+            System.err.println("Kill without being killed, go for it. "+current.model.instanceId+" --> "+ oppCard.model.instanceId);
       			
             actions.add("ATTACK "+current.model.instanceId+ " " + oppCard.model.instanceId);
             attack = true;
@@ -66,13 +88,36 @@ public class SimpleAI {
       		}
       	}
     	}
-      	
+      
+    	// double kill, but intersting only if we are not a guard ...
+    	if (!attack && !current.isGuard()) {
+        for (int o=1;o<opp.boardCardsFE;o++) {
+          Card oppCard = opp.boardCards[o];
+          if (oppCard.isDead()) continue;
+          // our card will kill it but will be killed too
+          if (oppCard.defense <= current.attack) {
+            // interesting to exchange ?
+            if (oppCard.attack > current.attack || oppCard.isLethal()) {
+              Action action = Action.attack(i, o);
+              sim.run(me, opp, action);
+              
+              System.err.println("Dbl-Kill but intersting "+current.model.instanceId+" <> "+ oppCard.model.instanceId);
+              
+              actions.add("ATTACK "+current.model.instanceId+ " " + oppCard.model.instanceId);
+              attack = true;
+              break;
+            }
+          }
+        }
+    	}
+    	
     	if (!attack) {
         // go for faces
         Action action = Action.attack(i, 0);
         sim.run(me, opp, action);
 
         actions.add("ATTACK "+me.boardCards[i].model.instanceId+ " " + opp.boardCards[0].model.instanceId);
+        attack = true;
     	}
     }    
     
@@ -92,7 +137,7 @@ public class SimpleAI {
   private int getIndexOfGuard(Agent agent) {
     for (int i=0;i<agent.boardCardsFE;i++) {
       Card card = agent.boardCards[i];
-      if (card != Card.EMPTY && card.isGuard()) {
+      if (!card.isDead() && card.isGuard()) {
         return i;
       }
     }

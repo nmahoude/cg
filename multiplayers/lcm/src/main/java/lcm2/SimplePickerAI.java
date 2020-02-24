@@ -39,10 +39,19 @@ public class SimplePickerAI {
 			
 		switch(card.model.type) {
 		case CREATURE:
-			score += 1000 + card.attack + card.defense - card.model.cost * 2;
+			score += 1000 + card.attack + 2 * card.defense - 3 * card.model.cost;
 			if (card.isGuard()) {
-				score += 500;
+				score += 5;
 			}
+			if (card.isLethal()) {
+			  score += 1;
+			}
+      if (card.isWarded()) {
+        score += card.defense;
+      }
+      if (card.isCharge()) {
+        score += card.attack;
+      }
 			break;
 		case ITEM_BLUE:
 			score += 1;
