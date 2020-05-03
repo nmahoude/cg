@@ -1,51 +1,192 @@
 package calm;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class State {
-  private int itemsFE;
-  private P itemsPos[] = new P[77];
-  private int itemsMask[] = new int[77];
-  private int ovenTimer;
-  private int ovenContents;
+  public Agent me = new Agent(this);
+  public Agent him = new Agent(this);
+
+  public Item items[] = new Item[Map.S2];
+  public int itemsFE = 0;
+  
+  public int ovenTimer;
+  public Item ovenContents = new Item(P.INVALID);
+  public boolean ovenIsMine = false;
+  
+  public Desert deserts[];
+  private int desertsFE = 0;
+  
+  
+  public State() {
+    
+  }
+  
   
   public void read(Scanner in) {
-    itemsFE = 0;
+    
+    me.read(in);
+    him.read(in);
 
+    
     int numTablesWithItems = in.nextInt(); // the number of tables in the kitchen that currently hold an item
+    itemsFE = Player.map.staticItemsFE;
+    
     for (int i = 0; i < numTablesWithItems; i++) {
-      int tableX = in.nextInt();
-      int tableY = in.nextInt();
-      P pos = P.get(tableX, tableY);
-      String item = in.next();
-      addItemToTables(pos, Item.toMask(item));
+      P pos = P.get(in.nextInt(), in.nextInt());
+      String maskStr = in.next();
+      items[itemsFE].mask = ItemMask.fromString(maskStr);
+      items[itemsFE].pos = pos;
+      itemsFE++;
     }
     
-    ovenContents = Item.toMask(in.next());
+    ovenContents.reset(ItemMask.fromString(in.next()));
     ovenTimer = in.nextInt();
-    
+    if (ovenContents.isEmpty()) {
+      ovenIsMine = false;
+    }
+    System.err.println(ovenIsMine ? "oven content is mine " : "oven content not mine");
     int numCustomers = in.nextInt(); // the number of customers currently waiting for food
+    desertsFE = 0;
     for (int i = 0; i < numCustomers; i++) {
-      String customerItem = in.next();
+      int mask = ItemMask.fromString(in.next());
       int customerAward = in.nextInt();
+      deserts[desertsFE++].set(mask, customerAward);
     }
   }
 
   public void addItemToTables(P pos, int itemMask) {
-    itemsPos[itemsFE] = pos;
-    itemsMask[itemsFE] = itemMask;
-    itemsFE++;
+    Item item = items[pos.offset];
+    item.reset(itemMask);
   }
   
   public void readInit(Scanner in) {
     int numAllCustomers = in.nextInt();
+    deserts = new Desert[numAllCustomers];
+    
     for (int i = 0; i < numAllCustomers; i++) {
-      String customerItem = in.next(); // the food the customer is waiting for
-      int customerAward = in.nextInt(); // the number of points awarded for delivering the food
+      int mask = ItemMask.fromString(in.next());
+      int customerAward = in.nextInt();
+      deserts[i] = new Desert();
+      deserts[i].set(mask, customerAward);
     }
-    in.nextLine();
-    for (int i = 0; i < 7; i++) {
-      String kitchenLine = in.nextLine();
+    
+    Player.map.read(in);
+    for (int i=0;i<Player.map.staticItemsFE;i++) {
+      items[i] = Player.map.items[i];
+    }
+    for (int i=Player.map.staticItemsFE;i<items.length;i++) {
+      items[i] = new Item(P.INVALID);
     }
   }
+
+
+  public boolean hasCroissant() {
+    return has(ItemMask.CROISSANT);
+  }
+  public boolean hasChoppedStrawberries() {
+    return has(ItemMask.CHOPPED_STRAWBERRIES);
+  }  
+  
+  public boolean has(int mask) {
+    for (int i=0;i<itemsFE;i++) {
+      if (!items[i].isFloor() && (items[i].mask & ~ItemMask.DISH) == mask) return true;
+    }
+    return false;
+  }
+
+
+  public Item getCroissant(Agent agent) {
+    return get(ItemMask.CROISSANT);
+  }
+  public Item getChoppedStrawberries(Agent agent) {
+    return get(ItemMask.CHOPPED_STRAWBERRIES);
+  }
+
+  Item get(int mask) {
+    for (int i=0;i<itemsFE;i++) {
+      if (!items[i].isFloor() && (items[i].mask & ~ItemMask.DISH) == mask) return items[i];
+    }
+    return null;
+  }
+
+
+  public Item getItem(int mask) {
+    for (int i=0;i<itemsFE;i++) {
+      if (!items[i].isFloor() && items[i].mask == mask) return items[i];
+    }
+    
+    return null;
+  }
+
+  public List<Item> getItemsCompatibleWith(Desert desert) {
+    List<Item> compatibleItems = new ArrayList<>();
+    for (int i=0;i<itemsFE;i++) {
+      if (!items[i].isFloor() && (items[i].mask & ~desert.item.mask) == 0) {
+        compatibleItems.add(items[i]);
+      }
+    }
+    
+    return compatibleItems;
+  }
+
+
+  public Item getDishCompatible(Desert desert, Item hands, int mask) {
+    for (int i=0;i<itemsFE;i++) {
+      if (hands.hasPlate() && items[i].hasPlate()) continue;
+      if (!items[i].isFloor() && (items[i].mask & ~desert.item.mask) == 0 && (items[i].mask & mask) != 0) {
+        return items[i];
+      }
+    }
+    
+    if ((ovenContents.mask & mask) != 0) {
+      return Player.map.ovenAsEquipment;
+    }
+    
+    return null;
+  }
+
+  public P findClosestEmptyTable(State state) {
+    P origin = state.me.pos;
+    System.err.println("Find closest empty table @ "+origin);
+    P best = null;
+    int bestDistance = Integer.MAX_VALUE;
+    
+    for (P pos : Player.map.tables) {
+      boolean found = false;
+      for (int i=0;i<itemsFE;i++) {
+        if (items[i].pos == pos && items[i].mask != 0) {
+          System.err.println("Found item @ "+pos+", cant use it with "+items[i].toString());
+          found =true;
+          break;
+        }
+      }
+      if (!found) {
+        int distance = Player.map.distanceFromTo(origin, pos, state.him.pos);
+        System.err.println("No items found @ "+pos);
+        if (distance < bestDistance) {
+          best = pos;
+          bestDistance = distance;
+        }
+      }
+    }
+
+    return best;
+  }
+  
+  public List<Item> getDishCompatibleWithDesertWhenHolding(Desert desert, Item hands) {
+    if (Player.DEBUG_PICKING) System.err.println("get Dishes Compatible ? "+ desert.item+" vs "+ItemMask.output(hands.mask));
+    List<Item> compatibleItems = new ArrayList<>();
+    for (int i=0;i<itemsFE;i++) {
+      if (!items[i].isFloor() && items[i].mask != 0 && (items[i].mask & ~desert.item.mask) == 0 && (items[i].mask & hands.mask) == 0) {
+        if(Player.DEBUG_PICKING) System.err.println("  Item "+items[i]+" @"+items[i].pos+" is compatible");
+        compatibleItems.add(items[i]);
+      }
+    }
+    
+    if (Player.DEBUG_PICKING && compatibleItems.isEmpty()) System.err.println("nothing compatible");
+    return compatibleItems;
+  }
+
 }
