@@ -4,6 +4,12 @@
   <artifactId>fast</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   
+  <parent>
+  	<groupId>nmahoude.codingame</groupId>
+  	<artifactId>librairies</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>..</relativePath>
+  </parent>
   
   <properties>
   	<maven.compiler.source>1.8</maven.compiler.source>

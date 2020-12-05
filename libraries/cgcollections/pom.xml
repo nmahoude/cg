@@ -5,9 +5,9 @@
 
   <parent>
     <groupId>nmahoude.codingame</groupId>
-    <artifactId>all</artifactId>
+    <artifactId>librairies</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <relativePath>../..</relativePath>
+    <relativePath>..</relativePath>
   </parent>
 
   <properties>
