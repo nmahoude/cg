@@ -1,18 +1,25 @@
 package lcm2;
 
+import java.util.Random;
 import java.util.Scanner;
 
 import lcm2.cards.Card;
+import lcm2.mc.MC;
+import lcm2.simpleai.SimplePickerAI;
 
 public class Player {
+  public static Random random = new Random(0);
+
+  public static long start;
+  
   int turn = 0;
   Agent agents[] = new Agent[2];
-  SimpleAI2 ai;
+  MC ai;
   SimplePickerAI picker;
   Player() {
     agents[0] = new Agent(0);
     agents[1] = new Agent(1);
-    ai = new SimpleAI2(agents[0], agents[1]);
+    ai = new MC();
     picker = new SimplePickerAI(agents[0]);
   }
 
@@ -31,6 +38,8 @@ public class Player {
         agents[i].clearCards();
         agents[i].read(in);
       }
+      Player.start = System.currentTimeMillis();
+      
       
       agents[1].readOpponentActions(in);
       
@@ -66,24 +75,35 @@ public class Player {
 
       System.err.println("Turn " + turn);
       if (turn <= 30) {
-        System.err.println("Choosing cards ....");
-        System.err.println("My hand");
-        agents[0].debugHandCards();
-        System.err.println("My board");
-        agents[0].debugBoardCards();
-        
-        picker.run();
+        runPickTurn();
       } else {
-        System.err.println("Playing cards ...");
-        System.err.println("My hand");
-        agents[0].debugHandCards();
-        System.err.println("My board");
-        agents[0].debugBoardCards();
-        System.err.println("His board");
-        agents[1].debugBoardCards();
-        
-        ai.run();
+        runBattleTurn();
       }
     }
+  }
+
+  private void runBattleTurn() {
+    System.err.println("Playing cards ...");
+    System.err.println("My hand");
+    agents[0].debugHandCards();
+    System.err.println("My board");
+    agents[0].debugBoardCards();
+    System.err.println("His board");
+    agents[1].debugBoardCards();
+
+    
+    
+    ai.think(agents[0], agents[1]);
+    
+  }
+
+  private void runPickTurn() {
+    System.err.println("Choosing cards ....");
+    System.err.println("My hand");
+    agents[0].debugHandCards();
+    System.err.println("My board");
+    agents[0].debugBoardCards();
+    
+    picker.run();
   }
 }

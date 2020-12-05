@@ -22,4 +22,8 @@ public enum CardType {
     }
     return null;
   }
+  
+  public boolean isAttackItem() { 
+    return index == 2;
+  }
 }

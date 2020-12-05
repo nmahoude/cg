@@ -1,8 +1,10 @@
-package lcm2;
+package lcm2.simpleai;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import lcm2.Agent;
+import lcm2.CardType;
 import lcm2.cards.Card;
 import lcm2.simulation.Action;
 import lcm2.simulation.Simulator;
@@ -28,6 +30,9 @@ public class SimpleAI2 {
     actions.clear();
     sim = new Simulator();
     
+    
+    List<Card> oppOrder = sortOppCards(opp);
+    
     // play cards from board
     for (int i=0+1;i<me.boardCardsFE;i++) {
       Card current = me.boardCards[i];
@@ -40,10 +45,8 @@ public class SimpleAI2 {
       if (canFaceKillAndDoIt(i, current)) continue;
       
     	Card bestCard = null;
-    	int bestIndex = 0;
     	double bestScore = Double.NEGATIVE_INFINITY;
-    	for (int o=0;o<opp.boardCardsFE;o++) {
-    	  Card oppCard = opp.boardCards[o];
+    	for (Card oppCard : oppOrder) {
 
     	  double score = scoreCard(current, oppCard);
     	  System.err.println("Score of "+current.model.instanceId + " vs "+oppCard.model.instanceId +" = "+score);
@@ -51,11 +54,10 @@ public class SimpleAI2 {
     	  if (score > bestScore) {
     	    bestScore = score;
     	    bestCard = oppCard;
-    	    bestIndex = o;
     	  }
     	}
     	if (bestCard != null) {
-        Action action = Action.attack(i, bestIndex);
+        Action action = Action.attack(i, indexFromCard(bestCard));
         sim.run(me, opp, action);
 
         actions.add("ATTACK "+current.model.instanceId+ " " + bestCard.model.instanceId);
@@ -66,6 +68,31 @@ public class SimpleAI2 {
     summonCards();
     
     actions.add("PASS");
+  }
+
+  private int indexFromCard(Card bestCard) {
+    for (int i=0;i<opp.boardCardsFE;i++) {
+      if (opp.boardCards[i] == bestCard) return i;
+    }
+    return -666;
+  }
+
+  private List<Card> sortOppCards(Agent opp) {
+    List<Card> order = new ArrayList<>();
+    for (int i=0;i<opp.boardCardsFE;i++) {
+      order.add(opp.boardCards[i]);
+    }
+    order.sort((c1, c2) -> Integer.compare(assesCard(c2), assesCard(c1)));
+    return order;
+  }
+
+  private int assesCard(Card card) {
+    int score = 0;
+    if (card.isGuard()) {
+      score += 1000;
+    }
+    score += 4 * card.attack + card.defense;
+    return score;
   }
 
   private void summonCards() {
@@ -87,7 +114,7 @@ public class SimpleAI2 {
         if (me.boardCardsFE < 9 && current.model.type == CardType.CREATURE && current.model.cost  <= me.mana) {
           double score = 0.0;
           score += 1.0 * (current.attack + current.defense) / current.model.cost;
-          if (current.isGuard()) score += 5;
+          if (current.isGuard() && me.guardsCount < 3) score += 5;
           
           if (score > bestScore) {
             bestScore = score;

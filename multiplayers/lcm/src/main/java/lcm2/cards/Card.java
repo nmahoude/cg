@@ -13,7 +13,7 @@ public class Card {
   public int attack;
   public int defense;
   public int abilities;
-  public final CardModel model;
+  public CardModel model;
   
   public Card(int cardNumber, int instanceId, int cardType, int cost, int attack, int defense, String abilitiesStr, int myHealthChange,
               int opponentHealthChange, int cardDraw) {
@@ -27,8 +27,22 @@ public class Card {
     model = CardModel.get(instanceId, cardNumber, cardType, cost, myHealthChange, opponentHealthChange, cardDraw);
   }
 
+  public void copyFrom(Card copyFrom) {
+    canAttack = copyFrom.canAttack;
+    hasAttacked = copyFrom.hasAttacked;
+    
+    this.attack = copyFrom.attack;
+    this.defense = copyFrom.defense;
+    this.abilities =copyFrom.abilities;
+
+    model = copyFrom.model;
+  }
+  
   public void debug() {
-    System.err.println(String.format("  Card id(%d) n°(%d) %s att(%d) def(%d) %s %d %d %d %d ", 
+    if (model.type == CardType.PLAYER) {
+      System.err.print("-- ");
+    }
+    System.err.print(String.format("  Card id(%d) n°(%d) %s att(%d) def(%d) %s %d %d %d %d ", 
 	        model.instanceId, model.cardNumber,
 	    		model.type.toString(),
           attack, defense,
@@ -36,7 +50,7 @@ public class Card {
           model.myHealthChange, model.opponentHealthChange, model.cardDraw
           , model.cost
         ));
-    
+    System.err.println();
     
   }
 
@@ -119,5 +133,13 @@ public class Card {
       }
     }		
 	}
+
+  public static Card deadCard() {
+    return EMPTY;
+  }
+
+  public static Card pop() {
+    return new Card(-1, -1, 0, 1000, 0, 0, "------", 0, 0, 0);
+  }
 
 }

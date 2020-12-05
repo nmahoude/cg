@@ -1,10 +1,11 @@
 package lcm2.simulation;
 
 import lcm2.Agent;
+import lcm2.CardType;
 import lcm2.cards.Card;
 
 public class Simulator {
-  
+  Card deadCard = Card.deadCard();
   private Agent me;
   private Agent opp;
   private Action action;
@@ -20,12 +21,14 @@ public class Simulator {
       resolveAttack(action);
     } else if (action.type == ActionType.SUMMON) {
     	summon(action.from);
+    } else if (action.type == ActionType.USE) {
+      useCard(action.from, action.target);
     }
   }
 
   private void resolveAttack(Action action) {
-    Card card = me.boardCards[action.from];
-    Card oppCard = opp.boardCards[action.target];
+    Card card = me.getFreshCard(action.from); 
+    Card oppCard = opp.getFreshCard(action.target);
 
     if (action.target == 0) {
       attackFace(card, oppCard);
@@ -36,19 +39,24 @@ public class Simulator {
 
   private void attackFace(Card card, Card oppCard) {
     oppCard.defense -= card.attack;
+    card.canAttack = false;
   }
 
   private void useCard(int index, int targetIndex) {
-    Card item = me.handCards[index];
-    Card target = opp.boardCards[targetIndex];
-    
+    Card item = me.useCard(index);
     me.useItem(item);
-    opp.oppUseItem(item);
-    target.applyItemEffects(me, opp, item);
+    me.oppUseItem(item);
+    
+    if (item.model.type == CardType.ITEM_GREEN) {
+      me.getFreshCard(targetIndex).applyItemEffects(me, opp, item);
+    } else if (item.model.type == CardType.ITEM_RED) {
+      opp.getFreshCard(targetIndex).applyItemEffects(me, opp, item);
+    }
   }
   
   private void attackCreature(Card attacker, Card defender) {
-
+    attacker.canAttack = false;
+    
     int damageGiven = ((defender.abilities & Abilities.WARD) != 0) ? 0 : attacker.attack;
     int damageTaken = ((attacker.abilities & Abilities.WARD) != 0) ? 0 : defender.attack;
 
@@ -83,10 +91,8 @@ public class Simulator {
   }
 
   private void summon(int index) {
-    Card card = me.handCards[index];
-    
-    me.summon(index, card);
-    opp.oppSummon(card);
+    Card card = me.summonCard(index);
+    opp.applyOppSummonEffects(card);
   }
   
   private void simError(String message) {

@@ -3,6 +3,9 @@ package lcm2.simulation;
 import java.io.PrintStream;
 
 import lcm2.Agent;
+import lcm2.CardType;
+import lcm2.cards.Card;
+import lcm2.cards.CardModel;
 
 public class Action {
   private static final Action END_TURN = new Action() {
@@ -94,7 +97,18 @@ public class Action {
       os.print("SUMMON " + player.handCards[from].model.instanceId +" " + message);
       break;
     case USE:
-      os.print("USE " + player.handCards[from].model.instanceId +" " + (target == -1 ? -1 : opp.boardCards[target].model.instanceId) + " " + message);
+      CardModel myCardModel = player.handCards[from].model;
+      CardModel targetCardModel;
+      
+      if (target == -1) {
+        targetCardModel = null;
+      } else if (myCardModel.type == CardType.ITEM_GREEN) {
+        targetCardModel = player.boardCards[target].model;
+      } else {
+        targetCardModel = opp.boardCards[target].model;
+      }
+      
+      os.print("USE " + myCardModel.instanceId +" " + (target == -1 ? -1 : targetCardModel.instanceId) + " " + message);
       break;
     case PICK:
       os.print("PICK " + from +" " + message);

@@ -3,19 +3,18 @@ package lcm2;
 import java.util.Scanner;
 
 import lcm2.cards.Card;
-import lcm2.simulation.Abilities;
 
 public class Agent {
   public Card boardCards[] = new Card[8+1]; // first card is agent himself
-  int boardCardsFE = 0;
+  public int boardCardsFE = 0;
   public Card handCards[] = new Card[8];
-  int handCardsFE = 0;
+  public int handCardsFE = 0;
   
   public Card face;
-  int mana;
-  int deck;
-  int rune;
-  int nextTurnDraw;
+  public int mana;
+  public int deck;
+  public int rune;
+  public int nextTurnDraw;
   public int guardsCount;
 
   public Agent(int index) {
@@ -24,6 +23,7 @@ public class Agent {
 	}
   
   public void copyFrom(Agent model) {
+    this.face = model.face;
     for (int i=0;i<9;i++) {
       boardCards[i] = model.boardCards[i];
       // boardCardsId, handCardsId => should be not needed 
@@ -35,7 +35,7 @@ public class Agent {
     handCardsFE = model.handCardsFE;
     guardsCount = model.guardsCount;
 
-    // TODO needed for copy ??
+    mana = model.mana;
     deck = model.deck;
     rune = model.rune;
     nextTurnDraw = model.nextTurnDraw;
@@ -108,23 +108,26 @@ public class Agent {
 
 	}
 
-	public void kill(Card myCard) {
-		if (myCard.isGuard()) {
+	public void kill(Card card) {
+		updateGuardCountOnDead(card);
+		removeBoardCard(card);
+	}
+
+  private void updateGuardCountOnDead(Card card) {
+    if (card.isGuard()) {
 			guardsCount--;
 		}
-	}
+  }
 
-	public void summon(int index, Card card) {
-    this.mana -= card.model.cost;
-    this.modifyHealth(card.model.myHealthChange);
-    this.nextTurnDraw += card.model.cardDraw;
-    handCards[index] = Card.EMPTY;
-    boardCards[boardCardsFE++] = card;
-    
-    if ((card.abilities & Abilities.GUARD) != 0) guardsCount++;
-	}
+	private void removeBoardCard(Card card) {
+	  for (int i=0;i<boardCardsFE;i++) {
+	    if (boardCards[i] == card) {
+	      boardCards[i] = Card.EMPTY;
+	    }
+	  }
+  }
 
-	public void oppSummon(Card card) {
+	public void applyOppSummonEffects(Card card) {
     this.modifyHealth(card.model.opponentHealthChange);
 	}
 
@@ -132,7 +135,6 @@ public class Agent {
     this.mana -= item.model.cost;
     this.modifyHealth(item.model.myHealthChange);
     this.nextTurnDraw += item.model.cardDraw;
-
 	}
 
 	public void oppUseItem(Card item) {
@@ -142,4 +144,40 @@ public class Agent {
 	public boolean hasEmptySpaceOnBoard() {
 		return boardCardsFE < 9;
 	}
+
+	/*
+	 * return a 'fresh' card instead of the immutable cards of our parent
+	 */
+  public Card getFreshCard(int index) {
+    Card newCard = Card.pop();
+    newCard.copyFrom(boardCards[index]);
+    boardCards[index] = newCard;
+    if (index == 0) {
+      face = newCard;
+    }
+    return newCard;
+  }
+
+  public Card summonCard(int index) {
+    Card newCard = Card.pop();
+    newCard.copyFrom(handCards[index]);
+    handCards[index] = Card.EMPTY;
+    boardCards[boardCardsFE++] = newCard;
+    
+    // apply effects
+    this.mana -= newCard.model.cost;
+    this.modifyHealth(newCard.model.myHealthChange);
+    this.nextTurnDraw += newCard.model.cardDraw;
+    if (newCard.isGuard()) guardsCount++;
+
+    newCard.canAttack = newCard.isCharge();
+    
+    return newCard;
+  }
+
+  public Card useCard(int index) {
+    Card card = handCards[index];
+    handCards[index] = Card.EMPTY;
+    return card;
+  }
 }

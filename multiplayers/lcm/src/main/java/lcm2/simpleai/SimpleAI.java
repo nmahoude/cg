@@ -1,8 +1,10 @@
-package lcm2;
+package lcm2.simpleai;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import lcm2.Agent;
+import lcm2.CardType;
 import lcm2.cards.Card;
 import lcm2.simulation.Action;
 import lcm2.simulation.Simulator;
