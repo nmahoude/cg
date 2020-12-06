@@ -32,12 +32,23 @@ public class AGSolution {
     }
     
     energy = 0.0
-        - state.ash.p.distTo(bestHuman.p);
-        //+ 100*deadZombies()
-        //+ minDistToZombies()
+        - state.ash.p.distTo(bestHuman.p)
+        + 2.0 * aliveHumans * aliveHumans * 10 * fib(deadZombiesThisTurn())
+        + minDistToZombies()
+        + 0.0
         ;
   }
 
+  static int fibValues[];
+  static {
+    fibValues = new int[] { 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 };
+    
+  }
+  int fib(int n) {
+    return fibValues[n+1];
+  }
+  
+  
   private Human closerHuman() {
     Human bestHuman = null;
     double bestScore = 0;
@@ -61,10 +72,10 @@ public class AGSolution {
     }
   }
 
-  private double deadZombies() {
+  private int deadZombiesThisTurn() {
     int deadZombies = 0;
     for (Zombie z : state.zombies) {
-      if (z.dead) deadZombies ++;
+      if (z.deadThisTurn) deadZombies ++;
     }
     return deadZombies;
   }

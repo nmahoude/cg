@@ -2,19 +2,21 @@ package calm;
 
 import java.util.Scanner;
 
-import calm.ai.AI2;
 import calm.ai.Order;
 import calm.ai.OrderTag;
+import calm.aifsm.FSMAI;
+import calm.desertmaker.DMNode;
 
 public class Player {
   public static final boolean DEBUG = true;
   public static final boolean DEBUG_PICKING = DEBUG && true;
   public static final boolean DEBUG_ASTAR = DEBUG && false;
+  public static final boolean DEBUG_TABLES = DEBUG && true;
   
   public static final Map map = new Map();
   
-  AI2 ai = new AI2();
-  State state = new State();
+  FSMAI ai = new FSMAI();
+  public static State state = new State();
 
 
   public static int turnsRemaining;
@@ -28,11 +30,13 @@ public class Player {
   }
   
   public void play(Scanner in) {
+    DMNode.resetCache();
     state.readInit(in);
 
     while (true) {
       readTurn(in);
       System.err.println("Turn remaining: "+turnsRemaining);
+      System.err.println("My current pos "+state.me.pos+" holding "+state.me.hands);
       start = System.currentTimeMillis();
 
       Order order = ai.think(state);

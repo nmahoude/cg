@@ -77,6 +77,7 @@ public class Simulation {
       
       if (state.ash.p.squareDistance(z.p) <= SQUARE_DIST_ASH_TO_KILL_ZOMBIE) {
         z.dead = true;
+        z.deadThisTurn = true;
         addDeadZombie();
       }
     }

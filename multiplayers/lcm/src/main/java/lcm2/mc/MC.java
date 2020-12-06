@@ -76,7 +76,7 @@ public class MC {
       }
       
       if (iter % 255 == 0) {
-        if (System.currentTimeMillis() - Player.start > 40) {
+        if (System.currentTimeMillis() - Player.start > 90) {
           break;
         }
       }

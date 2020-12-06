@@ -17,19 +17,21 @@ public class Scorer {
       return Double.POSITIVE_INFINITY;
     }
     
-    return (score(me) - score(opp));
+    return (score(me) - 1.1 * score(opp));
   }
 
   private double score(Agent agent) {
     double score = 0.0;
 
-    for (int i=0;i<agent.boardCardsFE;i++) {
+    score += 0.5 * agent.boardCards[0].defense;
+    
+    for (int i=1;i<agent.boardCardsFE;i++) {
       Card card = agent.boardCards[i];
       if (card.isDead()) continue;
       
       score += wa * card.attack;
       score += wd * card.defense;
-      score += 1;
+      score += card.isGuard() ? 5 : 1;
     }
 
     if (agent.boardCardsFE == 0) {

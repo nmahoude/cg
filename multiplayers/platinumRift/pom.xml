@@ -23,7 +23,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.nmx.codingame</groupId>
-			<artifactId>fastread</artifactId>
+			<artifactId>fast</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

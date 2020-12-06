@@ -14,7 +14,7 @@ public class Item {
 
   @Override
   public String toString() {
-    return ItemMask.output(mask);
+    return ItemMask.output(mask)+"@"+pos.toString();
   }
   
   public boolean hasStrawberries() {

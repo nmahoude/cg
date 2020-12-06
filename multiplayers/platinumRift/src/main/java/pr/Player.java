@@ -3,7 +3,7 @@ package pr;
 import java.io.IOException;
 import java.util.Random;
 
-import fastread.FastReader;
+import fast.read.FastReader;
 
 public class Player {
   public static int playerCount;

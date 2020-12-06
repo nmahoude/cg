@@ -1,12 +1,6 @@
-import java.util.*;
-
-import javax.swing.text.html.HTMLDocument.BlockElement;
-
-import org.omg.PortableInterceptor.INACTIVE;
-
-import java.beans.BeanDescriptor;
-import java.io.*;
-import java.math.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 class Solution {
   static int[][] Directions = {

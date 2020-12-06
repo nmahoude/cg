@@ -11,6 +11,7 @@ public class Zombie {
   public Point p;
   public Point nextP;
   public boolean dead;
+  public boolean deadThisTurn;
   
   public void init() {
     dead = true;
@@ -19,13 +20,15 @@ public class Zombie {
     p = new Point(zombieX,zombieY);
     nextP = new Point(zombieXNext,zombieYNext);
     dead = false;
+    deadThisTurn = false;
   }
-  public void copy(Zombie zombie) {
-    p = zombie.p;
-    nextP = zombie.nextP;
-    dead = zombie.dead;
-    
+  public void copy(Zombie model) {
+    p = model.p;
+    nextP = model.nextP;
+    dead = model.dead;
+    deadThisTurn = model.deadThisTurn;
   }
+  
   public Human findTarget(Ash ash, Human[] humans) {
     Human nearest = ash;
     double minDist = ash.p.squareDistance(p);

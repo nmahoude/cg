@@ -24,6 +24,9 @@ public class Order {
   public static Order move(Item item) {
     return new Order(OrderTag.MOVE, item.pos);
   }
+  public static Order move(P pos) {
+    return new Order(OrderTag.MOVE, pos);
+  }
 
   public static Order use(P pos) {
     return new Order(OrderTag.USE, pos);
@@ -32,4 +35,5 @@ public class Order {
   public static Order use(Item item) {
     return use(item.pos);
   }
+
 }

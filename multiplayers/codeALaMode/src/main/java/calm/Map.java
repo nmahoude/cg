@@ -49,11 +49,13 @@ public class Map {
         }
 
         int mask = ItemMask.fromLetter(value);
-
+        if (mask == 0) continue;
+        
         items[staticItemsFE].reset(mask);
         items[staticItemsFE].pos = pos;
         if (items[staticItemsFE].isEqDishwasher()) {
           this.dishwasher = items[staticItemsFE];
+          items[staticItemsFE].mask = ItemMask.DISH;
         }
         if (items[staticItemsFE].isEqStrawberries()) {
           this.strawberries = items[staticItemsFE];

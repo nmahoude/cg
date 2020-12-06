@@ -9,6 +9,7 @@ public class State {
   public Agent him = new Agent(this);
 
   public Item items[] = new Item[Map.S2];
+  public int tables[] = new int[Map.S2];
   public int itemsFE = 0;
   
   public int ovenTimer;
@@ -25,18 +26,28 @@ public class State {
   
   
   public void read(Scanner in) {
+    for (int i=0;i<Map.S2;i++) {
+      tables[i] = 0;
+    }
     
     me.read(in);
     him.read(in);
 
     
     int numTablesWithItems = in.nextInt(); // the number of tables in the kitchen that currently hold an item
-    itemsFE = Player.map.staticItemsFE;
     
+    for (int i=0;i<Player.map.staticItemsFE;i++) {
+      tables[items[i].pos.offset] = items[i].mask;
+    }
+    itemsFE = Player.map.staticItemsFE;
     for (int i = 0; i < numTablesWithItems; i++) {
       P pos = P.get(in.nextInt(), in.nextInt());
       String maskStr = in.next();
-      items[itemsFE].mask = ItemMask.fromString(maskStr);
+      int mask = ItemMask.fromString(maskStr);
+      
+      tables[pos.offset] = mask;
+
+      items[itemsFE].mask = mask;
       items[itemsFE].pos = pos;
       itemsFE++;
     }
@@ -53,6 +64,15 @@ public class State {
       int mask = ItemMask.fromString(in.next());
       int customerAward = in.nextInt();
       deserts[desertsFE++].set(mask, customerAward);
+    }
+    
+    if (Player.DEBUG_TABLES) {
+      System.err.println("Debug read, content of items");
+      System.err.println("Num tables with items "+numTablesWithItems);
+      for (int i=0;i<itemsFE;i++) {
+        Item item = items[i];
+        System.err.println("  "+item);
+      }
     }
   }
 
@@ -111,6 +131,16 @@ public class State {
     return null;
   }
 
+  public List<Item> getAll(int mask) {
+    List<Item> compatibleItems = new ArrayList<>();
+    for (int i=0;i<itemsFE;i++) {
+      if (items[i].mask == mask) {
+        compatibleItems.add(items[i]);
+      }
+    }
+    return compatibleItems;
+  }
+
 
   public Item getItem(int mask) {
     for (int i=0;i<itemsFE;i++) {
@@ -157,14 +187,14 @@ public class State {
       boolean found = false;
       for (int i=0;i<itemsFE;i++) {
         if (items[i].pos == pos && items[i].mask != 0) {
-          System.err.println("Found item @ "+pos+", cant use it with "+items[i].toString());
+          //System.err.println("Found item @ "+pos+", cant use it with "+items[i].toString());
           found =true;
           break;
         }
       }
       if (!found) {
         int distance = Player.map.distanceFromTo(origin, pos, state.him.pos);
-        System.err.println("No items found @ "+pos);
+        //System.err.println("No items found @ "+pos);
         if (distance < bestDistance) {
           best = pos;
           bestDistance = distance;
@@ -188,5 +218,18 @@ public class State {
     if (Player.DEBUG_PICKING && compatibleItems.isEmpty()) System.err.println("nothing compatible");
     return compatibleItems;
   }
+
+
+  public int distance(P... positions) {
+    int distance = 0;
+    P current = this.me.pos;
+    for (P p : positions) {
+      distance+= Player.map.distanceFromTo(current, p, him.pos);
+      current = p;
+    }
+    return distance;
+  }
+
+
 
 }

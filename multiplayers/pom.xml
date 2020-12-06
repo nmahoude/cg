@@ -11,11 +11,10 @@
     <module>hypersonic</module>
     <module>theAccountant</module>
     <module>ReverseEngineering</module>
-    <module>backToTheCode</module>
     <module>BackToTheCode</module>
     <module>TheGreatEscape</module>
     <module>CodeVersusZombies</module>
-    <module>hypersonic2</module>
+<!--     <module>hypersonic2</module> -->
     <module>fantasticBitsMulti</module>
     <module>tronbattle</module>
 	<module>ghostInTheCell</module>
@@ -29,6 +28,6 @@
 	<module>Tron_v2</module>
 	<module>platinumRift</module>
 	<module>meanmax</module>
-	<module>uttt</module>
+<!-- 	<module>uttt</module> -->
   </modules>
 </project>

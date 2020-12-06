@@ -87,6 +87,7 @@ public class AI2 {
       }
 
       if (shouldIGo) {
+        System.err.println("Save the oven !");
         if (state.me.hands.isEmpty()) {
           System.err.println("my hands are empty, going to oven");
           order = state.me.getOven();
@@ -139,7 +140,7 @@ public class AI2 {
     }
     
     // get ingredients for desert
-    if (order == null ) {
+    if (order == null) {// || (state.me.hands.isEmpty() && order.tag == OrderTag.WAIT)) {
       order = state.me.grab(desert);
     }
     
@@ -168,6 +169,21 @@ public class AI2 {
       return state.me.buildBlueberryTart();
     }
     
+    if (state.ovenContents.hasRawTart()) {
+      System.err.println("Oven is cooking one (for us ?)");
+      return null;
+    }
+    if (state.ovenContents.hasBlueBerriesTart()) {
+      System.err.print("oven has cooked BPie ..");
+      if (state.me.hands.isEmpty()) {
+        System.err.println(" get it (is it for us ?)");
+        return Order.use(Player.map.ovenAsEquipment);
+      } else {
+        System.err.println(" get ridoff to get it after");
+        return state.me.getRidOff();
+      }
+    }
+    
     List<Item> items = state.getItemsCompatibleWith(desert);
     for (Item item : items) {
       if (item.hasBlueBerriesTart() && (item.mask & state.me.hands.mask) == 0) {
@@ -192,6 +208,22 @@ public class AI2 {
 
     if (state.me.hands.hasDough()) {
       return state.me.buildCroissant();
+    }
+
+    if (state.ovenContents.hasDough()) {
+      System.err.println("Oven is cooking one (for us ?)");
+      return null;
+    }
+    
+    if (state.ovenContents.hasCroissant()) {
+      System.err.print("Oven has cooked a croissant, ");
+      if (state.me.hands.isEmpty()) {
+        System.err.println("get it (is it for us ?)");
+        return Order.use(Player.map.ovenAsEquipment);
+      } else {
+        System.err.println("get rif off before getting it");
+        return state.me.getRidOff();
+      }
     }
 
     List<Item> items = state.getItemsCompatibleWith(desert);
@@ -268,23 +300,9 @@ public class AI2 {
     Desert best = null;
     Item clean = new Item(P.INVALID);
     
-    
-    // check if other old desert it still here
-    if (state.him.desert != 0) {
-      int old = state.him.desert;
-      state.him.desert = 0;
-      for (int i=0;i<3;i++) {
-        Desert desert = state.deserts[i];
-        if (old == desert.item.mask) {
-          state.him.desert = old;
-          break;
-        }
-      }
-    }
-    
     for (int i=0;i<3;i++) {
       Desert desert = state.deserts[i];
-      if (desert.item.mask == state.him.desert) continue; // do not try to do the same desert
+      if (oppDoing.contains(desert)) continue; // do not try to do the same desert
       
       // TODO do better to know what we are preparing
       clean.reset(state.me.hands.mask);
@@ -294,7 +312,7 @@ public class AI2 {
       clean.mask = (clean.mask & ~ItemMask.STRAWBERRIES);
     
       if ((clean.mask & ~desert.item.mask) == 0 ) {
-        if (Player.turnsRemaining > 50) {
+        if (Player.turnsRemaining > 0) {
           if (best == null || desert.award > best.award) {
             best = desert;
           }

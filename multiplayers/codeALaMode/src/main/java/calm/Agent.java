@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import calm.ai.Order;
+import calm.desertmaker.DesertMakerAStar;
 
 public class Agent {
   public State state;
@@ -22,26 +23,25 @@ public class Agent {
 
   public Order buildChoppedStrawberries() {
     System.err.println("build Chopped strawberries");
-
     if (!hands.isEmpty() && !hands.hasStrawberries()) {
       return getRidOff();
-    } else if (!hands.hasStrawberries()){
-      return Order.use(Player.map.strawberries);
+    } else if (!hands.hasStrawberries()) {
+      Item item = state.getAll(ItemMask.STRAWBERRIES).stream().sorted(this::closer).findFirst().get();
+      return Order.use(item);
     } else {
       return Order.use(Player.map.chopper);
     }
   }
 
+  public int closer(Item item1, Item item2) {
+    return Integer.compare(Player.map.distanceFromTo(this.pos, item1.pos, Player.state.him.pos), Player.map.distanceFromTo(this.pos, item2.pos, Player.state.him.pos));
+  }
+  
   public Order buildCroissant() {
     System.err.println("build croissant ...");
-
     if (!hands.isEmpty() && !hands.hasCroissant() && !hands.hasDough()) {
       return getRidOff();
-    } 
-    
-    
-
-    
+    }
     if (hands.hasDough()) {
       return Order.use(Player.map.ovenAsEquipment);
     } else if (state.ovenIsMine && state.ovenContents.hasDough()) {
@@ -49,13 +49,8 @@ public class Agent {
     } else if (state.ovenContents.hasCroissant()) {
       return Order.use(Player.map.ovenAsEquipment);
     } else {
-      Item item;
-      // TODO best location ?
-      if ((item = state.get(ItemMask.DOUGH)) != null) {
-        return Order.use(item);
-      } else {
-        return Order.use(Player.map.dough);
-      }
+      Item item = state.getAll(ItemMask.DOUGH).stream().sorted(this::closer).findFirst().get();
+      return Order.use(item);
     }
   }
 
@@ -69,35 +64,38 @@ public class Agent {
     }
 
     
-    if (!hands.isEmpty() && !hands.hasBlueBerries() && !hands.hasDough() && !hands.hasChoppedDough() && !hands.hasRawTart()) {
-      return getRidOff();
-    }
-    
-    if (hands.isEmpty()) {
+    if (!hands.isEmpty()) {
+      if (hands.hasDough()) {
+        return Order.use(Player.map.chopper);
+      } else if (hands.hasChoppedDough()) {
+        return Order.use(Player.map.blueberries);
+      } else if (hands.hasRawTart()) {
+          return Order.use(Player.map.ovenAsEquipment);
+      } else if (state.ovenIsMine && state.ovenContents.hasRawTart()) {
+        return Order.WAIT;
+      } else if (state.ovenContents.hasBlueBerriesTart()) {
+        return Order.use(Player.map.ovenAsEquipment);
+      }  else {
+        return getRidOff();
+      }
+    } else {
       Item item;
-      if ((item = state.get(ItemMask.RAW_TART)) != null) {
+      item = state.getAll(ItemMask.RAW_TART).stream().sorted(this::closer).findFirst().orElse(null);
+      if (item != null) {
         return Order.use(item);
       } else {
         System.err.println(" no raw tart found");
       }
       
-      if ((item = state.get(ItemMask.CHOPPED_DOUGH)) != null) {
+      item = state.getAll(ItemMask.CHOPPED_DOUGH).stream().sorted(this::closer).findFirst().orElse(null);
+      if (item != null) {
         return Order.use(item);
+      } else {
+        System.err.println("no chopped dough");
       }
-    }
-    
-    if (hands.hasDough()) {
-      return Order.use(Player.map.chopper);
-    } else if (hands.hasChoppedDough()) {
-      return Order.use(Player.map.blueberries);
-    } else if (hands.hasRawTart()) {
-        return Order.use(Player.map.ovenAsEquipment);
-    } else if (state.ovenIsMine && state.ovenContents.hasRawTart()) {
-      return Order.WAIT;
-    } else if (state.ovenContents.hasBlueBerriesTart()) {
-      return Order.use(Player.map.ovenAsEquipment);
-    } else {
-      return Order.use(Player.map.dough);
+      
+      item = state.getAll(ItemMask.DOUGH).stream().sorted(this::closer).findFirst().orElse(null);
+      return Order.use(item);
     }
   }
 
@@ -122,17 +120,32 @@ public class Agent {
 
   public Order grab(Desert desert) {
     System.err.println("grab desert");
-
     boolean needPlate = false;
-    
-    
-    
     List<Item> items = state.getDishCompatibleWithDesertWhenHolding(desert, hands);
+    
+    
+//  Item next = new DesertMakerBruteForce(state).bruteForce(desert);
+//  return Order.use(next);
+  
+    P nextAction = new DesertMakerAStar(state).find(desert);
+
+    if (nextAction != null) {
+      System.err.println("Using A* to go to "+nextAction);
+      if (Player.map.cells[nextAction.offset] == 0) {
+        return Order.move(nextAction);
+      } else {
+        return Order.use(nextAction);
+      }
+    } else {
+      System.err.println("no a* result");
+    }
+    
     Item best = null;
     double bestV = Double.NEGATIVE_INFINITY;
     for (Item item : items) {
-      if (state.me.hands.mask != 0 && !state.me.hands.hasPlate() && !item.hasPlate()) continue; // can't grab 2 ingredient without a plate
-      System.err.println("testing "+item+ " @"+item.pos+" with dist "+Player.map.distanceFromTo(state.me.pos, item.pos, state.him.pos));
+      if (state.me.hands.mask != 0 && !state.me.hands.hasPlate() && !item.hasPlate())
+        continue;
+      System.err.println("testing " + item + " @" + item.pos + " with dist " + Player.map.distanceFromTo(state.me.pos, item.pos, state.him.pos));
       double value = item.getValue() - 0.1 * Player.map.distanceFromTo(state.me.pos, item.pos, state.him.pos);
       if (best == null || value > bestV) {
         bestV = value;
@@ -140,10 +153,9 @@ public class Agent {
       }
     }
     if (best != null) {
-      System.err.println("Get ingredients on table @"+best.pos);
+      System.err.println("Get ingredients on table @" + best.pos);
       return Order.use(best);
     }
-    
     if ((hands.mask & ~desert.item.mask) != 0) {
       return getRidOff();
     }
