@@ -180,4 +180,14 @@ public class Agent {
     handCards[index] = Card.EMPTY;
     return card;
   }
+
+  public int attackSum() {
+    int attack = 0;
+    for (int m=0;m<boardCardsFE;m++) {
+      Card card = boardCards[m];
+      if (card.isDead()) continue;
+      attack += card.attack;
+    }
+    return attack;
+  }
 }

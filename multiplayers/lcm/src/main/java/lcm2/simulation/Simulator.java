@@ -44,8 +44,10 @@ public class Simulator {
 
   private void useCard(int index, int targetIndex) {
     Card item = me.useCard(index);
+    me.getFreshCard(0);
     me.useItem(item);
-    me.oppUseItem(item);
+    opp.getFreshCard(0);
+    opp.oppUseItem(item);
     
     if (item.model.type == CardType.ITEM_GREEN) {
       me.getFreshCard(targetIndex).applyItemEffects(me, opp, item);
@@ -83,14 +85,18 @@ public class Simulator {
     if (!attacker.isDead()) attacker.defense -= damageTaken;
 
     if (healthGain > 0) {
+      me.getFreshCard(0);
       me.modifyHealth(healthGain);
     } 
     if (healthTaken > 0) {
+      opp.getFreshCard(0);
       opp.modifyHealth(healthTaken);
     }
   }
 
   private void summon(int index) {
+    me.getFreshCard(0);
+    opp.getFreshCard(0);
     Card card = me.summonCard(index);
     opp.applyOppSummonEffects(card);
   }
