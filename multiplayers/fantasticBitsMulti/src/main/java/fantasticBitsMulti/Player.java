@@ -16,6 +16,8 @@ import random.FastRand;
 import trigonometry.Point;
 
 public class Player {
+  public static final long TIME_LIMIT = 85;
+
   static final double TO_RAD = Math.PI / 180.0;
   public static final int ANGLES_LENGTH = 36;
   static final double ANGLES[] = new double[]{0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0, 130.0, 140.0, 150.0, 160.0, 170.0, 180.0, 190.0, 200.0, 210.0, 220.0, 230.0, 240.0, 250.0, 260.0, 270.0, 280.0, 290.0, 300.0, 310.0, 320.0, 330.0, 340.0, 350.0};
@@ -41,29 +43,64 @@ public class Player {
   public static Bludger[] bludgers = new Bludger[2];
   private static Pole[] poles = new Pole[4];
   
-  public static Spell spells[] = new Spell[16];
+  public static Spell spells[] = new Spell[4*4];
   public static Unit spellTargets[][] = new Unit[4][20];
   public static int spellTargetsFE[] = new int[4];
 
-  
   public static int myMana;
   public static int myScore;
   public static int hisScore;
+  private static int hisMana;
+  
+  
+  public static int _myMana;
+  public static int _myScore;
+  public static int _hisScore;
+  private static int _hisMana;
+  
+  
   
   public static Snaffle[] snaffles = new Snaffle[10];
   public static int snafflesFE;
   public static long start;
   public static int turn = 0;
   public static int victory;
-  public static int oldSnafflesFE;
+  private static int bludgersFE;
   
-  
-  public static double energy = 0;
-
   
   static {
     initConstants();
     rand = new FastRand(73);
+  }
+  
+  public static void backupState() {
+    _myMana = myMana;
+    _myScore = myScore;
+    _hisMana = hisMana;
+    _hisScore = hisScore;
+    
+    for (int i = 0; i < unitsFE; ++i) {
+      units[i].save();
+    }
+
+    for (int i = 0; i < 16; ++i) {
+      spells[i].save();
+    }
+  }
+  
+  public static void restoreState() {
+    myMana = _myMana;
+    myScore = _myScore;
+    hisMana = _hisMana;
+    hisScore = _hisScore;
+    
+    for (int i = 0; i < unitsFE; ++i) {
+      units[i].reset();
+    }
+
+    for (int i = 0; i < 16; ++i) {
+      spells[i].reset();
+    }
   }
   
   static public void init(int myTeam) {
@@ -87,20 +124,19 @@ public class Player {
     init(in.nextInt());
     
     while (true) {
+      bludgersFE = 0;
+      snafflesFE = 0;
+      resetSnaffles();
+
       myScore = in.nextInt();
+      updateStartAfter1stRead();
       myMana = in.nextInt();
       hisScore = in.nextInt();
-      int hisMana= in.nextInt();
+      hisMana = in.nextInt();
+      
+      TestOutputer.output(myScore, myMana, hisScore, hisMana);
       
       int entities = in.nextInt();
-      
-      start = System.nanoTime();
-      int bludgersFE = 0;
-
-      if (turn  != 0) {
-        resetSnaffles();
-      }
-      
       for (int i = 0; i < entities; i++) {
         int id = in.nextInt();
         String entity = in.next();
@@ -111,7 +147,8 @@ public class Player {
         int vy = in.nextInt();
         int state = in.nextInt();
         
-        System.err.println("createUnit("+id+", \""+entity+"\", "+x+", "+y+", "+vx+", "+vy+", "+state+");");
+        // System.err.println("createUnit("+id+", \""+entity+"\", "+x+", "+y+", "+vx+", "+vy+", "+state+");");
+        TestOutputer.output(id, entity, x, y, vx, vy, state);
         Unit unit = null;
         if (entityType == EntityType.WIZARD || entityType == EntityType.OPPONENT_WIZARD)  {
           unit = wizards[id];
@@ -140,26 +177,32 @@ public class Player {
       updatePetrificus();
       updateSnaffleSpells();
       
-      for (int i = 0; i < unitsFE; ++i) {
-        units[i].save();
-      }
-      Simulation.save();
 
       for (int i = 0; i < 16; ++i) {
         spells[i].checkTarget();
-        spells[i].save();
       }
-
+      
+      backupState();
+      for (int i=0;i<4;i++) {
+        if (Player.wizards[i].snaffle != null) {
+          TestOutputer.outputCommand("Player.wizards["+i+"].snaffle"+Player.wizards[i].snaffle.id);
+        }
+      }
       AGSolution solution = AG.evolution();
 
       myWizard1.output(solution.moves1[0], solution.spellTurn1, solution.spell1, solution.spellTarget1);
       myWizard2.output(solution.moves2[0], solution.spellTurn2, solution.spell2, solution.spellTarget2);
 
       Player.turn += 1;
-      Player.unitsFE = 10;
+      Player.unitsFE = 10; // 4 poles, 4 wizards & 2 bludgers
 
-      Player.oldSnafflesFE = snafflesFE;
-      Player.snafflesFE = 0;
+    }
+  }
+
+  private static void updateStartAfter1stRead() {
+    start = System.currentTimeMillis();
+    if (turn == 0) {
+      start += 800;
     }
   }
 

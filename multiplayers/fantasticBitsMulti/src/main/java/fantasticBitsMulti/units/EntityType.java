@@ -6,4 +6,5 @@ public enum EntityType {
   SNAFFLE,
   BLUDGER,
   POLE,
+  WALL
 }

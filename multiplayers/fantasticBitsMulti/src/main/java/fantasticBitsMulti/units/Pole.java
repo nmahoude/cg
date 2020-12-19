@@ -23,7 +23,7 @@ public class Pole extends Unit {
   public void reset() {};
   
   @Override
-  public Collision collision(double from) {
+  public Collision wallCollision(double from) {
     return null;
   }
 }

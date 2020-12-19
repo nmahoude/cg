@@ -1,19 +1,19 @@
 package fantasticBitsMulti.ag;
 
 import fantasticBitsMulti.Player;
-import fantasticBitsMulti.simulation.Simulation;
 import random.FastRand;
 
 public class AG {
   public static final int POOL = 50;
   public static final int MUTATION = 2;
-  public static final int DEPTH = 4;
+  public static final int DEPTH = 6;
   static final double COEF_PATIENCE = 0.9;
   public static final int SPELL_DEPTH = 8;
 
   private static AGSolution best = new AGSolution();
   private static FastRand rand = new FastRand(42);
-
+  private static AGSimulator simulator = new AGSimulator();
+  
   public static double patiences[] = new double[DEPTH];
   static {
     for (int i=0;i<DEPTH;++i) {
@@ -44,34 +44,34 @@ public class AG {
 
     AGSolution sol = pool[0];
     sol.randomize();
-    Simulation.simulate(sol);
+    simulator.simulate(sol);
     
     best.copy(sol);
     
     AGSolution tempBest = buildFirstGeneration(base, pool, sol);
 
-    double limit = Player.turn != 0 ? 85_000_000 : 800_000_000;
     int generation = 1;
     int bestGeneration = 1;
     int poolFE;
     
-    while (System.nanoTime() - Player.start < limit) {
+    while (System.currentTimeMillis() - Player.start < Player.TIME_LIMIT) {
       // New generation
 
       // Force the actual best with a mutation to be in the pool
       AGSolution solution = newPool[0];
       solution.copy(tempBest);
       solution.mutate();
-      Simulation.simulate(solution);
+      simulator.simulate(solution);
       if (solution.energy > tempBest.energy) {
         tempBest = solution;
       }
 
       poolFE = 1;
-      while (poolFE < POOL && System.nanoTime() - Player.start < limit) {
+      while (poolFE < POOL && System.nanoTime() - Player.start < Player.TIME_LIMIT) {
         AGSolution child = merge2Solutions(newPool[poolFE++], pool );
-        Simulation.simulate(child);
+        simulator.simulate(child);
         if (child.energy > tempBest.energy) {
+          bestGeneration = generation;
           tempBest = child;
         }
       }
@@ -89,31 +89,7 @@ public class AG {
       generation += 1;
     }
     
-    // Play a last time to check some infos
-    Player.myWizard1.apply(best, 0, 1);
-    Player.myWizard2.apply(best, 0, 2);
-    Simulation.dummies();
-    Simulation.play();
-    
-    Simulation.smyMana = Player.myMana;
-    Player.bludgers[0].slast = Player.bludgers[0].last;
-    Player.bludgers[1].slast = Player.bludgers[1].last;
-
-    for (int i = 0; i < 16; ++i) {
-      Player.spells[i].save();
-    }
-    Simulation.reset();
-    
-    // Burn last generation !!
-    //TODO revoir les deletes ...
-//    for (int i = 0; i < poolFE; ++i) {
-//      delete pool[i];
-//    }
-//
-//    delete [] pool;
-//    delete [] newPool;
-
-    System.err.println("Generations : "+generation);
+    System.err.println("Generations : "+generation+", best was "+bestGeneration);
     return best;
   }
 
@@ -151,7 +127,7 @@ public class AG {
         solution.copy(base);
         solution.randomizeLastMove();
         
-        Simulation.simulate(solution);
+        simulator.simulate(solution);
         
         if (solution.energy > tempBest.energy) {
           tempBest = solution;
@@ -164,7 +140,7 @@ public class AG {
       AGSolution solution = pool[i];
       solution.randomize();
 
-      Simulation.simulate(solution);
+      simulator.simulate(solution);
 
       if (solution.energy > tempBest.energy) {
         tempBest = solution;

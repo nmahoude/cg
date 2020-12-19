@@ -21,7 +21,7 @@ public class Snaffle extends Unit {
   }
 
   @Override
-  public Collision collision(double from) {
+  public Collision wallCollision(double from) {
     if (carrier == null || dead) {
       return null;
     }
@@ -76,7 +76,7 @@ public class Snaffle extends Unit {
   public void bounce(Unit u) {
     if (u.type == EntityType.WIZARD) {
       Wizard target = (Wizard) u;
-      if (target.snaffle == null && target.grab == 0 && !dead && carrier == null) {
+      if (target.snaffle == null && target.turnsBeforeGrabbingAgain == 0 && !dead && carrier == null) {
         target.grabSnaffle(this);
       }
     } else {

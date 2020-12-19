@@ -2,16 +2,18 @@ package fantasticBitsMulti.units;
 
 import fantasticBitsMulti.Player;
 import fantasticBitsMulti.ag.AGSolution;
+import fantasticBitsMulti.simulation.Action;
 import fantasticBitsMulti.simulation.Collision;
 import fantasticBitsMulti.spells.Accio;
 import fantasticBitsMulti.spells.Flipendo;
 import fantasticBitsMulti.spells.Obliviate;
 import fantasticBitsMulti.spells.Petrificus;
 import fantasticBitsMulti.spells.Spell;
-import trigonometry.Point;
 
 public class Wizard extends Unit {
 
+  private static final double WIZZARD_MOVE_COEFF = 150.0;
+  private static final double SNAFFLE_MOVE_COEFF = 500.0 * (1.0 / 0.5/*snaffle mass*/);
   public Spell[] spells = new Spell[4];
   public int team;
   
@@ -26,7 +28,7 @@ public class Wizard extends Unit {
     this.team = team;
 
     snaffle = null;
-    grab = 0;
+    turnsBeforeGrabbingAgain = 0;
 
     spells[Spell.OBLIVIATE] = new Obliviate(this);
     spells[Spell.PETRIFICUS] = new Petrificus(this);
@@ -37,7 +39,7 @@ public class Wizard extends Unit {
   }
 
   public void grabSnaffle(Snaffle snaffle) {
-    grab = 4;
+    turnsBeforeGrabbingAgain = 4;
     snaffle.carrier = this;
     this.snaffle = snaffle;
 
@@ -49,14 +51,33 @@ public class Wizard extends Unit {
     }
   }
   
+  public void apply(Action action) {
+    if (snaffle != null) {
+      if (action.type == Action.TYPE_THROW) {
+        snaffle.vx += action.cosAngle * action.thrust;
+        snaffle.vy += action.sinAngle * action.thrust;
+      }
+      
+      snaffle.carrier = null;
+      snaffle = null;
+      turnsBeforeGrabbingAgain = 4; // TODO or 3 ?
+    }
+
+    if (action.type == Action.TYPE_MOVE) {
+      vx += action.cosAngle * action.thrust;
+      vy += action.sinAngle * action.thrust;
+    }
+  }
+
   public void apply(int move) {
     if (snaffle != null) {
-      double coef = 500.0 * (1.0 / snaffle.mass); // TODO WHY NOT PRECALCULATE ?
-      snaffle.vx += Player.cosAngles[move] * coef;
-      snaffle.vy += Player.sinAngles[move] * coef;
+      // throw snaffle
+      snaffle.vx += Player.cosAngles[move] * SNAFFLE_MOVE_COEFF;
+      snaffle.vy += Player.sinAngles[move] * SNAFFLE_MOVE_COEFF;
     } else {
-      vx += Player.cosAngles[move] * 150.0;
-      vy += Player.sinAngles[move] * 150.0;
+      // move
+      vx += Player.cosAngles[move] * WIZZARD_MOVE_COEFF;
+      vy += Player.sinAngles[move] * WIZZARD_MOVE_COEFF;
     }
   }
   
@@ -119,20 +140,20 @@ public class Wizard extends Unit {
 
   public void save() {
     super.save();
-    sgrab = grab;
+    sgrab = turnsBeforeGrabbingAgain;
     ssnaffle = snaffle;
   }
 
   public void reset() {
     super.reset();
-    grab = sgrab;
+    turnsBeforeGrabbingAgain = sgrab;
     snaffle = ssnaffle;
   }
 
   public void bounce(Unit u) { 
     if (u.type == EntityType.SNAFFLE) {
       Snaffle target = (Snaffle) u;
-      if (snaffle == null && grab == 0 && !target.dead && target.carrier == null) {
+      if (snaffle == null && turnsBeforeGrabbingAgain == 0 && !target.dead && target.carrier == null) {
         grabSnaffle(target);
       }
     } else {
@@ -156,10 +177,10 @@ public class Wizard extends Unit {
   public void end()  { 
     super.end();
 
-    if (grab != 0) {
-      grab -= 1;
+    if (turnsBeforeGrabbingAgain != 0) {
+      turnsBeforeGrabbingAgain -= 1;
 
-      if (grab == 0) {
+      if (turnsBeforeGrabbingAgain == 0) {
             // Check if we can grab a snaffle
         for (int i = 0; i < Player.snafflesFE; ++i) {
           Snaffle snaffle = Player.snaffles[i];
@@ -187,7 +208,7 @@ public class Wizard extends Unit {
 
   @Override
   public void print() { 
-    System.err.print("Wizard " + id + " " + position + " " + vx + " " + vy + " " + speed() + " " + grab + " | ");
+    System.err.print("Wizard " + id + " " + position + " " + vx + " " + vy + " " + speed() + " " + turnsBeforeGrabbingAgain + " | ");
 
     if (snaffle != null) {
       System.err.print("Snaffle " + snaffle.id + " | ");
@@ -200,22 +221,23 @@ public class Wizard extends Unit {
   }
 
   public void updateSnaffle() {
-    if (state != 0) {
+    if (state != 0 /* just grab a snaffle */) {
       for (int i = 0; i < Player.snafflesFE; ++i) {
         Snaffle snaffle = Player.snaffles[i];
 
         if (snaffle.position.equals(this.position) && snaffle.vx == vx && snaffle.vy == vy) {
           this.snaffle = snaffle;
           snaffle.carrier = this;
+          break;
         }
       }
 
-      grab = 3;
+      turnsBeforeGrabbingAgain = 3; // grab for 3 turns
     } else {
-      if (grab != 0) {
-        grab -= 1;
+      if (turnsBeforeGrabbingAgain > 0) {
+        turnsBeforeGrabbingAgain -= 1;
       }
-      snaffle = null;
+      snaffle = null; // in any case the wizard drop the snaffle
     }
   }
 

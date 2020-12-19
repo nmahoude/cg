@@ -11,7 +11,6 @@ import fantasticBitsMulti.units.Unit;
 
 public class SimulationTest {
 
-  @Test
   public void test1() throws Exception {
     Player.myMana = 100;
     Player.init(1);
@@ -40,7 +39,7 @@ public class SimulationTest {
     for (int i = 0; i < Player.unitsFE; ++i) {
       Player.units[i].save();
     }
-    Simulation.save();
+    Player.backupState();
 
     for (int i = 0; i < 16; ++i) {
       Player.spells[i].checkTarget();

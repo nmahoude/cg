@@ -77,9 +77,12 @@ public class AGSolution {
     for (int i = 0; i < AG.DEPTH; ++i) {
       if (Player.rand.fastRandInt(2) != 0) {
         child.moves1[i] = solution.moves1[i];
-        child.moves2[i] = solution.moves2[i];
       } else {
         child.moves1[i] = moves1[i];
+      }
+      if (Player.rand.fastRandInt(2) != 0) {
+        child.moves2[i] = solution.moves2[i];
+      } else {
         child.moves2[i] = moves2[i];
       }
     }

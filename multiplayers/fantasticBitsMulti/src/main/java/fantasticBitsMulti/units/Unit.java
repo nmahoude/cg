@@ -14,7 +14,7 @@ public abstract class Unit {
   public static final int HORIZONTAL = 2;
 
   public Wizard carrier;
-  int grab;
+  int turnsBeforeGrabbingAgain;
   public Snaffle snaffle;
   
   public int id;
@@ -75,7 +75,10 @@ public abstract class Unit {
     return nspeed - (5 * ospeed * ospeed * d); // TODO c'est quoi ce 5 ???
   }
 
-  public Collision collision(double from) {
+  private static Wall horizontalWall = new Wall(HORIZONTAL);
+  private static Wall verticalWall = new Wall(VERTICAL);
+  
+  public Collision wallCollision(double from) {
     double tx = 2.0;
     double ty = tx;
 
@@ -190,12 +193,12 @@ public abstract class Unit {
     vy = Math.round(vy*friction);
   }
   
-  public boolean can(Unit u) {
+  public boolean canCollide(Unit u) {
     // TODO check the conversion to java
     if (type == EntityType.SNAFFLE) {
-      return carrier == null && !dead && u.snaffle == null && u.grab == 0;
+      return carrier == null && !dead && u.snaffle == null && u.turnsBeforeGrabbingAgain == 0;
     } else if (u.type == EntityType.SNAFFLE) {
-      return u.carrier == null && u.dead == false && snaffle == null && grab == 0;
+      return u.carrier == null && u.dead == false && snaffle == null && turnsBeforeGrabbingAgain == 0;
     }
     return true;
   }
