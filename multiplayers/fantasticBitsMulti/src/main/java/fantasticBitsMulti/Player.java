@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import fantasticBitsMulti.ag.AG;
 import fantasticBitsMulti.ag.AGSolution;
+import fantasticBitsMulti.simulation.Action;
 import fantasticBitsMulti.simulation.Simulation;
 import fantasticBitsMulti.spells.Spell;
 import fantasticBitsMulti.units.Bludger;
@@ -18,10 +19,17 @@ import trigonometry.Point;
 public class Player {
   public static final long TIME_LIMIT = 85;
 
+  public static final int MAP_WIDTH  = 16000;
+  public static final int MAP_HEIGHT = 7500;
+  public static final int MAP_MAX_DISTANCE_2 = MAP_WIDTH * MAP_WIDTH + MAP_HEIGHT * MAP_HEIGHT;
+  public static final int MAP_MAX_DISTANCE = (int)Math.sqrt(MAP_MAX_DISTANCE_2);
+  
   static final double TO_RAD = Math.PI / 180.0;
   public static final int ANGLES_LENGTH = 36;
   static final double ANGLES[] = new double[]{0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0, 120.0, 130.0, 140.0, 150.0, 160.0, 170.0, 180.0, 190.0, 200.0, 210.0, 220.0, 230.0, 240.0, 250.0, 260.0, 270.0, 280.0, 290.0, 300.0, 310.0, 320.0, 330.0, 340.0, 350.0};
   public static final double E = 0.001;
+
+  public static boolean DEBUG_SIM = false;
   public static double cosAngles[] = new double[ANGLES_LENGTH];
   public static double sinAngles[] = new double[ANGLES_LENGTH];
   
@@ -188,6 +196,30 @@ public class Player {
           TestOutputer.outputCommand("Player.wizards["+i+"].snaffle"+Player.wizards[i].snaffle.id);
         }
       }
+      
+      if (turn == 9 || turn == 10) {
+        System.err.println("-------------------------------");
+        System.err.println("Next turn sim if nothing change");
+        Player.DEBUG_SIM = true;
+  
+        Action action0 = new Action();
+        action0.type = Action.TYPE_WAIT;
+        action0.cosAngle = -1;
+        action0.sinAngle = 0;
+        action0.thrust = 500;
+        
+        new Simulation().simulate(action0, Action.WAIT, Action.WAIT, Action.WAIT);
+        
+        System.err.println("My score "+myScore);
+        System.err.println("Opp score "+hisScore);
+        for (int i=0;i<unitsFE;i++) {
+          System.err.println(""+units[i]);
+        }
+        Player.DEBUG_SIM = false;
+        restoreState();
+        System.err.println("-------------------------------");
+      }
+      
       AGSolution solution = AG.evolution();
 
       myWizard1.output(solution.moves1[0], solution.spellTurn1, solution.spell1, solution.spellTarget1);

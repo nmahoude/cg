@@ -26,12 +26,12 @@ public class AGSolution {
       moves2[i] = Player.rand.fastRandInt(Player.ANGLES_LENGTH);
     }
     spellTurn1 = Player.rand.fastRandInt(AG.SPELL_DEPTH);
-    spell1 = Player.rand.fastRandInt(4);
+    spell1 = 2+Player.rand.fastRandInt(2);
     spellTarget1 = Player.spellTargets[spell1][Player.rand.fastRandInt(Player.spellTargetsFE[spell1])];
+    
     spellTurn2 = Player.rand.fastRandInt(AG.SPELL_DEPTH);
-    spell2 = Player.rand.fastRandInt(4);
+    spell2 = 2+Player.rand.fastRandInt(2);
     spellTarget2 = Player.spellTargets[spell2][Player.rand.fastRandInt(Player.spellTargetsFE[spell2])];
-    spell2 += 0;
   }
 
   public void copy(AGSolution solution) {
@@ -69,7 +69,6 @@ public class AGSolution {
       spellTurn2 = Player.rand.fastRandInt(AG.SPELL_DEPTH);
       spell2 = Player.rand.fastRandInt(4);
       spellTarget2 = Player.spellTargets[spell2][Player.rand.fastRandInt(Player.spellTargetsFE[spell2])];
-      spellTarget2.speed();
     }
   }
 

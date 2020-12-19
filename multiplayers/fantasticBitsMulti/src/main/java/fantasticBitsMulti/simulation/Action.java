@@ -1,9 +1,11 @@
 package fantasticBitsMulti.simulation;
 
+import fantasticBitsMulti.units.Unit;
+
 public class Action {
-  private static final int TYPE_WAIT = -1;
+  public static final int TYPE_WAIT = -1;
   public static final int TYPE_MOVE = 0;
-  public static final int TYPE_SPELL = 1;
+  public static final int TYPE_CAST = 1;
   public static final int TYPE_THROW = 2;
 
   public static final Action WAIT = new Action();
@@ -21,5 +23,16 @@ public class Action {
   
   // spell info
   public int spellId;
-  public int targetId;
+  public Unit target;
+  
+  @Override
+  public String toString() {
+    switch(type) {
+    case TYPE_WAIT: return "WAIT";
+    case TYPE_MOVE: return "MOVE ("+cosAngle+","+sinAngle+") thrust="+thrust;
+    case TYPE_THROW : return "THROW ("+cosAngle+","+sinAngle+") thrust="+thrust;
+    case TYPE_CAST : return "CAST "+spellId+" @ "+target;
+    }
+    return "";
+  }
 }

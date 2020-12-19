@@ -19,26 +19,37 @@ public class AGSimulator {
     scorer.reset();
 
     for (int i = 0; i < AG.DEPTH; ++i) {
-      if (Player.wizards[0].snaffle != null) {
-        action0.type = Action.TYPE_THROW;
-        action0.thrust = 500;
+      if (solution.spellTurn1 == i) {
+        action0.type = Action.TYPE_CAST;
+        action0.spellId = solution.spell1;
+        action0.target = solution.spellTarget1;
       } else {
-        action0.type = Action.TYPE_MOVE;
-        action0.thrust = 150;
+        if (Player.wizards[0].snaffle != null) {
+          action0.type = Action.TYPE_THROW;
+          action0.thrust = 500;
+        } else {
+          action0.type = Action.TYPE_MOVE;
+          action0.thrust = 150;
+        }
+        action0.cosAngle = Player.cosAngles[solution.moves1[i]];
+        action0.sinAngle = Player.sinAngles[solution.moves1[i]];
       }
-      action0.cosAngle = Player.cosAngles[solution.moves1[i]];
-      action0.sinAngle = Player.sinAngles[solution.moves1[i]];
       
-      if (Player.wizards[1].snaffle != null) {
-        action1.type = Action.TYPE_THROW;
-        action1.thrust = 500;
+      if (solution.spellTurn2 == i) {
+        action1.type = Action.TYPE_CAST;
+        action1.spellId = solution.spell2;
+        action1.target = solution.spellTarget2;
       } else {
-        action1.type = Action.TYPE_MOVE;
-        action1.thrust = 150;
+        if (Player.wizards[1].snaffle != null) {
+          action1.type = Action.TYPE_THROW;
+          action1.thrust = 500;
+        } else {
+          action1.type = Action.TYPE_MOVE;
+          action1.thrust = 150;
+        }
+        action1.cosAngle = Player.cosAngles[solution.moves2[i]];
+        action1.sinAngle = Player.sinAngles[solution.moves2[i]];
       }
-      action1.cosAngle = Player.cosAngles[solution.moves2[i]];
-      action1.sinAngle = Player.sinAngles[solution.moves2[i]];
-
       
       Simulation.simulate(action0, action1, Action.WAIT, Action.WAIT);
 
@@ -46,7 +57,6 @@ public class AGSimulator {
     }
     scorer.finalEval();
     solution.energy = scorer.eval();
-
     Player.restoreState();
   }
 

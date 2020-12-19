@@ -49,6 +49,11 @@ public abstract class Unit {
     this.state = state;
   }
 
+  @Override
+  public String toString() {
+    return id+" ["+type+"] "+position+"";
+  }
+  
   public void move(double t) {
     position = position.add(new Vector(vx*t, vy*t));
   }
@@ -75,8 +80,8 @@ public abstract class Unit {
     return nspeed - (5 * ospeed * ospeed * d); // TODO c'est quoi ce 5 ???
   }
 
-  private static Wall horizontalWall = new Wall(HORIZONTAL);
-  private static Wall verticalWall = new Wall(VERTICAL);
+  protected static Wall horizontalWall = new Wall(HORIZONTAL);
+  protected static Wall verticalWall = new Wall(VERTICAL);
   
   public Collision wallCollision(double from) {
     double tx = 2.0;
@@ -94,22 +99,21 @@ public abstract class Unit {
       ty = (HEIGHT - radius - position.y)/vy;
     }
 
-    int dir;
     double t;
-
+    Wall wall;
     if (tx < ty) {
-      dir = HORIZONTAL;
+      wall = horizontalWall;
       t = tx + from;
     } else {
-      dir = VERTICAL;
+      wall = verticalWall;
       t = ty + from;
     }
 
     if (t <= 0.0 || t > 1.0) {
       return null;
     }
-
-    return Simulation.collisionsCache[Simulation.collisionsCacheFE++].update(t, this, dir);
+    
+    return Simulation.collisionsCache[Simulation.collisionsCacheFE++].update(t, this, wall);
   }
 
   public Collision collision(Unit u, double from) {
@@ -148,6 +152,10 @@ public abstract class Unit {
 
   
   public void bounce(Unit u) {
+    if (u.type == EntityType.WALL) {
+      u.bounce(this);
+      return;
+    }
     double mcoeff = (mass + u.mass) / (mass * u.mass);
     double nx = position.x - u.position.x;
     double ny = position.y - u.position.y; // TODO vector
@@ -177,14 +185,6 @@ public abstract class Unit {
     vy -= fy * m1c;
     u.vx += fx * m2c;
     u.vy += fy * m2c;
-  }
-
-  public void bounce(int dir) {
-    if (dir == HORIZONTAL) {
-      vx = -vx;
-    } else {
-      vy = -vy;
-    }
   }
 
   public void end() {

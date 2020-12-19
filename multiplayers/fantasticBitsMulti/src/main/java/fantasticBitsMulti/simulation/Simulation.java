@@ -48,13 +48,10 @@ public class Simulation {
       Player.spells[i].apply();
     }
 
-    // then update units
+    // then update bludgers
     Player.bludgers[0].play();
     Player.bludgers[1].play();
-    Player.wizards[0].play();
-    Player.wizards[1].play();
-    Player.wizards[2].play();
-    Player.wizards[3].play();
+    
 
     // then update all other spells
     for (int i = 4+1; i < 16; ++i) {
@@ -91,6 +88,12 @@ public class Simulation {
     int i, j;
 
     // Get first collisions
+    if (Player.DEBUG_SIM) {
+      System.err.println("Will move: ");
+      for (i = 0; i < Player.unitsFE; ++i) {
+        System.err.println("    "+Player.units[i]);
+      }
+    }
     for (i = 0; i < Player.unitsFE; ++i) {
       a = Player.units[i];
 
@@ -135,11 +138,7 @@ public class Simulation {
         t = next.t;
         //System.err.println("Advancing t to "+t + " collision is "+next.dir);
 
-        if (next.dir != 0) {
-          next.a.bounce(next.dir); // contre un mur
-        } else {
-          next.a.bounce(next.b); // contre une autre entity
-        }
+        next.a.bounce(next.b); // contre une autre entity
 
         a = next.a;
         b = next.b;
@@ -232,26 +231,14 @@ public class Simulation {
     }
   }
   
-  private static boolean mustErase(Collision col, Unit a /*not null*/, Unit b /*may be null*/) {
-    if (a.id == col.a.id) {
+  private static boolean mustErase(Collision col, Unit a, Unit b ) {
+    // check if we are not wall and not a pole (cause we don't move) based on id (risky business)
+    if (a.id < 20 && (a.id == col.a.id || a.id == col.b.id)) {
       return true;
+    } else if (b.id < 20 && (b.id == col.a.id || b.id == col.b.id)) {
+      return true;
+    } else {
+      return false;
     }
-
-    if (b != null && col.b != null) {
-      if (a.id == col.b.id
-        || b.id == col.a.id
-        || b.id == col.b.id) {
-        return true;
-      }
-    } else if (b != null) {
-      if (b.id == col.a.id) {
-        return true;
-      }
-    } else if (col.b != null) {
-      if (a.id == col.b.id) {
-        return true;
-      }
-    }
-    return false;
   }
 }

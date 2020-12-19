@@ -7,20 +7,12 @@ public class AG {
   public static final int POOL = 50;
   public static final int MUTATION = 2;
   public static final int DEPTH = 6;
-  static final double COEF_PATIENCE = 0.9;
   public static final int SPELL_DEPTH = 8;
 
   private static AGSolution best = new AGSolution();
   private static FastRand rand = new FastRand(42);
   private static AGSimulator simulator = new AGSimulator();
   
-  public static double patiences[] = new double[DEPTH];
-  static {
-    for (int i=0;i<DEPTH;++i) {
-      patiences[i] = Math.pow(COEF_PATIENCE, i);
-    }
-  }
-
   static AGSolution[] pool = new AGSolution[POOL];
   static AGSolution[] newPool = new AGSolution[POOL];
   static {
@@ -67,7 +59,7 @@ public class AG {
       }
 
       poolFE = 1;
-      while (poolFE < POOL && System.nanoTime() - Player.start < Player.TIME_LIMIT) {
+      while (poolFE < POOL && System.currentTimeMillis() - Player.start < Player.TIME_LIMIT) {
         AGSolution child = merge2Solutions(newPool[poolFE++], pool );
         simulator.simulate(child);
         if (child.energy > tempBest.energy) {
@@ -89,7 +81,7 @@ public class AG {
       generation += 1;
     }
     
-    System.err.println("Generations : "+generation+", best was "+bestGeneration);
+    System.err.println("Generations : "+generation+", best was "+bestGeneration + "with score "+best.energy);
     return best;
   }
 
@@ -152,6 +144,8 @@ public class AG {
       best.copy(tempBest);
     }
     tempBest = best;
+    
+    System.err.println("After 1st generation, best energy is "+tempBest.energy);
     return tempBest;
   }
 }

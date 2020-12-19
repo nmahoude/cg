@@ -1,7 +1,6 @@
 package fantasticBitsMulti.units;
 
 import fantasticBitsMulti.Player;
-import fantasticBitsMulti.ag.AGSolution;
 import fantasticBitsMulti.simulation.Action;
 import fantasticBitsMulti.simulation.Collision;
 import fantasticBitsMulti.spells.Accio;
@@ -20,9 +19,6 @@ public class Wizard extends Unit {
   int sgrab;
   Snaffle ssnaffle;
   
-  int spell;
-  Unit spellTarget;
-
   public Wizard(int team) {
     super(EntityType.WIZARD, 400.0, 1, 0.75);
     this.team = team;
@@ -35,7 +31,6 @@ public class Wizard extends Unit {
     spells[Spell.ACCIO] = new Accio(this);
     spells[Spell.FLIPENDO] = new Flipendo(this);
 
-    spellTarget = null;
   }
 
   public void grabSnaffle(Snaffle snaffle) {
@@ -52,6 +47,9 @@ public class Wizard extends Unit {
   }
   
   public void apply(Action action) {
+    if (Player.DEBUG_SIM) {
+      System.err.println("Wizard "+id+" action : "+action);
+    }
     if (snaffle != null) {
       if (action.type == Action.TYPE_THROW) {
         snaffle.vx += action.cosAngle * action.thrust;
@@ -63,27 +61,16 @@ public class Wizard extends Unit {
       turnsBeforeGrabbingAgain = 4; // TODO or 3 ?
     }
 
-    if (action.type == Action.TYPE_MOVE) {
+    if (action.type == Action.TYPE_CAST) {
+      cast(action.spellId, action.target);
+    } else if (action.type == Action.TYPE_MOVE) {
       vx += action.cosAngle * action.thrust;
       vy += action.sinAngle * action.thrust;
     }
   }
 
-  public void apply(int move) {
-    if (snaffle != null) {
-      // throw snaffle
-      snaffle.vx += Player.cosAngles[move] * SNAFFLE_MOVE_COEFF;
-      snaffle.vy += Player.sinAngles[move] * SNAFFLE_MOVE_COEFF;
-    } else {
-      // move
-      vx += Player.cosAngles[move] * WIZZARD_MOVE_COEFF;
-      vy += Player.sinAngles[move] * WIZZARD_MOVE_COEFF;
-    }
-  }
-  
-  
   public void output(int move, int spellTurn, int spell, Unit target) {
-    if (spellTurn == 0 && spells[spell].duration == Spell.SPELL_DURATION[spell]) {
+    if (spellTurn == 0) {
       if (spell == Spell.OBLIVIATE) {
         System.out.print("OBLIVIATE ");
       } else if (spell == Spell.PETRIFICUS) {
@@ -119,8 +106,7 @@ public class Wizard extends Unit {
 
     Player.myMana -= cost;
 
-    this.spell = spell;
-    spellTarget = target;
+    spells[spell].cast(target);
 
     return true;
   }
@@ -165,20 +151,12 @@ public class Wizard extends Unit {
     }
   }
 
-  public void play() { 
-    // Relacher le snaffle qu'on porte dans tous les cas
-    if (snaffle != null) {
-      snaffle.carrier = null;
-      snaffle = null;
-    }
-  }
-  
   @Override
   public void end()  { 
     super.end();
 
     if (turnsBeforeGrabbingAgain != 0) {
-      turnsBeforeGrabbingAgain -= 1;
+      turnsBeforeGrabbingAgain --;
 
       if (turnsBeforeGrabbingAgain == 0) {
             // Check if we can grab a snaffle
@@ -191,17 +169,6 @@ public class Wizard extends Unit {
           }
         }
       }
-    }
-
-    if (snaffle != null) {
-      snaffle.position = this.position;
-      snaffle.vx = vx;
-      snaffle.vy = vy;
-    }
-
-    if (spellTarget != null) {
-      spells[spell].cast(spellTarget);
-      spellTarget = null;
     }
   }
 
@@ -238,26 +205,6 @@ public class Wizard extends Unit {
         turnsBeforeGrabbingAgain -= 1;
       }
       snaffle = null; // in any case the wizard drop the snaffle
-    }
-  }
-
-  public void apply(AGSolution solution, int turn, int index) {
-    if (index == 1) {
-      if (solution.spellTurn1 == turn) {
-        if (Player.myWizard1.cast(solution.spell1, solution.spellTarget1)) {
-          Player.myWizard1.apply(solution.moves1[turn]);
-        }
-      } else {
-        Player.myWizard1.apply(solution.moves1[turn]);
-      }
-    } else {
-      if (solution.spellTurn2 == turn) {
-        if (Player.myWizard2.cast(solution.spell2, solution.spellTarget2)) {
-          Player.myWizard2.apply(solution.moves2[turn]);
-        }
-      } else {
-        Player.myWizard2.apply(solution.moves2[turn]);
-      }
     }
   }
 

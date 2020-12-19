@@ -22,7 +22,7 @@ public class Snaffle extends Unit {
 
   @Override
   public Collision wallCollision(double from) {
-    if (carrier == null || dead) {
+    if (carrier != null || dead) {
       return null;
     }
 
@@ -41,14 +41,14 @@ public class Snaffle extends Unit {
       ty = (HEIGHT - radius - position.y)/vy;
     }
 
-    int dir;
     double t;
-
+    Wall wall;
+    
     if (tx < ty) {
-      dir = HORIZONTAL;
+      wall = horizontalWall;
       t = tx + from;
     } else {
-      dir = VERTICAL;
+      wall = verticalWall;
       t = ty + from;
     }
 
@@ -56,7 +56,8 @@ public class Snaffle extends Unit {
       return null;
     }
 
-    return Simulation.collisionsCache[Simulation.collisionsCacheFE++].update(t, this, dir);
+
+    return Simulation.collisionsCache[Simulation.collisionsCacheFE++].update(t, this, wall);
   }
 
   @Override
@@ -74,35 +75,36 @@ public class Snaffle extends Unit {
 
   @Override
   public void bounce(Unit u) {
-    if (u.type == EntityType.WIZARD) {
+    if (u.type == EntityType.WALL) {
+      if (Player.DEBUG_SIM) {
+        System.err.println("Snaffle "+id+" bounce with wall @ "+position );
+      }
+      if (position.y >= 2050.0 && position.y <= 5450.0) {
+        dead = true;
+
+        if (Player.myTeam == 0) {
+          if (position.x > 8000) {
+            Player.myScore += 1;
+          } else {
+            Player.hisScore += 1;
+          }
+        } else {
+          if (position.x > 8000) {
+            Player.hisScore += 1;
+          } else {
+            Player.myScore += 1;
+          }
+        }
+      } else {
+        super.bounce(u);
+      }
+    } else if (u.type == EntityType.WIZARD) {
       Wizard target = (Wizard) u;
       if (target.snaffle == null && target.turnsBeforeGrabbingAgain == 0 && !dead && carrier == null) {
         target.grabSnaffle(this);
       }
     } else {
       super.bounce(u);
-    }
-  }
-
-  public void bounce(int dir) {
-    if (dir == HORIZONTAL && position.y >= 2050.0 && position.y <= 5450.0) {
-      dead = true;
-
-      if (Player.myTeam == 0) {
-        if (position.x > 8000) {
-          Player.myScore += 1;
-        } else {
-          Player.hisScore += 1;
-        }
-      } else {
-        if (position.x > 8000) {
-          Player.hisScore += 1;
-        } else {
-          Player.myScore += 1;
-        }
-      }
-    } else {
-      super.bounce(dir);
     }
   }
 
@@ -115,8 +117,13 @@ public class Snaffle extends Unit {
 
   @Override
   public void end() {
-    if (!dead && carrier == null) {
+    if (dead) return;
+    if (carrier == null) {
       super.end();
+    } else {
+      this.vx = carrier.vx;
+      this.vy = carrier.vy;
+      this.position = carrier.position;
     }
   }
 

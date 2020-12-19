@@ -9,4 +9,12 @@ public class Wall extends Unit {
     this.dir = dir;
   }
 
+  @Override
+  public void bounce(Unit u) {
+    if (dir == HORIZONTAL) {
+      u.vx = -u.vx;
+    } else {
+      u.vy = -u.vy;
+    }
+  }
 }
