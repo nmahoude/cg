@@ -1,6 +1,7 @@
 package fantasticBitsMulti.units;
 
 import fantasticBitsMulti.Player;
+import fantasticBitsMulti.TeamInfo;
 import fantasticBitsMulti.simulation.Action;
 import fantasticBitsMulti.simulation.Collision;
 import fantasticBitsMulti.spells.Accio;
@@ -14,12 +15,12 @@ public class Wizard extends Unit {
   private static final double WIZZARD_MOVE_COEFF = 150.0;
   private static final double SNAFFLE_MOVE_COEFF = 500.0 * (1.0 / 0.5/*snaffle mass*/);
   public Spell[] spells = new Spell[4];
-  public int team;
+  public TeamInfo team;
   
   int sgrab;
   Snaffle ssnaffle;
   
-  public Wizard(int team) {
+  public Wizard(TeamInfo team) {
     super(EntityType.WIZARD, 400.0, 1, 0.75);
     this.team = team;
 
@@ -52,8 +53,8 @@ public class Wizard extends Unit {
     }
     if (snaffle != null) {
       if (action.type == Action.TYPE_THROW) {
-        snaffle.vx += 2 * action.cosAngle * action.thrust;
-        snaffle.vy += 2 * action.sinAngle * action.thrust;
+        snaffle.vx += 2 * action.cosAngle() * action.thrust;
+        snaffle.vy += 2 * action.sinAngle() * action.thrust;
       }
       
       snaffle.carrier = null;
@@ -64,11 +65,41 @@ public class Wizard extends Unit {
     if (action.type == Action.TYPE_CAST) {
       cast(action.spellId, action.target);
     } else if (action.type == Action.TYPE_MOVE) {
-      vx += action.cosAngle * action.thrust;
-      vy += action.sinAngle * action.thrust;
+      vx += action.cosAngle() * action.thrust;
+      vy += action.sinAngle() * action.thrust;
     }
   }
 
+  public void output(Action action) {
+    if (action.type == Action.TYPE_CAST) {
+      if (action.spellId == Spell.OBLIVIATE) {
+        System.out.print("OBLIVIATE ");
+      } else if (action.spellId == Spell.PETRIFICUS) {
+        System.out.print("PETRIFICUS ");
+      } else if (action.spellId == Spell.ACCIO) {
+        System.out.print("ACCIO ");
+      } else if (action.spellId == Spell.FLIPENDO) {
+        System.out.print("FLIPENDO ");
+      }
+
+      System.out.println(""+action.target.id);
+      return;
+    }
+
+    // Adjust the targeted point for this angle
+    // Find a point with the good angle
+    double px = position.x + action.cosAngle() * 10000.0;
+    double py = position.y + action.sinAngle() * 10000.0;
+
+    if (snaffle != null) {
+      System.out.println("THROW " +Math.round(px) +" " + Math.round(py) + " " + action.thrust);
+    } else {
+      System.out.println("MOVE " + Math.round(px) + " " + Math.round(py) + " " + action.thrust);
+    }
+  }
+
+  
+  
   public void output(int move, int spellTurn, int spell, Unit target) {
     if (spellTurn == 0) {
       if (spell == Spell.OBLIVIATE) {
@@ -100,11 +131,11 @@ public class Wizard extends Unit {
   public boolean cast(int spell, Unit target) {
     int cost = Spell.SPELL_COST[spell];
 
-    if (Player.state.myMana < cost || target.dead) {
+    if (team.mana < cost || target.dead) {
       return false;
     }
 
-    Player.state.myMana -= cost;
+    team.mana -= cost;
 
     spells[spell].cast(target);
 

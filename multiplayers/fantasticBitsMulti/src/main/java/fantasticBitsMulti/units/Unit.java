@@ -225,4 +225,14 @@ public abstract class Unit {
     
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    Unit other = (Unit)obj;
+    
+    return id == other.id 
+        && position.x == other.position.x 
+        && position.y == other.position.y
+        && Math.abs(vx - other.vx) <= 1
+        && Math.abs(vy - other.vy) <= 1;
+  }
 }

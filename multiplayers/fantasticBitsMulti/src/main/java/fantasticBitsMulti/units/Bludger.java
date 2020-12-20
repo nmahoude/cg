@@ -55,7 +55,7 @@ public class Bludger extends Unit {
     for (int i = 0; i < 4; ++i) {
       Wizard wizard = Player.state.wizards[i];
   
-      if ((last != null && last.id == wizard.id) || wizard.team == ignore[0] || wizard.team == ignore[1]) {
+      if ((last != null && last.id == wizard.id) || wizard.team.id == ignore[0] || wizard.team.id == ignore[1]) {
         continue;
       }
   

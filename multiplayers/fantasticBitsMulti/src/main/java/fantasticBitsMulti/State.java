@@ -12,7 +12,7 @@ import fantasticBitsMulti.units.Wizard;
 public class State {
   public int unitsFE = 0;
   public Unit[] units = new Unit[20];
-  static Unit unitsById[] = new Unit[24];
+  public Unit unitsById[] = new Unit[24];
   
   public Wizard[] wizards = new Wizard[4];
 
@@ -26,17 +26,14 @@ public class State {
   public Unit spellTargets[][] = new Unit[4][20];
   public int spellTargetsFE[] = new int[4];
 
+  public TeamInfo[] teamInfos = new TeamInfo[2];
+  {
+    teamInfos[0] = new TeamInfo(0);
+    teamInfos[1] = new TeamInfo(1);
+  }
+  
+  
   public final int myTeam;
-  public int myMana;
-  public int myScore;
-  public int hisScore;
-  private int hisMana;
-  
-  
-  public int _myMana;
-  public int _myScore;
-  public int _hisScore;
-  private int _hisMana;
   
   
   public State(int myTeam) {
@@ -60,14 +57,9 @@ public class State {
     snafflesFE = 0;
     resetSnaffles();
 
-    myScore = in.nextInt();
+    teamInfos[0].read(in);
     Player.updateStartAfter1stRead();
-    myMana = in.nextInt();
-    hisScore = in.nextInt();
-    hisMana = in.nextInt();
-    
-    TestOutputer.output(myScore, myMana, hisScore, hisMana);
-    
+    teamInfos[1].read(in);
     
     int myWizzardFE = 0;
     int oppWizzardFE = 2;
@@ -127,16 +119,15 @@ public class State {
         TestOutputer.outputCommand("Player.wizards["+i+"].snaffle"+wizards[i].snaffle.id);
       }
     }
+    TestOutputer.outputCommand("Bludger 0 last is "+bludgers[0].last);
+    TestOutputer.outputCommand("Bludger 1 last is "+bludgers[1].last);
 
   }
   
   
   public void backupState() {
-    _myMana = myMana;
-    _myScore = myScore;
-    _hisMana = hisMana;
-    _hisScore = hisScore;
-    
+    teamInfos[0].backup();
+    teamInfos[1].backup();
     for (int i = 0; i < unitsFE; ++i) {
       units[i].save();
     }
@@ -147,10 +138,8 @@ public class State {
   }
   
   public void restoreState() {
-    myMana = _myMana;
-    myScore = _myScore;
-    hisMana = _hisMana;
-    hisScore = _hisScore;
+    teamInfos[0].restore();
+    teamInfos[1].restore();
     
     for (int i = 0; i < unitsFE; ++i) {
       units[i].reset();
@@ -172,10 +161,10 @@ public class State {
   }
 
   private void createWizards() {
-    wizards[0] = new Wizard(0);
-    wizards[1] = new Wizard(0);
-    wizards[2] = new Wizard(1);
-    wizards[3] = new Wizard(1);
+    wizards[0] = new Wizard(teamInfos[0]);
+    wizards[1] = new Wizard(teamInfos[0]);
+    wizards[2] = new Wizard(teamInfos[1]);
+    wizards[3] = new Wizard(teamInfos[1]);
     units[0] = wizards[0];
     units[1] = wizards[1];
     units[2] = wizards[2];
@@ -230,18 +219,39 @@ public class State {
   }
 
   public void updatePetrificus() {
-    // Wizards ennemis pour petrificus et flipendo
+    spellTargets[Spell.PETRIFICUS][spellTargetsFE[Spell.PETRIFICUS]++] = wizards[2];
+    spellTargets[Spell.PETRIFICUS][spellTargetsFE[Spell.PETRIFICUS]++] = wizards[3];
+    spellTargets[Spell.FLIPENDO][spellTargetsFE[Spell.FLIPENDO]++] = wizards[2];
+    spellTargets[Spell.FLIPENDO][spellTargetsFE[Spell.FLIPENDO]++] = wizards[3];
+  }
+
+
+  public void goal(double x) {
     if (myTeam == 0) {
-      spellTargets[Spell.PETRIFICUS][spellTargetsFE[Spell.PETRIFICUS]++] = wizards[2];
-      spellTargets[Spell.PETRIFICUS][spellTargetsFE[Spell.PETRIFICUS]++] = wizards[3];
-      spellTargets[Spell.FLIPENDO][spellTargetsFE[Spell.FLIPENDO]++] = wizards[2];
-      spellTargets[Spell.FLIPENDO][spellTargetsFE[Spell.FLIPENDO]++] = wizards[3];
+      if (x > 8000) {
+        teamInfos[0].score += 1;
+      } else {
+        teamInfos[1].score += 1;
+      }
     } else {
-      spellTargets[Spell.PETRIFICUS][spellTargetsFE[Spell.PETRIFICUS]++] = wizards[0];
-      spellTargets[Spell.PETRIFICUS][spellTargetsFE[Spell.PETRIFICUS]++] = wizards[1];
-      spellTargets[Spell.FLIPENDO][spellTargetsFE[Spell.FLIPENDO]++] = wizards[0];
-      spellTargets[Spell.FLIPENDO][spellTargetsFE[Spell.FLIPENDO]++] = wizards[1];
+      if (x > 8000) {
+        teamInfos[1].score += 1;
+      } else {
+        teamInfos[1].score += 1;
+      }
     }
+    
+  }
+
+
+  public void updateMana() {
+    if (teamInfos[0].mana != 100) {
+      teamInfos[0].mana += 1;
+    }
+    if (teamInfos[1].mana != 100) {
+      teamInfos[1].mana += 1;
+    }
+    
   }
 
 }

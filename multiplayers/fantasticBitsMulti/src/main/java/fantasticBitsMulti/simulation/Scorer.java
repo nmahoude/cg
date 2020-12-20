@@ -1,6 +1,7 @@
 package fantasticBitsMulti.simulation;
 
 import fantasticBitsMulti.Player;
+import fantasticBitsMulti.State;
 import fantasticBitsMulti.units.Snaffle;
 
 public class Scorer {
@@ -19,15 +20,16 @@ public class Scorer {
   }
   
   public void evalTurn(int depth) {
-    if (Player.state.myScore >= Player.victory) {
+    State state = Player.state;
+    if (state.teamInfos[0].score >= Player.victory) {
       eval += patiences[depth] * 1_000_000;
     }
-    if (Player.state.hisScore >= Player.victory) {
+    if (state.teamInfos[1].score >= Player.victory) {
       eval -= patiences[depth] * 1_000_000;
     }
     
     eval +=  100_000 * patiences[depth] * (0.0
-                + 1000.0 * (Player.state.myScore - Player.state.hisScore)
+                + 1000.0 * (state.teamInfos[0].score - state.teamInfos[1].score)
         
         );
   }
@@ -39,11 +41,11 @@ public class Scorer {
     //energy += snaffleAvgPosition();
     //energy += wizardDistanceToSnaffles();
     energy += distanceBetweenMyWizards();
-    energy += Player.state.myMana * 200;
+    energy += Player.state.teamInfos[0].mana * 200;
     energy += 500 * (+(Player.state.wizards[0].snaffle != null ? 1 : 0) + (Player.state.wizards[1].snaffle != null ? 1 : 0) 
         - (Player.state.wizards[2].snaffle != null ? 1 : 0) - (Player.state.wizards[3].snaffle != null ? 1 : 0));
     // last one !
-    if (Player.state.myScore >= Player.victory) {
+    if (Player.state.teamInfos[0].score >= Player.victory) {
         energy = Double.POSITIVE_INFINITY;
     }
 

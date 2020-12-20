@@ -82,19 +82,7 @@ public class Snaffle extends Unit {
       if (position.y >= 2050.0 && position.y <= 5450.0) {
         dead = true;
 
-        if (Player.state.myTeam == 0) {
-          if (position.x > 8000) {
-            Player.state.myScore += 1;
-          } else {
-            Player.state.hisScore += 1;
-          }
-        } else {
-          if (position.x > 8000) {
-            Player.state.hisScore += 1;
-          } else {
-            Player.state.myScore += 1;
-          }
-        }
+        Player.state.goal(position.x);
       } else {
         super.bounce(u);
       }

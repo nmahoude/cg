@@ -6,13 +6,7 @@ import fantasticBitsMulti.ag.AG;
 import fantasticBitsMulti.ag.AGSolution;
 import fantasticBitsMulti.simulation.Action;
 import fantasticBitsMulti.simulation.Simulation;
-import fantasticBitsMulti.spells.Spell;
-import fantasticBitsMulti.units.Bludger;
-import fantasticBitsMulti.units.EntityType;
 import fantasticBitsMulti.units.Pole;
-import fantasticBitsMulti.units.Snaffle;
-import fantasticBitsMulti.units.Unit;
-import fantasticBitsMulti.units.Wizard;
 import random.FastRand;
 import trigonometry.Point;
 
@@ -87,14 +81,13 @@ public class Player {
   
         Action action0 = new Action();
         action0.type = Action.TYPE_WAIT;
-        action0.cosAngle = -1;
-        action0.sinAngle = 0;
+        action0.angle = 18;
         action0.thrust = 500;
         
         new Simulation().simulate(action0, Action.WAIT, Action.WAIT, Action.WAIT);
         
-        System.err.println("My score "+state.myScore);
-        System.err.println("Opp score "+state.hisScore);
+        System.err.println("My score "+state.teamInfos[0].score);
+        System.err.println("Opp score "+state.teamInfos[1].score);
         for (int i=0;i<state.unitsFE;i++) {
           System.err.println(""+state.units[i]);
         }
@@ -105,8 +98,10 @@ public class Player {
       
       AGSolution solution = AG.evolution();
 
-      state.wizards[0].output(solution.moves1[0], solution.spellTurn1, solution.spell1, solution.spellTarget1);
-      state.wizards[1].output(solution.moves2[0], solution.spellTurn2, solution.spell2, solution.spellTarget2);
+      Action action0 = solution.actions0[0];
+      Action action1 = solution.actions0[1];
+      state.wizards[0].output(action0);
+      state.wizards[1].output(action0);
 
       Player.turn += 1;
       state.unitsFE = 10; // 4 poles, 4 wizards & 2 bludgers

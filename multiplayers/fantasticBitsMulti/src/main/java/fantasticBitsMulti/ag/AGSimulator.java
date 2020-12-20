@@ -25,14 +25,13 @@ public class AGSimulator {
         action0.target = solution.spellTarget1;
       } else {
         if (Player.state.wizards[0].snaffle != null) {
-          action0.type = Action.TYPE_THROW;
-          action0.thrust = 500;
+          solution.actions0[i].type = Action.TYPE_THROW;
+          solution.actions0[i].thrust = 500;
         } else {
-          action0.type = Action.TYPE_MOVE;
-          action0.thrust = 150;
+          solution.actions0[i].type = Action.TYPE_MOVE;
+          solution.actions0[i].thrust = 150;
         }
-        action0.cosAngle = Player.cosAngles[solution.moves1[i]];
-        action0.sinAngle = Player.sinAngles[solution.moves1[i]];
+        action0.copy(solution.actions0[i]);
       }
       
       if (solution.spellTurn2 == i) {
@@ -41,17 +40,16 @@ public class AGSimulator {
         action1.target = solution.spellTarget2;
       } else {
         if (Player.state.wizards[1].snaffle != null) {
-          action1.type = Action.TYPE_THROW;
-          action1.thrust = 500;
+          solution.actions1[i].type = Action.TYPE_THROW;
+          solution.actions1[i].thrust = 500;
         } else {
-          action1.type = Action.TYPE_MOVE;
-          action1.thrust = 150;
+          solution.actions1[i].type = Action.TYPE_MOVE;
+          solution.actions1[i].thrust = 150;
         }
-        action1.cosAngle = Player.cosAngles[solution.moves2[i]];
-        action1.sinAngle = Player.sinAngles[solution.moves2[i]];
+        action1.copy(solution.actions1[i]);
       }
       
-      Simulation.simulate(action0, action1, Action.WAIT, Action.WAIT);
+      sim.simulate(action0, action1, Action.WAIT, Action.WAIT);
 
       scorer.evalTurn(i);
     }

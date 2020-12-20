@@ -36,7 +36,7 @@ public class Simulation {
   static State state;
   
   // resolve one turn based on wizards actions
-  public static void simulate(Action... actions) {
+  public void simulate(Action... actions) {
     state = Player.state;
     for (int i=0;i<4;i++) {
       state.wizards[i].apply(actions[i]);
@@ -70,9 +70,7 @@ public class Simulation {
     }
 
     // update global mana
-    if (state.myMana != 100) {
-      state.myMana += 1;
-    }
+    state.updateMana();
 
   }
   private static void move() {

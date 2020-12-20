@@ -1,6 +1,7 @@
 package fantasticBitsMulti.ag;
 
 import fantasticBitsMulti.Player;
+import fantasticBitsMulti.simulation.Action;
 import fantasticBitsMulti.units.Unit;
 import random.FastRand;
 
@@ -8,9 +9,16 @@ public class AGSolution {
   private static FastRand rand = new FastRand(42);
 
   public double energy;
-  public int moves1[] = new int[AG.DEPTH];
-  public int moves2[] = new int[AG.DEPTH];
-
+  public Action[] actions0 = new Action[AG.DEPTH];
+  public Action[] actions1 = new Action[AG.DEPTH];
+  {
+    for (int i=0;i<AG.DEPTH;i++) {
+      actions0[i] = new Action();
+      actions1[i] = new Action();
+    }
+  }
+  
+  
   public int spellTurn1;
   public Unit spellTarget1;
   public int spell1;
@@ -22,8 +30,11 @@ public class AGSolution {
 
   public void randomize() {
     for (int i=0;i<AG.DEPTH;++i) {
-      moves1[i] = Player.rand.fastRandInt(Player.ANGLES_LENGTH);
-      moves2[i] = Player.rand.fastRandInt(Player.ANGLES_LENGTH);
+      actions0[i].type = Action.TYPE_MOVE;
+      actions0[i].angle = Player.rand.fastRandInt(Player.ANGLES_LENGTH);
+      
+      actions1[i].type = Action.TYPE_MOVE;
+      actions1[i].angle = Player.rand.fastRandInt(Player.ANGLES_LENGTH);
     }
     spellTurn1 = Player.rand.fastRandInt(AG.SPELL_DEPTH);
     spell1 = 2+Player.rand.fastRandInt(2);
@@ -36,8 +47,8 @@ public class AGSolution {
 
   public void copy(AGSolution solution) {
     for (int i = 0; i < AG.DEPTH; ++i) {
-      moves1[i] = solution.moves1[i];
-      moves2[i] = solution.moves2[i];
+      actions0[i].copy(solution.actions0[i]);
+      actions1[i].copy(solution.actions1[i]);
     }
 
     spellTurn1 = solution.spellTurn1;
@@ -55,10 +66,10 @@ public class AGSolution {
 
     if (r == 0) {
       // Change a moves1
-      moves1[Player.rand.fastRandInt(AG.DEPTH)] = Player.rand.fastRandInt(Player.ANGLES_LENGTH);
+      actions0[Player.rand.fastRandInt(AG.DEPTH)].angle = Player.rand.fastRandInt(Player.ANGLES_LENGTH);
     } else if (r == 1) {
       // Change a moves2
-      moves2[Player.rand.fastRandInt(AG.DEPTH)] = Player.rand.fastRandInt(Player.ANGLES_LENGTH);
+      actions1[Player.rand.fastRandInt(AG.DEPTH)].angle = Player.rand.fastRandInt(Player.ANGLES_LENGTH);
     } else if (r == 2) {
       // Change spell1
       spellTurn1 = Player.rand.fastRandInt(AG.SPELL_DEPTH);
@@ -75,14 +86,14 @@ public class AGSolution {
   public AGSolution mergeInto(AGSolution child, AGSolution solution) {
     for (int i = 0; i < AG.DEPTH; ++i) {
       if (Player.rand.fastRandInt(2) != 0) {
-        child.moves1[i] = solution.moves1[i];
+        child.actions0[i].copy(solution.actions0[i]);
       } else {
-        child.moves1[i] = moves1[i];
+        child.actions0[i].copy(actions0[i]);
       }
       if (Player.rand.fastRandInt(2) != 0) {
-        child.moves2[i] = solution.moves2[i];
+        child.actions1[i].copy(solution.actions1[i]);
       } else {
-        child.moves2[i] = moves2[i];
+        child.actions1[i].copy(actions1[i]);
       }
     }
 
@@ -110,8 +121,9 @@ public class AGSolution {
 
   void makeNewSolutionFromLastBest(AGSolution best) {
     for (int j = 1; j < AG.DEPTH; ++j) {
-      moves1[j - 1] = best.moves1[j];
-      moves2[j - 1] = best.moves2[j];
+      actions0[j - 1].copy(best.actions0[j]);
+      actions1[j - 1].copy(best.actions1[j]);
+
       spellTurn1 = best.spellTurn1;
       spell1 = best.spell1;
       spellTarget1 = best.spellTarget1;
@@ -143,8 +155,11 @@ public class AGSolution {
   }
 
   public void randomizeLastMove() {
-    moves1[AG.DEPTH - 1] = rand.fastRandInt(Player.ANGLES_LENGTH);
-    moves2[AG.DEPTH - 1] = rand.fastRandInt(Player.ANGLES_LENGTH);
+    actions0[AG.DEPTH - 1].type = Action.TYPE_MOVE;
+    actions0[AG.DEPTH - 1].angle = rand.fastRandInt(Player.ANGLES_LENGTH);
+
+    actions1[AG.DEPTH - 1].type = Action.TYPE_MOVE;
+    actions1[AG.DEPTH - 1].angle = rand.fastRandInt(Player.ANGLES_LENGTH);
   }
 
 }

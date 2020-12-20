@@ -11,6 +11,6 @@ public class Obliviate extends Spell {
 
   @Override
   public void effect() {
-    ((Bludger)target).ignore[caster.team] = caster.team;
+    ((Bludger)target).ignore[caster.team.id] = caster.team.id;
   }
 }

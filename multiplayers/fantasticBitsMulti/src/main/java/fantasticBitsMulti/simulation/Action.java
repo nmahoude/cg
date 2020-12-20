@@ -1,5 +1,6 @@
 package fantasticBitsMulti.simulation;
 
+import fantasticBitsMulti.Player;
 import fantasticBitsMulti.units.Unit;
 
 public class Action {
@@ -17,9 +18,8 @@ public class Action {
   public int type;
   
   // move info
-  public double cosAngle;
-  public double sinAngle;
-  public int    thrust;
+  public int angle;
+  public int thrust;
   
   // spell info
   public int spellId;
@@ -29,10 +29,29 @@ public class Action {
   public String toString() {
     switch(type) {
     case TYPE_WAIT: return "WAIT";
-    case TYPE_MOVE: return "MOVE ("+cosAngle+","+sinAngle+") thrust="+thrust;
-    case TYPE_THROW : return "THROW ("+cosAngle+","+sinAngle+") thrust="+thrust;
+    case TYPE_MOVE: return "MOVE ("+cosAngle()+","+sinAngle()+") thrust="+thrust;
+    case TYPE_THROW : return "THROW ("+cosAngle()+","+sinAngle()+") thrust="+thrust;
     case TYPE_CAST : return "CAST "+spellId+" @ "+target;
     }
     return "";
   }
+  
+  public double cosAngle() {
+    return Player.cosAngles[angle];
+  }
+  public double sinAngle() {
+    return Player.sinAngles[angle];
+  }
+
+  public void copy(Action model) {
+    this.type = model.type;
+    if (model.type == TYPE_MOVE || model.type == TYPE_THROW) {
+      this.angle = model.angle;
+      this.thrust = model.thrust;
+    } else {
+      this.spellId = model.spellId;
+      this.target = model.target;
+    }
+  }
+  
 }
