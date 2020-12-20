@@ -1,6 +1,7 @@
 package fantasticBitsMulti.simulation;
 
 import fantasticBitsMulti.Player;
+import fantasticBitsMulti.State;
 import fantasticBitsMulti.units.EntityType;
 import fantasticBitsMulti.units.Snaffle;
 import fantasticBitsMulti.units.Unit;
@@ -32,11 +33,13 @@ public class Simulation {
   }
 
   static Scorer scorer = new Scorer();
+  static State state;
   
   // resolve one turn based on wizards actions
   public static void simulate(Action... actions) {
+    state = Player.state;
     for (int i=0;i<4;i++) {
-      Player.wizards[i].apply(actions[i]);
+      state.wizards[i].apply(actions[i]);
     }
     
     play();
@@ -45,30 +48,30 @@ public class Simulation {
   public static void play() {
     // update obliviate spells first
     for (int i = 0; i < 4; ++i) {
-      Player.spells[i].apply();
+      state.spells[i].apply();
     }
 
     // then update bludgers
-    Player.bludgers[0].play();
-    Player.bludgers[1].play();
+    state.bludgers[0].play();
+    state.bludgers[1].play();
     
 
     // then update all other spells
     for (int i = 4+1; i < 16; ++i) {
-      Player.spells[i].apply();
+      state.spells[i].apply();
     }
 
     // Resolve collision & do move
     move();
 
     // end of player move, round the speed & positions
-    for (int i = 0; i < Player.unitsFE; ++i) {
-      Player.units[i].end();
+    for (int i = 0; i < state.unitsFE; ++i) {
+      state.units[i].end();
     }
 
     // update global mana
-    if (Player.myMana != 100) {
-      Player.myMana += 1;
+    if (state.myMana != 100) {
+      state.myMana += 1;
     }
 
   }
@@ -90,12 +93,12 @@ public class Simulation {
     // Get first collisions
     if (Player.DEBUG_SIM) {
       System.err.println("Will move: ");
-      for (i = 0; i < Player.unitsFE; ++i) {
-        System.err.println("    "+Player.units[i]);
+      for (i = 0; i < state.unitsFE; ++i) {
+        System.err.println("    "+state.units[i]);
       }
     }
-    for (i = 0; i < Player.unitsFE; ++i) {
-      a = Player.units[i];
+    for (i = 0; i < state.unitsFE; ++i) {
+      a = state.units[i];
 
       // collision contre les murs
       col = a.wallCollision(t);
@@ -107,8 +110,8 @@ public class Simulation {
       }
 
       // collision contre les autres units
-      for (j = i + 1; j < Player.unitsFE; ++j) {
-        b = Player.units[j];
+      for (j = i + 1; j < state.unitsFE; ++j) {
+        b = state.units[j];
         if (a.canCollide(b)) {
           col = a.collision(b, t);
           if (col != null) {
@@ -123,16 +126,16 @@ public class Simulation {
     
     while (t < 1.0) {
       if (next == NO_COLLISION) { // no collision found
-        for (i = 0; i < Player.unitsFE; ++i) {
-          Player.units[i].move(1.0 - t);
+        for (i = 0; i < state.unitsFE; ++i) {
+          state.units[i].move(1.0 - t);
         }
 
         break;
       } else {
         // Move to the collision time
         delta = next.t - t;
-        for (i = 0; i < Player.unitsFE; ++i) {
-          Player.units[i].move(delta);
+        for (i = 0; i < state.unitsFE; ++i) {
+          state.units[i].move(delta);
         }
 
         t = next.t;
@@ -178,8 +181,8 @@ public class Simulation {
         }
 
         // check other units
-        for (i = 0; i < Player.unitsFE; ++i) {
-          u = Player.units[i];
+        for (i = 0; i < state.unitsFE; ++i) {
+          u = state.units[i];
 
           if (a.id != u.id && a.canCollide(u)) {
             col = a.collision(u, t);
@@ -211,8 +214,8 @@ public class Simulation {
             }
           }
 
-          for (i = 0; i < Player.unitsFE; ++i) {
-            u = Player.units[i];
+          for (i = 0; i < state.unitsFE; ++i) {
+            u = state.units[i];
 
             if (b.id != u.id && b.canCollide(u)) {
               col = b.collision(u, t);

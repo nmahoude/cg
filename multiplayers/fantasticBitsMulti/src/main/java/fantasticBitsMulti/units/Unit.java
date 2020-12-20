@@ -51,7 +51,7 @@ public abstract class Unit {
 
   @Override
   public String toString() {
-    return id+" ["+type+"] "+position+"";
+    return id+" ["+type+"] "+position+" V("+(int)vx+","+(int)vy+")";
   }
   
   public void move(double t) {

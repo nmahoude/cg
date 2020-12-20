@@ -34,46 +34,25 @@ public class Player {
   public static double sinAngles[] = new double[ANGLES_LENGTH];
   
   public static FastRand rand;
-  public static int myTeam;
   
-
-  public static Wizard[] wizards = new Wizard[4];
-  static Unit unitsById[] = new Unit[24];
-  public static int unitsFE = 0;
-  public static Unit[] units = new Unit[20];
-  public static Wizard myWizard1;
-  public static Wizard myWizard2;
-  public  static Wizard hisWizard1;
-  public static Wizard hisWizard2;
+  public static Point mid = new Point(8000, 3750);
   public static Point myGoal;
   public static Point hisGoal;
-  private static Point mid;
-  public static Bludger[] bludgers = new Bludger[2];
-  private static Pole[] poles = new Pole[4];
-  
-  public static Spell spells[] = new Spell[4*4];
-  public static Unit spellTargets[][] = new Unit[4][20];
-  public static int spellTargetsFE[] = new int[4];
+  public static Pole[] poles = new Pole[4];
+  static {
+    poles[0] = new Pole(20, 0, 1750);
+    poles[1] = new Pole(21, 0, 5750);
+    poles[2] = new Pole(22, 16000, 1750);
+    poles[3] = new Pole(23, 16000, 5750);
+  }
 
-  public static int myMana;
-  public static int myScore;
-  public static int hisScore;
-  private static int hisMana;
-  
-  
-  public static int _myMana;
-  public static int _myScore;
-  public static int _hisScore;
-  private static int _hisMana;
+  public static State state;
   
   
   
-  public static Snaffle[] snaffles = new Snaffle[10];
-  public static int snafflesFE;
   public static long start;
   public static int turn = 0;
   public static int victory;
-  private static int bludgersFE;
   
   
   static {
@@ -81,121 +60,25 @@ public class Player {
     rand = new FastRand(73);
   }
   
-  public static void backupState() {
-    _myMana = myMana;
-    _myScore = myScore;
-    _hisMana = hisMana;
-    _hisScore = hisScore;
-    
-    for (int i = 0; i < unitsFE; ++i) {
-      units[i].save();
-    }
-
-    for (int i = 0; i < 16; ++i) {
-      spells[i].save();
-    }
-  }
   
-  public static void restoreState() {
-    myMana = _myMana;
-    myScore = _myScore;
-    hisMana = _hisMana;
-    hisScore = _hisScore;
-    
-    for (int i = 0; i < unitsFE; ++i) {
-      units[i].reset();
+  public static void init(int myTeam) {
+    if (myTeam == 0) {
+      myGoal = new Point(16000, 3750);
+      hisGoal = new Point(0, 3750);
+    } else {
+      myGoal = new Point(0, 3750);
+      hisGoal = new Point(16000, 3750);
     }
-
-    for (int i = 0; i < 16; ++i) {
-      spells[i].reset();
-    }
+    state = new State(myTeam);
   }
-  
-  static public void init(int myTeam) {
-    Player.myTeam = myTeam;
-    createWizards();
-    createBludgers();
-    createPoles();
-    unitsFE = 10;
 
-    int spellsFE = 0;
-    for (int i = 0; i < 4; ++i) {
-      for (int j = 0; j < 4; ++j) {
-        spells[spellsFE++] = wizards[j].spells[i];
-      }
-    }
-  }
-  
   public static void main(String[] args) {
     Scanner in = new Scanner(System.in);
 
     init(in.nextInt());
     
     while (true) {
-      bludgersFE = 0;
-      snafflesFE = 0;
-      resetSnaffles();
-
-      myScore = in.nextInt();
-      updateStartAfter1stRead();
-      myMana = in.nextInt();
-      hisScore = in.nextInt();
-      hisMana = in.nextInt();
-      
-      TestOutputer.output(myScore, myMana, hisScore, hisMana);
-      
-      int entities = in.nextInt();
-      for (int i = 0; i < entities; i++) {
-        int id = in.nextInt();
-        String entity = in.next();
-        EntityType entityType = EntityType.valueOf(entity);
-        int x = in.nextInt();
-        int y = in.nextInt();
-        int vx = in.nextInt();
-        int vy = in.nextInt();
-        int state = in.nextInt();
-        
-        // System.err.println("createUnit("+id+", \""+entity+"\", "+x+", "+y+", "+vx+", "+vy+", "+state+");");
-        TestOutputer.output(id, entity, x, y, vx, vy, state);
-        Unit unit = null;
-        if (entityType == EntityType.WIZARD || entityType == EntityType.OPPONENT_WIZARD)  {
-          unit = wizards[id];
-        } else if (entityType == EntityType.SNAFFLE) {
-          if (turn == 0) {
-            unit = new Snaffle();
-          } else {
-            unit = unitsById[id];
-          }
-          units[unitsFE++] = unit;
-          snaffles[snafflesFE++] = (Snaffle)unit;
-        } else if (entityType == EntityType.BLUDGER) {
-          unit = bludgers[bludgersFE++];
-        }
-        unit.update(id, x, y, vx, vy, state);
-      }
-      
-      if (turn == 0) {
-        victory = (snafflesFE / 2 ) + 1;
-        affectUnitsToUnitsById();
-      }
-
-      // Mise à jour des carriers et des snaffles
-      updateWizardsAndSnaffles();
-      updateBludgersSpells();
-      updatePetrificus();
-      updateSnaffleSpells();
-      
-
-      for (int i = 0; i < 16; ++i) {
-        spells[i].checkTarget();
-      }
-      
-      backupState();
-      for (int i=0;i<4;i++) {
-        if (Player.wizards[i].snaffle != null) {
-          TestOutputer.outputCommand("Player.wizards["+i+"].snaffle"+Player.wizards[i].snaffle.id);
-        }
-      }
+      state.read(in);
       
       if (turn == 9 || turn == 10) {
         System.err.println("-------------------------------");
@@ -210,139 +93,34 @@ public class Player {
         
         new Simulation().simulate(action0, Action.WAIT, Action.WAIT, Action.WAIT);
         
-        System.err.println("My score "+myScore);
-        System.err.println("Opp score "+hisScore);
-        for (int i=0;i<unitsFE;i++) {
-          System.err.println(""+units[i]);
+        System.err.println("My score "+state.myScore);
+        System.err.println("Opp score "+state.hisScore);
+        for (int i=0;i<state.unitsFE;i++) {
+          System.err.println(""+state.units[i]);
         }
         Player.DEBUG_SIM = false;
-        restoreState();
+        state.restoreState();
         System.err.println("-------------------------------");
       }
       
       AGSolution solution = AG.evolution();
 
-      myWizard1.output(solution.moves1[0], solution.spellTurn1, solution.spell1, solution.spellTarget1);
-      myWizard2.output(solution.moves2[0], solution.spellTurn2, solution.spell2, solution.spellTarget2);
+      state.wizards[0].output(solution.moves1[0], solution.spellTurn1, solution.spell1, solution.spellTarget1);
+      state.wizards[1].output(solution.moves2[0], solution.spellTurn2, solution.spell2, solution.spellTarget2);
 
       Player.turn += 1;
-      Player.unitsFE = 10; // 4 poles, 4 wizards & 2 bludgers
+      state.unitsFE = 10; // 4 poles, 4 wizards & 2 bludgers
 
     }
   }
 
-  private static void updateStartAfter1stRead() {
+  static void updateStartAfter1stRead() {
     start = System.currentTimeMillis();
     if (turn == 0) {
       start += 800;
     }
   }
 
-  public static void updateWizardsAndSnaffles() {
-    for (int i = 0; i < 4; ++i) {
-      wizards[i].updateSnaffle();
-    }
-  }
-
-  public static void affectUnitsToUnitsById() {
-    for (int i=0;i<unitsFE;++i) {
-      unitsById[units[i].id] = units[i];
-    }
-  }
-
-  private static void resetSnaffles() {
-    for (int i = 0; i < 24; ++i) {
-      Unit u = unitsById[i];
-
-      if (u != null && u.type == EntityType.SNAFFLE) {
-        u.dead = true;
-        u.carrier = null;
-      }
-    }
-  }
-
-
-  public static void updateSnaffleSpells() {
-    // Snaffles pour tous les sorts sauf obliviate
-    for (int i = 1; i < 4; ++i) {
-      for (int j = 0; j < snafflesFE; ++j) {
-        spellTargets[i][spellTargetsFE[i]++] = snaffles[j];
-      }
-    }
-  }
-
-  public static void updatePetrificus() {
-    // Wizards ennemis pour petrificus et flipendo
-    if (myTeam == 0) {
-      spellTargets[Spell.PETRIFICUS][spellTargetsFE[Spell.PETRIFICUS]++] = wizards[2];
-      spellTargets[Spell.PETRIFICUS][spellTargetsFE[Spell.PETRIFICUS]++] = wizards[3];
-      spellTargets[Spell.FLIPENDO][spellTargetsFE[Spell.FLIPENDO]++] = wizards[2];
-      spellTargets[Spell.FLIPENDO][spellTargetsFE[Spell.FLIPENDO]++] = wizards[3];
-    } else {
-      spellTargets[Spell.PETRIFICUS][spellTargetsFE[Spell.PETRIFICUS]++] = wizards[0];
-      spellTargets[Spell.PETRIFICUS][spellTargetsFE[Spell.PETRIFICUS]++] = wizards[1];
-      spellTargets[Spell.FLIPENDO][spellTargetsFE[Spell.FLIPENDO]++] = wizards[0];
-      spellTargets[Spell.FLIPENDO][spellTargetsFE[Spell.FLIPENDO]++] = wizards[1];
-    }
-  }
-
-  public static void updateBludgersSpells() {
-    // Bludgers pour tous les sorts
-    for (int i = 0; i < 4; ++i) {
-      spellTargets[i][0] = bludgers[0];
-      spellTargets[i][1] = bludgers[1];
-      spellTargetsFE[i] = 2;
-    }    
-  }
-
-  private static void createWizards() {
-    wizards[0] = new Wizard(0);
-    wizards[1] = new Wizard(0);
-    wizards[2] = new Wizard(1);
-    wizards[3] = new Wizard(1);
-    units [0] = wizards[0];
-    units[1] = wizards[1];
-    units[2] = wizards[2];
-    units[3] = wizards[3];
-    initTeams();
-    mid = new Point(8000, 3750);
-  }
-
-  private static void createBludgers() {
-    bludgers [0] = new Bludger();
-    bludgers[1] = new Bludger();
-    units[4] = bludgers[0];
-    units[5] = bludgers[1];
-  }
-
-  private static void createPoles() {
-    poles[0] = new Pole(20, 0, 1750);
-    poles[1] = new Pole(21, 0, 5750);
-    poles[2] = new Pole(22, 16000, 1750);
-    poles[3] = new Pole(23, 16000, 5750);
-    units[6] = poles[0];
-    units[7] = poles[1];
-    units[8] = poles[2];
-    units[9] = poles[3];
-  }
-
-  private static void initTeams() {
-    if (myTeam == 0) {
-      myWizard1 = wizards[0];
-      myWizard2 = wizards[1];
-      hisWizard1 = wizards[2];
-      hisWizard2 = wizards[3];
-      myGoal = new Point(16000, 3750);
-      hisGoal = new Point(0, 3750);
-    } else {
-      myWizard1 = wizards[2];
-      myWizard2 = wizards[3];
-      hisWizard1 = wizards[0];
-      hisWizard2 = wizards[1];
-      myGoal = new Point(0, 3750);
-      hisGoal = new Point(16000, 3750);
-    }
-  }
 
   private static void initConstants() {
     for (int i = 0; i < ANGLES_LENGTH; ++i) {

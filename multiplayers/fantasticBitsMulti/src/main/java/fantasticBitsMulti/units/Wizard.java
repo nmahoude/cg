@@ -52,8 +52,8 @@ public class Wizard extends Unit {
     }
     if (snaffle != null) {
       if (action.type == Action.TYPE_THROW) {
-        snaffle.vx += action.cosAngle * action.thrust;
-        snaffle.vy += action.sinAngle * action.thrust;
+        snaffle.vx += 2 * action.cosAngle * action.thrust;
+        snaffle.vy += 2 * action.sinAngle * action.thrust;
       }
       
       snaffle.carrier = null;
@@ -100,11 +100,11 @@ public class Wizard extends Unit {
   public boolean cast(int spell, Unit target) {
     int cost = Spell.SPELL_COST[spell];
 
-    if (Player.myMana < cost || target.dead) {
+    if (Player.state.myMana < cost || target.dead) {
       return false;
     }
 
-    Player.myMana -= cost;
+    Player.state.myMana -= cost;
 
     spells[spell].cast(target);
 
@@ -160,8 +160,8 @@ public class Wizard extends Unit {
 
       if (turnsBeforeGrabbingAgain == 0) {
             // Check if we can grab a snaffle
-        for (int i = 0; i < Player.snafflesFE; ++i) {
-          Snaffle snaffle = Player.snaffles[i];
+        for (int i = 0; i < Player.state.snafflesFE; ++i) {
+          Snaffle snaffle = Player.state.snaffles[i];
 
           if (!snaffle.dead && snaffle.carrier == null && this.position.squareDistance(snaffle.position) < 159201.0) {
             grabSnaffle(snaffle);
@@ -189,8 +189,8 @@ public class Wizard extends Unit {
 
   public void updateSnaffle() {
     if (state != 0 /* just grab a snaffle */) {
-      for (int i = 0; i < Player.snafflesFE; ++i) {
-        Snaffle snaffle = Player.snaffles[i];
+      for (int i = 0; i < Player.state.snafflesFE; ++i) {
+        Snaffle snaffle = Player.state.snaffles[i];
 
         if (snaffle.position.equals(this.position) && snaffle.vx == vx && snaffle.vy == vy) {
           this.snaffle = snaffle;

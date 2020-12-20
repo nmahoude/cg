@@ -12,7 +12,7 @@ import fantasticBitsMulti.units.Unit;
 public class SimulationTest {
 
   public void test1() throws Exception {
-    Player.myMana = 100;
+    Player.state.myMana = 100;
     Player.init(1);
     
     createUnit(2, "WIZARD", 1141, 1991, -51, -2, 1);
@@ -26,24 +26,24 @@ public class SimulationTest {
     createUnit(10, "BLUDGER", 1879, 5955, -425, -15, 0);
 
     if (Player.turn == 0) {
-      Player.victory = (Player.snafflesFE / 2 ) + 1;
-      Player.affectUnitsToUnitsById();
+      Player.victory = (Player.state.snafflesFE / 2 ) + 1;
+      Player.state.affectUnitsToUnitsById();
     }
 
     // Mise à jour des carriers et des snaffles
-    Player.updateWizardsAndSnaffles();
-    Player.updateBludgersSpells();
-    Player.updatePetrificus();
-    Player.updateSnaffleSpells();
+    Player.state.updateWizardsAndSnaffles();
+    Player.state.updateBludgersSpells();
+    Player.state.updatePetrificus();
+    Player.state.updateSnaffleSpells();
     
-    for (int i = 0; i < Player.unitsFE; ++i) {
-      Player.units[i].save();
+    for (int i = 0; i < Player.state.unitsFE; ++i) {
+      Player.state.units[i].save();
     }
-    Player.backupState();
+    Player.state.backupState();
 
     for (int i = 0; i < 16; ++i) {
-      Player.spells[i].checkTarget();
-      Player.spells[i].save();
+      Player.state.spells[i].checkTarget();
+      Player.state.spells[i].save();
     }
 
     Player.start = System.nanoTime();
@@ -58,13 +58,13 @@ public class SimulationTest {
     int bludgersFE=0;
     
     if (entityType == EntityType.WIZARD || entityType == EntityType.OPPONENT_WIZARD)  {
-      unit = Player.wizards[id];
+      unit = Player.state.wizards[id];
     } else if (entityType == EntityType.SNAFFLE) {
       unit = new Snaffle();
-      Player.units[Player.unitsFE++] = unit;
-      Player.snaffles[Player.snafflesFE++] = (Snaffle)unit;
+      Player.state.units[Player.state.unitsFE++] = unit;
+      Player.state.snaffles[Player.state.snafflesFE++] = (Snaffle)unit;
     } else if (entityType == EntityType.BLUDGER) {
-      unit = Player.bludgers[bludgersFE++];
+      unit = Player.state.bludgers[bludgersFE++];
     }
     unit.update(id, x, y, vx, vy, state);
     

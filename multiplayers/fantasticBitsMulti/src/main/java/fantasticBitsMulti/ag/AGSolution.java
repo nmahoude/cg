@@ -27,11 +27,11 @@ public class AGSolution {
     }
     spellTurn1 = Player.rand.fastRandInt(AG.SPELL_DEPTH);
     spell1 = 2+Player.rand.fastRandInt(2);
-    spellTarget1 = Player.spellTargets[spell1][Player.rand.fastRandInt(Player.spellTargetsFE[spell1])];
+    spellTarget1 = Player.state.spellTargets[spell1][Player.rand.fastRandInt(Player.state.spellTargetsFE[spell1])];
     
     spellTurn2 = Player.rand.fastRandInt(AG.SPELL_DEPTH);
     spell2 = 2+Player.rand.fastRandInt(2);
-    spellTarget2 = Player.spellTargets[spell2][Player.rand.fastRandInt(Player.spellTargetsFE[spell2])];
+    spellTarget2 = Player.state.spellTargets[spell2][Player.rand.fastRandInt(Player.state.spellTargetsFE[spell2])];
   }
 
   public void copy(AGSolution solution) {
@@ -63,12 +63,12 @@ public class AGSolution {
       // Change spell1
       spellTurn1 = Player.rand.fastRandInt(AG.SPELL_DEPTH);
       spell1 = Player.rand.fastRandInt(4);
-      spellTarget1 = Player.spellTargets[spell1][Player.rand.fastRandInt(Player.spellTargetsFE[spell1])];
+      spellTarget1 = Player.state.spellTargets[spell1][Player.rand.fastRandInt(Player.state.spellTargetsFE[spell1])];
     } else {
       // Change spell2
       spellTurn2 = Player.rand.fastRandInt(AG.SPELL_DEPTH);
       spell2 = Player.rand.fastRandInt(4);
-      spellTarget2 = Player.spellTargets[spell2][Player.rand.fastRandInt(Player.spellTargetsFE[spell2])];
+      spellTarget2 = Player.state.spellTargets[spell2][Player.rand.fastRandInt(Player.state.spellTargetsFE[spell2])];
     }
   }
 
@@ -132,12 +132,12 @@ public class AGSolution {
 
       if (spellTarget1.dead) {
         spellTurn1 = AG.SPELL_DEPTH - 1;
-        spellTarget1 = Player.spellTargets[spell1][rand.fastRandInt(Player.spellTargetsFE[spell1])];
+        spellTarget1 = Player.state.spellTargets[spell1][rand.fastRandInt(Player.state.spellTargetsFE[spell1])];
       }
 
       if (spellTarget2.dead) {
         spellTurn2 = AG.SPELL_DEPTH - 1;
-        spellTarget2 = Player.spellTargets[spell2][rand.fastRandInt(Player.spellTargetsFE[spell2])];
+        spellTarget2 = Player.state.spellTargets[spell2][rand.fastRandInt(Player.state.spellTargetsFE[spell2])];
       }
     }
   }

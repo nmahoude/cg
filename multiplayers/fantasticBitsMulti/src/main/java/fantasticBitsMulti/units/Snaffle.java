@@ -82,17 +82,17 @@ public class Snaffle extends Unit {
       if (position.y >= 2050.0 && position.y <= 5450.0) {
         dead = true;
 
-        if (Player.myTeam == 0) {
+        if (Player.state.myTeam == 0) {
           if (position.x > 8000) {
-            Player.myScore += 1;
+            Player.state.myScore += 1;
           } else {
-            Player.hisScore += 1;
+            Player.state.hisScore += 1;
           }
         } else {
           if (position.x > 8000) {
-            Player.hisScore += 1;
+            Player.state.hisScore += 1;
           } else {
-            Player.myScore += 1;
+            Player.state.myScore += 1;
           }
         }
       } else {
@@ -110,7 +110,7 @@ public class Snaffle extends Unit {
 
   @Override
   public void move(double t) {
-    if (!dead && carrier== null) {
+    if (!dead && carrier == null) {
       super.move(t);
     }
   }
