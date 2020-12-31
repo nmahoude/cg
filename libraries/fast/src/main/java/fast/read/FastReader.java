@@ -146,12 +146,16 @@ public class FastReader {
     while ((c = read()) != -1) {
       if (c == '\n' || c == ' ')
         break;
-      sBuf.append((byte)c);
+      sBuf.append((char)c);
     }
     return sBuf.toString();
   }
 
   public byte nextByte()  {
+    return nextBytes()[0];
+  }
+
+  public byte[] nextBytes() {
     byte[] buf = new byte[64]; // max line length
     int cnt = 0, c;
     while ((c = read()) != -1) {
@@ -159,6 +163,21 @@ public class FastReader {
         break;
       buf[cnt++] = (byte) c;
     }
-    return buf[0];
+    return buf;
+  }
+
+  public char[] nextChars() {
+    char[] buf = new char[64]; // max line length
+    int cnt = 0, c;
+    while ((c = read()) != -1) {
+      if (c == '\n' || c == ' ') {
+        buf[cnt++] = '\n';
+        break;
+      } else {
+        buf[cnt++] = (char)c;
+      }
+    }
+    buf[cnt++] = '\n';
+    return buf;
   }
 }
