@@ -8,6 +8,7 @@ import xmasrush.Pos;
 import xmasrush.State;
 import xmasrush.ai.push.Direction;
 import xmasrush.find.AStar;
+import xmasrush.find.BFS;
 
 public class MoveAI {
   MoveAction actions[] = new MoveAction[20];
@@ -21,6 +22,8 @@ public class MoveAI {
   
   List<Cell> bestPath = new ArrayList<>();
   AStar astar = new AStar();
+  BFS bfs = new BFS();
+  
   private State state;
   
   public void think(State state) {
@@ -46,6 +49,48 @@ public class MoveAI {
       bestPath.clear();
       bestPath.addAll(bestMp.path);
     }
+    
+    bfs.process(state, bestMp.currentCell, 20-bestMp.path.size());
+    
+    int bestCellIndex = -1;
+    double bestScore = Double.NEGATIVE_INFINITY;
+    for (int i=0;i<49;i++) {
+      if (bfs.gScore[i] != Integer.MAX_VALUE) {
+        
+        Cell currentCell = state.cells[i];
+        
+        int dist = 0;
+        int count = 0;
+        for (int qi=0;qi<state.agents[0].questItemsFE;qi++) {
+          count++;
+          if (state.agents[0].questItems[qi] == null) continue;
+          dist+=state.agents[0].questItems[qi].manhattan(currentCell.pos);
+        }    
+        
+        double score = 1000.0
+            - 1.0 * currentCell.pos.manhattan(State.Center)
+            + 10 * currentCell.exitCount()
+            - 0.1 * (count > 0 ? 1.0 * dist / count : 0)
+            ;
+        
+        System.err.println(" MOVEAI - Looking for "+currentCell+" => score ="+score);
+        if (score > bestScore) {
+          bestScore = score;
+          bestCellIndex = i;
+        }
+      }
+    }
+    System.err.println("Should go to "+state.cells[bestCellIndex]);
+    if (state.cells[bestCellIndex] != bestMp.currentCell) {
+      List<Cell> movePath = bfs.reconstructPathTo(bestCellIndex);
+      if (bestPath.size() == 0) {
+        bestPath.addAll(movePath);
+      } else {
+        bestPath.addAll(movePath.subList(1, movePath.size()-1));
+      }
+    }
+    
+    System.err.println("My path will be "+bestPath);
     
 //    for (int i=0;i<state.agents[0].questItemsFE;i++) {
 //      if (state.agents[0].questItems[i] == null) continue;

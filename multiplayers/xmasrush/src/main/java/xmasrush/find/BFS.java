@@ -33,9 +33,12 @@ public class BFS {
   }
 
   public void process(State state, Cell start) {
+    process(state, start, 20);
+  }
+  
+  public void process(State state, Cell start, int maxDepth) {
     this.state = state; // hold temporary
     
-    int maxDepth = 20;
     init(start);
     
     
@@ -47,7 +50,7 @@ public class BFS {
         Cell nextCell = currentCell.getVisitableNeighbor(dir);
         if (nextCell != Cell.WALL) {
           int tentativeGScore = gScore[current.offset] + 1;
-          if (tentativeGScore < gScore[nextCell.pos.offset]) {
+          if (tentativeGScore < gScore[nextCell.pos.offset] && tentativeGScore < maxDepth) {
             gScore[nextCell.pos.offset] = tentativeGScore;
             cameFrom[nextCell.pos.offset] = current;
             // force reinsertion with correct order
@@ -84,5 +87,18 @@ public class BFS {
     }
     return actions;
 	}
+
+  public List<Cell> reconstructPathTo(int index) {
+    List<Cell> actions = new ArrayList<>();
+    
+    AStarNode prev;
+    actions.add(state.cells[index]);
+    while(cameFrom[index]!= null) {
+      prev = cameFrom[index];
+      actions.add(0, state.cells[prev.offset]);
+      index = prev.offset;
+    }
+    return actions;
+  }
 
 }

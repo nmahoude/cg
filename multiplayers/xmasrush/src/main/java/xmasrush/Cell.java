@@ -15,8 +15,8 @@ public class Cell {
   
   public final Pos pos;
   public Cell[] neighbors = new Cell[4];
-  int directions, invDir; /* 4 bits for directions*/
-  int itemIndex = -1;
+  int directions, invDir; /* 4 bits for directions + 4 bits for invDir*/
+  int itemIndex = -1; /* 4+1 bits */
 
   
   static char directionsStr[] = new char[] {
@@ -95,6 +95,10 @@ public class Cell {
 
   public void reset() {
     itemIndex = -1;
+  }
+
+  public double exitCount() {
+    return Integer.bitCount(directions);
   }
 
 }

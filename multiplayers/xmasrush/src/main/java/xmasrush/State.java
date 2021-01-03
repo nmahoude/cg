@@ -4,6 +4,8 @@ import cgutils.test.TestOutputer;
 import fast.read.FastReader;
 
 public class State {
+  public static final Pos Center = Pos.get(3,3);
+  
   public int turnType;
   public Cell[] cells = new Cell[7*7];
   public Agent[] agents = new Agent[2];
