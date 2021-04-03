@@ -93,7 +93,7 @@ public class CodingameView extends Application {
     toolbar = new ToolBar();
     root.getChildren().add(toolbar);
 
-    rootNode = new GfxNode(this, rootGameNode);
+    rootNode = new GfxNode(this, null, rootGameNode);
     rootNode.updateWidth();
     rootNode.redispose();
     rootNode.setTranslateX(500);

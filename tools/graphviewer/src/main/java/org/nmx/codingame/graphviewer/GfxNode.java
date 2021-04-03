@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.scene.Group;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
@@ -12,16 +13,23 @@ class GfxNode extends Group {
 	 * 
 	 */
 	private final CodingameView codingameView;
-	private GameNode node;
-  private boolean childrenHidden = false;
+	GfxNode parent;
+  List<GfxNode> gfxChildren = new ArrayList<>();
+	private boolean replie = false;
 
+	// back link to GameNode
+	private GameNode node;
+  
+
+	// shape
   private Circle circle;
   Line line;
   int width;
 
-  List<GfxNode> gfxChildren = new ArrayList<>();
   
-  public GfxNode(CodingameView codingameView, GameNode gameNode) {
+  
+  public GfxNode(CodingameView codingameView, GfxNode parent, GameNode gameNode) {
+  	this.parent = parent;
     this.codingameView = codingameView;
 		this.node = gameNode;
     this.codingameView.gfxNodes.add(this);
@@ -30,12 +38,19 @@ class GfxNode extends Group {
     if (gameNode.score() > this.codingameView.maxValue) { this.codingameView.maxValue = gameNode.score(); }
     
     for (GameNode child : node.getChildren()) {
-      GfxNode c = new GfxNode(this.codingameView, child);
+      GfxNode c = new GfxNode(this.codingameView, this, child);
       this.getChildren().add(c);
       gfxChildren.add(c);
     }
     //setTranslateX(random.nextInt(7*32));
     setTranslateY(64);
+
+    if (parent == null) {
+    	addRootShape();
+    }
+
+    line = new Line();
+    this.getChildren().add(line);
 
     circle = new Circle();
     circle.setOnMouseClicked(event -> {
@@ -45,21 +60,27 @@ class GfxNode extends Group {
         if (hasChildrenHidden())  {
           showChildren(); 
         } else {
-          hideChildren();
+          replierNoeud();
         }
       }
     });
-    
     this.getChildren().add(circle);
+    
+    
     this.codingameView.gfxNodes.add(this);
-
-    line = new Line();
-    this.getChildren().add(line);
-
   }
 
-  public void updateWidth() {
-    if (gfxChildren.isEmpty() || childrenHidden) {
+  private void addRootShape() {
+  	Circle ring = new Circle();
+  	ring.setRadius(20);
+  	ring.setFill(Color.TRANSPARENT);
+  	ring.setStroke(Color.AQUA);
+  	ring.setStrokeWidth(2);
+  	this.getChildren().add(ring);
+	}
+
+	public void updateWidth() {
+    if (gfxChildren.isEmpty() || replie) {
       this.width = 32;
     } else {
       this.width = 0;
@@ -70,7 +91,7 @@ class GfxNode extends Group {
     }
   }
   
-  boolean updateDetails() {
+  boolean updateDetails(boolean oneParentReplie) {
     circle.setRadius(16);
     if (node.score() >= this.codingameView.percentile * this.codingameView.maxValue) {
       circle.setFill(this.codingameView.colorFor(node.score()));
@@ -86,9 +107,9 @@ class GfxNode extends Group {
       line.setEndY(0);
     }
     
-    boolean visible = !this.codingameView.hideNodeUnderThreshold || node.score() >= this.codingameView.percentile * this.codingameView.maxValue;
+    boolean visible = !oneParentReplie;
     for (GfxNode child : gfxChildren) {
-      visible |= child.updateDetails();
+      visible |= child.updateDetails(oneParentReplie | this.replie);
     }
     
     if (!visible) {
@@ -108,26 +129,22 @@ class GfxNode extends Group {
       currentX+=child.width+2;
       child.redispose();
     }
-    updateDetails();
+    updateDetails(parent == null ? false : parent.replie);
   }
   
   public boolean hasChildrenHidden() {
-    return childrenHidden;
+    return replie;
   }
-  public void hideChildren() {
-    childrenHidden = true;
-    for (GfxNode node : this.gfxChildren) {
-      node.hide();
-    }
+  public void replierNoeud() {
+    replie = true;
     this.codingameView.rootNode.updateWidth();
     this.codingameView.rootNode.redispose();
   }
 
   public void showChildren() {
-    childrenHidden = false;
-    for (GfxNode node : this.gfxChildren) {
-      node.show();
-    }
+    replie = false;
+    this.codingameView.rootNode.updateWidth();
+    this.codingameView.rootNode.redispose();
   }
 
   

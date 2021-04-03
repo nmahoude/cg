@@ -14,6 +14,11 @@ public abstract class GameNode {
     return children;
   }
   
+	public void addChild(GameNode child) {
+		children.add(child);
+		child.parent = this;
+	}
+
   public abstract List<String> getTipDisplay();
   public abstract double score();
 }
