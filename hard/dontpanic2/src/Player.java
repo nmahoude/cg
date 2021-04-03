@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 class Player {
 
-	private static final boolean DEBUG = true;
 	private static int nbFloors;
 	private static int width;
 	private static int nbRounds;
@@ -14,7 +13,13 @@ class Player {
 	private static int nbAdditionalElevators;
 
 	static enum Direction {
-		RIGHT, LEFT, NONE
+		RIGHT(0), LEFT(1), NONE(100);
+
+		public final int value;
+
+		Direction(int value) {
+			this.value = value;
+		}
 	}
 
 	static enum Action {
@@ -23,16 +28,47 @@ class Player {
 
 	static int floors[][];
 	static int realFloors[][];
-	static int blocksPerLine[];
-
-	static Node bestSoFar[][][];
-	private static boolean finishedAStar;
 
 	static class AStarNode {
-		public int round;
-		public int cameFrom;
+		public final int floor;
+		public final int pos;
+		public final int clones;
+		public final int elevator;
+		public final Player.Direction dir;
+		public final int remainingRounds;
+
+		public int rounds = -1;
+		public AStarNode cameFrom;
+		public Action action;
+		
+		public AStarNode(int y, int x, int c, int e, Direction dir) {
+			this.floor = y;
+			this.pos = x;
+			this.clones = c;
+			this.elevator = e;
+			this.dir = dir;
+			
+			remainingRounds = Math.abs(exitFloor - floor) + Math.abs(pos - exitPos);
+		}
+
+		public int estimatedTotalRounds() {
+			return rounds + remainingRounds;
+		}
+		
+		public boolean isExit() {
+			return pos == exitPos && floor == exitFloor;
+		}
+		
+		
+		@Override
+		public String toString() {
+			return ""+floor+" / "+pos+" / "+dir+" -> A = "+action;
+		}
 	}
 	
+	static Player.AStarNode[][][][][] aStars;
+	static Player.AStarNode[][][][][] aStarCameFrom;
+	static AStarNode exit;
 	
 	public static void main(String args[]) {
 		Scanner in = new Scanner(System.in);
@@ -46,17 +82,24 @@ class Player {
 
 		
 		
-		AStarNode aStar[] = new AStarNode[nbFloors*width*nbTotalClones*nbAdditionalElevators*2];
-		System.err.println("Length is "+aStar.length);
-		for (int i=0;i<aStar.length;i++) {
-			aStar[i] = new AStarNode();
+		aStars = new AStarNode[nbFloors][width][nbTotalClones+1][nbAdditionalElevators+1][2];
+		aStarCameFrom = new AStarNode[nbFloors][width][nbTotalClones+1][nbAdditionalElevators+1][2];
+
+		for (int y=0;y<nbFloors;y++) {
+			for (int x=0;x<width;x++) {
+				for (int c=0;c<nbTotalClones+1;c++) {
+					for (int e=0;e<nbAdditionalElevators+1;e++) {
+						for (int d=0;d<2;d++) {
+							aStars[y][x][c][e][d] = new AStarNode(y, x, c, e, d==0 ? Direction.RIGHT : Direction.LEFT);
+						}
+					}
+				}
+			}
 		}
 		
 		
 		floors = new int[nbFloors][width];
 		realFloors = new int[nbFloors][width];
-		blocksPerLine = new int[nbFloors];
-		bestSoFar = new Node[nbFloors][width][2];
 
 		System.err.println("nbClones = " + nbTotalClones);
 		System.err.println("NbRounds = " + nbRounds);
@@ -87,256 +130,114 @@ class Player {
 
 			System.err.println("Current floor=" + cloneFloor + " pos=" + clonePos + " direction=" + direction);
 
-			if (!finishedAStar) {
-				start = System.currentTimeMillis();
-				if (turn == 1) {
-					Node node = new Node();
-					node.rounds = 0;
-					node.direction = Direction.valueOf(direction);
-					node.pos = clonePos;
-					node.floor = cloneFloor;
-					node.cloneLeft = nbTotalClones;
-					node.additionalElevators = nbAdditionalElevators;
-					nodes.add(node);
-				}
+			AStarNode result = null;
+			if (turn == 1) {
+				AStarNode start = aStars[cloneFloor][ clonePos][ nbTotalClones][ nbAdditionalElevators][ Direction.valueOf(direction).value];
+				nodes.add(start);
+				result = findAStar();
+			}
+			
+			
+			if (result == null) {
+				System.err.println("Pas de soluton trouvée :(");
+			} else {
+				System.err.println("Une solution apparemment");
 				
-				Node result = findAStar();
-				
-				if (result == null) {
-					System.err.println("Pas de soluton trouvée :(");
-				} else {
-					System.err.println("Une solution apparemment");
-					
-					Node current = result;
-					while (current != null) {
-						if (current.action == Action.ELEVATOR) {
-							System.err.println("Setting elevator @ "+current);
-							floors[current.floor-1][current.pos] = 'E';
-						}
-						if (current.action == Action.BLOCK) {
-							System.err.println("Setting block @ "+current);
-							floors[current.floor][current.pos] = 'B';
-						}
-						
-						current = current.parent;
+				AStarNode current = result;
+				while (current != null) {
+					System.err.println("Node : "+current);
+					if (current.action == Action.ELEVATOR) {
+						System.err.println("Setting elevator @ "+current);
+						floors[current.floor-1][current.pos] = 'E';
 					}
+					if (current.action == Action.BLOCK) {
+						System.err.println("Setting block @ "+current);
+						floors[current.floor][current.pos] = 'B';
+					}
+					
+					current = current.cameFrom;
 				}
 			}
 
-			if (!finishedAStar) {
-				System.out.println("WAIT");
+			System.err.println("Current is "+cloneFloor+"/"+clonePos);
+			System.err.println("Floors = "+ floors[cloneFloor][clonePos]);
+			if (floors[cloneFloor][clonePos] == 'E' && realFloors[cloneFloor][clonePos] == 0) {
+				realFloors[cloneFloor][clonePos] = 'E';
+				System.out.println("ELEVATOR");
+			} else if (floors[cloneFloor][clonePos] == 'B' && realFloors[cloneFloor][clonePos] == 0) {
+				realFloors[cloneFloor][clonePos] = 'B';
+				System.out.println("BLOCK");
 			} else {
-				System.err.println("Current is "+cloneFloor+"/"+clonePos);
-				System.err.println("Floors = "+ floors[cloneFloor][clonePos]);
-				if (floors[cloneFloor][clonePos] == 'E' && realFloors[cloneFloor][clonePos] == 0) {
-					realFloors[cloneFloor][clonePos] = 'E';
-					System.out.println("ELEVATOR");
-				} else if (floors[cloneFloor][clonePos] == 'B' && realFloors[cloneFloor][clonePos] == 0) {
-					realFloors[cloneFloor][clonePos] = 'B';
-					System.out.println("BLOCK");
-				} else {
-					System.out.println("WAIT");
-				}
+				System.out.println("WAIT");
 			}
 		}
 	}
 
-
-	static PriorityQueue<Node> nodes = new PriorityQueue<>((n1, n2) -> Integer.compare(n1.estimatedTotalRounds(), n2.estimatedTotalRounds()));
-	private static long start;
-	public static Node findAStar() {
+	static PriorityQueue<AStarNode> nodes = new PriorityQueue<>((n1, n2) -> Integer.compare(n1.estimatedTotalRounds(), n2.estimatedTotalRounds()));
+	public static AStarNode findAStar() {
 		System.err.println("Astar turn");
 
 		while (!nodes.isEmpty()) {
-			if (System.currentTimeMillis() - start > 90) {
-				return null;
-			}
 			
+			AStarNode node = nodes.poll();
 			
-			Node node = nodes.poll();
-
 			if (node.rounds > nbRounds || node.floor > exitFloor) {
 				continue;
 			}
 			
-			if (node.isFinal()) {
-				finishedAStar = true;
+			if (node.isExit()) {
+				System.err.println("Found exit");
 				return node;
 			}
 			
+			if (floors[node.floor][node.pos] == 'E' ) {
+				// pas le choix
+				AStarNode next = aStars[node.floor+1][ node.pos][ node.clones][ node.elevator][ node.dir.value];
+				replaceIfNeeded(node, next, 1, Action.WAIT);
+				continue;
+			}
 			
-			Node best = bestSoFar[node.floor][node.pos][node.direction == Direction.RIGHT ? 0 : 1];
-			if (best == node) {
-				
+			// wait
+			if (node.dir == Direction.RIGHT) {
+				if (node.pos < width-1) {
+					AStarNode next = aStars[node.floor][ node.pos+1][ node.clones][ node.elevator][ node.dir.value];
+					replaceIfNeeded(node, next, 1, Action.WAIT);
+				}
 			} else {
-				if (best != null) {
-					if ( best.rounds <= node.rounds 
-						&& best.cloneLeft >= node.cloneLeft
-						&& best.additionalElevators >= node.additionalElevators
-						) {
-						continue; // won't do better
-					}
-					
-					if (best.rounds >= node.rounds 
-							&& best.cloneLeft <= node.cloneLeft
-							&& best.additionalElevators <= node.additionalElevators
-							) {
-						bestSoFar[node.floor][node.pos][node.direction == Direction.RIGHT ? 0 : 1] = node;
-					}
-				} else {
-					bestSoFar[node.floor][node.pos][node.direction == Direction.RIGHT ? 0 : 1] = node;
+				if (node.pos > 0) {
+					AStarNode next = aStars[node.floor][ node.pos-1][ node.clones][ node.elevator][ node.dir.value];
+
+					replaceIfNeeded(node, next, 1, Action.WAIT);
 				}
 			}
-				
-			if (DEBUG && node.action != Action.WAIT && node.floor >= 10) System.err.println("Node "+node);
 			
-			if (floors[node.floor][node.pos] == 'E') {
-				nodes.add(node.up());
-			} else {
-				if (node.action != Action.BLOCK && node.additionalElevators > 0) {
-					nodes.add(node.elevator());
-					
-				}
-				if (node.cloneLeft > 0) {
-					nodes.add(node.block());
-				}
-				
-				Node next = node.next();
-				if (next != null) {
-					nodes.add(next);
-				}
-			}			
+			// Elevator
+			if (node.elevator > 0 && node.floor < exitFloor) {
+				AStarNode next = aStars[node.floor+1][ node.pos][ node.clones][ node.elevator-1][ node.dir.value];
+
+				replaceIfNeeded(node, next, 3, Action.ELEVATOR);
+			}
+			
+			// Block
+			if (node.clones > 0) {
+				AStarNode next = aStars[node.floor][ node.pos][ node.clones-1][ node.elevator][ node.dir == Direction.RIGHT ? Direction.LEFT.value: Direction.RIGHT.value];
+
+				replaceIfNeeded(node, next, 3, Action.BLOCK);
+			}
 		}
 
 		System.err.println("No exit");
-		finishedAStar = true;
 		return null;
 	}
 		
 	
-	private static boolean isFinished(Node currentNode) {
-		if (currentNode.floor != exitFloor)
-			return false;
-
-		System.err.println("Get on last floor !");
-		int distanceToExit = Math.abs(currentNode.pos - exitPos) + currentNode.rounds;
-		if (distanceToExit > nbRounds)
-			return false;
-
-		if (currentNode.direction == Direction.RIGHT) {
-			if (currentNode.pos <= exitPos)
-				return true;
-		} else if (currentNode.direction == Direction.LEFT) {
-			if (currentNode.pos >= exitPos)
-				return true;
-		}
-		return false;
+	private static void replaceIfNeeded(AStarNode node, AStarNode next, int cost, Action action) {
+		if (next.rounds == -1 || next.rounds > node.rounds+cost) {
+			nodes.remove(next);
+			next.rounds = node.rounds+cost;
+			next.cameFrom = node;
+			next.action = action;
+			nodes.add(next);
+		}				
 	}
-
-	public static class Node {
-		Node parent;
-		public int additionalElevators;
-		public int cloneLeft;
-		int floor;
-		int pos;
-		int rounds;
-		Direction direction;
-		private Player.Action action;
-		
-		public boolean isFinal() {
-			return pos == exitPos && floor == exitFloor;
-		}
-		
-
-		public int currentRounds() {
-			return rounds;
-		}
-		
-		public int estimatedTotalRounds() {
-			return rounds + remaingingRounds();
-		}
-
-		public Player.Node next() {
-			Node node = new Node();
-			node.action = Action.WAIT;
-			node.parent = this;
-			node.cloneLeft = this.cloneLeft;
-			node.floor = this.floor;
-			node.direction = this.direction;
-			node.rounds = this.rounds + 1;
-			node.additionalElevators = this.additionalElevators;
-
-			if (direction == Direction.RIGHT && pos < width-1) {
-				node.pos = this.pos + 1;
-			} else if (direction == Direction.LEFT && pos > 0) {
-				node.pos = this.pos - 1;
-			} else {
-				return null;
-			}
-			return node;
-		}
-
-		public int remaingingRounds() {
-			if (floor > exitFloor) return Integer.MAX_VALUE;
-			return Math.abs(floor-exitFloor) + Math.abs(pos-exitPos);
-		}
-
-		public Node elevator() {
-			return elevator(pos);
-		}		
-		
-			public Node elevator(int pos) {
-			Node node = new Node();
-			node.action = Action.ELEVATOR;
-			node.parent = this;
-			node.cloneLeft = this.cloneLeft - 1;
-			node.floor = this.floor + 1;
-			node.pos = pos;
-			node.direction = this.direction;
-			node.rounds = this.rounds + 3  + Math.abs(this.pos - pos);
-			node.additionalElevators = this.additionalElevators - 1;
-			return node;
-		}
-
-		public Player.Node up() {
-			return up(pos);
-		}
-		
-		public Player.Node up(int pos) {
-			Node node = new Node();
-			node.action = Action.WAIT;
-			node.parent = this;
-			node.cloneLeft = this.cloneLeft;
-			node.floor = this.floor + 1;
-			node.pos = pos;
-			node.direction = this.direction;
-			node.additionalElevators = this.additionalElevators;
-			node.rounds = this.rounds + 1 + Math.abs(this.pos - pos);
-			return node;
-		}
-
-		public Node block() {
-			return block(pos);
-		}
-		
-		
-		public Node block(int pos) {
-			Node node = new Node();
-			node.action = Action.BLOCK;
-			node.parent = this;
-			node.cloneLeft = this.cloneLeft - 1;
-			node.floor = this.floor;
-			node.pos = pos;
-			node.additionalElevators = this.additionalElevators;
-			node.direction = this.direction == Direction.RIGHT ? Direction.LEFT : Direction.RIGHT;
-			node.rounds = this.rounds + 3  + Math.abs(this.pos - pos);
-			return node;
-		}
-
-		@Override
-		public String toString() {
-			return "A="+action+", Rnd=" + rounds + " F=" + floor + " / P=" + pos + " D="+direction+" => (" + cloneLeft + " / " + additionalElevators+")";
-		}
-	}
-
 }
