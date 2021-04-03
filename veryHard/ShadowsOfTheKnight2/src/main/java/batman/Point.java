@@ -1,20 +1,45 @@
 package batman;
 
 public class Point {
-  public int x;
-  public int y;
+	public static final Point WALL = new Point(-1, -1);
   
-  public Point() {
-    x = 0;
-    y = 0;
+  public final int x;
+  public final int y;
+  
+  public Point(int x, int y) {
+    this.x = x;
+    this.y = y;
   }
 
-  public Point(int w, int h) {
-    x = w;
-    y = h;
+  public String toString() {
+    return "P("+x+","+y+")";
   }
 
-  public String debug() {
-    return "("+x+","+y+")";
-  }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + x;
+		result = prime * result + y;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Point other = (Point) obj;
+		if (x != other.x)
+			return false;
+		if (y != other.y)
+			return false;
+		return true;
+	}
+  
+
+  
 }
