@@ -2,6 +2,7 @@ package org.nmx.codingame.graphviewer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -58,7 +59,7 @@ class GfxNode extends Group {
       
       if (event.isControlDown()) {
         if (hasChildrenHidden())  {
-          showChildren(); 
+          deplierNoeud(); 
         } else {
           replierNoeud();
         }
@@ -70,6 +71,18 @@ class GfxNode extends Group {
     this.codingameView.gfxNodes.add(this);
   }
 
+  
+  public void dfs(Consumer<GfxNode> function) {
+  	function.accept(this);
+  	for (GfxNode child : gfxChildren) {
+  		child.dfs(function);
+  	}
+  }
+
+  public GameNode node() {
+  	return node;
+  }
+  
   private void addRootShape() {
   	Circle ring = new Circle();
   	ring.setRadius(20);
@@ -135,16 +148,27 @@ class GfxNode extends Group {
   public boolean hasChildrenHidden() {
     return replie;
   }
+
   public void replierNoeud() {
+  	replierNoeud(false);
+  }
+  public void replierNoeud(boolean differRedispose) {
     replie = true;
-    this.codingameView.rootNode.updateWidth();
-    this.codingameView.rootNode.redispose();
+    if (!differRedispose) {
+    	this.codingameView.rootNode.updateWidth();
+    	this.codingameView.rootNode.redispose();
+    }
   }
 
-  public void showChildren() {
+  public void deplierNoeud() {
+  	deplierNoeud(false);
+  }
+  	public void deplierNoeud(boolean differRedispose) {
     replie = false;
-    this.codingameView.rootNode.updateWidth();
-    this.codingameView.rootNode.redispose();
+    if (!differRedispose) {
+	    this.codingameView.rootNode.updateWidth();
+	    this.codingameView.rootNode.redispose();
+    }
   }
 
   
@@ -155,5 +179,15 @@ class GfxNode extends Group {
   private void hide() {
     setVisible(false);
   }
+
+
+	public void deplierNoeudEtParent(boolean differRedispose) {
+    replie = false;
+    if (this.parent != null) this.parent.deplierNoeudEtParent(differRedispose);
+    if (!differRedispose) {
+	    this.codingameView.rootNode.updateWidth();
+	    this.codingameView.rootNode.redispose();
+    }
+	}
 
 }

@@ -100,13 +100,10 @@ public class CodingameView extends Application {
     gameView.getChildren().add(rootNode);
 
     
-    Button nextBtn = new Button("Next");
-    
-
-    nextBtn.setOnAction(event -> {
-      wait = false;
-    });
+    Button nextBtn = createNextBtn();
     toolbar.getItems().add(nextBtn);
+    Button replieBtn = createReplieBtn();
+    toolbar.getItems().add(replieBtn);
     
     // score percentile slider
     Slider slider = new Slider();
@@ -130,6 +127,31 @@ public class CodingameView extends Application {
     
     primaryStage.show();
   }
+
+	private Button createReplieBtn() {
+		Button nextBtn = new Button("Replié (thrshld)");
+    nextBtn.setOnAction(event -> {
+      replieWithThresoldAction();
+    });
+		return nextBtn;
+	}
+
+	/**
+	 * Replie all nodes with all childs under the currentThreshold
+	 */
+	private void replieWithThresoldAction() {
+		rootNode.dfs(gfx -> { if (gfx != rootNode) {if (gfx.node().score() > percentile * maxValue) gfx.deplierNoeudEtParent(false); else gfx.replierNoeud(false); }} );
+		rootNode.updateWidth();
+  	rootNode.redispose();
+	}
+
+	private Button createNextBtn() {
+		Button nextBtn = new Button("Next");
+    nextBtn.setOnAction(event -> {
+      wait = false;
+    });
+		return nextBtn;
+	}
 
   private void updateNodes() {
     rootNode.redispose();
