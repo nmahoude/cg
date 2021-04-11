@@ -1,14 +1,17 @@
 package codeBusters;
 
 public class P {
-  public P(int x, int y) {
+  public static final P NOWHERE = new P(100_000, 100_000);
+
+	public P(int x, int y) {
     this.x = x;
     this.y = y;
   }
-  public int x;
-  public int y;
+  public final int x;
+  public final int y;
   
   public int dist2(P other) {
+  	if (this == NOWHERE || other == NOWHERE) return Integer.MAX_VALUE;
     return (x-other.x)*(x-other.x) + (y-other.y)*(y-other.y);
   }
 

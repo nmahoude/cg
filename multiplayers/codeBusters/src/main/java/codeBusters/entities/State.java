@@ -1,6 +1,7 @@
 package codeBusters.entities;
 
 public enum State {
+	START(false),
   UNKNOWN(false),
   FREE(true),
   BUSTED(true),
