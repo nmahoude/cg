@@ -2,6 +2,7 @@ package cgcollections.arrays;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 public class FastArray<T> implements Iterable<T> {
   public final T elements[];
@@ -106,5 +107,13 @@ public class FastArray<T> implements Iterable<T> {
       }
     }
     return -1;
+  }
+  
+  
+  public void applyAll(Consumer<T> function) {
+  	System.err.println(function);
+		for (int i=0;i<length;i++) {
+			function.accept(elements[i]);
+		}
   }
 }
