@@ -45,9 +45,9 @@ public class Grid {
 			
 			double score = 0;
 			if (cp.lastSeenTurn < 0) {
-				score+=1_000_000;
+				score+=10_000_000;
 			}
-			score -= buster.position.dist2(cp.position);
+			score -= buster.position.dist(cp.position);
 			score -= cp.lastSeenTurn * 1000;
 			
 			

@@ -57,6 +57,11 @@ public class Action {
 		action.target = target;
 		return action;
 	}
+	
+	@Override
+	public String toString() {
+		return type+" "+ target+ " " + (ghost != null ? ghost : buster);
+	}
 
 	
 }

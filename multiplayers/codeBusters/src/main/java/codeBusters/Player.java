@@ -27,7 +27,8 @@ public class Player {
   public static final int RANGE_LIMIT_TO_BUST_GHOST_2 = 900 * 900;
   public static final int BUSTER_RANGE_2 = 1760 * 1760;
   public static final int STUN_RANGE_2 = 1760 * 1760;
-	public static final int MOVE_DISTANCE_2 = 800*800;
+  public static final int MOVE_DISTANCE = 800;
+	public static final int MOVE_DISTANCE_2 = MOVE_DISTANCE * MOVE_DISTANCE;
   
   public static Random rand = ThreadLocalRandom.current();
   public static int bustersPerPlayer;
@@ -42,7 +43,7 @@ public class Player {
   public static Grid grid;
   
 	public static int turn = 0;
-  
+  public static boolean seenAllGhost = false;
 	
 	public static Set<Ghost> ghostsToRescue = new HashSet<>();
 	
@@ -183,7 +184,13 @@ public class Player {
   }
 
   private static void updateGhostsStatus() {
-  	for (Ghost ghost : ghosts.elements) {
+		seenAllGhost = true;
+
+		for (Ghost ghost : ghosts.elements) {
+  		if (ghost.state == State.START) {
+  			seenAllGhost = false;
+  		}
+  		
   		
   		if (ghost.state != State.FREE) {
   			ghostsToRescue.remove(ghost);

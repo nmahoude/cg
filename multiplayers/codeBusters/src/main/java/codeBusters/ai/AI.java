@@ -41,38 +41,47 @@ public class AI {
 	private Action findBestAction(Buster buster) {
 		Action action;
 
+		System.err.println("Look for action for buster "+buster);
 		if (buster.stunned > 0) {
 			return Action.doWait();
 		}
 
 		if ((action = visitCenter(buster)) != null) {
+			System.err.println(" => Action from visit Center");
 			return action;
 		}
 		
 		if ((action = tryToRelease(buster)) != null) {
+			System.err.println(" => Action from Try to release");
 			return action;
 		}
 		
 		if ((action = tryToStun(buster)) != null) {
+			System.err.println(" => Action from try to stun");
 			return action;
 		}
 		
 		if ((action = tryToRescueGhost(buster)) != null) {
+			System.err.println(" => Action from try to rescue");
 			return action;
 		}
 
 		if ((action = tryToBust(buster)) != null) {
+			System.err.println(" => Action from try to bust "+action);
 			return action;
 		}
 		
 		if ((action = goToNearestGhost(buster)) != null) {
+			System.err.println(" => Action from go to nearest ghost "+ action);
 			return action;
 		}
 		
 		if ((action = explore(buster)) != null) {
+			System.err.println(" => Action from explore");
 			return action;
 		}
 		//return Action.doWait();
+		System.err.println(" => Action from random");
 		return Action.move(new P(Player.rand.nextInt(Player.WIDTH), Player.rand.nextInt(Player.HEIGHT)));
 	}
 
@@ -118,16 +127,7 @@ public class AI {
 
 
 	private Action goToNearestGhost(Buster buster) {
-		Ghost bestGhost = null;
-		int bestDist2 = Integer.MAX_VALUE;
-		for (Ghost ghost : Player.ghosts) {
-			if (ghost.state != State.FREE && ghost.state != State.IN_FOG) continue;
-			int dist2 = ghost.position.dist2(buster.position);
-			if (dist2 < bestDist2) {
-				bestDist2 = dist2;
-				bestGhost = ghost;
-			}
-		}
+		Ghost bestGhost = bestGhostToBust(buster);
 		if( bestGhost != null) {
 			return Action.move(bestGhost.position);
 		}
@@ -137,11 +137,15 @@ public class AI {
 
 	private Action tryToBust(Buster buster) {
 		Ghost bestGhost = bestGhostToBust(buster);
+		
 		if( bestGhost != null) {
+			if (!buster.isInRange2(bestGhost.position, Player.BUSTER_RANGE_2)) {
+				return null;
+			}
 			if (buster.isInRange2(bestGhost.position, Player.RANGE_LIMIT_TO_BUST_GHOST_2)) {
 				// ok we want to bust if but he is too close :(
 				// TODO move farther is better than waiting for the ghostToMove
-				System.err.println("Buster "+buster+" is too close");
+				System.err.println("Buster "+buster+" is too close from "+bestGhost);
 				for (int angle=0;angle<360;angle+=10) {
 					double x = 910 * Math.cos(1.0*Math.PI*angle/180) + bestGhost.position.x; 
 					double y = 910 * Math.sin(1.0*Math.PI*angle/180) + bestGhost.position.y;
@@ -165,14 +169,18 @@ public class AI {
 
 	private Ghost bestGhostToBust(Buster buster) {
 		Ghost bestGhost = null;
-		int bestEnergy = Integer.MAX_VALUE;
+		int bestScore = Integer.MIN_VALUE;
 		for (Ghost ghost : Player.ghosts) {
 			if (ghost.state != State.FREE) continue;
-			if (Player.turn < 30 && ghost.energy>20) continue;
-			if (!buster.isInRange2(ghost.position, Player.BUSTER_RANGE_2)) continue; 
+			if (!Player.seenAllGhost && ghost.energy>20) continue;
+			//if (!buster.isInRange2(ghost.position, Player.BUSTER_RANGE_2)) continue;
+			int turnToGo = (int)(buster.position.dist(ghost.position) / Player.MOVE_DISTANCE);
+			if (turnToGo > 3) continue;
 			
-			if (bestEnergy > ghost.energy) {
-				bestEnergy = ghost.energy;
+			int score = - turnToGo * 2 + (40 - ghost.energy);
+			
+			if (score > bestScore ) {
+				bestScore = score;
 				bestGhost = ghost;
 			}
 		}
@@ -262,6 +270,33 @@ public class AI {
 						return Action.eject(Player.myBase);
 					}
 				}
+			}
+		}
+		
+		
+		if (buster.stunCooldown > 0 && buster.position.dist2(Player.myBase) > Player.CENTER.dist2(Player.myBase)) {
+			System.err.println("Far and withoot stun");
+			// TODO check for escort ?
+			
+			// follow the walls and prey
+			int bestScore = Integer.MIN_VALUE;
+			P best = null;
+			for (int angle=0;angle<360;angle+=10) {
+				double x = buster.position.x + Player.MOVE_DISTANCE * Math.cos(1.0*Math.PI*angle/180); 
+				double y = buster.position.y + Player.MOVE_DISTANCE * Math.sin(1.0*Math.PI*angle/180);
+				System.err.println(""+x+", "+y);
+				if (x<0 || y< 0 || x >= Player.WIDTH || y>=Player.HEIGHT) continue;
+				
+				P tentative = new P((int)x, (int)y);
+				int score = -tentative.dist2(Player.myBase) + tentative.dist2(Player.CENTER);
+				System.err.println("tentative "+tentative+" => score = "+score);
+				if( score > bestScore) {
+					bestScore = score;
+					best = tentative;
+				}
+			}
+			if (best != null) {
+				return Action.move(best);
 			}
 		}
 		

@@ -43,4 +43,8 @@ public class P {
   public String toString() {
     return " "+x+" "+y+" ";
   }
+
+	public double dist(P position) {
+		return Math.sqrt(dist2(position));
+	}
 }
