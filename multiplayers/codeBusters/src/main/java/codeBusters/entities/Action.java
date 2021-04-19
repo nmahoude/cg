@@ -63,5 +63,11 @@ public class Action {
 		return type+" "+ target+ " " + (ghost != null ? ghost : buster);
 	}
 
+	public static Action radar() {
+		Action action = new Action();
+		action.type = MoveType.RADAR;
+		return action;
+	}
+
 	
 }

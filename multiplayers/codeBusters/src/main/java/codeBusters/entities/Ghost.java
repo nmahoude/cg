@@ -1,5 +1,8 @@
 package codeBusters.entities;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import codeBusters.P;
 import codeBusters.Player;
 
@@ -9,8 +12,10 @@ public class Ghost extends Entity {
   public State state = State.START;
   public int energy = 40;
   public int bustersOnIt;
-
+  public Set<Buster> onIt = new HashSet<>();
+  
   public Ghost() {
+  	super();
   	position = P.NOWHERE;
 	}
   

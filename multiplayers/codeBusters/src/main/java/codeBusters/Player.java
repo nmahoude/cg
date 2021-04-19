@@ -29,6 +29,7 @@ public class Player {
   public static final int STUN_RANGE_2 = 1760 * 1760;
   public static final int MOVE_DISTANCE = 800;
 	public static final int MOVE_DISTANCE_2 = MOVE_DISTANCE * MOVE_DISTANCE;
+	private static final int RADAR_RANGE_2 = 4400 * 4400;
   
   public static Random rand = ThreadLocalRandom.current();
   public static int bustersPerPlayer;
@@ -44,8 +45,10 @@ public class Player {
   
 	public static int turn = 0;
   public static boolean seenAllGhost = false;
+	public static boolean catchHalfGhost = false;
 	
 	public static Set<Ghost> ghostsToRescue = new HashSet<>();
+	public static int myPoints = 0;
 	
   public static void main(String args[]) {
   	grid = new Grid(100,WIDTH, HEIGHT);
@@ -56,6 +59,7 @@ public class Player {
     
     // game loop
     while (true) {
+    	
     	turn++;
       readTurn(in);
       
@@ -64,31 +68,59 @@ public class Player {
       updateGridStatus();
       updateGhostsStatus();
 
-      debugGhosts();
-
+      //debugGhosts();
+      debugBustersRadarZone();
+      
 			ai.think();
       
       for (Buster buster : myTeam.elements) {
       	if (buster.action.type == MoveType.STUN) {
       		buster.stunCooldown = 20;
       	}
-      	if (buster.action.type == MoveType.RELEASE) {
-      		for (Ghost g : ghosts) {
-      			if (g == buster.action.ghost) {
-      				g.position = P.NOWHERE;
-      				g.state = State.BASE;
-      			}
-      		}
+      	if (buster.action.type == MoveType.RELEASE && buster.carried.isReleaseInBase()) {
+      		myPoints++;
+        	if (myPoints>= ghostCount / 2) {
+        		System.err.println("Catch half the ghost, only one more to win !");
+        		catchHalfGhost = true;
+        	}
+      		Ghost ghost = buster.carried;
+      		ghost.position = P.NOWHERE;
+      		ghost.state = State.BASE;
       	}
         buster.action.output();
       }
     }
   }
 
+	private static void debugBustersRadarZone() {
+		// debug the number of checkpoint seen by each buster
+//		System.err.println("Debug checkpoints");
+		for (Buster buster : myTeam) {
+			int notseen = 0;
+			int totalTurnNotSeen = 0;
+			for (CheckPoint cp : grid.checkpoints) {
+				if (cp.lastSeenTurn == turn) continue;
+				int dist2 = cp.position.dist2(buster.position);
+				if (dist2 <= Player.RADAR_RANGE_2 & dist2 >= Player.BUSTER_RANGE_2 ) {
+					notseen++;
+					totalTurnNotSeen+=(turn-cp.lastSeenTurn);
+				}
+			}
+//			System.err.println("Infos for "+buster);
+//			System.err.println("   checkpoints not seen this turn : "+notseen);
+//			System.err.println("   checkpoints * last seen turn "+totalTurnNotSeen);
+			buster.notSeenAround = totalTurnNotSeen;
+			
+			
+		}
+		
+	}
+
 	private static void debugGhosts() {
 		int ghostInFog = 0;
 		for (Ghost ghost : ghosts.elements) {
 			System.err.println(ghost);
+			ghost.onIt.stream().forEach(b -> System.err.println("  "+b));
 		  if (ghost.state == State.IN_FOG) {
 		  	ghostInFog++;
 		  }
@@ -115,6 +147,9 @@ public class Player {
 		  if (entityType == -1) {
 		    Ghost ghost = ghosts.elements[entityId];
 		    ghost.position = new P(x, y);
+
+		    ghost.lastSeenTurn = turn;
+
 		    if (entityId != 0 && ghost.state== State.START) {
 		    	int antipodId = entityId % 2 == 1 ? entityId+1 : entityId -1;
 		    	Ghost antipod = ghosts.elements[antipodId];
@@ -130,8 +165,15 @@ public class Player {
 		    if (entityId >= bustersPerPlayer) entityId -=bustersPerPlayer;
 		    Buster buster = entityType == myTeamId ? myTeam.elements[entityId] : hisTeam.elements[entityId];
 		    buster.position = new P(x, y);
+		    
+		    buster.lastSeenTurn = turn;
+		    
 		    if (state == 2 && buster.state != 2) {
 		      buster.stunned = 20; // newly stunned
+		    }
+		    if (state == 3) {
+		    	Ghost bustGhost = ghosts.get(value);
+		    	bustGhost.onIt.add(buster);
 		    }
 		    buster.state = state;
 		    buster.value = value;
@@ -224,6 +266,8 @@ public class Player {
 
   private static void reinitGhostsState() {
     for (Ghost ghost : ghosts.elements) {
+			ghost.onIt.clear();
+			
       if (ghost.state != State.UNKNOWN && ghost.state != State.START) {
         ghost.state = State.IN_FOG;
       }

@@ -1,7 +1,10 @@
 package codeBusters;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import cgcollections.arrays.FastArray;
 import codeBusters.entities.Buster;
@@ -38,30 +41,35 @@ public class Grid {
 	}
 
 	public CheckPoint findCheckpoint(Buster buster) {
-		double bestScore = Double.NEGATIVE_INFINITY;
-		CheckPoint bestCp = null;
-		for (CheckPoint cp : checkpoints) {
-			if (cp.lastSeenTurn == Player.turn) continue;
-			
-			double score = 0;
-			if (cp.lastSeenTurn < 0) {
-				score+=10_000_000;
-			}
-			score -= buster.position.dist(cp.position);
-			score -= cp.lastSeenTurn * 1000;
-			
-			
-			if (score > bestScore) {
-				bestScore = score;
-				bestCp = cp;
-			}
-		}
-		
-		
-		return bestCp;
+    return findCheckpoint(buster, Collections.emptySet());
 	}
 	
+	public CheckPoint findCheckpoint(Buster buster, Set<P> alreadyCheckpointed) {
 	
+	int minLastSeen = Integer.MAX_VALUE;
+  double minDist2 = Double.POSITIVE_INFINITY;
+  CheckPoint r = null;
+  for (CheckPoint checkPoint : checkpoints) {
+  	if (alreadyCheckpointed.contains(checkPoint.position)) continue;
+      double dist2 = buster.position.dist2(checkPoint.position);
+      if (checkPoint.lastSeenTurn < minLastSeen || checkPoint.lastSeenTurn == minLastSeen && dist2 < minDist2) {
+          minLastSeen = checkPoint.lastSeenTurn;
+          minDist2 = dist2;
+          r = checkPoint;
+      }
+  }
+  return r;
+}
+
+	public Set<P> around(CheckPoint cp) {
+		Set<P> around = new HashSet<>();
+	  for (CheckPoint checkPoint : checkpoints) {
+	  	if (checkPoint.position.dist2(cp.position) < Player.BUSTER_RANGE_2) {
+	  		around.add(checkPoint.position);
+	  	}
+	  }
+		return around;
+	}
 	
 	
 }

@@ -10,8 +10,10 @@ public class Buster extends Entity{
   public Ghost carried;
   public int stunCooldown = 0;
   public int stunned = 0;
+  public boolean hasRadar = true;
 	
   public Action action = Action.doWait();
+	public int notSeenAround;
 
 	public boolean isInOwnBase() {
 		return (team == 0 && Player.TEAM0_BASE.dist2(this.position) < Player.BASE_RANGE_2)
@@ -34,5 +36,9 @@ public class Buster extends Entity{
 
 	public boolean inStunRange(Buster e) {
 		return this.isInRange2(e.position, Player.STUN_RANGE_2);
+	}
+
+	public boolean canStun(Buster b) {
+		return isInRange2(b.position, Player.STUN_RANGE_2);
 	}
 }

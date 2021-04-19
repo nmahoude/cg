@@ -1,7 +1,7 @@
 package codeBusters;
 
 public class P {
-  public static final P NOWHERE = new P(100_000, 100_000);
+  public static final P NOWHERE = new P(100_001, 100_002);
 
 	public P(int x, int y) {
     this.x = x;
