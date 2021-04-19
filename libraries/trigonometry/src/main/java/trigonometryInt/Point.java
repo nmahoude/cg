@@ -56,6 +56,10 @@ public class Point {
     return Math.abs(x-other.x)+Math.abs(y-other.y);
   }
   
+  public int distance2(Point other) {
+    return (x-other.x)*(x-other.x) + (y-other.y)*(y-other.y);
+  }
+
   public boolean inRange(int radius, Point other) {
     return distance(other) <= radius;
   }
