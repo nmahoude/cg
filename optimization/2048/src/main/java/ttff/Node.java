@@ -162,6 +162,27 @@ public class Node {
 		
 	}
 	
+	public void predict(Node parent) {
+		// TODO auto calculate ?
+		long freeCells = 0;
+		long mask = 0b1111;
+		for (int x = 0; x < 4; x++) {
+			for (int y = 0; y < 4; y++) {
+				if ((bits & mask) != 0) freeCells++;
+				mask = mask << 4;
+			}
+		}
+		System.err.println("Current freecells = "+freeCells);
+		
+		int spawnIndex = (int) (parent.seed % freeCells); // TODO quick find of the real location
+		int value = (parent.seed & 0x10) == 0 ? 2 : 4;
+		System.err.println("Previsions ");
+		System.err.println("It will be a " + value + " @ empty cell " + spawnIndex);
+		System.err.println("next seed will be " + this.seed);
+
+	}
+	
+	
 	protected long transpose(long state) {
 		long result = 0;
 
