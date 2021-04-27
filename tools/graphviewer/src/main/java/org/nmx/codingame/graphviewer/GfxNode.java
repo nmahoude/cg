@@ -10,6 +10,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
 class GfxNode extends Group {
+	
+	
   /**
 	 * 
 	 */
@@ -56,6 +58,15 @@ class GfxNode extends Group {
     circle.setOnMouseClicked(event -> {
       this.codingameView.infoPanel.fill(gameNode.getTipDisplay());
       
+      Circle selectedNode = this.codingameView.selectedNode;
+			selectedNode.setVisible(true);
+      selectedNode.setRadius(node.getRadius(this.codingameView.globalData) + 5);
+      selectedNode.setFill(Color.TRANSPARENT);
+      selectedNode.setStroke(Color.web("#00FF00"));
+      selectedNode.setStrokeWidth(2);
+      this.getChildren().add(selectedNode);
+    	
+    	
       if (event.isControlDown()) {
         if (hasChildrenHidden())  {
           deplierNoeud(); 

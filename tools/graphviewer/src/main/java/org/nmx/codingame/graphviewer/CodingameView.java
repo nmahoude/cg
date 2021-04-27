@@ -23,6 +23,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -122,6 +123,11 @@ public class CodingameView extends Application {
     toolbar.getItems().add(slider);
     
     root.getChildren().add(makeDraggableInfoPanel());
+    
+    selectedNode = new Circle();
+    selectedNode.setVisible(false); 
+    
+    root.getChildren().add(selectedNode);
     
     primaryStage.show();
   }
@@ -227,7 +233,9 @@ public class CodingameView extends Application {
 
   public boolean hideNodeUnderThreshold = false;
   InfoPanel infoPanel;
+	Circle selectedNode;
 
+	
   GfxNode rootNode;
   
   private static final class DragContext {
