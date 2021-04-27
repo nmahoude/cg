@@ -3,9 +3,8 @@ package weightsOptimizer;
 import java.util.Properties;
 import java.util.Random;
 
-import com.codingame.game.engine.Constants;
 import com.codingame.gameengine.runner.MultiplayerGameRunner;
-import com.codingame.gameengine.runner.dto.GameResult;
+import com.codingame.gameengine.runner.simulate.GameResult;
 
 public class WeightsOptimizer {
   static Random random = new Random(System.currentTimeMillis());
@@ -72,8 +71,6 @@ public class WeightsOptimizer {
     gameRunner.addAgent(agent1);
     gameRunner.addAgent(agent2);
 
-    Constants.VERBOSE_LEVEL = 0;
-    
     //set ruleset here
     System.setProperty("league.level", "6");
     

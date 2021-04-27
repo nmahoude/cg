@@ -1,6 +1,6 @@
 package optimizer;
 
-import com.codingame.gameengine.runner.dto.GameResult;
+import com.codingame.gameengine.runner.simulate.GameResult;
 
 @FunctionalInterface
 public interface GameResolver {

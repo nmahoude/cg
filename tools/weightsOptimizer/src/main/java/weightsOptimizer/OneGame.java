@@ -8,9 +8,8 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.codingame.game.engine.Constants;
 import com.codingame.gameengine.runner.MultiplayerGameRunner;
-import com.codingame.gameengine.runner.dto.GameResult;
+import com.codingame.gameengine.runner.simulate.GameResult;
 
 public class OneGame {
   static Random random = new Random(System.currentTimeMillis());
@@ -52,7 +51,6 @@ public class OneGame {
     gameRunner.addAgent(agent1);
     gameRunner.addAgent(agent2);
   
-    Constants.VERBOSE_LEVEL = 0;
     System.setProperty("league.level", "6");
     
     GameResult result = gameRunner.simulate();

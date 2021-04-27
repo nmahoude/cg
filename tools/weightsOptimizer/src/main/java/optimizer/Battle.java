@@ -2,7 +2,7 @@ package optimizer;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import com.codingame.gameengine.runner.dto.GameResult;
+import com.codingame.gameengine.runner.simulate.GameResult;
 
 /** launch n games between 2 bots */
 public class Battle {
