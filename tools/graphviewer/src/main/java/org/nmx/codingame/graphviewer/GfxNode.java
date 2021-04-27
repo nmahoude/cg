@@ -35,8 +35,7 @@ class GfxNode extends Group {
 		this.node = gameNode;
     this.codingameView.gfxNodes.add(this);
     
-    if (gameNode.score() < this.codingameView.minValue) { this.codingameView.minValue = gameNode.score(); }
-    if (gameNode.score() > this.codingameView.maxValue) { this.codingameView.maxValue = gameNode.score(); }
+    this.codingameView.globalData.addValue(gameNode.score());
     
     for (GameNode child : node.getChildren()) {
       GfxNode c = new GfxNode(this.codingameView, this, child);
@@ -103,15 +102,24 @@ class GfxNode extends Group {
       }
     }
   }
-  
-  boolean updateDetails(boolean oneParentReplie) {
-    circle.setRadius(16);
-    if (node.score() >= this.codingameView.percentile * this.codingameView.maxValue) {
-      circle.setFill(this.codingameView.colorFor(node.score()));
-    } else {
-      circle.setFill(CodingameView.DISABLE_PERCENTILE);
-    }
+
+  void updateRepresentation() {
     
+    circle.setRadius(node.getRadius(this.codingameView.globalData));
+    String nodeColor = node.getColor(this.codingameView.globalData);
+    if (nodeColor != null) {
+      circle.setFill(Color.web(nodeColor));
+    } else {
+      if (node.score() >= this.codingameView.globalData.scoreThreshold()) {
+        circle.setFill(this.codingameView.colorFor(node.score()));
+      } else {
+        circle.setFill(CodingameView.DISABLE_PERCENTILE);
+      }
+    }
+  }
+
+  boolean updateDetails(boolean oneParentReplie) {
+    updateRepresentation();
     
     if (node.parent != null) {
       line.setStartX(-this.getTranslateX());
@@ -134,7 +142,9 @@ class GfxNode extends Group {
     return visible;
   }
   
-  public void redispose() {
+
+
+public void redispose() {
 
     int currentX = -width / 2;
     for (GfxNode child : gfxChildren) {

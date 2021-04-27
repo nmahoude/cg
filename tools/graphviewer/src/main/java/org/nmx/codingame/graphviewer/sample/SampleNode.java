@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.nmx.codingame.graphviewer.GameNode;
+import org.nmx.codingame.graphviewer.GlobalData;
 
 public class SampleNode extends GameNode {
 	private double score;
@@ -25,4 +26,14 @@ public class SampleNode extends GameNode {
 	public double score() {
 		return score;
 	}
+	
+	@Override
+	public double getRadius(GlobalData data) {
+	  if (this.score > data.maxScore() / 2) {
+	    return 16;
+	  } else {
+	    return 8;
+	  }
+	}
+	
 }

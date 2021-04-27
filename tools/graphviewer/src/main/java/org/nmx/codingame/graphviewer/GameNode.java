@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class GameNode {
+  private static final int DEFAULT_RADIUS = 16;
   protected GameNode parent;
   protected List<GameNode> children = new ArrayList<>();
 
@@ -21,4 +22,12 @@ public abstract class GameNode {
 
   public abstract List<String> getTipDisplay();
   public abstract double score();
+
+  public double getRadius(GlobalData data) {
+    return DEFAULT_RADIUS;
+  }
+
+  public String getColor(GlobalData data) {
+    return null;
+  }
 }

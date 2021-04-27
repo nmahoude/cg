@@ -37,10 +37,8 @@ public class CodingameView extends Application {
   private Group gameView;
 
   private static GameNode rootGameNode;
-  
-  double maxValue = Double.NEGATIVE_INFINITY;
-  double minValue = Double.POSITIVE_INFINITY;
-  double percentile = 0.1;
+
+  public GlobalData globalData = new GlobalData();
 
   protected boolean controlIsDown = false;
 
@@ -117,7 +115,7 @@ public class CodingameView extends Application {
     slider.setBlockIncrement(1);
     slider.valueProperty().addListener(new ChangeListener<Number>() {
       public void changed(ObservableValue<? extends Number> ov,Number old_val, Number new_val) {
-        percentile = 1.0 * new_val.doubleValue() / 1000;
+        globalData.percentile = 1.0 * new_val.doubleValue() / 1000;
         updateNodes();
       }
     });
@@ -140,7 +138,7 @@ public class CodingameView extends Application {
 	 * Replie all nodes with all childs under the currentThreshold
 	 */
 	private void replieWithThresoldAction() {
-		rootNode.dfs(gfx -> { if (gfx != rootNode) {if (gfx.node().score() > percentile * maxValue) gfx.deplierNoeudEtParent(false); else gfx.replierNoeud(false); }} );
+		rootNode.dfs(gfx -> { if (gfx != rootNode) {if (gfx.node().score() > globalData.percentile * globalData.maxScore) gfx.deplierNoeudEtParent(false); else gfx.replierNoeud(false); }} );
 		rootNode.updateWidth();
   	rootNode.redispose();
 	}
@@ -196,7 +194,8 @@ public class CodingameView extends Application {
   }
   
   Paint colorFor(double score) {
-    double reductedScore = (score-minValue) / (maxValue - minValue);
+    
+    double reductedScore = globalData.reducted(score);
     return Color.color(reductedScore, 0, 1.0-reductedScore);
   }
 
@@ -230,6 +229,7 @@ public class CodingameView extends Application {
   InfoPanel infoPanel;
 
   GfxNode rootNode;
+  
   private static final class DragContext {
     public double mouseAnchorX;
     public double mouseAnchorY;
