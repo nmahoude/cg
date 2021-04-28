@@ -28,12 +28,17 @@ public class SampleNode extends GameNode {
 	}
 	
 	@Override
-	public double getRadius(GlobalData data) {
+	public int getRadius(GlobalData data) {
 	  if (this.score > data.maxScore() / 2) {
 	    return 16;
 	  } else {
 	    return 8;
 	  }
+	}
+	
+	@Override
+	public int getBoundingbox(GlobalData data) {
+	  return 16 * 2;
 	}
 	
 }

@@ -23,11 +23,15 @@ public abstract class GameNode {
   public abstract List<String> getTipDisplay();
   public abstract double score();
 
-  public double getRadius(GlobalData data) {
+  public int getRadius(GlobalData data) {
     return DEFAULT_RADIUS;
   }
 
   public String getColor(GlobalData data) {
     return null;
+  }
+
+  public int getBoundingbox(GlobalData data) {
+    return getRadius(data) * 2;
   }
 }

@@ -95,6 +95,8 @@ public class CodingameView extends Application {
     rootNode = new GfxNode(this, null, rootGameNode);
     rootNode.updateWidth();
     rootNode.redispose();
+    GfxNode.redraw(rootNode, globalData);
+
     rootNode.setTranslateX(500);
     gameView.getChildren().add(rootNode);
 
@@ -146,7 +148,8 @@ public class CodingameView extends Application {
 	private void replieWithThresoldAction() {
 		rootNode.dfs(gfx -> { if (gfx != rootNode) {if (gfx.node().score() > globalData.percentile * globalData.maxScore) gfx.deplierNoeudEtParent(false); else gfx.replierNoeud(false); }} );
 		rootNode.updateWidth();
-  	rootNode.redispose();
+		rootNode.redispose();
+		GfxNode.redraw(rootNode, globalData);
 	}
 
 	private Button createNextBtn() {
@@ -159,6 +162,7 @@ public class CodingameView extends Application {
 
   private void updateNodes() {
     rootNode.redispose();
+    GfxNode.redraw(rootNode, globalData);
   }
 
   static class InfoPanel {
