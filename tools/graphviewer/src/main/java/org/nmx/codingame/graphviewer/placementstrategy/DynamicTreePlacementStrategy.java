@@ -8,6 +8,7 @@ public class DynamicTreePlacementStrategy implements PlacementStrategy {
   private GlobalData data;
 
 
+  @Override
   public void place(GfxNode root, GlobalData data) {
     this.data = data;
     placeNode(root);

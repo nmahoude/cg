@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.nmx.codingame.graphviewer.placementstrategy.DynamicTreePlacementStrategy;
+import org.nmx.codingame.graphviewer.placementstrategy.PlacementStrategy;
 
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -13,7 +14,7 @@ import javafx.scene.shape.Line;
 
 public class GfxNode extends Group {
 	
-	private static DynamicTreePlacementStrategy strategy = new DynamicTreePlacementStrategy();
+	private static PlacementStrategy strategy = new DynamicTreePlacementStrategy();
 	
   /**
 	 * 

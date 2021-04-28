@@ -19,7 +19,7 @@ public class SampleNode extends GameNode {
 	
 	@Override
 	public List<String> getTipDisplay() {
-		return Arrays.asList("TODO ...", t1, ""+score);
+		return Arrays.asList("TODO ...", "id = "+t1, ""+"Score="+score);
 	}
 
 	@Override
