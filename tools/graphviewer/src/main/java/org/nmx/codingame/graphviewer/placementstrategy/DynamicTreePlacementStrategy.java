@@ -3,7 +3,7 @@ package org.nmx.codingame.graphviewer.placementstrategy;
 import org.nmx.codingame.graphviewer.GfxNode;
 import org.nmx.codingame.graphviewer.GlobalData;
 
-public class TreePlacementStrategy implements PlacementStrategy {
+public class DynamicTreePlacementStrategy implements PlacementStrategy {
 
   private GlobalData data;
 
@@ -16,6 +16,10 @@ public class TreePlacementStrategy implements PlacementStrategy {
 
   
   private void placeNode(GfxNode node) {
+    if (node.replie) {
+      node.width = node.node.getBoundingbox(data) + 2 ;
+      return;
+    }
     
     int width;
     if (node.children().isEmpty()) {

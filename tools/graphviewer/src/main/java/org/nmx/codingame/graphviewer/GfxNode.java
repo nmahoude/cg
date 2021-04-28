@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.nmx.codingame.graphviewer.placementstrategy.TreePlacementStrategy;
+import org.nmx.codingame.graphviewer.placementstrategy.DynamicTreePlacementStrategy;
 
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -13,13 +13,13 @@ import javafx.scene.shape.Line;
 
 public class GfxNode extends Group {
 	
-	private static TreePlacementStrategy strategy = new TreePlacementStrategy();
+	private static DynamicTreePlacementStrategy strategy = new DynamicTreePlacementStrategy();
 	
   /**
 	 * 
 	 */
 	private final CodingameView codingameView;
-	GfxNode parent;
+	public GfxNode parent;
   List<GfxNode> gfxChildren = new ArrayList<>();
 	public boolean replie = false;
 
@@ -47,8 +47,6 @@ public class GfxNode extends Group {
       this.getChildren().add(c);
       gfxChildren.add(c);
     }
-    //setTranslateX(random.nextInt(7*32));
-    setTranslateY(64);
 
     if (parent == null) {
     	addRootShape();
@@ -67,7 +65,9 @@ public class GfxNode extends Group {
       selectedNode.setFill(Color.TRANSPARENT);
       selectedNode.setStroke(Color.web("#00FF00"));
       selectedNode.setStrokeWidth(2);
-      this.getChildren().add(selectedNode);
+      if (!this.getChildren().contains(selectedNode)) {
+        this.getChildren().add(0, selectedNode);
+      }
     	
     	
       if (event.isControlDown()) {
@@ -107,18 +107,6 @@ public class GfxNode extends Group {
   	this.getChildren().add(ring);
 	}
 
-	public void updateWidth() {
-    if (gfxChildren.isEmpty() || replie) {
-      this.width = 32;
-    } else {
-      this.width = 0;
-      for (GfxNode child : gfxChildren) {
-        child.updateWidth();
-        this.width+= child.width + 2;
-      }
-    }
-  }
-
   void updateRepresentation() {
     
     circle.setRadius(node.getRadius(this.codingameView.globalData));
@@ -152,13 +140,6 @@ public class GfxNode extends Group {
   }
   
   public void redispose() {
-
-//    int currentX = -width / 2;
-//    for (GfxNode child : gfxChildren) {
-//      child.setTranslateX(currentX + child.width / 2);
-//      currentX+=child.width+2;
-//      child.redispose();
-//    }
     updateDetails(parent == null ? false : parent.replie);
   }
   
@@ -172,7 +153,6 @@ public class GfxNode extends Group {
   public void replierNoeud(boolean differRedispose) {
     replie = true;
     if (!differRedispose) {
-    	this.codingameView.rootNode.updateWidth();
     	this.codingameView.rootNode.redispose();
 
     	GfxNode.strategy.place(this.codingameView.rootNode, this.codingameView.globalData);
@@ -186,7 +166,6 @@ public class GfxNode extends Group {
   public void deplierNoeud(boolean differRedispose) {
     replie = false;
     if (!differRedispose) {
-      this.codingameView.rootNode.updateWidth();
       this.codingameView.rootNode.redispose();
       GfxNode.strategy.place(this.codingameView.rootNode, this.codingameView.globalData);
     }
@@ -206,7 +185,6 @@ public class GfxNode extends Group {
     replie = false;
     if (this.parent != null) this.parent.deplierNoeudEtParent(differRedispose);
     if (!differRedispose) {
-      this.codingameView.rootNode.updateWidth();
       this.codingameView.rootNode.redispose();
       GfxNode.strategy.place(this.codingameView.rootNode, this.codingameView.globalData);
     }
