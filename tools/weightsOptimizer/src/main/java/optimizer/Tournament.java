@@ -32,9 +32,11 @@ public class Tournament {
 		if (bots.size() < 2) {
 			throw new RuntimeException("Not enough participants in tournament");
 		}
+		List<Participant> roundDone = new ArrayList<>();
 		for (Participant bot1 : bots) {
 			for (Participant bot2 : bots) {
 				if (bot1 == bot2) continue ; // no match against each other
+				if (roundDone.contains(bot2)) continue;
 				
 				Battle battle = new Battle(resolver);
 				if (this.withSwap) battle.withSwap();
@@ -44,14 +46,11 @@ public class Tournament {
 				bot2.append(bot1, result.inv());
 				
 			}
+			roundDone.add(bot1);
 		}
 		
-		System.err.print(String.format("%12s", "|"));
-		for (Participant bot2 : bots) {
-			System.err.print(String.format("%5s |", bot2.name()));
-		}		
-		System.err.println();
-		System.err.println("-----------------------------");
+		printHeader();		
+		printLine();		
 		for (Participant bot1 : bots) {
 			System.err.print(String.format("%10s |", bot1.name()));
 			for (Participant bot2 : bots) {
@@ -65,7 +64,7 @@ public class Tournament {
 			}
 			System.err.println();
 		}
-		System.err.println("-----------------------------");
+		printLine();		
 		
 		
 		List<Participant> sortedBots = bots.stream()
@@ -75,6 +74,22 @@ public class Tournament {
 		for (Participant bot : sortedBots) {
 			System.err.println(bot.name()+" => "+bot.globalResult());
 		}
+	}
+
+	private void printHeader() {
+		System.err.print(String.format("%12s", "|"));
+		for (Participant bot2 : bots) {
+			System.err.print(String.format("%4s|", bot2.name()));
+		}		
+		System.err.println();
+	}
+
+	private void printLine() {
+		System.err.print(String.format("%12s", "------------"));
+		for (Participant bot2 : bots) {
+			System.err.print(String.format("%4s-|", "-----"));
+		}
+		System.err.println();
 	}
 
 	public List<Participant> getLeaderboard() {
