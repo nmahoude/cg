@@ -37,4 +37,9 @@ public class BattleResult {
 	public String toString() {
 		return "w("+wins+") - d["+draws+"] - l("+loses+")"+ " timeouts: "+timeouts[0]+"/"+timeouts[1] +" count="+gameCount;
 	}
+
+
+	public double ratio() {
+		return 1.0 * wins / (wins+loses+draws);
+	}
 }

@@ -37,7 +37,7 @@ public class Tournament {
 				if (bot1 == bot2) continue ; // no match against each other
 				
 				Battle battle = new Battle(resolver);
-				if (withSwap) battle.withSwap();
+				if (this.withSwap) battle.withSwap();
 				
 				BattleResult result = battle.launch(count, bot1, bot2);
 				bot1.append(bot2, result);
@@ -46,11 +46,34 @@ public class Tournament {
 			}
 		}
 		
+		System.err.print(String.format("%12s", "|"));
+		for (Participant bot2 : bots) {
+			System.err.print(String.format("%5s |", bot2.name()));
+		}		
+		System.err.println();
+		System.err.println("-----------------------------");
+		for (Participant bot1 : bots) {
+			System.err.print(String.format("%10s |", bot1.name()));
+			for (Participant bot2 : bots) {
+				if (bot1 == bot2) {
+					System.err.print("***** |");
+					continue ; // no match against each other
+				} else {
+					BattleResult br = bot1.results.get(bot2);
+					System.err.print(String.format("%2.3f |", br.ratio()));
+				}
+			}
+			System.err.println();
+		}
+		System.err.println("-----------------------------");
 		
-		int i=0;
-		for (Participant bot : bots) {
-			System.err.println(""+i+" => "+bot.globalResult());
-			i++;
+		
+		List<Participant> sortedBots = bots.stream()
+										.sorted((b1, b2) -> Integer.compare(b2.globalResult().wins, b1.globalResult().wins))
+										.collect(Collectors.toList());
+
+		for (Participant bot : sortedBots) {
+			System.err.println(bot.name()+" => "+bot.globalResult());
 		}
 	}
 
