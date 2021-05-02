@@ -43,5 +43,18 @@ public class Participant {
 	public String name() {
 		return name;
 	}
+
+	public boolean hasMatchesAgainst(Participant bot2) {
+		return results.containsKey(bot2);
+	}
+
+	public void removeResult(Participant bot) {
+		results.remove(bot);
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 	
 }

@@ -18,6 +18,13 @@ public class Tournament {
 	public void addParticipant(Participant bot) {
 		bots.add(bot);
 	}
+
+	public void removeParticipant(Participant bot) {
+		bots.remove(bot);
+		for (Participant b : bots) {
+			b.removeResult(bot);
+		}
+	}
 	
 	public Tournament withSwap() {
 		this.withSwap = true;
@@ -32,11 +39,10 @@ public class Tournament {
 		if (bots.size() < 2) {
 			throw new RuntimeException("Not enough participants in tournament");
 		}
-		List<Participant> roundDone = new ArrayList<>();
 		for (Participant bot1 : bots) {
 			for (Participant bot2 : bots) {
 				if (bot1 == bot2) continue ; // no match against each other
-				if (roundDone.contains(bot2)) continue;
+				if (bot1.hasMatchesAgainst(bot2)) continue;
 				
 				Battle battle = new Battle(resolver);
 				if (this.withSwap) battle.withSwap();
@@ -46,7 +52,6 @@ public class Tournament {
 				bot2.append(bot1, result.inv());
 				
 			}
-			roundDone.add(bot1);
 		}
 		
 		printHeader();		
@@ -94,6 +99,14 @@ public class Tournament {
 
 	public List<Participant> getLeaderboard() {
 		return bots.stream().sorted((b1, b2) -> Integer.compare(b2.globalResult().wins, b1.globalResult().wins)).collect(Collectors.toList());
+	}
+
+	/**
+	 * in any order
+	 * @return
+	 */
+	public List<Participant> getParticipants() {
+		return bots;
 	}
 	
 	
