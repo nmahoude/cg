@@ -5,7 +5,7 @@ import org.nmx.codingame.graphviewer.GameNode;
 
 public class SampleViewer {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		SampleNode root = new SampleNode();
 		addSubNodes(root, 5, 4);
 

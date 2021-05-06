@@ -19,7 +19,7 @@ public class GfxNode extends Group {
   /**
 	 * 
 	 */
-	private final CodingameView codingameView;
+	private final GraphPane codingameView;
 	public GfxNode parent;
   List<GfxNode> gfxChildren = new ArrayList<>();
 	public boolean replie = false;
@@ -35,7 +35,7 @@ public class GfxNode extends Group {
 
   
   
-  public GfxNode(CodingameView codingameView, GfxNode parent, GameNode gameNode) {
+  public GfxNode(GraphPane codingameView, GfxNode parent, GameNode gameNode) {
   	this.parent = parent;
     this.codingameView = codingameView;
 		this.node = gameNode;
@@ -118,7 +118,7 @@ public class GfxNode extends Group {
       if (node.score() >= this.codingameView.globalData.scoreThreshold()) {
         circle.setFill(this.codingameView.colorFor(node.score()));
       } else {
-        circle.setFill(CodingameView.DISABLE_PERCENTILE);
+        circle.setFill(GraphPane.DISABLE_PERCENTILE);
       }
     }
   }
