@@ -15,7 +15,8 @@ import javafx.scene.shape.Line;
 public class GfxNode extends Group {
 	
 	private static PlacementStrategy strategy = new DynamicTreePlacementStrategy();
-	
+	static Consumer<GameNode> selectNodeCallback = gn -> {};
+
   /**
 	 * 
 	 */
@@ -77,6 +78,10 @@ public class GfxNode extends Group {
         } else {
           replierNoeud();
         }
+      }
+      
+      if (selectNodeCallback != null) {
+        selectNodeCallback.accept(gameNode);
       }
     });
     this.getChildren().add(circle);
