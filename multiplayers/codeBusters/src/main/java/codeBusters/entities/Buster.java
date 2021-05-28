@@ -1,5 +1,8 @@
 package codeBusters.entities;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import codeBusters.P;
 import codeBusters.Player;
 
@@ -14,6 +17,7 @@ public class Buster extends Entity{
 	
   public Action action = Action.doWait();
 	public int notSeenAround;
+	public static Map<Ghost, Buster> ejectedGhosts = new HashMap<>();
 
 	public boolean isInOwnBase() {
 		return (team == 0 && Player.TEAM0_BASE.dist2(this.position) < Player.BASE_RANGE_2)
@@ -40,5 +44,17 @@ public class Buster extends Entity{
 
 	public boolean canStun(Buster b) {
 		return isInRange2(b.position, Player.STUN_RANGE_2);
+	}
+
+	public boolean hasStun() {
+		return stunCooldown == 0;
+	}
+	
+	public boolean hisTeam() {
+		return team == 1;
+	}
+
+	public int turnsToReach(Ghost ghost) {
+		return (int)Math.ceil(Math.max(0, this.position.dist(ghost.position) - Player.STUN_RANGE ) / Player.MOVE_DISTANCE);
 	}
 }

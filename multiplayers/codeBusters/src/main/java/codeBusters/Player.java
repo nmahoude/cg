@@ -26,10 +26,11 @@ public class Player {
   public static final int RANGE_TO_BUST_GHOST_2 = 1760 * 1760;
   public static final int RANGE_LIMIT_TO_BUST_GHOST_2 = 900 * 900;
   public static final int BUSTER_RANGE_2 = 1760 * 1760;
-  public static final int STUN_RANGE_2 = 1760 * 1760;
+  public static final int STUN_RANGE = 1760;
+  public static final int STUN_RANGE_2 =  STUN_RANGE * STUN_RANGE;
   public static final int MOVE_DISTANCE = 800;
-	public static final int MOVE_DISTANCE_2 = MOVE_DISTANCE * MOVE_DISTANCE;
-	private static final int RADAR_RANGE_2 = 4400 * 4400;
+  public static final int MOVE_DISTANCE_2 = MOVE_DISTANCE * MOVE_DISTANCE;
+  private static final int RADAR_RANGE_2 = 4400 * 4400;
   
   public static Random rand = ThreadLocalRandom.current();
   public static int bustersPerPlayer;
@@ -71,7 +72,7 @@ public class Player {
       //debugGhosts();
       debugBustersRadarZone();
       
-			ai.think();
+      ai.think();
       
       for (Buster buster : myTeam.elements) {
       	if (buster.action.type == MoveType.STUN) {
@@ -155,6 +156,7 @@ public class Player {
 		    	Ghost antipod = ghosts.elements[antipodId];
 		    	if (antipod.state == State.START) {
 		    		antipod.state = State.IN_FOG;
+		    		antipod.energy = state;
 		    		antipod.position = new P (WIDTH-x, HEIGHT-y);
 		    	}
 		    }
@@ -181,6 +183,7 @@ public class Player {
 		      Ghost carriedGhost = ghosts.elements[value];
 		      carriedGhost.state = State.BUSTED;
 		      carriedGhost.position = buster.position;
+		      carriedGhost.energy = 0;
 		      buster.carried = carriedGhost;
 		    } else {
 		      buster.carried = Ghost.noGhost;

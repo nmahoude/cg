@@ -1,12 +1,15 @@
 package codeBusters.ai;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import codeBusters.CheckPoint;
 import codeBusters.P;
 import codeBusters.Player;
+import codeBusters.V;
 import codeBusters.entities.Action;
 import codeBusters.entities.Buster;
 import codeBusters.entities.Ghost;
@@ -14,7 +17,8 @@ import codeBusters.entities.MoveType;
 import codeBusters.entities.State;
 
 public class AI {
-	Consumer<Buster> function = t -> busterThink(t);
+	Consumer<Buster> think = t -> busterThink(t);
+	Consumer<Buster> aiInit =  t -> busterInit(t);
 	
 	private Set<Buster> stunnedEnnemies = new HashSet<>();
 	private Set<Ghost> bustedGhosts = new HashSet<>();
@@ -26,12 +30,26 @@ public class AI {
 		bustedGhosts.clear();
 		alreadyCheckpointed.clear();
 		
-		Player.myTeam.applyAll(function);
+		Player.myTeam.applyAll(aiInit);
+		Player.myTeam.applyAll(think);
 		
 	}
 	
 	
+	private void busterInit(Buster t) {
+		t.action = Action.doWait();
+		
+		if (t.carried != Ghost.noGhost) Buster.ejectedGhosts.remove(t.carried);
+		
+	}
+
+
 	public void busterThink(Buster buster) {
+		if (buster.action.type != MoveType.WAIT) {
+			System.err.println("/!\\/!\\ Already an action (overide by quaterback!)");
+			return;
+		}
+		
 		
 		Action action = findBestAction(buster);
 		if (action != null) {
@@ -41,8 +59,11 @@ public class AI {
 				stunnedEnnemies.add(action.buster);
 			}
 			if (action.type == MoveType.BUST) {
-					if (action.ghost.energy <= 1/* TODO disputed ghost */) {
-						bustedGhosts.add(action.ghost);
+					if (action.ghost.energy <= 1 /* TODO don't run off disputed ghost */) {
+						long count = action.ghost.onIt.stream().filter(Buster::hisTeam).count();
+						if (count == 0) {
+							bustedGhosts.add(action.ghost);
+						}
 					}
 			}
 			if (action.type == MoveType.RADAR) {
@@ -62,7 +83,9 @@ public class AI {
 	private Action findBestAction(Buster buster) {
 		Action action;
 
+		System.err.println("**********************************");
 		System.err.println("Look for action for buster "+buster);
+		System.err.println("**********************************");
 		if (buster.stunned > 0) {
 			System.err.println("  => I'm stunned");
 			return Action.doWait();
@@ -78,16 +101,16 @@ public class AI {
 			return action;
 		}
 
-		if ((action = tryToEscort(buster)) != null) {
-			System.err.println(" => Action from escort "+action);
-			return action;
-		}
-
 		if ((action = tryToStun(buster)) != null) {
 			System.err.println(" => Action from try to stun");
 			return action;
 		}
 		
+		if ((action = tryToEscort(buster)) != null) {
+			System.err.println(" => Action from escort "+action);
+			return action;
+		}
+
 		if ((action = tryToBust(buster)) != null) {
 			System.err.println(" => Action from try to bust "+action);
 			return action;
@@ -102,7 +125,12 @@ public class AI {
 			System.err.println(" => Action from go to nearest ghost "+ action);
 			return action;
 		}
-		
+
+//		if ((action = campAtEnemyBase(buster)) != null) {
+//			System.err.println(" => Action from campAtEnemyBase");
+//			return action;
+//		}
+
 //		if ((action = tryRadar(buster)) != null) {
 //			System.err.println(" => Action from radar "+action);
 //			return action;
@@ -119,33 +147,58 @@ public class AI {
 	}
 
 
+	private Action campAtEnemyBase(Buster buster) {
+		// only for last ghost
+		if (!Player.catchHalfGhost) return null;
+		
+		if (buster.position.dist2(Player.hisBase) < Player.BASE_RANGE_2) {
+			System.err.println("    stay in his base ... ");
+			return Action.move(buster.position); // Don't move
+		}
+		
+		System.err.println("   go to his base");
+		return Action.move(Player.hisBase);
+	}
+
+
 	private Action tryToEscort(Buster buster) {
-//		if (!Player.catchHalfGhost) return null; // TODO pour l'instant on n'escort que sur le dernier ghost
 		if (buster.carried != Ghost.noGhost) return null; // I myself have a ghost
 		
 		for (Buster b : Player.myTeam) {
 			if (b == buster) continue;
 			if (b.carried != Ghost.noGhost)  {
-				boolean danger = false;
-				for (Buster ennemy : Player.hisTeam) {
-					if (ennemy.position == P.NOWHERE) continue;
-					
-					if (ennemy.canStun(b)) danger = true;
-					
-					if (ennemy.position.dist2(Player.myBase) < b.position.dist2(Player.myBase)) danger = true;
+				boolean shouldEscort = false;
+				
+				if (Player.catchHalfGhost) {
+					shouldEscort = true;
+				} else {
+					boolean danger = false;
+					for (Buster ennemy : Player.hisTeam) {
+						if (ennemy.position == P.NOWHERE) continue;
+						
+						if (ennemy.canStun(b)) danger = true;
+						
+						if (ennemy.position.dist2(Player.myBase) < b.position.dist2(Player.myBase)) danger = true;
+					}
+					if (danger) {
+						shouldEscort = true;
+					}
 				}
 				
-				if (danger) {
-					// TODO anticiper ? proteger ?
+				if (shouldEscort) {
 					System.err.println("Escort "+b);
-					
-					
-					return Action.move(b.position);
+					return escortActionFor(b);
 				}
 			}
 		}
 		
 		return null;
+	}
+
+
+	private Action escortActionFor(Buster b) {
+		// TODO anticiper ? proteger ?
+		return Action.move(b.position);
 	}
 
 
@@ -220,6 +273,9 @@ public class AI {
 	private Action goToNearestGhost(Buster buster) {
 		Ghost bestGhost = bestGhostToBust(buster, -1);
 		if( bestGhost != null) {
+			// TODO dont go to near
+			V dir = V.dir(buster.position, bestGhost.position);
+			
 			return Action.move(bestGhost.position);
 		}
 		return null;
@@ -228,7 +284,6 @@ public class AI {
 
 	private Action tryToBust(Buster buster) {
 		Ghost bestGhost = bestGhostToBust(buster, 10);
-		
 		
 		if( bestGhost != null) {
 			P ghostBelievablePos = bestGhost.position;
@@ -269,6 +324,8 @@ public class AI {
 
 
 	private Ghost bestGhostToBust(Buster buster, int maxTurns) {
+		
+		
 		if (Player.catchHalfGhost) {
 			Ghost closest = closestGhostToBase();
 			if (closest != null) return closest;
@@ -278,22 +335,38 @@ public class AI {
 		int bestScore = Integer.MIN_VALUE;
 		for (Ghost ghost : Player.ghosts) {
 			if (bustedGhosts.contains(ghost)) continue;
-			
 			if (ghost.state != State.FREE && ghost.state != State.IN_FOG && ghost.lastSeenTurn > Player.turn - 10) continue;
 			if (ghost.position == P.NOWHERE) continue;
+
+			boolean canCatchIt = true;
+			Buster receiver = Buster.ejectedGhosts.get(ghost);
+			if (receiver != null && receiver != buster) {
+				System.err.println("Ghost "+ghost+" is thrown at "+receiver+" which is not me ("+buster+")");
+				if (receiver.position.dist(ghost.position) < 2000) {
+					System.err.println(" receiver is still in the viccinity, so really can't catch it");
+					canCatchIt = false; // throw at somebody else & receiver can still catch it
+				} else {
+					buster.ejectedGhosts.remove(ghost); // ok 
+				}
+			}
+			if (!canCatchIt) {
+				System.err.println("Can't catch "+ghost);
+				continue;
+			}
+			
 			
 			if (excludeFatGhosts() && ghost.energy>20) continue;
 			//if (underWhelmed(buster, ghost)) continue;
 			
 			//if (!buster.isInRange2(ghost.position, Player.BUSTER_RANGE_2)) continue;
-			int turnToGo = (int)(buster.position.dist(ghost.position) / Player.MOVE_DISTANCE);
+			int turnToGo = buster.turnsToReach(ghost);
 			if (maxTurns != -1 && turnToGo > maxTurns) continue;
 			
 			int score = - turnToGo * 2 + (40 - ghost.energy);
 			if (ghost.state != State.FREE) {
 				score -= turnToGo * 5;
 			}
-//			System.err.println("Score for "+ghost+" = "+score);
+			//System.err.println("Score for "+ghost+" = "+score+" reach in "+turnToGo+" turns");
 			if (score > bestScore ) {
 				bestScore = score;
 				bestGhost = ghost;
@@ -371,9 +444,12 @@ public class AI {
 			}
 		}
 		
-		if (bestTarget == null) {	return null; }
+		if (bestTarget == null) {	
+			System.err.println("no one to stun around");
+			return null; 
+		}
 		
-		Action stunAction = buster.isInRange2(bestTarget.position, Player.STUN_RANGE_2) ? Action.stun(bestTarget) : null; 
+		Action stunAction = buster.isInRange2(bestTarget.position, Player.STUN_RANGE_2) ? Action.stun(bestTarget) : interceptBuster(bestTarget); 
 		
 		if (bestTarget.carried != Ghost.noGhost) {
 			System.err.println("Buster with a ghost, auto stun");
@@ -394,6 +470,14 @@ public class AI {
 //		}
 		
 		if (bestGhost.energy < 7) {
+			List<Buster> hisBusters = Player.hisTeam.stream().filter(buster::canStun).filter(b -> b.hasStun()).collect(Collectors.toList());
+			List<Buster> myBusters = Player.myTeam.stream().filter(buster::canStun).filter(b -> b.hasStun()).collect(Collectors.toList());
+
+//			if (hisBusters.size() >= myBusters.size()) {
+//				System.err.println("We may get the buster but there is too much of his busters around "+hisBusters.size()+" >= "+myBusters.size());
+//				return null;
+//			}
+
 			System.err.println("we may get the ghost back before he is not unstunned - so stun!");
 			if (stunAction == null) {
 				System.err.println("Need to move before");
@@ -408,6 +492,12 @@ public class AI {
 		} else {
 			return null;
 		}
+	}
+
+
+	private Action interceptBuster(Buster target) {
+		// TODO anticipate his own moves
+		return Action.move(target.position);
 	}
 
 
@@ -426,8 +516,10 @@ public class AI {
 			}
 		}
 		
-		// TODO Quaterback
-		
+		Action action = quaterback(buster);
+		if (action != null) {
+			return action;
+		}
 		
 		if (buster.stunCooldown == 0) {
 			// check if there is somebody waiting for me
@@ -481,5 +573,64 @@ public class AI {
 		} else {
 			return Action.move(Player.myBase);
 		}
+	}
+
+
+	private Action quaterback(Buster buster) {
+		// check if we can send our ghost to another, better placed, buster
+		
+		
+		for (Buster receiver : Player.myTeam) {
+			if (receiver == buster) continue;
+			if (receiver.stunned > 0) continue; // don't throw at stunned buster ...
+			
+			if (receiver.action.type != MoveType.WAIT && receiver.action.type != MoveType.MOVE) continue; // don't override important action of others
+			if (buster.position.dist(Player.myBase) - 800 < receiver.position.dist(Player.myBase)) continue; // not close enough to base
+			if (buster.position.dist(receiver.position) > 1760+1760+800) continue; // too far away from each others
+			
+			V dir = V.dirNorm(buster.position, Player.myBase);
+			System.err.println("  Dir to base is "+dir);
+			
+			dir = dir.mult(1760);
+			P target = buster.position.add(dir);
+
+			boolean canThrow = true;
+			for (Buster opp : Player.hisTeam) {
+				if (opp.position.dist(target) < 2000) {
+					canThrow = false;
+					System.err.println("No Quaterback @ "+target+" with ennemies ("+opp+") around ");
+					break;
+				}
+			}
+			if (!canThrow) continue;
+			
+			
+			System.err.println("Found a receiver " + receiver);
+			System.err.println("  Dir is "+dir);
+			System.err.println("  Throw at "+target);
+			Action eject = Action.eject(target);
+			P bestPos = null;
+			int bestDist = Integer.MAX_VALUE;
+			for (int i=0;i<360;i++) {
+				P projection = receiver.position.add(new V(800*Math.cos(Math.PI * i / 180), 800*Math.sin(Math.PI * i / 180)));
+				int dist = (int)projection.dist(target);
+				if (dist < 1760 & dist > 900) {
+					if (dist < bestDist) {
+						bestDist = dist;
+						bestPos = projection;
+					}
+				}
+			}
+			if (bestPos != null) {
+				System.err.println("Receiver moving to "+bestPos+" to receive ghost @ "+target);
+				receiver.action = Action.move(bestPos);
+				Buster.ejectedGhosts.put(buster.carried, receiver);
+				return eject;
+			} else {
+				System.err.println(" Impossible de trouver une position correcte avec "+receiver +" & target "+target);
+			}
+		}
+		
+		return null;
 	}
 }
