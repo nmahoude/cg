@@ -47,4 +47,8 @@ public class P {
 	public double dist(P position) {
 		return Math.sqrt(dist2(position));
 	}
+
+	public P add(V dir) {
+		return new P(x + (int)dir.vx, y+(int)dir.vy);
+	}
 }

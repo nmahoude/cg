@@ -1,8 +1,10 @@
 package cgcollections.arrays;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class FastArray<T> implements Iterable<T> {
   public final T elements[];
@@ -115,5 +117,9 @@ public class FastArray<T> implements Iterable<T> {
 		for (int i=0;i<length;i++) {
 			function.accept(elements[i]);
 		}
+  }
+  
+  public Stream<T> stream() {
+	  return Arrays.stream(elements).limit(length);
   }
 }
