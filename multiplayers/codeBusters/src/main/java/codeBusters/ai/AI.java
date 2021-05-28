@@ -45,11 +45,6 @@ public class AI {
 
 
 	public void busterThink(Buster buster) {
-		if (buster.action.type != MoveType.WAIT) {
-			System.err.println("/!\\/!\\ Already an action (overide by quaterback!)");
-			return;
-		}
-		
 		
 		Action action = findBestAction(buster);
 		if (action != null) {
@@ -59,9 +54,17 @@ public class AI {
 				stunnedEnnemies.add(action.buster);
 			}
 			if (action.type == MoveType.BUST) {
+				action.ghost.energy = Math.max(0, action.ghost.energy-1);
+				
 					if (action.ghost.energy <= 1 /* TODO don't run off disputed ghost */) {
+						System.err.println("Busting a 0 energy ghost, last turn there was "+action.ghost.bustersOnIt+" buster on it");
 						long count = action.ghost.onIt.stream().filter(Buster::hisTeam).count();
-						if (count == 0) {
+						System.err.println("Now I see "+count+" of his buster on it");
+						System.err.println("Last turn there was "+action.ghost.lastTurnOnIt.size()+" of my buster on it");
+						int histBusterOnIt = action.ghost.bustersOnIt - action.ghost.lastTurnOnIt.size();
+						System.err.println("So there was "+histBusterOnIt+" of his busters on it");
+						if (histBusterOnIt == 0 || action.ghost.lastTurnOnIt.size() > action.ghost.bustersOnIt) {
+							System.err.println("  !Consider the ghost is busted for the other team members");
 							bustedGhosts.add(action.ghost);
 						}
 					}
@@ -86,6 +89,11 @@ public class AI {
 		System.err.println("**********************************");
 		System.err.println("Look for action for buster "+buster);
 		System.err.println("**********************************");
+		if (buster.action.type != MoveType.WAIT) {
+			System.err.println("/!\\/!\\ Already an action (overide by quaterback!)");
+			return buster.action;
+		}
+
 		if (buster.stunned > 0) {
 			System.err.println("  => I'm stunned");
 			return Action.doWait();
@@ -101,13 +109,13 @@ public class AI {
 			return action;
 		}
 
-		if ((action = tryToStun(buster)) != null) {
-			System.err.println(" => Action from try to stun");
-			return action;
-		}
-		
 		if ((action = tryToEscort(buster)) != null) {
 			System.err.println(" => Action from escort "+action);
+			return action;
+		}
+
+		if ((action = tryToStun(buster)) != null) {
+			System.err.println(" => Action from try to stun");
 			return action;
 		}
 
@@ -247,6 +255,13 @@ public class AI {
 
 
 	private Action explore(Buster buster) {
+		if (Player.turn < 3) {
+			V dir = V.dir(Player.myBase, buster.position).normalize();
+			dir = dir.mult(Player.MOVE_DISTANCE);
+			return Action.move(buster.position.add(dir));
+		}
+		
+		
 		// check for ghost in fog
 		Ghost bestGhost = bestGhostToBust(buster, -1);
 		if (bestGhost != null) {
@@ -402,7 +417,7 @@ public class AI {
 		int myCountLastTurn = 0;
 		int hisCountLastTurn = 0;
 		for (Buster b : ghost.onIt) {
-			if (b.team == Player.myTeamId) myCountLastTurn++; else hisCountLastTurn++;
+			if (b.myTeam()) myCountLastTurn++; else hisCountLastTurn++;
 		}
 		
 		if (!ghost.onIt.contains(buster)) {
@@ -582,7 +597,8 @@ public class AI {
 		
 		for (Buster receiver : Player.myTeam) {
 			if (receiver == buster) continue;
-			if (receiver.stunned > 0) continue; // don't throw at stunned buster ...
+			if (!canReceiveGhostFromQuaterback(buster, receiver)) continue;
+			
 			
 			if (receiver.action.type != MoveType.WAIT && receiver.action.type != MoveType.MOVE) continue; // don't override important action of others
 			if (buster.position.dist(Player.myBase) - 800 < receiver.position.dist(Player.myBase)) continue; // not close enough to base
@@ -613,10 +629,12 @@ public class AI {
 			int bestDist = Integer.MAX_VALUE;
 			for (int i=0;i<360;i++) {
 				P projection = receiver.position.add(new V(800*Math.cos(Math.PI * i / 180), 800*Math.sin(Math.PI * i / 180)));
-				int dist = (int)projection.dist(target);
-				if (dist < 1760 & dist > 900) {
-					if (dist < bestDist) {
-						bestDist = dist;
+				int distToGhost = (int)projection.dist(target);
+				if (distToGhost < 1760 & distToGhost > 900) {
+					// projection is ok to catch ghost, but we need the nearest the base
+					int distToBase = (int)projection.dist(Player.myBase);
+					if (distToBase < bestDist) {
+						bestDist = distToGhost;
 						bestPos = projection;
 					}
 				}
@@ -632,5 +650,13 @@ public class AI {
 		}
 		
 		return null;
+	}
+
+
+	private boolean canReceiveGhostFromQuaterback(Buster quaterback, Buster receiver) {
+		if (receiver.stunned > 0) return false; // don't throw at stunned buster ...
+		if (receiver.carried != Ghost.noGhost ) return false; // already got a ghost  TODO what if receiver can release it now, but not move ?
+		
+		return true;
 	}
 }

@@ -74,9 +74,16 @@ public class Player {
       
       ai.think();
       
+      for (Ghost ghost : ghosts) {
+      	ghost.lastTurnOnIt.clear();
+      }
+      
       for (Buster buster : myTeam.elements) {
       	if (buster.action.type == MoveType.STUN) {
       		buster.stunCooldown = 20;
+      	}
+      	if (buster.action.type == MoveType.BUST) {
+      		buster.action.ghost.lastTurnOnIt.add(buster);
       	}
       	if (buster.action.type == MoveType.RELEASE && buster.carried.isReleaseInBase()) {
       		myPoints++;

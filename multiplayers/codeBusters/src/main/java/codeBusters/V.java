@@ -29,7 +29,7 @@ public class V {
 	public V normalize() {
 		double vx = this.vx;
 		double vy = this.vy;
-		double dist = Math.sqrt(vy*vx+vy*vy);
+		double dist = Math.sqrt(vx*vx+vy*vy);
 		if (dist == 0) dist = 1;
 		vx /= dist;
 		vy /= dist;

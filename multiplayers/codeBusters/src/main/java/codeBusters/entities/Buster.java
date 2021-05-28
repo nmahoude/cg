@@ -50,11 +50,16 @@ public class Buster extends Entity{
 		return stunCooldown == 0;
 	}
 	
+	public boolean myTeam() {
+		return team == Player.myTeamId;
+	}
+
 	public boolean hisTeam() {
-		return team == 1;
+		return !myTeam();
 	}
 
 	public int turnsToReach(Ghost ghost) {
 		return (int)Math.ceil(Math.max(0, this.position.dist(ghost.position) - Player.STUN_RANGE ) / Player.MOVE_DISTANCE);
 	}
+
 }

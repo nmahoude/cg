@@ -13,6 +13,7 @@ public class Ghost extends Entity {
   public int energy = 40;
   public int bustersOnIt;
   public Set<Buster> onIt = new HashSet<>();
+  public Set<Buster> lastTurnOnIt = new HashSet<>();
   
   public Ghost() {
   	super();
