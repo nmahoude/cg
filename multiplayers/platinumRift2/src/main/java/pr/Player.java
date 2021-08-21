@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Player {
-  public static final boolean DEBUG_CALCULATION = false;
+  public static boolean DEBUG_CALCULATION = true ;
 
   public static int playerCount;
   public static int myId;
@@ -15,7 +15,9 @@ public class Player {
   public static final Random random= new Random();
   public static int round;
   public static int platinum;
-  private static Cell ennemyHQ;
+  
+  static Cell enemyHQ;
+	static Cell myHQ;
   
   
   public static void main(String args[]) throws IOException {
@@ -27,6 +29,11 @@ public class Player {
     round = 0;
     while (true) {
       readTurn(in);
+      if (round == 1) {
+      	System.err.println("my  hq : "+myHQ);
+      	System.err.println("opp hq : "+enemyHQ);
+      	System.err.println("Distance between HQ is "+myHQ.distanceTo(enemyHQ));
+      }
       grid.buildClusters();
       
       ai.think();
@@ -59,7 +66,17 @@ public class Player {
       
       
       Cell cell = grid.getById(zID);
-      if (visible) {
+    	if (round == 1) {
+    		if (ownerId == myId) {
+    			myHQ = cell;
+    			System.err.println("=> Setting my  HQ @"+myHQ);
+    		} else if (ownerId != -1) {
+    			enemyHQ = cell;
+    			System.err.println("=> Setting opp HQ @"+enemyHQ);
+    		}
+    	}
+
+    	if (visible) {
         cell.ownerId = ownerId;
       }
       int playerOnCellCount = 0;
@@ -73,15 +90,11 @@ public class Player {
       if (visible) {
         cell.platinum = platinum;
       }
-      if (round == 1 && visible) {
-        if (cell.ownerId != Player.myId) {
-          ennemyHQ = cell;
-        }
-      }
       cell.atWar = playerOnCellCount > 1;
     }
     long end = System.currentTimeMillis();
     System.err.println("Time to read : " + (end - start));
+    
   }
 
   private static void init(Scanner in) throws IOException {
@@ -90,11 +103,13 @@ public class Player {
     zoneCount = in.nextInt();
     linkCount = in.nextInt();
 
+    System.err.println("ZoneCount : "+zoneCount);
     grid = new Grid(zoneCount);
     for (int i = 0; i < zoneCount; i++) {
       int zoneId = in.nextInt(); // this zone's ID (between 0 and zoneCount-1)
       Cell cell = grid.getById(zoneId);
-      cell.platinum = in.nextInt(); // the amount of Platinum this zone can provide per game turn
+      in.nextInt(); // the amount of Platinum this zone can provide per game turn
+      cell.platinum = -1; // discarded because FOW
     }
     for (int i = 0; i < linkCount; i++) {
       Cell cell1 = grid.getById(in.nextInt());

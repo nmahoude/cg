@@ -20,7 +20,7 @@ public class Grid {
   };
   
   private Cell initCells[];
-  private Cell cells[];
+  public Cell cells[];
   int distances[][];
   
   public List<Cell> world = new ArrayList<>();

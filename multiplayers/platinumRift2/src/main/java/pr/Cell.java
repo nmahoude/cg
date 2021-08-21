@@ -13,13 +13,13 @@ public class Cell {
   
   // immutables
   public final int id;
-  Cell neighbors[] = new Cell[6];
+  public Cell neighbors[] = new Cell[6];
   int neighborsFE = 0;
-  public int platinum;
+  public int platinum = -1;
   public double attractivness;
 
   // turn variables
-  public int ownerId;
+  public int ownerId = -1;
   public int[] pods = new int[4];
   public boolean atWar;
   public int podCount;
@@ -112,6 +112,10 @@ public class Cell {
     return ownerId == Player.myId;
   }
 
+  public boolean haveMyPods() {
+  	return myPods() > 0;
+  }
+  
   public int myPods() {
     return pods[Player.myId];
   }
@@ -155,7 +159,7 @@ public class Cell {
     }
   }
   
-  private int distanceTo(Cell cell) {
+  public int distanceTo(Cell cell) {
     if (this.id == cell.id) return 0;
     return this.grid.distances[this.id][cell.id];
   }
@@ -180,4 +184,44 @@ public class Cell {
     return isNeutral() || isMine();
   }
 
+  @Override
+  public String toString() {
+  	return ""+id;
+  }
+
+	public int countEnemiesAround() {
+		return neighbors().stream()
+        .filter(Cell::isEnnemy)
+        .mapToInt(v -> v.podCount)
+        .sum();
+	}
+
+	// find the best cell to get to destination
+	public Cell findRouteTo(Cell target) {
+		if (target == null) {
+			throw new RuntimeException("Target is null ...");
+		}
+		int bestDist = Integer.MAX_VALUE;
+		Cell bestCell = null;
+		for (Cell n : neighbors) {
+			if (n == invalidCell) continue;
+			int dist = n.distanceTo(target);
+			if (dist < bestDist) {
+				bestDist = dist;
+				bestCell = n;
+			}
+		}
+		return bestCell;
+		
+//		Cell next = Arrays.stream(neighbors).filter(n -> n != null).sorted((c1, c2) -> Integer.compare(c1.distanceTo(target), c2.distanceTo(target))).findFirst().orElse(null);
+//		return next;
+	}
+
+	/**
+	 * dead end with no platinum
+	 * @return
+	 */
+	public boolean isForbiden() {
+		return this == invalidCell || (neighborsFE == 1 && platinum == 0); 
+	}
 }
