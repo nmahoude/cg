@@ -3,6 +3,7 @@ package xmashrush2;
 import fast.read.FastReader;
 import xmashrush2.ai.MoveAI;
 import xmashrush2.ai.PushAI;
+import xmashrush2.ai.PushTreeAI;
 
 public class Player {
 
@@ -12,6 +13,8 @@ public class Player {
 	private long start;
 	
 	public static void main(String args[]) {
+		PushTreeAI.resetCache();
+		
 		FastReader in = new FastReader(System.in);
 	
 		new Player().play(in);

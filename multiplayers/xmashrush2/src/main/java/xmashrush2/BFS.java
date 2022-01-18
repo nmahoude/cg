@@ -1,6 +1,7 @@
 package xmashrush2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BFS {
@@ -27,6 +28,10 @@ public class BFS {
 	}
 
 	public void process(State state, Pos start) {
+		process(state, Arrays.asList(start), 20);
+	}
+
+	public void process(State state, List<Pos> start) {
 		process(state, start, 20);
 	}
 
@@ -34,6 +39,10 @@ public class BFS {
 	static int invDirMask[] = new int[] { 0b0100, 0b1000, 0b0001, 0b0010};
 	
 	public void process(State state, Pos start, int maxDepth) {
+		process(state, Arrays.asList(start), maxDepth);
+	}
+	
+	public void process(State state, List<Pos> start, int maxDepth) {
 		this.state = state; // hold temporary
 
 		init(start);
@@ -63,16 +72,19 @@ public class BFS {
 		}
 	}
 
-	private void init(Pos startingCell) {
-		openSet.clear();
-		openSet.add(nodes[startingCell.offset]);
-
+	private void init(List<Pos> startingCells) {
 		for (int i = 0; i < cameFrom.length; i++) {
 			gScore[i] = Integer.MAX_VALUE;
 		}
 
-		cameFrom[startingCell.offset] = null;
-		gScore[startingCell.offset] = 0;
+		openSet.clear();
+		for (Pos p : startingCells) {
+			openSet.add(nodes[p.offset]);
+			cameFrom[p.offset] = null;
+			gScore[p.offset] = 0;
+		}
+
+
 	}
 
 	private List<Pos> reconstructPath(AStarNode current) {

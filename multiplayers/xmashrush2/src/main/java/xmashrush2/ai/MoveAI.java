@@ -46,6 +46,7 @@ public class MoveAI {
 		}
 
 		public Route goToBestSpotForNextPush() {
+			
 			int reachableQuestItemsByPos[] = new int[49];
 			
 			BFS bfs = new BFS();
@@ -83,7 +84,13 @@ public class MoveAI {
 					if (tmpState.items[i] < 0 || tmpState.items[i] > 99) continue; // not my items
 					
 					
-					double baseScore = tmpState.agents[0].needs(tmpState.items[i]) ? 100 : 1; // need items are way better
+					double baseScore = 0;
+					if (!tmpState.agents[0].fullOfQuestItems()) {
+						baseScore = 1;
+					}
+					if (tmpState.agents[0].needs(tmpState.items[i])) {
+						baseScore = 100000; // need items are way better
+					}
 					
 //					System.err.println("For action "+action+" can reach "+Item.name(tmpState.items[i])+" ?");
 					
@@ -94,7 +101,10 @@ public class MoveAI {
 						if (bfs.gScore[r] == Integer.MAX_VALUE) continue; // not reachable
 						int index = movedReachablePositions.indexOf(Pos.from(r));
 						if (index != -1) {
-							reachableQuestItemsByPos[reachablePositions.get(index).offset]+=baseScore; // 
+							reachableQuestItemsByPos[reachablePositions.get(index).offset]+=baseScore; //
+							if (baseScore == 100000) {
+								System.err.println("Can reach QuestItem target "+Pos.from(i)+"from "+Pos.from(r)+" with this action "+action);
+							}
 //							System.err.print("From "+reachablePositions.get(index)+" , ");
 						}
 						
@@ -111,7 +121,7 @@ public class MoveAI {
 				if (reachableQuestItemsByPos[i] == 0) {
 					continue; // no way to reach it
 				}
-				System.err.println("Can reach item @"+Pos.from(i)+" "+reachableQuestItemsByPos[i]+" times");
+				System.err.println("Can reach item @"+Pos.from(i)+" with score "+reachableQuestItemsByPos[i]);
 				
 				double score = reachableQuestItemsByPos[i] - 0.01 * (49 - state.agents[0].pos.manhattan(Pos.from(i)));
 				if (!state.agents[0].fullOfQuestItems() && Item.p0Item(state.items[i])) score+=2; // bonus to land on an item
@@ -122,7 +132,11 @@ public class MoveAI {
 			}
 
 			if (best != Pos.WALL) {
-				System.err.println("Found a pos with a next push to quest items "+best);
+				if (bestScore > 100) {
+					System.err.println("Found a next pos with a next push to quest items  : "+best);
+				} else {
+					System.err.println("Didn't found quest items, but only items");
+				}
 				bfs.process(state, agent.pos, MAX_MOVE - route.size());
 				Route newRoute = this.createFrom(bfs.reconstructPathTo(best.offset));
 				newRoute.state.agents[0].pos = newRoute.route.get(newRoute.route.size()-1);
@@ -133,9 +147,74 @@ public class MoveAI {
 			}
 		}
 
-		
-		
 		public Route goToBestSpot() {
+			System.err.println("Trying depth 2 lookup of pushes");
+			PushTreeAI pushTreeAI = new PushTreeAI(2);
+			List<PushTreeNode> solutions = pushTreeAI.findSolution(state);
+			for (PushTreeNode solution : solutions) {
+				boolean debug = false;
+				if (debug 
+					&& solution.parent.actionFromParent == PushAction.actions(1, Direction.DOWN)
+					&& solution.actionFromParent == PushAction.actions(1, Direction.DOWN)
+						) {
+					System.err.println("down down 1 -> ");
+					System.err.println(solution.parent.toString());
+					System.err.println(solution.toString());
+					System.err.println("quest items :"+solution.reachableQuestItems);
+					System.err.println("reachable positions : "+solution.potentialPos);
+				}
+					
+				if (solution.reachableQuestItems.size() > 0) {
+					String soluce = solution.parent.actionFromParent + " -> "  + solution.actionFromParent;
+					System.err.println("Can reach items after "+soluce);
+					System.err.println("Items are at "+solution.reachableQuestItems);
+					if (solution.parent.reachableQuestItems.isEmpty()) {
+						System.err.println("And just one push didn't find any !");
+						System.err.println("Rollback move & push to find initial positions");
+						
+						BFS bfs = new BFS();
+						bfs.process(solution.state, solution.reachableQuestItems.get(0));
+						List<Pos> reachablePosToQuestItem = new ArrayList<>();
+						for (int i=0;i<49;i++) {
+							if (bfs.gScore[i] == Integer.MAX_VALUE) continue;
+							if (solution.potentialPos.contains(Pos.from(i))) {
+								reachablePosToQuestItem.add(Pos.from(i));
+							}
+						}
+						System.err.println("Reachable pos to get to quest items "+reachablePosToQuestItem);
+						List<Pos> parentPos = new ArrayList<>();
+						for (Pos pos : reachablePosToQuestItem) {
+							
+							Pos positionBefore = pos.unapplyPushOnPos(solution.actionFromParent);
+							System.err.println("Pos b4 : "+positionBefore);
+							if (solution.parent.potentialPos.contains(positionBefore)) {
+								System.err.println("   is in parent potential pos");
+								parentPos.add(positionBefore);
+							} else {
+								System.err.println("   is not in parent potential pos");
+							}
+						}
+						System.err.println("Can reach before action "+solution.actionFromParent+" from "+parentPos);
+						
+						
+						List<Pos> positionsFromStep2 = solution.findStartingPosFromParentToReach(solution.reachableQuestItems.get(0), 20);
+						List<Pos> positionsFromStep1 = solution.parent.findStartingPosFromParentToReach(positionsFromStep2, 20);
+						System.err.println("New result from step 2 : "+positionsFromStep2);
+						System.err.println("which give from step 1 : "+positionsFromStep1);
+						
+						Pos target = positionsFromStep1.get(0);
+						System.err.println("Choosing starting point : "+target+" in possible : "+positionsFromStep1);
+						// create a route to one of the positions
+						// TODO there should be better one to choose ...
+						Agent agent = state.agents[0];
+						bfs.process(state, agent.pos, MAX_MOVE - route.size());
+						Route newRoute = this.createFrom(bfs.reconstructPathTo(target.offset));
+						newRoute.state.agents[0].pos = newRoute.route.get(newRoute.route.size()-1);
+						return newRoute;
+					}
+				}
+			}
+			
 			
 			BFS bfs = new BFS();
 			Agent agent = state.agents[0];
@@ -248,6 +327,8 @@ public class MoveAI {
 		
 		if (best != null && !best.route.isEmpty()) {
 			best.state.applyMoves(best.route); // remove objects 
+			
+			
 			best = best.goToBestSpotForNextPush();
 			List<Pos> route = best.route;
 			actions = rebuildFromRoute(route);

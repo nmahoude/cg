@@ -66,27 +66,35 @@ public class Pos {
 	    return Pos.from(x, y);
 	  }
 
-	  public Pos applyPushOnPos(PushAction action) {
-	    switch(action.dir ) {
+	public Pos unapplyPushOnPos(PushAction action) {
+	    return apply(action.dir.inverse, action.offset);
+	}
+
+	public Pos applyPushOnPos(PushAction action) {
+		return apply(action.dir, action.offset);
+	}
+
+	private Pos apply(Direction dir, int offset2) {
+		switch(dir ) {
 	    case UP:
-	      if (action.offset == x) {
-	        return getCircular(this, action.dir);
+	      if (offset2 == x) {
+	        return getCircular(this, dir);
 	      }
 	      break;
 	    case RIGHT:
-	      if (action.offset == y) {
-	        return getCircular(this, action.dir);
+	      if (offset2 == y) {
+	        return getCircular(this, dir);
 	      }
 	      break;
 	    case DOWN:
-	      if (action.offset == x) {
-	        return getCircular(this, action.dir);
+	      if (offset2 == x) {
+	        return getCircular(this, dir);
 	      }
 
 	      break;
 	    case LEFT:
-	      if (action.offset == y) {
-	        return getCircular(this, action.dir);
+	      if (offset2 == y) {
+	        return getCircular(this, dir);
 	      }
 
 	      break;
@@ -94,7 +102,7 @@ public class Pos {
 	      break;
 	    }
 	    return this;
-	  }
+	}
 
 	public String dirFrom(Pos from) {
 		if (this.x == from.x) {
