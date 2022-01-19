@@ -148,72 +148,72 @@ public class MoveAI {
 		}
 
 		public Route goToBestSpot() {
-			System.err.println("Trying depth 2 lookup of pushes");
-			PushTreeAI pushTreeAI = new PushTreeAI(2);
-			List<PushTreeNode> solutions = pushTreeAI.findSolution(state);
-			for (PushTreeNode solution : solutions) {
-				boolean debug = false;
-				if (debug 
-					&& solution.parent.actionFromParent == PushAction.actions(1, Direction.DOWN)
-					&& solution.actionFromParent == PushAction.actions(1, Direction.DOWN)
-						) {
-					System.err.println("down down 1 -> ");
-					System.err.println(solution.parent.toString());
-					System.err.println(solution.toString());
-					System.err.println("quest items :"+solution.reachableQuestItems);
-					System.err.println("reachable positions : "+solution.potentialPos);
-				}
-					
-				if (solution.reachableQuestItems.size() > 0) {
-					String soluce = solution.parent.actionFromParent + " -> "  + solution.actionFromParent;
-					System.err.println("Can reach items after "+soluce);
-					System.err.println("Items are at "+solution.reachableQuestItems);
-					if (solution.parent.reachableQuestItems.isEmpty()) {
-						System.err.println("And just one push didn't find any !");
-						System.err.println("Rollback move & push to find initial positions");
-						
-						BFS bfs = new BFS();
-						bfs.process(solution.state, solution.reachableQuestItems.get(0));
-						List<Pos> reachablePosToQuestItem = new ArrayList<>();
-						for (int i=0;i<49;i++) {
-							if (bfs.gScore[i] == Integer.MAX_VALUE) continue;
-							if (solution.potentialPos.contains(Pos.from(i))) {
-								reachablePosToQuestItem.add(Pos.from(i));
-							}
-						}
-						System.err.println("Reachable pos to get to quest items "+reachablePosToQuestItem);
-						List<Pos> parentPos = new ArrayList<>();
-						for (Pos pos : reachablePosToQuestItem) {
-							
-							Pos positionBefore = pos.unapplyPushOnPos(solution.actionFromParent);
-							System.err.println("Pos b4 : "+positionBefore);
-							if (solution.parent.potentialPos.contains(positionBefore)) {
-								System.err.println("   is in parent potential pos");
-								parentPos.add(positionBefore);
-							} else {
-								System.err.println("   is not in parent potential pos");
-							}
-						}
-						System.err.println("Can reach before action "+solution.actionFromParent+" from "+parentPos);
-						
-						
-						List<Pos> positionsFromStep2 = solution.findStartingPosFromParentToReach(solution.reachableQuestItems.get(0), 20);
-						List<Pos> positionsFromStep1 = solution.parent.findStartingPosFromParentToReach(positionsFromStep2, 20);
-						System.err.println("New result from step 2 : "+positionsFromStep2);
-						System.err.println("which give from step 1 : "+positionsFromStep1);
-						
-						Pos target = positionsFromStep1.get(0);
-						System.err.println("Choosing starting point : "+target+" in possible : "+positionsFromStep1);
-						// create a route to one of the positions
-						// TODO there should be better one to choose ...
-						Agent agent = state.agents[0];
-						bfs.process(state, agent.pos, MAX_MOVE - route.size());
-						Route newRoute = this.createFrom(bfs.reconstructPathTo(target.offset));
-						newRoute.state.agents[0].pos = newRoute.route.get(newRoute.route.size()-1);
-						return newRoute;
-					}
-				}
-			}
+//			System.err.println("Trying depth 2 lookup of pushes");
+//			PushTreeAI pushTreeAI = new PushTreeAI(2);
+//			List<PushTreeNode> solutions = pushTreeAI.findSolution(state);
+//			for (PushTreeNode solution : solutions) {
+//				boolean debug = false;
+//				if (debug 
+//					&& solution.parent.actionFromParent == PushAction.actions(1, Direction.DOWN)
+//					&& solution.actionFromParent == PushAction.actions(1, Direction.DOWN)
+//						) {
+//					System.err.println("down down 1 -> ");
+//					System.err.println(solution.parent.toString());
+//					System.err.println(solution.toString());
+//					System.err.println("quest items :"+solution.reachableQuestItems);
+//					System.err.println("reachable positions : "+solution.potentialPos);
+//				}
+//					
+//				if (solution.reachableQuestItems.size() > 0) {
+//					String soluce = solution.parent.actionFromParent + " -> "  + solution.actionFromParent;
+//					System.err.println("Can reach items after "+soluce);
+//					System.err.println("Items are at "+solution.reachableQuestItems);
+//					if (solution.parent.reachableQuestItems.isEmpty()) {
+//						System.err.println("And just one push didn't find any !");
+//						System.err.println("Rollback move & push to find initial positions");
+//						
+//						BFS bfs = new BFS();
+//						bfs.process(solution.state, solution.reachableQuestItems.get(0));
+//						List<Pos> reachablePosToQuestItem = new ArrayList<>();
+//						for (int i=0;i<49;i++) {
+//							if (bfs.gScore[i] == Integer.MAX_VALUE) continue;
+//							if (solution.potentialPos.contains(Pos.from(i))) {
+//								reachablePosToQuestItem.add(Pos.from(i));
+//							}
+//						}
+//						System.err.println("Reachable pos to get to quest items "+reachablePosToQuestItem);
+//						List<Pos> parentPos = new ArrayList<>();
+//						for (Pos pos : reachablePosToQuestItem) {
+//							
+//							Pos positionBefore = pos.unapplyPushOnPos(solution.actionFromParent);
+//							System.err.println("Pos b4 : "+positionBefore);
+//							if (solution.parent.potentialPos.contains(positionBefore)) {
+//								System.err.println("   is in parent potential pos");
+//								parentPos.add(positionBefore);
+//							} else {
+//								System.err.println("   is not in parent potential pos");
+//							}
+//						}
+//						System.err.println("Can reach before action "+solution.actionFromParent+" from "+parentPos);
+//						
+//						
+//						List<Pos> positionsFromStep2 = solution.findStartingPosFromParentToReach(solution.reachableQuestItems.get(0), 20);
+//						List<Pos> positionsFromStep1 = solution.parent.findStartingPosFromParentToReach(positionsFromStep2, 20);
+//						System.err.println("New result from step 2 : "+positionsFromStep2);
+//						System.err.println("which give from step 1 : "+positionsFromStep1);
+//						
+//						Pos target = positionsFromStep1.get(0);
+//						System.err.println("Choosing starting point : "+target+" in possible : "+positionsFromStep1);
+//						// create a route to one of the positions
+//						// TODO there should be better one to choose ...
+//						Agent agent = state.agents[0];
+//						bfs.process(state, agent.pos, MAX_MOVE - route.size());
+//						Route newRoute = this.createFrom(bfs.reconstructPathTo(target.offset));
+//						newRoute.state.agents[0].pos = newRoute.route.get(newRoute.route.size()-1);
+//						return newRoute;
+//					}
+//				}
+//			}
 			
 			
 			BFS bfs = new BFS();

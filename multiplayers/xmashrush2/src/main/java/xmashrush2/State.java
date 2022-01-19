@@ -219,4 +219,26 @@ public class State {
 			}
 		}
 	}
+
+	public int reachableItems(int maxSteps) {
+		BFS bfs = new BFS();
+		bfs.process(this, this.agents[0].pos, maxSteps);
+
+		int count = 0;
+		for (int i = 0;i<49;i++) {
+			if (bfs.gScore[i] == Integer.MAX_VALUE) continue; // not reachable
+
+			if (agents[0].needs(this.items[i]) ) {
+				count ++;
+			}
+		}
+		return count;
+	}
+
+	public boolean hasSameCells(State otherState) {
+		for (int i=0;i<49;i++) {
+			if (this.cells[i] != otherState.cells[i]) return false;
+		}
+		return true;
+	}
 }

@@ -1,9 +1,12 @@
 package xmashrush2.ai;
 
+import java.util.List;
+
 import xmashrush2.Agent;
 import xmashrush2.BFS;
 import xmashrush2.Direction;
 import xmashrush2.Item;
+import xmashrush2.Player;
 import xmashrush2.Pos;
 import xmashrush2.PushAction;
 import xmashrush2.State;
@@ -12,7 +15,7 @@ public class PushAI {
 
 	private static final int MAX_MOVES = 20;
 	private State tmpState = new State();
-	private PushAction action;
+	public PushAction action;
 	private BFS bfs = new BFS();
 	
 	public void output() {
@@ -23,7 +26,11 @@ public class PushAI {
 	public void think(State currentState) {
 		double maxScore = Double.NEGATIVE_INFINITY;
 		PushAction best = null;
+		boolean pushWithSolution = false;
+		
 		for (PushAction action0 : PushAction.actions) {
+			if (action0 == Player.forbiddenAction) continue; 
+			
 			
 			double minScore = Double.POSITIVE_INFINITY;
 			PushAction minBest = null;
@@ -52,18 +59,54 @@ public class PushAI {
 			tmpState.apply(action0, null);
 			
 			double myScore = evalScore(tmpState, tmpState.agents[0], action0, false && action0 == PushAction.actions(3, Direction.UP));
+			//System.err.println("My action : "+action0+" -> avgMinScore is "+avgMinScore+ " his best actions would be "+minBest);
+			//System.err.println("My score alone would be "+myScore);
+			
+			if (tmpState.reachableItems(MAX_MOVES) != 0) {
+				pushWithSolution = true;
+			}
 			
 			double avgMinScore = totalMinScore / counterActionsCount;
-			System.err.println("My action : "+action0+" -> avgMinScore is "+avgMinScore+ " his best actions would be "+minBest);
-			System.err.println("My score alone would be "+myScore);
 			if (avgMinScore > maxScore) {
 				maxScore = avgMinScore;
 				best = action0;
 			}
 		}
 		
-		System.err.println("Setting the push action ...");
 		this.action = best;
+		
+//		if (pushWithSolution) {
+//			System.err.println("Setting the push action when there is a solution du catch an item...");
+//			this.action = best;
+//		} else {
+//			System.err.println("Can't find a direct solution with one push, trying a second push");
+//			PushTreeAI multipush = new PushTreeAI(MAX_MOVES);
+//			List<PushTreeNode> solutions = multipush.findSolution(currentState);
+//			if (solutions.isEmpty()) {
+//				System.err.println("No solution with multi push, rollback to best solution");
+//				this.action = best;
+//			} else {
+//				// TODO DO NOT take random solution ...
+//				PushTreeNode solution = null;
+//				for (PushTreeNode s : solutions) {
+//					if (s.reachableQuestItems.size() > 0 && s.getInitialPushAction() != Player.forbiddenAction) {
+//						solution = s;
+//						break;
+//					}
+//				}
+//				if (solution != null) {
+//					System.err.println("Found some solutions with multi push, random picking ...");
+//					// no move, so do the striaght parent push action
+//					System.err.println("Actions : "+solution.parent.actionFromParent + " -> "+solution.actionFromParent );
+//					solution.state.debugGrid();
+//					this.action = solution.getInitialPushAction();
+//				} else {
+//					System.err.println("Can't find solution in multiple pushes, rollback to best");
+//					this.action = best;
+//				}
+//			}
+//			
+//		}
 		
 	}
 

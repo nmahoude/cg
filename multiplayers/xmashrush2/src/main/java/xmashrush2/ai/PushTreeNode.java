@@ -24,8 +24,11 @@ public class PushTreeNode {
 		return actionFromParent.toString()+" reachableItems : "+reachableQuestItems+" pos : "+potentialPos;
 	}
 	
-	
 	public void initFrom(State state) {
+		initFrom(state, 20);
+	}
+	
+	public void initFrom(State state, int maxSteps) {
 		this.state.copyFrom(state);
 		this.actionFromParent = null;
 		this.parent = null;
@@ -34,7 +37,7 @@ public class PushTreeNode {
 		// find all reachable positions
 		bfs.process(state, state.agents[0].pos, 20);
 		for (int i=0;i<49;i++) {
-			if (bfs.gScore[i]  == Integer.MAX_VALUE) continue;
+			if (bfs.gScore[i]  > maxSteps) continue;
 			potentialPos.add(Pos.from(i));
 		}
 	}
@@ -107,5 +110,13 @@ public class PushTreeNode {
 		for (Pos p : initialPositions) {
 			potentialPos.add(p.applyPushOnPos(pa));
 		}
+	}
+
+	public PushAction getInitialPushAction() {
+		PushTreeNode current = this;
+		while (current.parent.parent != null) {
+			current = current.parent;
+		}
+		return current.actionFromParent;
 	}
 }
