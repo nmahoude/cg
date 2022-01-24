@@ -24,6 +24,10 @@ public class PushAI {
 	}
 
 	public void think(State currentState) {
+		boolean imWinning = (currentState.agents[0].score >= currentState.agents[1].score); 
+		
+		
+		
 		double maxScore = Double.NEGATIVE_INFINITY;
 		PushAction best = null;
 		boolean pushWithSolution = false;
@@ -47,7 +51,14 @@ public class PushAI {
 				double myScore = evalScore(tmpState, tmpState.agents[0], action0, false);
 				double hisScore = evalScore(tmpState, tmpState.agents[1], action1, false);
 				
-				double score = 1.1*myScore - hisScore;
+				if (action1 == PushAction.actions(1, Direction.RIGHT)) {
+					System.err.println("*************************************");
+					System.err.println(" me:"+action0+" opp:"+action1+"  => "+myScore+" "+hisScore);
+					System.err.println("his score: "+tmpState.agents[1].score);
+					tmpState.debugGrid();
+					System.err.println("*************************************");
+				}
+				double score = (imWinning ? 1.00 : 1.00) *(myScore - hisScore);
 				if (score < minScore) {
 					minScore = score;
 					minBest = action1;
@@ -67,8 +78,8 @@ public class PushAI {
 			}
 			
 			double avgMinScore = totalMinScore / counterActionsCount;
-			if (avgMinScore > maxScore) {
-				maxScore = avgMinScore;
+			if (minScore > maxScore) {
+				maxScore = minScore;
 				best = action0;
 			}
 		}
@@ -114,10 +125,15 @@ public class PushAI {
 	private double evalScore(State state, Agent agent, PushAction action, boolean debug) {
 		bfs.process(state, agent.pos, MAX_MOVES);
 		
-		double score = 100 * agent.score; // sometimes a push is enough to get an object
+		double score = 200 * agent.score; // sometimes a push is enough to get an object
+		
+		// won
+		if (agent.score == 12) {
+			score += 100_000;
+		}
 		
 		if (agent.needs(agent.item)) {
-			score += 25; // getting our own item is good
+			score += 10; // getting our own item in out hands is good
 		}
 		
 		if (action.dir.isRow()) score += 0.1; // row is better than column ...
@@ -127,7 +143,7 @@ public class PushAI {
 
 			if (debug) System.err.println("     can reach "+Pos.from(i) + " item : "+Item.name(state.items[i]));
 			
-			score +=1; // reachable cells is a good thing
+			score +=1.5; // reachable cells is a good thing
 			
 			if (agent.needs(state.items[i]) ) {
 				score+=100; // reachable cell items is a very good thing
