@@ -23,6 +23,7 @@
 		<module>javaexplorer</module>
 		<module>contests</module>
 		<module>cc</module>
+		<module>acraft</module>
 	</modules>
 
 	<dependencies>
