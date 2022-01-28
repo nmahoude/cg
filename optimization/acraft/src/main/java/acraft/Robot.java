@@ -20,7 +20,7 @@ public class Robot {
 		int x = in.nextInt();
         int y = in.nextInt();
         char[] direction = in.nextChars();
-
+        System.err.println(String.format("addRobot(%d,%d,%c);",x, y, direction[0]));
         Robot r = new Robot(Pos.get(x, y, direction[0]));
         r._pos = r.pos;
 		return r;
@@ -38,6 +38,7 @@ public class Robot {
 		this.restore();
 		this.incrementSim();
 		
+		pathFE = 0;
 		do {
 			path[pathFE++] = this.pos; // remember the path
 			move(state);
@@ -47,14 +48,20 @@ public class Robot {
 	
 	
 	public void move(State state) {
+		// if (debug) System.err.println("    Before move : "+this.pos);
 		this.pos = this.pos.move();
-		this.pos = pos.update(state.cells[pos.x][pos.y]);
+		// if (debug) System.err.println("    After move : "+this.pos);
+		this.pos = pos.updateDir(state.cells[pos.x][pos.y]);
+		// if (debug) System.err.println("    After rotate: "+this.pos);
 		
 		if (grid[pos.offset] == simNumber) { 
 			pos = Pos.VOID;
 		} else { 
-			grid[pos.offset] = simNumber; // remember robot get there with the direction
-			if (state.cells[pos.x][pos.y]== State.VOID ) this.pos = Pos.VOID;
+			if (state.cells[pos.x][pos.y]== State.VOID ) {
+				this.pos = Pos.VOID;
+			} else {
+				grid[pos.offset] = simNumber; // remember robot get there with the direction
+			}
 		}
 	}
 
@@ -71,6 +78,13 @@ public class Robot {
 			grid[pos.offset] = 0;
 		}
 		this.pos = initialPos;
+	}
+
+	public void debugPath() {
+		for (int i=0;i<pathFE;i++) {
+			System.err.print(path[i]+" ; ");
+		}
+		System.err.println();
 	}
 
 }

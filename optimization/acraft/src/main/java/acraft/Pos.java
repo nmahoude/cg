@@ -49,7 +49,7 @@ public class Pos {
 	}
 
 	public static Pos get(int x, int y, char dir) {
-		return positions[x + y * State.WIDTH + 4 * State.WIDTH*State.HEIGHT].update(dir); // hack to get the correct direction quickly
+		return positions[x + y * State.WIDTH + 4 * State.WIDTH*State.HEIGHT].updateDir(dir); // hack to get the correct direction quickly
 	}
 
 	public static Pos get(int x, int y, int dir) {
@@ -60,7 +60,7 @@ public class Pos {
 		return positions[x + y * State.WIDTH + newDir * State.WIDTH*State.HEIGHT];
 	}
 
-	public Pos update(char newDir) {
+	public Pos updateDir(char newDir) {
 		switch(newDir) {
 		case 'U': return update(UP);
 		case 'R': return update(RIGHT);
@@ -76,7 +76,7 @@ public class Pos {
 		switch(dir) {
 		case UP: if (y == 0) newY = State.HEIGHT-1; else newY--; break;
 		case RIGHT: if (x == State.WIDTH-1) newX = 0; else newX++; break; 
-		case DOWN: if (x == State.HEIGHT-1) newY = 0; else newY++; break;
+		case DOWN: if (y == State.HEIGHT-1) newY = 0; else newY++; break;
 		case LEFT: if (x == 0) newX = State.WIDTH-1; else newX--; break;
 		default : throw new IllegalArgumentException("not a correct direction  :"+dir);
 		}

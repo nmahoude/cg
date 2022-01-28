@@ -104,4 +104,11 @@ public class State {
 		return cells[pos.x][pos.y] == EMPTY;
 	}
 
+	public void debugRobotsPath() {
+		for (int r=0;r<robotsFE;r++) {
+			System.err.println("Robot "+r);
+			robots[r].debugPath();
+		}
+	}
+
 }

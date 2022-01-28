@@ -22,11 +22,24 @@ public class Player {
 		initState.read(in);
 		initState.print();
 		
-		int score = initState.calculateScore();
-		System.err.println("Default Score is "+score);
+		myHumanBestScore(initState, Pos.get(9, 4, Pos.DOWN), Pos.get(9, 2, Pos.UP));
+		
 		
 		ai.think(initState);
 		ai.output();
+		
+	}
+
+	private void myHumanBestScore(State initState, Pos... positions) {
+		for (Pos p : positions) {
+			initState.applyArrow(p);
+		}
+		int score = initState.calculateScore();
+		System.err.println("My best Score would be "+score);
+		for (Pos p : positions) {
+			initState.removeArrow(p);
+		}
+
 		
 	}
 }
