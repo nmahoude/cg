@@ -13,14 +13,14 @@ public class AIDFSTest {
 	@Test
 	void debug() throws Exception {
 		String input = ""
-				+ "##################\r\n"
-				+ "#...#...#...#...###\r\n"
-				+ "#...#...#...#...###\r\n"
-				+ "#...#...#...#...###\r\n"
 				+ "###################\r\n"
-				+ "#...#...#...#...###\r\n"
-				+ "#...#...#...#...###\r\n"
-				+ "#...#...#...#...###\r\n"
+				+ "###################\r\n"
+				+ "###################\r\n"
+				+ "###################\r\n"
+				+ "###............####\r\n"
+				+ "###################\r\n"
+				+ "###################\r\n"
+				+ "###################\r\n"
 				+ "###################\r\n"
 				+ "###################\r\n"
 				+ "0\r\n"
@@ -30,14 +30,7 @@ public class AIDFSTest {
 		state = new State();
 		state.read(new FastReader(input.getBytes()));
 		
-		addRobot(1,1,'R');
-		addRobot(6,1,'D');
-		addRobot(11,1,'L');
-		addRobot(14,2,'D');
-		addRobot(14,6,'U');
-		addRobot(1,7,'R');
-		addRobot(6,7,'U');
-		addRobot(11,7,'L');
+		addRobot(3,4,'R');
 		
 		
 		AIDFS ai = new AIDFS();

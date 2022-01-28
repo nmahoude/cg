@@ -23,11 +23,20 @@ public class AIDFS {
 					this.initState.applyArrow(fullSolution[r2][i]);
 				}
 			}
+			for (int y=0;y<10;y++) {
+				for (int x=0;x<19;x++) {
+					int need = neededDirOnCell[Pos.get(x, y).posOffset];
+					System.err.print(need == -1 ? ' ' : ""+need);
+				}
+				System.err.println();
+			}
 			
 			
 			System.err.println("______________________");
 			System.err.println("Robot : "+r);
 			System.err.println("______________________");
+			
+			
 			think(this.initState, this.initState.robots[r]);
 			
 			System.arraycopy(bestPos, 0, fullSolution[r], 0, bestPosFE);
@@ -56,8 +65,8 @@ public class AIDFS {
 	private void think(State state, Robot robot) {
 		robot.restore();
 		
-		Pos initialPos = robot.pos;
-		needToStayEmptyCells[initialPos.posOffset] = 1;
+		final Pos initialPos = robot.pos;
+		final int initialNeed = neededDirOnCell[initialPos.posOffset];
 		
 		bestScore = -1;
 		posFE = 0;
@@ -68,6 +77,7 @@ public class AIDFS {
 			
 			if (!initState.isCellEmpty(robot.pos) && dir != robot.pos.dir) continue;
 			
+			neededDirOnCell[initialPos.posOffset] = dir;
 			if (initialPos.dir != dir) {
 				robot.pos = robot.pos.update(dir);
 				initState.applyArrow(robot.pos);
@@ -77,6 +87,7 @@ public class AIDFS {
 			
 			iterate(initState, robot, 0);
 	
+			neededDirOnCell[initialPos.posOffset] = initialNeed;
 			if (initialPos.dir != dir) {
 				initState.removeArrow(initialPos);
 				posFE--;
@@ -84,7 +95,7 @@ public class AIDFS {
 			}
 		}
 		
-		
+		neededDirOnCell[initialPos.posOffset] = initialNeed;
 		
 		System.err.println("Best score is "+bestScore);
 		for (int i=0;i<bestPosFE;i++) {
@@ -101,8 +112,12 @@ public class AIDFS {
 	static int bestPosFE = 0;
 	
 	
-	static int[] needToStayEmptyCells = new int[10*19];
-	
+	static int[] neededDirOnCell = new int[10*19];
+	static {
+		for (int i=0;i<neededDirOnCell.length;i++) {
+			neededDirOnCell[i] = -1; // no dir needed
+		}
+	}
 	private void iterate(State state, Robot robot, int currentScore) {
 		boolean debug = false;
 		if (robot.pos.posOffset == Pos.get(8, 4).posOffset
@@ -113,18 +128,21 @@ public class AIDFS {
 			debug = false;
 		}
 		
-		
+		if (robot.pos == Pos.get(4, 4, 'L')) {
+			System.err.println("debug ! ");
+		}
 
 		Pos initialPos = robot.pos;
 
 		robot.move(state); // make the move in the current direction
+		currentScore++;
+		
 		if (debug) {
 			System.err.println("Robot pos after move is "+robot.pos);
 		}
 		
 		if (robot.pos == Pos.VOID) {
 			//System.err.println("End of line with score "+currentScore);
-			currentScore++;
 			
 			if (currentScore > bestScore) {
 				bestScore = currentScore;
@@ -142,25 +160,39 @@ public class AIDFS {
 
 		
 		final Pos movedPos = robot.pos;
-		final int initialNeedToStayEmptyCells = needToStayEmptyCells[movedPos.posOffset];
+		final int initialNeedToStayEmptyCells = neededDirOnCell[movedPos.posOffset];
 		if (debug) {
 			System.err.println("Robot pos : "+robot.pos);
 			System.err.println("is cell empty ? " + state.isCellEmpty(robot.pos));
-			System.err.println("need to stay this way ? "+needToStayEmptyCells[robot.pos.posOffset]);
+			System.err.println("need to stay this way ? "+neededDirOnCell[movedPos.posOffset]);
 		}
-		if (state.isCellEmpty(robot.pos) && needToStayEmptyCells[robot.pos.posOffset] == 0) {
+		if (state.isCellEmpty(robot.pos) && neededDirOnCell[movedPos.posOffset] != 6) {
 			if (debug) System.err.println("I can put an arrow on "+robot.pos);
 			for (int dir=0;dir<4;dir++) {
+				
+				if (neededDirOnCell[movedPos.posOffset] != -1 && 
+						(neededDirOnCell[movedPos.posOffset] != dir && dir != movedPos.dir)) continue;
+				
 				robot.pos = movedPos;
-				if (dir != movedPos.dir) { 
+				if (dir != movedPos.dir) {
+					if (robot.hasVisited(robot.pos.update(dir))) {
+						continue; // don't turn
+					}
 					boolean result = state.applyArrow(movedPos.update(dir));
 					robot.pos = robot.pos.update(dir);
 					positions[posFE++] = robot.pos;
 					if (debug) System.err.println("  Putting the arrow was "+result+" and the updated robot pos is "+robot.pos);
 				}
-				needToStayEmptyCells[movedPos.posOffset] = 1;
 				
-				iterate(state, robot, currentScore+1);
+				if (neededDirOnCell[movedPos.posOffset] == -1) {
+					neededDirOnCell[movedPos.posOffset] = dir; // force this dir
+				} else if (neededDirOnCell[movedPos.posOffset] != dir) {
+					neededDirOnCell[movedPos.posOffset] = 6; // multiple dirs on the same cell, 
+				}
+				
+				iterate(state, robot, currentScore);
+				
+				neededDirOnCell[movedPos.posOffset] = initialNeedToStayEmptyCells;
 				
 				if (dir != movedPos.dir) { 
 					state.removeArrow(movedPos);
@@ -170,11 +202,18 @@ public class AIDFS {
 				
 			}
 		} else {
-			iterate(state, robot, currentScore+1);
+			if (neededDirOnCell[movedPos.posOffset] == -1) {
+				neededDirOnCell[movedPos.posOffset] = movedPos.dir;
+			} else if (neededDirOnCell[movedPos.posOffset] != movedPos.dir) {
+				neededDirOnCell[movedPos.posOffset] = 6;
+			}
+			
+			iterate(state, robot, currentScore);
+
+			neededDirOnCell[movedPos.posOffset] = initialNeedToStayEmptyCells;
 		}
 
 		robot.undoMoveTo(initialPos);
-		needToStayEmptyCells[movedPos.posOffset] = initialNeedToStayEmptyCells;
 	}
 
 	public void output() {

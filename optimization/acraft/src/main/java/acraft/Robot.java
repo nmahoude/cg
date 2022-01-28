@@ -20,7 +20,7 @@ public class Robot {
 		int x = in.nextInt();
         int y = in.nextInt();
         char[] direction = in.nextChars();
-        System.err.println(String.format("addRobot(%d,%d,%c);",x, y, direction[0]));
+        System.err.println(String.format("addRobot(%d,%d,'%c');",x, y, direction[0]));
         Robot r = new Robot(Pos.get(x, y, direction[0]));
         r._pos = r.pos;
 		return r;
@@ -65,6 +65,17 @@ public class Robot {
 		}
 	}
 
+	public void rotate(int dir) {
+		this.pos = this.pos.update(dir);
+		if (grid[pos.offset] == simNumber) { 
+			this.pos = Pos.VOID;
+		}
+	}
+
+	public boolean hasVisited(Pos pos) {
+		return grid[pos.offset] == simNumber;
+	}
+	
 	public void incrementSim() {
 		simNumber++;
 	}
@@ -86,5 +97,7 @@ public class Robot {
 		}
 		System.err.println();
 	}
+
+
 
 }
