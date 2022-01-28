@@ -106,7 +106,7 @@ public class State {
 
 	public void debugRobotsPath() {
 		for (int r=0;r<robotsFE;r++) {
-			System.err.println("Robot "+r);
+			System.err.println("Robot "+r+" path:");
 			robots[r].debugPath();
 		}
 	}

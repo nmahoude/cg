@@ -17,12 +17,23 @@ public class AIDFS {
 		for (int r=0;r<fullState.robotsFE;r++) {
 			initState.copyFrom(fullState);
 			
-			// reapply former arrows
+			// reapply former robots arrows & paths
 			for (int r2=0;r2<r;r2++) {
 				for (int i=0;i<fullSolutionFE[r2];i++) {
 					this.initState.applyArrow(fullSolution[r2][i]);
 				}
+				// reapply needed direction of the former robots
+				System.err.println("Robot "+r2+" path : ");
+				Robot robot = initState.robots[r2];
+				robot.calculatePath(initState);
+				for (int i=0;i<robot.pathFE;i++) {
+					System.err.print(robot.path[i]+ "->");
+					neededDirOnCell[robot.path[i].posOffset] = robot.path[i].dir;
+				}
+				System.err.println();
 			}
+
+			
 			for (int y=0;y<10;y++) {
 				for (int x=0;x<19;x++) {
 					int need = neededDirOnCell[Pos.get(x, y).posOffset];
@@ -128,7 +139,7 @@ public class AIDFS {
 			debug = false;
 		}
 		
-		if (robot.pos == Pos.get(4, 4, 'L')) {
+		if (robot.pos == Pos.get(9, 4, 'D')) {
 			System.err.println("debug ! ");
 		}
 
@@ -146,12 +157,14 @@ public class AIDFS {
 			
 			if (currentScore > bestScore) {
 				bestScore = currentScore;
+				/*
 				System.err.println("New best score ! " + bestScore);
 				for (int i=0;i<posFE;i++) {
 					System.err.print(positions[i]);
 					System.err.print(" ; ");
 				}
 				System.err.println();
+				*/
 				System.arraycopy(positions, 0, bestPos, 0, posFE);
 				bestPosFE = posFE;
 			}
