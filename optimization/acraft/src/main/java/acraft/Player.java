@@ -22,7 +22,7 @@ public class Player {
 		initState.read(in);
 		initState.print();
 		
-		//myHumanBestScore(initState, Pos.get(9, 4, Pos.DOWN), Pos.get(9, 2, Pos.UP));
+		// myHumanBestScore(initState, Pos.get(9, 4, Pos.DOWN));
 		
 		
 		ai.think(initState);

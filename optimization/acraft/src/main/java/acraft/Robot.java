@@ -37,7 +37,9 @@ public class Robot {
 	public void calculatePath(State state) {
 		this.restore();
 		this.incrementSim();
-		
+		if (state.cells[pos.x][pos.y] >='A' && state.cells[pos.x][pos.y] <= 'Z') {
+			this.pos = this.pos.updateDir(state.cells[pos.x][pos.y]);
+		}
 		pathFE = 0;
 		do {
 			path[pathFE++] = this.pos; // remember the path
@@ -78,6 +80,7 @@ public class Robot {
 	
 	public void incrementSim() {
 		simNumber++;
+		grid[this.pos.offset] = simNumber; // initial position
 	}
 	
 	public int score() {
@@ -96,6 +99,18 @@ public class Robot {
 			System.err.print(path[i]+" ; ");
 		}
 		System.err.println();
+	}
+
+	public void printGrid() {
+		for (int dir=0;dir<4;dir++) {
+			System.err.println("For dir :"+dir);
+			for (int y=0;y<10;y++) {
+				for (int x=0;x<19;x++) {
+					System.err.print(grid[Pos.get(x, y, dir).offset]);
+				}
+				System.err.println();
+			}
+		}
 	}
 
 
