@@ -9,6 +9,7 @@ import fast.read.FastReader;
  * the standard input according to the problem statement.
  **/
 public class Player {
+	public static long start;
 	State initState = new State();
 	AIDFS ai = new AIDFS();
 	
@@ -20,8 +21,9 @@ public class Player {
 
 	private void play(FastReader in) {
 		initState.read(in);
-		initState.print();
+		start = System.currentTimeMillis();
 		
+		//initState.print();
 		// myHumanBestScore(initState, Pos.get(9, 4, Pos.DOWN));
 		
 		

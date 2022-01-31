@@ -16,6 +16,10 @@ public class AIDFS {
 	Pos bestSolution[][] = new Pos[10][4*10*19];
 	int bestSolutionFE[] = new int[10];
 	int bestSolutionScore = -1;
+	int bestTotalScore = -1;
+	
+	AIMC aimc=  new AIMC();
+	
 	
 	public void think(State fullState) {
 		long start = System.currentTimeMillis();
@@ -38,9 +42,22 @@ public class AIDFS {
 			}
 			Collections.shuffle(order);
 			
-		} while(System.currentTimeMillis() - start < 500);
+		} while(false);
+		
+		launchAIMC();
 	}
 	
+	private void launchAIMC() {
+		aimc.bestPositionedArrowsFE = 0;
+		for (int r=0;r<initState.robotsFE;r++) {
+			for (int i=0;i<bestSolutionFE[r];i++) {
+				aimc.bestPositionedArrows[aimc.bestPositionedArrowsFE++] = bestSolution[r][i];
+			}
+		}
+		aimc.bestScore = bestTotalScore;
+		aimc.think(initState);
+	}
+
 	public void think(State fullState, List<Integer> order) {
 		boolean debug;
 		bestScore = -1;
@@ -127,7 +144,7 @@ public class AIDFS {
 			}
 			System.err.println();
 		}
-		this.initState.calculateScore();
+		bestTotalScore = this.initState.calculateScore();
 		this.initState.debugRobotsPath();
 		
 	}
@@ -281,12 +298,13 @@ public class AIDFS {
 	}
 
 	public void output() {
-		for (int r=0;r<initState.robotsFE;r++) {
-			for (int i=0;i<bestSolutionFE[r];i++) {
-				
-				System.out.print(""+bestSolution[r][i].x +" "+bestSolution[r][i].y+" "+bestSolution[r][i].dirToLetter()+" ");
-			}
-		}
-		System.out.println();
+		aimc.output();
+//		for (int r=0;r<initState.robotsFE;r++) {
+//			for (int i=0;i<bestSolutionFE[r];i++) {
+//				
+//				System.out.print(""+bestSolution[r][i].x +" "+bestSolution[r][i].y+" "+bestSolution[r][i].dirToLetter()+" ");
+//			}
+//		}
+//		System.out.println();
 	}
 }
