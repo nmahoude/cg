@@ -61,7 +61,7 @@ public class BitBoard {
   }
 
   public boolean isSkull(char value) {
-    return value == '0' || value == '@' || value == '☠' || value =='X';
+    return value == '0' || value == '@' || value == 'X' || value =='X';
   }
 
   public boolean isColor(char value) {

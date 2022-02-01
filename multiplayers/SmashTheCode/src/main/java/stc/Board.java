@@ -30,7 +30,7 @@ public class Board {
       if (row.charAt(x) >= '1' && row.charAt(x) <= '5') {
         cells[x+6*y] = row.charAt(x) - '0';
         heights[x] = Math.max(y+1, heights[x]);
-      } else if (row.charAt(x) == '0' || row.charAt(x) == '@' || row.charAt(x) == '☠') {
+      } else if (row.charAt(x) == '0' || row.charAt(x) == '@' || row.charAt(x) == 'X') {
         cells[x+6*y] = SKULL;
         heights[x] = Math.max(y+1, heights[x]);
         skullCount++;
