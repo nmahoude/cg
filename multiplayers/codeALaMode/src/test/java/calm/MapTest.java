@@ -24,7 +24,7 @@ public class MapTest {
         + "XXXXXXXXXXX"+EOF
         + ""));
     
-    Assertions.assertThat(map.distanceFromTo(P.get(1, 1), P.get(9, 1))).isEqualTo(2); // floor to floor
-    Assertions.assertThat(map.distanceFromTo(P.get(1, 1), P.get(10, 1))).isEqualTo(2); // floor to table
+    Assertions.assertThat(map.distanceFromTo(P.get(1, 1), P.get(9, 1), P.INVALID)).isEqualTo(2); // floor to floor
+    Assertions.assertThat(map.distanceFromTo(P.get(1, 1), P.get(10, 1), P.INVALID)).isEqualTo(2); // floor to table
   }
 }
