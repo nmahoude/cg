@@ -31,5 +31,6 @@
 <!-- 	<module>uttt</module> -->
   	<module>xmashrush2</module>
   	<module>acoiaf</module>
+  	<module>connect4</module>
   </modules>
 </project>
