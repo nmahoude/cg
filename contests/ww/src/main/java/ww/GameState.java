@@ -2,8 +2,6 @@ package ww;
 
 import java.util.Scanner;
 
-import javax.xml.bind.ValidationException;
-
 public class GameState {
   public static int size;
   public static int unitsPerPlayer;
