@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import fast.read.FastReader;
+
 public class StateTest {
 
   @Test
@@ -177,4 +179,25 @@ public class StateTest {
     assertThat(state.winner).isEqualTo(0);
     
   }
+  
+  @Test
+  void debug() throws Exception {
+    String input = "0 "
+        + ".......X.\r\n"
+        + "...X...O.\r\n"
+        + "...XO..O.\r\n"
+        + "XXOOXO.OX\r\n"
+        + "OXXXOXOXO\r\n"
+        + "OOOXXXOXO\r\n"
+        + "OXXOOXXXO\r\n"
+        
+        + "0 0 ";
+    FastReader in = new FastReader(input.getBytes());
+    
+    State state = State.emptyState();
+    state.read(in);
+    
+    int col = state.findCol();
+  }
+  
 }

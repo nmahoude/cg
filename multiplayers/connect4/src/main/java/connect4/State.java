@@ -4,12 +4,15 @@ import cgutils.random.FastRandom;
 import fast.read.FastReader;
 
 public class State {
-  int cells[][] = new int[9][7];
-  int winner = -1;
+  private static FastRandom random = new FastRandom(0); //System.currentTimeMillis());
 
-  int choice[] = new int[9];
-  int choiceFE = 0;
-  private FastRandom random = new FastRandom(0); //System.currentTimeMillis());
+  
+  int cells[][] = new int[9][7];
+  long mine;
+  long opp;
+  long all;
+  
+  int winner = -1;
   
   private State() {
   }
@@ -21,12 +24,21 @@ public class State {
         state.cells[x][y] = -1;
       }
     }
+    
+    state.mine = 0L;
+    state.opp = 0L;
+    state.all = 0L;
+    
     return state;
 	}
 	
   public void read(FastReader in) {
     int turnIndex = in.nextInt(); // starts from 0; As the game progresses, first player gets [0,2,4,...] and second player gets [1,3,5,...]
 
+    this.all = 0L;
+    this.mine = 0L;
+    this.opp = 0L;
+    
     for (int y = 6; y >= 0; y--) {
       char[] boardRow = in.nextChars(); // one row of the board (from top to bottom)
       for (int x = 0; x < 9; x++) {
@@ -34,16 +46,25 @@ public class State {
         if (v == '.') {
           cells[x][y] = -1;
         } else {
-          cells[x][y] = (v == '0' && ! Player.inverse) || (v == '1' && Player.inverse) ? 0 : 1;
+          boolean myCell = ((v == '0' || v == 'O') && ! Player.inverse) || ((v == '1' || v== 'X') && Player.inverse);
+          cells[x][y] = myCell ? 0 : 1;
+          
+          long mask = 1L << (7*x + y);
+          all |= mask;
+          if (myCell) {
+            this.mine |= mask;
+          } else {
+            this.opp |= mask;
+          }
         }
       }
     }
     
     debug();
     
-    choiceFE = in.nextInt(); // number of unfilled columns in the board
-    for (int i = 0; i < choiceFE; i++) {
-      choice[i] = in.nextInt(); // a valid column index into which a chip can be dropped
+    int choiceCount = in.nextInt(); // number of unfilled columns in the board
+    for (int i = 0; i < choiceCount; i++) {
+      int c = in.nextInt();
     }
     int oppPreviousAction = in.nextInt(); // opponent's previous chosen column index (will be -1 for first player in the first turn)
 
@@ -54,42 +75,44 @@ public class State {
 	  int possibleChoicesFE = 0;
 	  
 	  int bestChoice = -1;
-	  for (int i=0;i<choiceFE;i++) {
-	    this.put(choice[i], 0);
+	  for (int i=0;i<9;i++) {
+	    if (firstEmptyCell(i) == 7) continue;
+	    this.put(i, 0);
 	    
 	    if (winner == 0) {
-        System.err.println("I can won @ "+choice[i]);
-	      bestChoice = choice[i];
-	      this.remove(choice[i]);
+        System.err.println("I can won @ "+i);
+	      bestChoice = i;
+	      this.remove(i);
 	      break;
-	    } else if (firstEmptyCell(choice[i]) != 7) {
+	    } else if (firstEmptyCell(i) != 7) {
 	      // check he won't win with our direct move 
-	      this.put(choice[i], 1);
+	      this.put(i, 1);
 	      if (winner != 1) {
-	        System.err.println("He won't win if a put on "+choice[i]);
-	        possibleChoices[possibleChoicesFE++] = choice[i];
+	        System.err.println("He won't win if I put on "+i);
+	        possibleChoices[possibleChoicesFE++] = i;
 	      } else {
-	        System.err.println("He would win if a put on "+choice[i]);
+	        System.err.println("He would win if i put on "+i);
 	        this.debug();
 	      }
-	      this.remove(choice[i]);
+	      this.remove(i);
 	    }
-	    this.remove(choice[i]);
+	    this.remove(i);
 	  }
 	  
 	  // check for him
-    for (int i=0;i<choiceFE;i++) {
-      this.put(choice[i], 1);
+	  for (int i=0;i<9;i++) {
+      if (firstEmptyCell(i) == 7) continue;
+      this.put(i, 1);
       
       if (winner == 1) {
-        System.err.println("He can win @ "+choice[i]+" so block it");
+        System.err.println("He can win @ "+i+" so block it");
         this.debug();
         
-        bestChoice = choice[i];
-        this.remove(choice[i]);
+        bestChoice = i;
+        this.remove(i);
         break;
       }
-      this.remove(choice[i]);
+      this.remove(i);
     }
 	  
 	  
@@ -110,85 +133,12 @@ public class State {
 	    throw new IllegalArgumentException("Col "+col+" is full !");
 	  } else {
 	    cells[col][r] = player;
-	    checkWinner(col, r, player);
+	    boolean result = Connect4Checker.is4Connected(cells, col, r);
+	    if (result) {
+	      winner = player;
+	    }
 	  }
 	}
-
-  private boolean checkWinner(int posx, int posy, int player) {
-    winner = -1;
-    
-    // check col
-    int start = Math.max(0, posy-3);
-    int end = Math.min(posy+3, 6);
-    int connect4 = 0;
-
-    for (int y=start;y<=end;y++) {
-      if (cells[posx][y] == player) {
-        connect4++; 
-        if (connect4 == 4) {
-          winner = player; 
-          return true;
-        }
-      } else {
-        connect4 = 0;
-      }
-    }
-    
-    // checkRow
-    start = Math.max(0, posx-3);
-    end = Math.min(posx+3, 7);
-    connect4 = 0;
-    for (int x=start;x<=end;x++) {
-      if (cells[x][posy] == player) {
-        connect4++; 
-        if (connect4 == 4) {
-          winner = player; 
-          return true;
-        }
-      } else {
-        connect4 = 0;
-      }
-    }
-
-    // diagonal upright
-    connect4 = 0;
-    for (int d=-3;d<4;d++) {
-      int px = posx+d;
-      int py = posy+d;
-      if (px < 0 || py < 0) continue;
-      if (px > 8 || py > 6) break;
-      
-      if (cells[px][py] == player) {
-        connect4++; 
-        if (connect4 == 4) {
-          winner = player;
-          return true;
-        }
-      } else {
-        connect4 = 0;
-      }
-    }
-    
-    connect4 = 0;
-    for (int d=-3;d<4;d++) {
-      int px = posx+d;
-      int py = posy-d;
-      if (px > 8 || py < 0) continue;
-      if (px < 0 || py > 6) break;
-      
-      if (cells[px][py] == player) {
-        connect4++; 
-        if (connect4 == 4) {
-          winner = player;
-          return true;
-        }
-      } else {
-        connect4 = 0;
-      }
-    }
-    
-    return false;
-  }
 
   private int firstEmptyCell(int col) {
     int r=0;
@@ -208,8 +158,14 @@ public class State {
     System.err.println("State of the grid : ");
     for (int y=6;y>=0;y--) {
       for (int x=0;x<9;x++) {
-        String v = cells[x][y] == -1 ? " ": (""+cells[x][y]);
-        System.err.print(v);
+        long mask = 1L << (7*x+y);
+        if ((mine & mask) != 0 ) {
+          System.err.print("O");
+        } else if ((opp & mask) != 0) {
+          System.err.print("X");
+        } else {
+          System.err.print(".");
+        }
       }
       System.err.println();
     }
