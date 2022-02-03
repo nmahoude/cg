@@ -1,17 +1,15 @@
 package connect4;
 
-import cgutils.random.FastRandom;
 import fast.read.FastReader;
 
 public class State {
-  private static FastRandom random = new FastRandom(0); //System.currentTimeMillis());
 
   State parent;
   State childs[] = new State[9];
   int childsFE = 0;
   
-  int possibleColumns[] = new int[9];
-  int possibleColumnsFE = 0;
+  public int possibleColumns[] = new int[9];
+  public int possibleColumnsFE = 0;
   
   long wins;
   long count;
@@ -56,7 +54,7 @@ public class State {
       for (int x = 0; x < 9; x++) {
         char v = boardRow[x];
         if (v == '.') {
-          if (y == 0) {
+          if (y == 6) {
             possibleColumns[possibleColumnsFE++] = x;
           }
         } else {
@@ -83,82 +81,6 @@ public class State {
 
   }
 
-  public int findCol() {
-    return findCol(null, 0);
-  }
-	public int findCol(int forbidenCols[], int forbidenColsFE) {
-	  
-	  int possibleChoices[] = new int[9];
-	  int possibleChoicesFE = 0;
-	  
-	  int bestChoice = -1;
-	  for (int i=0;i<9;i++) {
-	    boolean forbiden = false;
-	    for (int k=0;k<forbidenColsFE;k++) {
-	      if (forbidenCols[k] == i) {
-	        forbiden = true;
-	        break;
-	      }
-	    }
-	    if (forbiden) continue;
-	    if (firstEmptyCell(i) == 7) continue;
-	    
-	    
-	    this.put(i, true);
-	    
-	    if (winner == 0) {
-        System.err.println("I can won @ "+i);
-	      bestChoice = i;
-	      this.remove(i);
-	      break;
-	    } else if (firstEmptyCell(i) != 7) {
-	      // check he won't win with our direct move 
-	      this.put(i, false);
-	      if (winner != 1) {
-	        System.err.println("He won't win if I put on "+i);
-	        possibleChoices[possibleChoicesFE++] = i;
-	      } else {
-	        System.err.println("He would win if i put on "+i);
-	        this.debug();
-	      }
-	      this.remove(i);
-	    }
-	    this.remove(i);
-	  }
-	  
-	  // check for him
-	  for (int i=0;i<9;i++) {
-      if (firstEmptyCell(i) == 7) continue;
-      this.put(i, false);
-      
-      if (winner == 1) {
-        System.err.println("He can win @ "+i+" so block it");
-        this.debug();
-        
-        bestChoice = i;
-        this.remove(i);
-        break;
-      }
-      this.remove(i);
-    }
-	  
-	  
-	  
-	  if (bestChoice == -1) {
-	    if (possibleChoicesFE == 0) {
-	      System.err.println("No available cols, we lost ...");
-	      System.err.println("TODO : find the less penalisable column ?");
-	      bestChoice = 0; // lost
-	    } else {
-	      bestChoice = possibleChoices[random .nextInt(possibleChoicesFE)];
-	    }
-	  }
-	  
-	  return bestChoice;
-	}
-	
-	
-	
 	public void put(int col, boolean player) {
 	  int r = firstEmptyCell(col);
 	  
@@ -232,7 +154,7 @@ public class State {
     winner = -1;
 	}
 
-  private void debug() {
+  public void debug() {
     System.err.println("State of the grid : ");
     for (int y=6;y>=0;y--) {
       for (int x=0;x<9;x++) {
@@ -283,7 +205,35 @@ public class State {
     return winner != -1;
   }
 
-  public void put(int col, int i) {
-    put(col, i == 0);
+  public void put(int x, int playerId) {
+    put(x, playerId == 0);
+  }
+
+  public int getCellPlayerAt(int x, int y) {
+    if (x < 0 || x>8 || y<0 || y>7) return -1;
+    
+    
+    long mask = 1L << (7*x + y);
+    
+    if ((mine & mask) != 0) return 0; // P0
+    else if ((opp & mask) != 0) return 1; // P1
+    else return -2; // EMPTY
+  }
+
+  public void debugColumns() {
+    System.err.println("Possible columns count is "+possibleColumnsFE);
+    for (int c=0;c<possibleColumnsFE;c++) {
+      System.err.print(possibleColumns[c]);
+      System.err.print(" , ");
+    }
+    System.err.println();
+    
+    
+    System.err.println("Col height are: ");
+    for (int c=0;c<9;c++) {
+      System.err.println(""+firstEmptyCell(c)+" , ");
+    }
+    System.err.println("Grid is : ");
+    debug();
   }
 }

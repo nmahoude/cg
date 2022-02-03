@@ -197,7 +197,6 @@ public class StateTest {
     State state = State.emptyState();
     state.read(in);
     
-    int col = state.findCol();
   }
   
 }
