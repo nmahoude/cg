@@ -13,13 +13,13 @@ public class MinimaxTest {
     StateCache.reset();
     
     String input = "0 "
-        + ".........\r\n"
-        + ".........\r\n"
-        + ".........\r\n"
-        + ".........\r\n"
-        + ".........\r\n"
-        + ".........\r\n"
-        + "OXO.XOXOO"
+        + "O........\r\n"
+        + "O.....O..\r\n"
+        + "O.OO..X..\r\n"
+        + "X.OX.OXO.\r\n"
+        + "O.XX.XXX.\r\n"
+        + "O.OXXXOX.\r\n"
+        + "O.XOXXXO."
         + "\r\n"
         + "0 0 ";
     
@@ -35,7 +35,7 @@ public class MinimaxTest {
     Assertions.assertThat(col).isEqualTo(-1);
     Assertions.assertThat(max.forbidenColsFE).isNotEqualTo(0);
     for (int i=0;i<max.forbidenColsFE;i++) {
-      System.err.println("Forbiden : "+max.forbidenCols[i]);
+      System.err.println("Forbiden : "+max.forbidenCols[i]+" score : "+max.forbidenScore[i]);
     }
   }
 }

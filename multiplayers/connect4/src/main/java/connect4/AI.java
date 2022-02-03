@@ -18,13 +18,27 @@ public class AI {
       if (max.forbidenColsFE != 0) {
         System.err.println("Minimax found forbiden cols :");
         for (int i = 0; i < max.forbidenColsFE; i++) {
-          System.err.println(max.forbidenCols[i]);
+          System.err.println(max.forbidenCols[i] +" with score "+max.forbidenScore[i]);
         }
       }
 
       col = findCol(max.forbidenCols, max.forbidenColsFE);
     }
 
+    if (col == -1) {
+      // no solution found, check in best forbiden cells (with the loss further away)
+      double bestScore = Double.NEGATIVE_INFINITY;
+      for (int i=0;i<max.forbidenColsFE;i++) {
+        if (max.forbidenScore[i] > bestScore) {
+          bestScore = max.forbidenScore[i];
+          col = max.forbidenCols[i];
+        }
+      }
+      System.err.println("Seems like we lost :(  best shot is "+col);
+    }
+
+    
+    
     return col;
   }
 
@@ -73,10 +87,7 @@ public class AI {
           bestScore = score;
           bestCol = c;
         }
-        
-        
       }
-      
       
       return bestCol;
     }
