@@ -13,6 +13,7 @@ public class Player {
 
 	public static void main(String args[]) {
 		FastReader in = new FastReader(System.in);
+		StateCache.reset();
 		new Player().play(in);
 	}
 
@@ -26,7 +27,23 @@ public class Player {
 		while (true) {
 			state.read(in);
 			
-			System.out.println(state.findCol());
+			Minimax max = new Minimax();
+			int col = max.think(state);
+			if (col != -1) {
+			  System.err.println("Found on minimax ! "+col);
+			} else {
+  			if (max.forbidenColsFE != 0) {
+  			  System.err.println("Minimax found forbiden cols :");
+  			  for (int i=0;i<max.forbidenColsFE;i++) {
+  			    System.err.println(max.forbidenCols[i]);
+  			  }
+  			}
+  			
+  			col = state.findCol(max.forbidenCols, max.forbidenColsFE);
+			}
+			
+			System.out.println(col);
+			
 		}
 	}
 }

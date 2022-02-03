@@ -3,9 +3,7 @@ package connect4;
 public class Connect4Checker {
   
   
-  public static boolean is4Connected(int[][] cells, int posx, int posy) {
-    int player = cells[posx][posy];
-    
+  public static boolean is4Connected(long cells, int posx, int posy) {
     int connect4;
     
     // check col
@@ -15,8 +13,10 @@ public class Connect4Checker {
       int py = posy+d;
       if (py < 0) continue;
       if (py > 6) break;
+
+      long mask = 1L << (7*px+py);
       
-      if (cells[px][py] == player) {
+      if ((cells & mask) != 0) {
         connect4++; 
         if (connect4 == 4) {
           return true;
@@ -34,7 +34,8 @@ public class Connect4Checker {
       if (px < 0) continue;
       if (px > 8) break;
       
-      if (cells[px][py] == player) {
+      long mask = 1L << (7*px+py);
+      if ((cells & mask) != 0) {
         connect4++; 
         if (connect4 == 4) {
           return true;
@@ -51,7 +52,8 @@ public class Connect4Checker {
       if (px < 0 || py < 0) continue;
       if (px > 8 || py > 6) break;
       
-      if (cells[px][py] == player) {
+      long mask = 1L << (7*px+py);
+      if ((cells & mask) != 0) {
         connect4++; 
         if (connect4 == 4) {
           return true;
@@ -68,7 +70,8 @@ public class Connect4Checker {
       if (px < 0 || py > 6) continue;
       if (px > 8 || py < 0) break;
       
-      if (cells[px][py] == player) {
+      long mask = 1L << (7*px+py);
+      if ((cells & mask) != 0) {
         connect4++; 
         if (connect4 == 4) {
           return true;
