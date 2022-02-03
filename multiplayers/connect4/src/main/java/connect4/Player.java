@@ -9,7 +9,7 @@ import fast.read.FastReader;
 public class Player {
 
 	public static boolean inverse;
-  State state = new State();
+  State state = State.emptyState();
 
 	public static void main(String args[]) {
 		FastReader in = new FastReader(System.in);
