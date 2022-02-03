@@ -13,7 +13,10 @@ public class Minimax {
     root.childsFE = 0;
     forbidenColsFE = 0;
     
+    long start = System.currentTimeMillis();
     int value = alphaBeta(root, 0, 0, true, MAX_DEPTH);
+    long end = System.currentTimeMillis();
+    System.err.println("Minimax time : "+(end-start));
     
     return bestCol;
   }
@@ -53,7 +56,7 @@ public class Minimax {
       }
 
       if (depth == MAX_DEPTH) {
-        System.err.println("for col "+col+" score is "+score);
+//        System.err.println("for col "+col+" score is "+score);
         if (score == Integer.MAX_VALUE) {
           bestCol = col;
         }

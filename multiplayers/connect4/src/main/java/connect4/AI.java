@@ -47,7 +47,7 @@ public class AI {
       for (int c=0;c<9;c++) {
 
         if (state.firstEmptyCell(c) == 7) continue;
-        System.err.println("Col height is "+state.firstEmptyCell(c));
+        //System.err.println("Col height is "+state.firstEmptyCell(c));
         
         boolean usable = true;
         for (int f=0;f<forbidenColsFE;f++) {

@@ -1,7 +1,7 @@
 package connect4;
 
 public class StateCache {
-  public static final int MAX = 1_000_000;
+  public static final int MAX = 700_000;
   private static State states[] = new State[MAX];
   private static int statesFE;
   
