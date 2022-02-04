@@ -13,13 +13,13 @@ public class MinimaxTest {
     StateCache.reset();
     
     String input = "0 "
+        + ".........\r\n"
+        + ".........\r\n"
+        + ".........\r\n"
         + "O........\r\n"
-        + "O.....O..\r\n"
-        + "O.OO..X..\r\n"
-        + "X.OX.OXO.\r\n"
-        + "O.XX.XXX.\r\n"
-        + "O.OXXXOX.\r\n"
-        + "O.XOXXXO."
+        + "X...X....\r\n"
+        + "X..OO....\r\n"
+        + "XXXOO...."
         + "\r\n"
         + "0 0 ";
     
@@ -30,7 +30,21 @@ public class MinimaxTest {
     
     
     Minimax max = new Minimax();
-    int col = max.think(state);
+    int col = -1;
+    
+    col = max.think(state);
+    
+    // WARM UP
+    for (int i=0;i<1000;i++) {
+    	col = max.think(state);
+    }
+    
+    System.err.println("Start .... ");
+    
+    for (int i=0;i<100_000;i++) {
+		col = max.think(state);
+    }
+
     
     Assertions.assertThat(col).isEqualTo(-1);
     Assertions.assertThat(max.forbidenColsFE).isNotEqualTo(0);

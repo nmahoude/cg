@@ -82,41 +82,36 @@ public class State {
   }
 
 	public void put(int col, boolean player) {
-	  int r = firstEmptyCell(col);
-	  
-	  if (r == -1) {
-	    throw new IllegalArgumentException("Col "+col+" is full !");
-	  } else {
-	    if (r == 6) {
-	      // remove column from possible
-	      for (int i=0;i<possibleColumnsFE;i++) {
-	        if (possibleColumns[r] == col) {
-	          possibleColumns[r] = possibleColumns[possibleColumnsFE-1];
-	          possibleColumnsFE--;
-	          break;
-	        }
-	      }
-	    }
-	    
-      long mask = 1L << (7*col+r);
-      all |=mask;
-	    if (player) {
-	      mine |=mask;
-	    } else {
-	      opp |=mask;
-	    }
-	    
-	    boolean result = Connect4Checker.is4Connected(player ? mine : opp, col, r);
-	    if (result) {
-	      winner = player ? 0 : 1;
-	    }
-	  }
-	  
-	  if (possibleColumnsFE == 0) {
-	    winner = 2;
-	  }
-	}
+		int r = firstEmptyCell(col);
 
+		if (r == 6) {
+			// remove column from possible
+			for (int i = 0; i < possibleColumnsFE; i++) {
+				if (possibleColumns[i] == col) {
+					possibleColumns[i] = possibleColumns[possibleColumnsFE - 1];
+					possibleColumnsFE--;
+					break;
+				}
+			}
+		}
+		long mask = 1L << (7 * col + r);
+		all |= mask;
+		if (player) {
+			mine |= mask;
+		} else {
+			opp |= mask;
+		}
+
+		boolean result = Connect4Checker.is4Connected(player ? mine : opp, col, r);
+		if (result) {
+			winner = player ? 0 : 1;
+		}
+
+		if (possibleColumnsFE == 0) {
+			winner = 2;
+		}
+	}
+	  
   int firstEmptyCell(int col) {
     int column = (int)((all >> 7*col) & 0b1111111);
     
@@ -143,7 +138,7 @@ public class State {
     int r = lastFilledCell(col);
     if (r == 6) {
       // remettre dans les possibilités
-      possibleColumns[possibleColumnsFE++] = col;
+		possibleColumns[possibleColumnsFE++] = col;
     }
     
     long notMask = ~(1L << (7*col+r));

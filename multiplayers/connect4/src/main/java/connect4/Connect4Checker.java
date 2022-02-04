@@ -1,7 +1,7 @@
 package connect4;
 
 public class Connect4Checker {
-  static long connect4Masks[][] = new long[9*7][100];
+  static long connect4Masks[] = new long[9*7 * 100];
   static int connect4MasksFE[] = new int[9*7];
   
   
@@ -17,7 +17,7 @@ public class Connect4Checker {
         int index = x*7+y;
         
         for (int dd=0;dd<4;dd++) {
-          for (int start=-3;start<=3;start++) {
+          for (int start=-3;start<=0;start++) {
             
             long mask = 0L;
             for (int d=0;d<4;d++) {
@@ -33,7 +33,7 @@ public class Connect4Checker {
             }
             
             if (mask != 0) {
-              connect4Masks[index][connect4MasksFE[index]++] = mask;
+              connect4Masks[100 * index + connect4MasksFE[index]++] = mask;
             }
             
           }
@@ -46,7 +46,7 @@ public class Connect4Checker {
   public static boolean is4Connected(long cells, int posx, int posy) {
     int index = posx*7+posy;
     for (int i=0;i<connect4MasksFE[index];i++) {
-      long bits = connect4Masks[index][i];
+      long bits = connect4Masks[100 * index + i];
       if ((cells & bits) == bits) return true;
     }
     
