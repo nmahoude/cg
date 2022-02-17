@@ -34,7 +34,7 @@ public class Player {
 			state.read(in);
 			
 			if (turn == 1) {
-			  for (int i=0;i<4;i++) {
+			  for (int i=0;i<4 ;i++) {
 			    ai.think(state);
 			  }
 			}
@@ -42,8 +42,15 @@ public class Player {
 
 			if (turn == 1 && !inverse) {
 			  System.out.println("2"); // force a bad steal (the same as Royale ...)
-			} else if (turn == 1 && inverse && state.firstEmptyCell(0) == 0 && state.firstEmptyCell(8) == 0) {
-        System.out.println("STEAL"); //steal from 1 to 7 (according to Royale is a better move ?!)
+			} else if (turn == 1 && inverse && (
+//					state.firstEmptyCell(0) == 1 || state.firstEmptyCell(8) == 1 ||
+//					state.firstEmptyCell(1) == 1 || state.firstEmptyCell(7) == 1 ||
+					state.firstEmptyCell(2) == 1 || state.firstEmptyCell(6) == 1 ||
+					state.firstEmptyCell(3) == 1 || state.firstEmptyCell(5) == 1 ||
+					state.firstEmptyCell(4) == 1 
+					)
+					) {
+        System.out.println("STEAL"); 
       } else {
         if (col == -1) {
           col = forcedPlay[forcedPlayFE++];

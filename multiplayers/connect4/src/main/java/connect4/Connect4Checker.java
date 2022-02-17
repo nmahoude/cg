@@ -4,6 +4,12 @@ public class Connect4Checker {
   static long connect4Masks[] = new long[9*7 * 100];
   static int connect4MasksFE[] = new int[9*7];
   
+  public static final long allConnect4Masks[] = new long[9*7*100];
+  public static int allConnect4MasksFE = 0;
+  
+  
+  static long connect3Masks[] = new long[9*7 * 100];
+  static int connect3MasksFE[] = new int[9*7];
   
   static {
     // prepare the masks to detects lines from a given position
@@ -23,7 +29,7 @@ public class Connect4Checker {
             for (int d=0;d<4;d++) {
               int px = x + dx[dd] * (start+d);
               int py = y + dy[dd] * (start+d);
-              
+
               if (px < 0 || px > 8 || py < 0 || py > 6) {
                 mask = 0L;
                 break;
@@ -34,12 +40,43 @@ public class Connect4Checker {
             
             if (mask != 0) {
               connect4Masks[100 * index + connect4MasksFE[index]++] = mask;
+              if (start == 0) {
+            	  allConnect4Masks[allConnect4MasksFE++] = mask;
+              }
             }
             
           }
         }
       }
     }
+    
+    for (int y=0;y<7;y++) {
+        for (int x=0;x<9;x++) {
+          int index = x*7+y;
+          
+          for (int dd=0;dd<4;dd++) {
+            for (int start=-2;start<=0;start++) {
+              
+              long mask = 0L;
+              for (int d=0;d<3;d++) {
+                int px = x + dx[dd] * (start+d);
+                int py = y + dy[dd] * (start+d);
+
+                if (px < 0 || px > 8 || py < 0 || py > 6) {
+                  mask = 0L;
+                  break;
+                } else {
+                  mask |= 1L << (7*px + py);
+                }
+              }
+              
+              if (mask != 0) {
+                connect3Masks[100 * index + connect3MasksFE[index]++] = mask;
+              }
+            }
+          }
+        }
+      }
     
   }
   
@@ -52,6 +89,17 @@ public class Connect4Checker {
     
     return false;
   }
+  
+  public static int count3Connected(long cells, int posx, int posy) {
+	  int count = 0;
+	    int index = posx*7+posy;
+	    for (int i=0;i<connect3MasksFE[index];i++) {
+	      long bits = connect3Masks[100 * index + i];
+	      if ((cells & bits) == bits) count++;
+	    }
+	    
+	    return count;
+	  }
   
   public static boolean old_is4Connected(long cells, int posx, int posy) {
     int connect4;

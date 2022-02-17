@@ -15,11 +15,11 @@ public class State {
   long count;
   boolean turn;
   
+  long zobrist;
   
   
   long mine;
   long opp;
-  long all;
   
   int winner = -1;
   
@@ -30,7 +30,6 @@ public class State {
 	  State state = new State();
     state.mine = 0L;
     state.opp = 0L;
-    state.all = 0L;
     
     state.possibleColumnsFE =0;
     for (int i=0;i<9;i++) {
@@ -41,9 +40,9 @@ public class State {
 	
   public void read(FastReader in) {
     int turnIndex = in.nextInt(); // starts from 0; As the game progresses, first player gets [0,2,4,...] and second player gets [1,3,5,...]
-
+    
+    zobrist = 0;
     winner = -1;
-    this.all = 0L;
     this.mine = 0L;
     this.opp = 0L;
     this.turn = true;
@@ -61,7 +60,6 @@ public class State {
           boolean myCell = ((v == '0' || v == 'O') && ! Player.inverse) || ((v == '1' || v== 'X') && Player.inverse);
           
           long mask = 1L << (7*x + y);
-          all |= mask;
           if (myCell) {
             this.mine |= mask;
           } else {
@@ -94,8 +92,10 @@ public class State {
 				}
 			}
 		}
+		
+		zobrist = zobrist ^ ZobristHash.get(player, col, r); 
+		
 		long mask = 1L << (7 * col + r);
-		all |= mask;
 		if (player) {
 			mine |= mask;
 		} else {
@@ -113,6 +113,8 @@ public class State {
 	}
 	  
   int firstEmptyCell(int col) {
+	long all = mine | opp;
+	  
     int column = (int)((all >> 7*col) & 0b1111111);
     
     return lookupColumn(column);
@@ -134,20 +136,22 @@ public class State {
     return lookup[column];
   }
 
-  public void remove(int col) {
+  public void remove(int col, boolean player) {
     int r = lastFilledCell(col);
     if (r == 6) {
       // remettre dans les possibilités
 		possibleColumns[possibleColumnsFE++] = col;
     }
     
+	zobrist = zobrist ^ ZobristHash.get(player, col, r); 
+
+    
     long notMask = ~(1L << (7*col+r));
-    all &=notMask;
     mine &=notMask;
     opp &=notMask;
     
     winner = -1;
-	}
+  }
 
   public void debug() {
     System.err.println("State of the grid : ");
@@ -178,7 +182,6 @@ public class State {
     this.wins = 0;
     this.count = 0;
     
-    this.all = parent.all;
     this.mine = parent.mine;
     this.opp = parent.opp;
     this.winner = parent.winner;
@@ -189,7 +192,6 @@ public class State {
   }
 
   public void copyFrom(State model) {
-    this.all = model.all;
     this.mine = model.mine;
     this.opp = model.opp;
     this.turn = model.turn;

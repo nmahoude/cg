@@ -1,5 +1,7 @@
 package connect4;
 
+import java.util.Arrays;
+
 import cgutils.random.FastRandom;
 
 public class AI {
@@ -60,29 +62,37 @@ public class AI {
       // make the better choice !
       for (int c=0;c<9;c++) {
 
-        if (state.firstEmptyCell(c) == 7) continue;
-        //System.err.println("Col height is "+state.firstEmptyCell(c));
+     	int y = state.firstEmptyCell(c);
+        if (y == 7) continue;
+        if (isForbiden(forbidenCols, forbidenColsFE, c)) continue; // this col is forbiden
         
-        boolean usable = true;
-        for (int f=0;f<forbidenColsFE;f++) {
-          if (forbidenCols[f] == c) {
-            usable = false;
-            break;
-          }
-        }
-        if (!usable) continue; // this col is forbiden
         
-        int y = state.firstEmptyCell(c);
-        double score = 1.0 - 0.01 * Math.abs(4-c); // the more central the best
+        state.put(c, true);
+        
+        ThreatAnalyser threatAnalyser = new ThreatAnalyser();
+        threatAnalyser.analyse(state.mine, state.opp);
+
+        double score = 0.01 - 0.001 * Math.abs(4-c); // the more central the best
+        score += -0.01*y;
+
+        double hisCoeff = 1.1;
+        score += 5.0 * (threatAnalyser.myThreats[3] - hisCoeff*threatAnalyser.oppThreats[3]); 
+        score += 1.0 * (threatAnalyser.myThreats[2] - hisCoeff*threatAnalyser.oppThreats[2]);
+        score += 0.1 * (threatAnalyser.myThreats[1] - hisCoeff*threatAnalyser.oppThreats[1]);
         
         for (int dy=-1;dy<=1;dy++) {
           for (int dx=-1;dx<=1;dx++) {
             if (state.getCellPlayerAt(c+dx, y+dy) == 0) {
-              score += 1;
+              score += 1.0;
             }
           }
         }
+
         
+        state.remove(c, true);
+        System.err.println("AI - col "+c +" => score = "+score);
+        System.err.println("     my threats : "+Arrays.toString(threatAnalyser.myThreats));
+        System.err.println("     opp threats : "+Arrays.toString(threatAnalyser.oppThreats));
         if (score > bestScore) {
           bestScore = score;
           bestCol = c;
@@ -93,5 +103,14 @@ public class AI {
     }
 
   }
+
+	private boolean isForbiden(int[] forbidenCols, int forbidenColsFE, int col) {
+		for (int f = 0; f < forbidenColsFE; f++) {
+			if (forbidenCols[f] == col) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }
