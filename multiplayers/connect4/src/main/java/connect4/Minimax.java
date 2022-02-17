@@ -22,7 +22,7 @@ public class Minimax {
 		ZobristHash.clear();
 		collisions = 0;
 		
-		int value = alphaBeta(root, Integer.MIN_VALUE, Integer.MAX_VALUE, true, MAX_DEPTH);
+		double value = alphaBeta(root, Integer.MIN_VALUE, Integer.MAX_VALUE, true, MAX_DEPTH);
 		long end = System.currentTimeMillis();
 		System.err.println("Minimax time : " + (end - start));
 		System.err.println("Detected collision : "+collisions);
@@ -32,12 +32,12 @@ public class Minimax {
 	int columnsOrder[] = new int[] { 4, 5, 3, 6, 2, 7, 1, 8, 0 };
 	private int collisions;
 
-	public int alphaBeta(State node, int alpha, int beta, boolean maximizingScore, int depth) {
+	public double alphaBeta(State node, double alpha, double beta, boolean maximizingScore, int depth) {
 		if (node.end() || depth == 0) {
 			return evaluate(node, depth);
 		}
 
-		int bestScore = maximizingScore ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+		double bestScore = maximizingScore ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 		for (int cc = 0; cc < 9; cc++) {
 			int col = columnsOrder[cc];
 			
@@ -59,14 +59,14 @@ public class Minimax {
 //				ZobristHash.add(node.zobrist);
 //			}
 			
-			int score = alphaBeta(node, alpha, beta, !maximizingScore, depth - 1);
+			double score = alphaBeta(node, alpha, beta, !maximizingScore, depth - 1);
 			node.remove(col, maximizingScore);
 			
 
 			if (maximizingScore) {
 				if (depth == MAX_DEPTH) {
 					System.err.println("Score for col "+col+" is "+score);
-					if (score > 2000 && score > bestScore) {
+					if (score > bestScore) {
 						bestCol = col;
 					} else if (score < -2000) {
 						forbidenScore[forbidenColsFE] = score;
@@ -94,18 +94,29 @@ public class Minimax {
 		return bestScore;
 	}
 
-	private int evaluate(State node, int depth) {
-		if (depth == 0) {
-			return 0; // abandon
-		}
-
+	private double evaluate(State node, int depth) {
 		if (node.winner == 0) {
 			return 10_000 + depth;
 		} else if (node.winner == 1) {
 			return -10_000 - depth;
 		} else {
-			return 0; // draw or not finished
+			return evaluateNonFinishedBoard(node); 
 		}
+	}
+	
+	ThreatAnalyser threatAnalyser = new ThreatAnalyser();
+	
+	private double evaluateNonFinishedBoard(State node) {
+        threatAnalyser.analyse(node.mine, node.opp);
+
+        double score = 0.0;
+
+        double hisCoeff = 1.1;
+        score += 5.0 * (threatAnalyser.myThreats[3] - hisCoeff*threatAnalyser.oppThreats[3]); 
+        score += 1.0 * (threatAnalyser.myThreats[2] - hisCoeff*threatAnalyser.oppThreats[2]);
+        score += 0.1 * (threatAnalyser.myThreats[1] - hisCoeff*threatAnalyser.oppThreats[1]);
+
+        return score;
 	}
 
 }

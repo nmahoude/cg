@@ -1,8 +1,8 @@
 package connect4;
 
 public class ThreatAnalyser {
-	public int[] myThreats = new int[4];
-	public int[] oppThreats = new int[4];
+	public int[] myThreats = new int[5];
+	public int[] oppThreats = new int[5];
 	
 	public void analyse(long mine, long opp) {
 		long myThreatMask[] = new long[4];
