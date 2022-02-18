@@ -1,18 +1,17 @@
 package connect4;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class ZobristHash {
-	static long[] player0Hashes = createHashes();
-	static long[] player1Hashes = createHashes();
+	static long[] player0Hashes = createHashes(101L);
+	static long[] player1Hashes = createHashes(101010L);
 	
-	static Set<Long> zobrist = new HashSet<>();
+	static Map<Long, Position> zobrist = new HashMap<>();
 	
-	private static long[] createHashes() {
-		Random random = new Random(0);
+	private static long[] createHashes(long seed) {
+		Random random = new Random(seed);
 		
 		long[] hashes = new long[9 * 7];
 		
@@ -25,21 +24,27 @@ public class ZobristHash {
 	
 	public static long get(boolean player, int col, int row) {
 		if (player) {
-			return player0Hashes[col + 9 * row];
+			return player0Hashes[col + 9*row];
 		} else {
-			return player1Hashes[col + 9 * row];
+			return player1Hashes[col +  9*row];
 		}
 	}
 
-	public static boolean contains(long hash) {
-		return zobrist.contains(hash);
+	public static Position contains(long hash) {
+		return zobrist.get(hash);
 	}
 
-	public static void add(long hash) {
-		zobrist.add(hash);
+	public static void add(long hash, long mine, long opp, double score) {
+		Position position = Position.getFromCache();
+		position.mine = mine;
+		position.opp = opp;
+		position.score = score;
+				
+		zobrist.put(hash, position);
 	}
 
 	public static void clear() {
 		zobrist.clear();
+		Position.resetCache();
 	}
 }

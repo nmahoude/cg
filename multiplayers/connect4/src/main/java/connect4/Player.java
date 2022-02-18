@@ -32,6 +32,7 @@ public class Player {
 		while (true) {
 		  turn++;
 			state.read(in);
+			checkDoubleThread(state);
 			
 			if (turn == 1) {
 			  for (int i=0;i<4 ;i++) {
@@ -41,10 +42,10 @@ public class Player {
 			int col = ai.think(state);
 
 			if (turn == 1 && !inverse) {
-			  System.out.println("2"); // force a bad steal (the same as Royale ...)
+			  System.out.println("1"); // force a bad steal (the same as Royale ...)
 			} else if (turn == 1 && inverse && (
 //					state.firstEmptyCell(0) == 1 || state.firstEmptyCell(8) == 1 ||
-//					state.firstEmptyCell(1) == 1 || state.firstEmptyCell(7) == 1 ||
+					state.firstEmptyCell(1) == 1 || state.firstEmptyCell(7) == 1 ||
 					state.firstEmptyCell(2) == 1 || state.firstEmptyCell(6) == 1 ||
 					state.firstEmptyCell(3) == 1 || state.firstEmptyCell(5) == 1 ||
 					state.firstEmptyCell(4) == 1 
@@ -60,5 +61,25 @@ public class Player {
       
 			
 		}
+	}
+	private void checkDoubleThread(State state2) {
+		ThreatAnalyser threatAnalyser = new ThreatAnalyser();
+		threatAnalyser.analyse(state2.mine, state2.opp);
+		
+		System.err.println("Threats of connect 4");
+		State.printGrid(threatAnalyser.myThreatMask[3], threatAnalyser.oppThreatMask[3]);
+		
+		
+		for (int x=0;x<9;x++) {
+        	for (int y = 0;y<6;y++) {
+        		long mask = 0b11L << (7*x+y);
+        		if ((threatAnalyser.myThreatMask[3] & mask) == mask) {
+        			System.err.println("My threat @ "+x+","+y);
+        		}
+        		if ((threatAnalyser.oppThreatMask[3] & mask) == mask) {
+        			System.err.println("Opp threat @ "+x+","+y);
+        		}
+        	}
+        }		
 	}
 }

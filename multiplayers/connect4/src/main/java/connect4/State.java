@@ -70,7 +70,6 @@ public class State {
     }
     
     debug();
-    
     int choiceCount = in.nextInt(); // number of unfilled columns in the board
     for (int i = 0; i < choiceCount; i++) {
       int c = in.nextInt();
@@ -108,7 +107,7 @@ public class State {
 		}
 
 		if (possibleColumnsFE == 0) {
-			winner = 2;
+			winner = 2; // draw
 		}
 	}
 	  
@@ -154,7 +153,11 @@ public class State {
   }
 
   public void debug() {
-    System.err.println("State of the grid : ");
+    printGrid(mine, opp);
+  }
+
+  static public void printGrid(long mine, long opp) {
+	System.err.println("State of the grid : ");
     for (int y=6;y>=0;y--) {
       for (int x=0;x<9;x++) {
         long mask = 1L << (7*x+y);
@@ -168,7 +171,7 @@ public class State {
       }
       System.err.println();
     }
-  }
+}
 
   private int lastFilledCell(int col) {
     int r = firstEmptyCell(col);
@@ -196,6 +199,7 @@ public class State {
     this.opp = model.opp;
     this.turn = model.turn;
     this.winner = model.winner;
+    this.zobrist = model.zobrist;
   }
 
   public boolean end() {
