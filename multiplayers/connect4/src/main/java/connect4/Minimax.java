@@ -3,98 +3,79 @@ package connect4;
 public class Minimax {
 
 	private static final int MAX_DEPTH = 6;
-	private int bestCol;
-	public double[] forbidenScore = new double[10];
-	public int[] forbidenCols = new int[10];
-	public int forbidenColsFE;
-	private double currentForbidenScore;
 
-	
-	public int think(State root) {
-		StateCache.reset();
-		bestCol = -1;
-		root.childsFE = 0;
-		forbidenColsFE = 0;
-		
-		
-		
-		long start = System.currentTimeMillis();
-		ZobristHash.clear();
-		collisions = 0;
-		
-		double value = alphaBeta(root, Integer.MIN_VALUE, Integer.MAX_VALUE, true, MAX_DEPTH);
-		long end = System.currentTimeMillis();
-		System.err.println("Minimax time : " + (end - start));
-		System.err.println("Detected collision : "+collisions);
-		return bestCol;
-	}
+    public int think(State root) {
+        StateCache.reset();
+        root.childsFE = 0;
+        long start = System.currentTimeMillis();
+        ZobristHash.clear();
+        collisions = 0;
 
-	int columnsOrder[] = new int[] { 4, 5, 3, 6, 2, 7, 1, 8, 0 };
-	private int collisions;
+        int bestCol = -1;
+        double bestScore = Double.NEGATIVE_INFINITY;
+        for (int col : columnsOrder) {
+            if (!root.canPutOn(col)) {
+                continue;
+            }
 
-	public double alphaBeta(State node, double alpha, double beta, boolean maximizingScore, int depth) {
-		if (node.end() || depth == 0) {
-			return evaluate(node, depth);
-		}
+            root.put(col, true);
+            double score = alphaBeta(root, Integer.MIN_VALUE, Integer.MAX_VALUE, false, MAX_DEPTH-1);
+            System.err.println("New way "+col+" => "+score);
+            if (score > bestScore) {
+            	bestScore = score;
+            	bestCol = col;
+            }
+            root.remove(col, true);
+            
+        }
+        
+        long end = System.currentTimeMillis();
+        System.err.println("Minimax time : " + (end - start));
+        System.err.println("Detected collision : " + collisions);
+        return bestCol;
+    }
 
-		double bestScore = maximizingScore ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-		for (int cc = 0; cc < 9; cc++) {
-			int col = columnsOrder[cc];
-			
-			if (!node.canPutOn(col)) {
-				continue;
-			}
+    int columnsOrder[] = new int[] { 4, 5, 3, 6, 2, 7, 1, 8, 0 };
 
-			if (depth == MAX_DEPTH) {
-				currentForbidenScore = Integer.MAX_VALUE;
-			}
-			node.put(col, maximizingScore);
-			long zobrist = node.zobrist;
-			Position existingPos = ZobristHash.contains(node.zobrist);
-			
-			double score;
-			if (existingPos != null) {
-				collisions++;
-				
-				score = existingPos.score;
-			} else {
-				score = alphaBeta(node, alpha, beta, !maximizingScore, depth - 1);
-				ZobristHash.add(zobrist, node.mine, node.opp, score);
-			}
-			
-			node.remove(col, maximizingScore);
-			
+    private int collisions;
 
-			if (maximizingScore) {
-				if (depth == MAX_DEPTH) {
-					System.err.println("Score for col "+col+" is "+score);
-					if (score > bestScore) {
-						bestCol = col;
-					} else if (score < -2000) {
-						forbidenScore[forbidenColsFE] = score;
-						forbidenCols[forbidenColsFE++] = col;
-					}
-				}
-				
-				bestScore = Math.max(bestScore, score);
-				alpha = Math.max(alpha, bestScore);
-
-				if (bestScore > beta)
-					break;
-			} else {
-				if (score  < -5000) {
-					currentForbidenScore = Math.min(currentForbidenScore, MAX_DEPTH - depth);
-				}
-				bestScore = Math.min(bestScore, score);
-				beta = Math.min(beta, bestScore);
-
-				if (bestScore < alpha)
-					break;
-			}
-		}
-		
-		return bestScore;
-	}
+    public double alphaBeta(State node, double alpha, double beta, boolean maximizingScore, int depth) {
+        if (node.end() || depth == 0) {
+            return evaluate(node, depth);
+        }
+        double bestScore = maximizingScore ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        for (int cc = 0; cc < 9; cc++) {
+            int col = columnsOrder[cc];
+            if (!node.canPutOn(col)) {
+                continue;
+            }
+            
+            node.put(col, maximizingScore);
+            long zobrist = node.zobrist;
+            Position existingPos = ZobristHash.contains(node.zobrist);
+            double score;
+            if (existingPos != null) {
+                collisions++;
+                score = existingPos.score;
+            } else {
+                score = alphaBeta(node, alpha, beta, !maximizingScore, depth - 1);
+                ZobristHash.add(zobrist, node.mine, node.opp, score);
+            }
+            node.remove(col, maximizingScore);
+            if (maximizingScore) {
+                bestScore = Math.max(bestScore, score);
+                alpha = Math.max(alpha, bestScore);
+                if (bestScore > beta)
+                    break;
+            } else {
+                bestScore = Math.min(bestScore, score);
+                beta = Math.min(beta, bestScore);
+                if (bestScore < alpha)
+                    break;
+            }
+        }
+        return bestScore;
+    }
 
 	private double evaluate(State node, int depth) {
 		if (node.winner == 0) {
@@ -115,8 +96,13 @@ public class Minimax {
 
         double score = 0.0;
 
-        double hisCoeff = 1.5;
-        score += 5.0 * (threatAnalyser.myThreats[3] - hisCoeff*threatAnalyser.oppThreats[3]); 
+        double hisCoeff;
+        if (Player.attack) {
+        	hisCoeff = 0.9;
+        } else {
+        	hisCoeff = 1.1;
+        }
+        score += 10.0 * (threatAnalyser.myThreats[3] - hisCoeff*threatAnalyser.oppThreats[3]); 
         score += 1.0 * (threatAnalyser.myThreats[2] - hisCoeff*threatAnalyser.oppThreats[2]);
         score += 0.1 * (threatAnalyser.myThreats[1] - hisCoeff*threatAnalyser.oppThreats[1]);
 

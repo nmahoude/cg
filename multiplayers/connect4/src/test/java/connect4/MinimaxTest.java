@@ -13,17 +13,18 @@ public class MinimaxTest {
   @Test
 void shouldNotFindWin() throws Exception {
 	String input = "0 "
-			+ ".........\r\n"
-			+ ".........\r\n"
-			+ "...O.....\r\n"
-			+ "...XXX...\r\n"
-			+ "...XXO...\r\n"
-			+ "...XOO...\r\n"
-			+ ".XOOOX..."
+			+ "...OX....\r\n"
+			+ "..XOO....\r\n"
+			+ "..OXX....\r\n"
+			+ "..OOX.O..\r\n"
+			+ "..XOO.X..\r\n"
+			+ "..OXX.O..\r\n"
+			+ "..XOX.X.."
 	        + "\r\n"
 	        + "0 0 ";
 
     FastReader in = new FastReader(input.getBytes());
+    Player.inverse = true;
     
     State state = State.emptyState();
     state.read(in);
@@ -37,19 +38,18 @@ void shouldNotFindWin() throws Exception {
 	Assertions.assertThat(col).isEqualTo(-1);
   }
 	
+  public static void main(String[] args) {
 	
-  //@Test
-  void debug() throws Exception {
     StateCache.reset();
     
     String input = "0 "
-        + ".........\r\n"
-        + ".........\r\n"
-        + ".........\r\n"
-        + "O........\r\n"
-        + "X...X....\r\n"
-        + "X..OO....\r\n"
-        + "XXXOO...."
+        + "...O.....\r\n"
+        + "...X.....\r\n"
+        + ".O.O.XO..\r\n"
+        + ".X.O.XXX.\r\n"
+        + ".X.O.OOO.\r\n"
+        + ".O.X.XXX.\r\n"
+        + "OOOX.OXX."
         + "\r\n"
         + "0 0 ";
     
@@ -65,21 +65,17 @@ void shouldNotFindWin() throws Exception {
     col = max.think(state);
     
     // WARM UP
-    for (int i=0;i<1000;i++) {
+    for (int i=0;i<500;i++) {
     	col = max.think(state);
     }
     
     System.err.println("Start .... ");
     
-    for (int i=0;i<100_000;i++) {
+    for (int i=0;i<500;i++) {
 		col = max.think(state);
     }
 
     
     Assertions.assertThat(col).isEqualTo(-1);
-    Assertions.assertThat(max.forbidenColsFE).isNotEqualTo(0);
-    for (int i=0;i<max.forbidenColsFE;i++) {
-      System.err.println("Forbiden : "+max.forbidenCols[i]+" score : "+max.forbidenScore[i]);
-    }
   }
 }
