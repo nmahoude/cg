@@ -6,14 +6,18 @@ import java.util.Scanner;
  * Try to survive by not falling off
  **/
 public class Player {
-
+	static int turn = 0;
+	
 	public static void main(String args[]) {
 		Scanner in = new Scanner(System.in);
 		State state = new State();
 
 		
+		StateCache.reset();
 		
-		state.myId = in.nextInt() + 1; // Your id, 0 or 1
+		state.ME = in.nextInt() + 1; // Your id, 0 or 1
+		state.OPP = 3 - state.ME;
+		
 		int height = in.nextInt(); // height of the grid
 		int width = in.nextInt(); // width of the grid
 		if (in.hasNextLine()) {
@@ -22,60 +26,15 @@ public class Player {
 
 		
 		State copy = new State();
+		Minimax minimax = new Minimax();
+		
 		// game loop
 		while (true) {
 			state.read(in);
+			turn++;
 			
 
-
-			double bestScore = Double.NEGATIVE_INFINITY;
-			int mines = 0;
-			int opp = 0;
-
-			String dir = "NOLOSE";
-			double score;
-			
-			
-			System.err.println("UP");
-			copy.copy(state);
-			copy.pushUp();
-			copy.print();
-			score = score(copy);
-			if (score > bestScore) {
-				bestScore= score;
-				dir = "UP";
-			}
-			
-			System.err.println("RIGHT");
-			copy.copy(state);
-			copy.pushRight();
-			copy.print();
-			score = score(copy);
-			if (score > bestScore) {
-				bestScore= score;
-				dir = "RIGHT";
-			}
-			
-			System.err.println("DOWN");
-			copy.copy(state);
-			copy.pushDown();
-			copy.print();
-			score = score(copy);
-			if (score > bestScore) {
-				bestScore= score;
-				dir = "DOWN";
-			}
-
-			System.err.println("LEFT");
-			copy.copy(state);
-			copy.pushLeft();
-			copy.print();
-			score = score(copy);
-			if (score > bestScore) {
-				bestScore= score;
-				dir = "LEFT";
-			}
-
+			Dir dir = minimax.think(state);
 
 			System.out.println(dir); // UP | RIGHT | DOWN | LEFT
 		}

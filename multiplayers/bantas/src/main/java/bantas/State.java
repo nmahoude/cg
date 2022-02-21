@@ -3,7 +3,9 @@ package bantas;
 import java.util.Scanner;
 
 public class State {
-	public int myId;
+	static int ME = -1;
+	static int OPP = -2;
+	
 	int minWidth = 0, maxWidth = 8;		
 	int minHeight = 0, maxHeight = 8;
 	
@@ -11,10 +13,11 @@ public class State {
 	int totalMines;
 	int totalOpp;
 
+	int turn = ME;
+	int pCount[] = new int[3];
 	
-	void copy(State from) {
-		this.myId = from.myId;
-		
+	void copyFrom(State from) {
+		this.turn = from.turn;
 		for (int y=0;y<8;y++) {
 			for (int x=0;x<8;x++) {
 				this.cells[x][y] = from.cells[x][y];
@@ -26,6 +29,7 @@ public class State {
 		this.maxHeight = from.maxHeight;
 		this.totalMines = from.totalMines;
 		this.totalOpp = from.totalOpp;
+		
 	}
 	
 	public void reset() {
@@ -37,6 +41,7 @@ public class State {
 		totalMines = 0;
 		totalOpp = 0;
 
+		turn = ME;
 	}
 
 	public void read(Scanner in) {
@@ -129,82 +134,133 @@ public class State {
 	
 	
 	public void pushUp() {
+		resetPCount();
+		
 		for (int x=minWidth;x<=maxWidth;x++) {
 			int next = 0;
 			for (int y=maxHeight;y>=minHeight;y--) {
 				int cell = cells[x][y];
 				if (next > 0) {
 					cells[x][y] = next;
+					pCount[next]++;
 					next = cell;
 				} else {
-					if (cell == myId) {
+					if (cell == turn) {
 						cells[x][y] = 0;
 						next = cell;
 					} else {
+						pCount[cells[x][y]]++;
 						next = 0;
 					}
 				}
 			}
 		}
+		switchTurn();
 	}
 	
 	public void pushDown() {
+		resetPCount();
 		for (int x=minWidth;x<=maxWidth;x++) {
 			int next = 0;
 			for (int y=minHeight;y<=maxHeight;y++) {
 				int cell = cells[x][y];
 				if (next > 0) {
 					cells[x][y] = next;
+					pCount[next]++;
 					next = cell;
 				} else {
-					if (cell == myId) {
+					if (cell == turn) {
 						cells[x][y] = 0;
 						next = cell;
 					} else {
+						pCount[cells[x][y]]++;
 						next = 0;
 					}
 				}
 			}
 		}
+		switchTurn();
 	}
 	
 	public void pushRight() {
+		resetPCount();
 		for (int y=minHeight;y<=maxHeight;y++) {
 			int next = 0;
 			for (int x=minWidth;x<=maxWidth;x++) {
 				int cell = cells[x][y];
 				if (next > 0) {
 					cells[x][y] = next;
+					pCount[next]++;
 					next = cell;
 				} else {
-					if (cell == myId) {
+					if (cell == turn) {
 						cells[x][y] = 0;
 						next = cell;
 					} else {
+						pCount[cells[x][y]]++;
 						next = 0;
 					}
 				}
 			}
 		}
+		switchTurn();
 	}
 	
 	public void pushLeft() {
+		resetPCount();
 		for (int y=minHeight;y<=maxHeight;y++) {
 			int next = 0;
 			for (int x=maxWidth;x>=minWidth;x--) {
 				int cell = cells[x][y];
 				if (next > 0) {
 					cells[x][y] = next;
+					pCount[next]++;
 					next = cell;
 				} else {
-					if (cell == myId) {
+					if (cell == turn) {
 						cells[x][y] = 0;
 						next = cell;
 					} else {
+						pCount[cells[x][y]]++;
 						next = 0;
 					}
 				}
 			}
 		}
+		switchTurn();
+	}
+
+	private void resetPCount() {
+		pCount[0] = 0;
+		pCount[1] = 0;
+		pCount[2] = 0;
+	}
+
+	private void switchTurn() {
+		this.turn = 3 - this.turn;
+	}
+
+	public void push(Dir dir) {
+		switch(dir) {
+		case DOWN:
+			pushDown();
+			break;
+		case LEFT:
+			pushLeft();
+			break;
+		case RIGHT:
+			pushRight();
+			break;
+		case UP:
+			pushUp();
+			break;
+		default:
+			break;
+		
+		}
+	}
+
+	public boolean gameOver() {
+		return pCount[1] == 0 || pCount[2] == 0;
 	}
 }
