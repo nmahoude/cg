@@ -9,7 +9,7 @@ public class State {
 	int minWidth = 0, maxWidth = 8;		
 	int minHeight = 0, maxHeight = 8;
 	
-	int cells[][]=  new int[8][8];
+	int cells[]=  new int[8*8];
 	int totalMines;
 	int totalOpp;
 
@@ -18,11 +18,8 @@ public class State {
 	
 	void copyFrom(State from) {
 		this.turn = from.turn;
-		for (int y=0;y<8;y++) {
-			for (int x=0;x<8;x++) {
-				this.cells[x][y] = from.cells[x][y];
-			}
-		}
+		System.arraycopy(from.cells, 0, this.cells, 0, 8*8);
+
 		this.minWidth = from.minWidth;
 		this.maxWidth = from.maxWidth;
 		this.minHeight = from.minHeight;
@@ -63,11 +60,11 @@ public class State {
 				if (c == '0' || c == '1') {
 					if (c == '0') totalMines++;
 					if (c == '1') totalOpp++;
-					cells[x][y] = (c-'0')+1; // 1 ou 2
+					cells[x+8*y] = (c-'0')+1; // 1 ou 2
 				} else if (c == 'x'){
-					cells[x][y] = -1; // void
+					cells[x+8*y] = -1; // void
 				} else {
-					cells[x][y] = 0; // empty;
+					cells[x+8*y] = 0; // empty;
 				}
 			}
 		}
@@ -75,7 +72,7 @@ public class State {
 		for (int x=0;x<8;x++) {
 			boolean wall = true;
 			for (int y=0;y<8;y++) {
-				if (cells[x][y] != -1) {
+				if (cells[x+8*y] != -1) {
 					wall = false;
 					break;
 				}
@@ -112,7 +109,7 @@ public class State {
 		int count = 0;
 		for (int y = 0; y < 8; y++) {
 			for (int x=0;x<8;x++) {
-				if (cells[x][y] == playerId) count++;
+				if (cells[x+8*y] == playerId) count++;
 			}
 		}
 		return count;
@@ -121,11 +118,15 @@ public class State {
 	public void print() {
 		for (int y = 0; y < 8; y++) {
 			for (int x=0;x<8;x++) {
-				switch(cells[x][y]) {
-				case -1 : System.err.print("x "); break;
-				case 0 : System.err.print("  "); break;
-				case 1 : System.err.print("1 "); break;
-				case 2 : System.err.print("2 "); break;
+				if (x < minWidth || x > maxWidth || y < minHeight || y > maxHeight) {
+					System.err.print("x ");
+				} else {
+					switch(cells[x+8*y]) {
+					case -1 : System.err.print("x "); break;
+					case 0 : System.err.print("  "); break;
+					case 1 : System.err.print("0 "); break;
+					case 2 : System.err.print("1 "); break;
+					}
 				}
 			}
 			System.err.println();
@@ -139,22 +140,25 @@ public class State {
 		for (int x=minWidth;x<=maxWidth;x++) {
 			int next = 0;
 			for (int y=maxHeight;y>=minHeight;y--) {
-				int cell = cells[x][y];
+				int cell = cells[x+8*y];
 				if (next > 0) {
-					cells[x][y] = next;
+					cells[x+8*y] = next;
 					pCount[next]++;
 					next = cell;
 				} else {
 					if (cell == turn) {
-						cells[x][y] = 0;
+						cells[x+8*y] = 0;
 						next = cell;
 					} else {
-						pCount[cells[x][y]]++;
+						pCount[cell]++;
 						next = 0;
 					}
 				}
 			}
 		}
+		
+		clear();
+		
 		switchTurn();
 	}
 	
@@ -163,46 +167,77 @@ public class State {
 		for (int x=minWidth;x<=maxWidth;x++) {
 			int next = 0;
 			for (int y=minHeight;y<=maxHeight;y++) {
-				int cell = cells[x][y];
+				int cell = cells[x+8*y];
 				if (next > 0) {
-					cells[x][y] = next;
+					cells[x+8*y] = next;
 					pCount[next]++;
 					next = cell;
 				} else {
 					if (cell == turn) {
-						cells[x][y] = 0;
+						cells[x+8*y] = 0;
 						next = cell;
 					} else {
-						pCount[cells[x][y]]++;
+						pCount[cell]++;
 						next = 0;
 					}
 				}
 			}
 		}
+		
+		clear();
 		switchTurn();
 	}
+
+	private void clearHorizontals() {
+		for (int y = minHeight;y<=maxHeight;y++) {
+			if (lineIsClear(y)) {
+				minHeight++;
+			} else {
+				break;
+			}
+		}
+		
+		for (int y = maxHeight;y>=minHeight;y--) {
+			if (lineIsClear(y)) {
+				maxHeight--;
+			} else {
+				break;
+			}
+		}
+	}
 	
+	private boolean lineIsClear(int y) {
+		for (int x=minWidth;x<=maxWidth;x++) {
+			if (cells[x+8*y] > 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public void pushRight() {
 		resetPCount();
 		for (int y=minHeight;y<=maxHeight;y++) {
 			int next = 0;
 			for (int x=minWidth;x<=maxWidth;x++) {
-				int cell = cells[x][y];
+				int cell = cells[x+8*y];
 				if (next > 0) {
-					cells[x][y] = next;
+					cells[x+8*y] = next;
 					pCount[next]++;
 					next = cell;
 				} else {
 					if (cell == turn) {
-						cells[x][y] = 0;
+						cells[x+8*y] = 0;
 						next = cell;
 					} else {
-						pCount[cells[x][y]]++;
+						pCount[cell]++;
 						next = 0;
 					}
 				}
 			}
 		}
+		
+		clear();
 		switchTurn();
 	}
 	
@@ -211,23 +246,55 @@ public class State {
 		for (int y=minHeight;y<=maxHeight;y++) {
 			int next = 0;
 			for (int x=maxWidth;x>=minWidth;x--) {
-				int cell = cells[x][y];
+				int cell = cells[x+8*y];
 				if (next > 0) {
-					cells[x][y] = next;
+					cells[x+8*y] = next;
 					pCount[next]++;
 					next = cell;
 				} else {
 					if (cell == turn) {
-						cells[x][y] = 0;
+						cells[x+8*y] = 0;
 						next = cell;
 					} else {
-						pCount[cells[x][y]]++;
+						pCount[cell]++;
 						next = 0;
 					}
 				}
 			}
 		}
+
+		clear();
 		switchTurn();
+	}
+
+	private void clear() {
+		clearVerticals();
+		clearHorizontals();
+	}
+	
+	
+	private void clearVerticals() {
+		for (int x=minWidth;x<=maxWidth;x++) {
+			if (rowIsClear(x)) {
+				minWidth++;
+			} else {
+				break;
+			}
+		}
+		for (int x=maxWidth;x>=minWidth;x--) {
+			if (rowIsClear(x)) {
+				maxWidth--;
+			} else {
+				break;
+			}
+		}
+	}
+
+	private boolean rowIsClear(int x) {
+		for (int y=minHeight;y<=maxHeight;y++) {
+			if (cells[x+8*y]>0) return false;
+		}
+		return true;
 	}
 
 	private void resetPCount() {

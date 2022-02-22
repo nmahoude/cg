@@ -25,14 +25,13 @@ public class Player {
 		}
 
 		
-		State copy = new State();
 		Minimax minimax = new Minimax();
 		
 		// game loop
 		while (true) {
 			state.read(in);
 			turn++;
-			
+			System.err.println("Starting turn "+ turn);
 
 			Dir dir = minimax.think(state);
 
@@ -59,9 +58,9 @@ public class Player {
 				double deltaY = Math.abs(y - centerY);
 				double delta = deltaX+deltaY;
 				
-				if (state.cells[x][y] == 1) {
+				if (state.cells[x+8*y] == 1) {
 					score -= delta;
-				} else if (state.cells[x][y] == 2) {
+				} else if (state.cells[x+8*y] == 2) {
 					score += delta;
 				}
 			}
