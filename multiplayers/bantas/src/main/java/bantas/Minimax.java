@@ -2,7 +2,7 @@ package bantas;
 
 
 public class Minimax {
-	private static final int MAX_DEPTH = 10;
+	private static final int MAX_DEPTH = 8;
 	
     public Dir think(State root) {
         long start = System.currentTimeMillis();
@@ -125,7 +125,7 @@ public class Minimax {
 		double score = 1.0 * ( state.pCount[State.ME] - state.pCount[State.OPP]);
 		score += 3.0 * (positionalScore[State.ME] / state.pCount[State.ME] - positionalScore[State.OPP] / state.pCount[State.OPP]);
 		
-		score += 0.1 * (clusterScore[State.ME] / state.pCount[State.ME] - clusterScore[State.OPP] / state.pCount[State.OPP]);
+		score += 10.0 * (clusterScore[State.ME] / state.pCount[State.ME] - clusterScore[State.OPP] / state.pCount[State.OPP]);
 		return score;
 	}
 }
