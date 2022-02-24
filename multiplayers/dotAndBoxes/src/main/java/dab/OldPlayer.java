@@ -4,11 +4,11 @@ import javax.print.attribute.standard.Sides;
 
 import dab.fast.FastReader;
 
-public class Player {
+public class OldPlayer {
 
   public static void main(String args[]) {
       FastReader in = new FastReader(System.in);
-      new Player().play(in);
+      new OldPlayer().play(in);
   }
 
   private void play(FastReader in) {
