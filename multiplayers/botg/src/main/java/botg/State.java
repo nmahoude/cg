@@ -1,9 +1,13 @@
 package botg;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fast.read.FastReader;
 
 public class State {
-
+  List<Item> items = new ArrayList<>();
+  
   int roundType;
   int enemyGold;
   int gold;
@@ -19,16 +23,8 @@ public class State {
     }
     int itemCount = in.nextInt(); // useful from wood2  
     for (int i = 0; i < itemCount; i++) {
-        String itemName = in.next(); // contains keywords such as BRONZE, SILVER and BLADE, BOOTS connected by "_" to help you sort easier
-        int itemCost = in.nextInt(); // BRONZE items have lowest cost, the most expensive items are LEGENDARY
-        int damage = in.nextInt(); // keyword BLADE is present if the most important item stat is damage
-        int health = in.nextInt();
-        int maxHealth = in.nextInt();
-        int mana = in.nextInt();
-        int maxMana = in.nextInt();
-        int moveSpeed = in.nextInt(); // keyword BOOTS is present if the most important item stat is moveSpeed
-        int manaRegeneration = in.nextInt();
-        int isPotion = in.nextInt(); // 0 if it's not instantly consumed
+        Item item = Item.from(in);
+        items.add(item);
     }
   }
 
