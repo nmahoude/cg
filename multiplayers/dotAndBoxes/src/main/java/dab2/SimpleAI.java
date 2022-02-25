@@ -7,13 +7,13 @@ public class SimpleAI {
 
   
   
-  private List<Box> filledFrom(State root, Box initial) {
+  private List<Box> filledFrom(State root, List<Box> initial) {
     State state = new State();
     state.copyFrom(root);
     
     List<Box> toVisit = new ArrayList<>();
     List<Box> visited = new ArrayList<Box>();
-    toVisit.add(initial);
+    toVisit.addAll(initial);
     
     while (!toVisit.isEmpty()) {
       Box parent = toVisit.remove(0);
@@ -23,8 +23,7 @@ public class SimpleAI {
         if (state.edgeCount(box.x, box.y) != 3) continue;
         
         Dir missingDir = Dir.missingDir(state.cell(box));
-        state.set(box, missingDir);
-        toVisit.add(box);
+        toVisit.addAll(state.set(box, missingDir));
       }
     }
     
@@ -48,21 +47,53 @@ public class SimpleAI {
         Dir missingDir = Dir.missingDir(root.cell(current));
         
         state.copyFrom(root);
-        state.set(current, missingDir);
+        List<Box> initialFilled = state.set(current, missingDir);
         
-        int score = 1_000 + 1 + filledFrom(state, Box.box(x, y)).size();
-        if (x == 0 && y == 0) {
-          System.err.println("Root edges of "+current+" is "+root.edgeCount(current));
-          System.err.println("score is "+score);
-        }
-        
-        
+        int filledCells = filledFrom(state, initialFilled).size();
+        int score = 1_000 + filledCells;
         
         if (score > bestScore) {
           bestScore = score;
           bestBox = current;
           bestDir = missingDir;
         }
+        
+        
+        System.err.println(""+current+" "+missingDir+" => filled cells = "+filledCells);
+        
+        if (filledCells == 2 && root.emptyCells() != 2) {
+          // TODO check that there is still cells to fill after this two ! forcing him to open another serie
+          // IE : we can close a 2 cells instead of filling them in order to  open another serie ourselve !
+          System.err.println("Checking if we need to let a 2 empty spaces");
+          state.copyFrom(root);
+          state.set(current, missingDir);
+          List<Box> boxes = findAdjacentBoxWithEdges(state, current, 3);
+          System.err.println("Adjacent boxes with 3 edges : "+boxes);
+          if (boxes.size() == 1) {
+            Box adjacent = boxes.get(0);
+            Dir missingDir2 = Dir.missingDir(state.cell(adjacent));
+            state.set(adjacent, missingDir2);
+            boolean stillRoomToExplore = false;
+            for (int yy=0;yy<7;yy++) {
+              for (int xx=0;xx<7;xx++) {
+                if (state.edgeCount(xx, yy) < 2) {
+                  stillRoomToExplore = true;
+                  break;
+                }
+              }
+            }
+            System.err.println("Still room after this one ? "+stillRoomToExplore);
+            if (!stillRoomToExplore) {
+              bestScore = 1003;
+              bestBox = adjacent;
+              bestDir = missingDir2;
+            }
+          }
+        } else {
+          
+        }
+        
+        
       }
     }
 
@@ -89,28 +120,30 @@ public class SimpleAI {
     }
     
     // find the smaller field
-    for (int x = 0; x < 7; x++) {
-      for (int y = 0; y < 7; y++) {
-        Box current = Box.box(x, y);
-        if (root.edgeCount(current) != 2) continue;
-        
-        for (Dir dir : Dir.values()) {
-          if (root.hasEdge(current, dir)) continue;
-
-          state.copyFrom(root);
-          state.set(current, dir);
-          state.set(current, Dir.missingDir(state.cell(current))); // end filling
+    if (bestScore == Integer.MIN_VALUE) {
+      for (int x = 0; x < 7; x++) {
+        for (int y = 0; y < 7; y++) {
+          Box current = Box.box(x, y);
+          if (root.edgeCount(current) != 2) continue;
           
-          
-          List<Box> filled = filledFrom(state, current);
-          System.err.println("setting "+x+" "+y+" "+dir+" let him filled "+filled.size());
-          System.err.println(filled);
-          int score = -100 - filled.size();
-
-          if (score > bestScore) {
-            bestScore = score;
-            bestBox = current;
-            bestDir = dir;
+          for (Dir dir : Dir.values()) {
+            if (root.hasEdge(current, dir)) continue;
+  
+            state.copyFrom(root);
+            state.set(current, dir);
+            List<Box> initial = state.set(current, Dir.missingDir(state.cell(current))); // end filling
+            
+            
+            List<Box> filled = filledFrom(state, initial);
+            System.err.println("setting "+x+" "+y+" "+dir+" let him filled "+filled.size());
+            System.err.println(filled);
+            int score = -100 - filled.size();
+  
+            if (score > bestScore) {
+              bestScore = score;
+              bestBox = current;
+              bestDir = dir;
+            }
           }
         }
       }
@@ -123,6 +156,16 @@ public class SimpleAI {
     } else {
       output(bestBox, bestDir);
     }
+  }
+
+  private List<Box> findAdjacentBoxWithEdges(State state, Box current, int count) {
+    List<Box> boxes = new ArrayList<Box>();
+    for (Box box : current.neighbors) {
+      if (state.edgeCount(box) == count) {
+        boxes.add(box);
+      }
+    }
+    return boxes;
   }
 
   public void thinkOld(State root) {
@@ -153,8 +196,8 @@ public class SimpleAI {
         if (score < 0 && bestScore < 0) {
           // refine to know how many cell he can close
           state.copyFrom(root);
-          state.setVerticalEdge(x, y);
-          int filled = filledFrom(state, Box.box(x, y)).size();
+          List<Box> initial = state.setVerticalEdge(x, y);
+          int filled = filledFrom(state, initial).size();
 
           System.err.println("If I set vertical "+x+","+y+" he can fill "+filled+" cells");
           score = -filled;
@@ -188,8 +231,8 @@ public class SimpleAI {
         if (score < 0 && bestScore < 0) {
           // refine to know how many cell he can close
           state.copyFrom(root);
-          state.setHorizontalEdge(x, y);
-          int filled = filledFrom(state, Box.box(x, y)).size();
+          List<Box> initial = state.setHorizontalEdge(x, y);
+          int filled = filledFrom(state, initial).size();
           score = -filled;
         }
         if (score > bestScore) {

@@ -1,5 +1,10 @@
 package dab2;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import dab.fast.FastReader;
 
 public class State {
@@ -100,21 +105,21 @@ public class State {
 	 * 
 	 * warning, doesn't check if play is valid !
 	 */
-	public int setVerticalEdge(int x, int y) {
+	public List<Box> setVerticalEdge(int x, int y) {
 		if (x == 0) {
 			cells[0][y] |=LEFT_MASK;
-			if (cells[0][y] == ALL_MASKS) return 1; else return 0;
+			if (cells[0][y] == ALL_MASKS) return Arrays.asList(Box.box(0,y)); else return Collections.emptyList();
 		} else if (x == 7) {
 			cells[6][y] |=RIGHT_MASK;
-			if (cells[6][y] == ALL_MASKS) return 1; else return 0;
+			if (cells[6][y] == ALL_MASKS) return Arrays.asList(Box.box(6,y)); else return Collections.emptyList();
 		} else {
-			int score = 0;
 			cells[x-1][y] |=RIGHT_MASK;
 			cells[x][y] |= LEFT_MASK;
 
-			if (cells[x-1][y] == ALL_MASKS) score++;
-			if (cells[x][y] == ALL_MASKS) score++;
-			return score;
+			List<Box> boxes = new ArrayList<Box>();
+			if (cells[x-1][y] == ALL_MASKS) boxes.add(Box.box(x-1,  y));
+			if (cells[x][y] == ALL_MASKS) boxes.add(Box.box(x,  y));
+			return boxes;
 		}
 	}
 	
@@ -126,21 +131,21 @@ public class State {
 	 * 
 	 * warning, doesn't check if play is valid !
 	 */
-	public int setHorizontalEdge(int x, int y) {
+	public List<Box> setHorizontalEdge(int x, int y) {
 		if (y == 0) {
 			cells[x][0] |=BOTTOM_MASK;
-			if (cells[x][0] == ALL_MASKS) return 1; else return 0;
+			if (cells[x][0] == ALL_MASKS) return Arrays.asList(Box.box(x,0)); else return Collections.emptyList();
 		} else if (y == 7) {
 			cells[x][6] |=TOP_MASK;
-			if (cells[x][6] == ALL_MASKS) return 1; else return 0;
+			if (cells[x][6] == ALL_MASKS) return Arrays.asList(Box.box(x,6)); else return Collections.emptyList();
 		} else {
-			int score = 0;
 			cells[x][y-1] |=TOP_MASK;
 			cells[x][y] |= BOTTOM_MASK;
 
-			if (cells[x][y-1] == ALL_MASKS) score++;
-			if (cells[x][y] == ALL_MASKS) score++;
-			return score;
+			List<Box> boxes = new ArrayList<Box>();
+			if (cells[x][y-1] == ALL_MASKS) boxes.add(Box.box(x, y-1));
+			if (cells[x][y] == ALL_MASKS) boxes.add(Box.box(x, y));
+			return boxes;
 		}
 	}
 	
@@ -166,7 +171,7 @@ public class State {
     return cells[x][y];
   }
 
-  public int set(Box box, Dir dir) {
+  public List<Box> set(Box box, Dir dir) {
     if (dir == null) {
       throw new IllegalArgumentException("Error setting "+box+" with dir null!");
     }
@@ -190,6 +195,10 @@ public class State {
 
   public boolean hasEdge(Box box, Dir dir) {
     return (cell(box) & dir.mask) == dir.mask;
+  }
+
+  public int emptyCells() {
+    return 7*7 - (scores[0]+scores[1]);
   }
 
 }
