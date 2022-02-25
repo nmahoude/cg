@@ -78,18 +78,14 @@ public class State {
 	public boolean canSetVerticalEdge(int x, int y) {
 		if (x == 0) {
 			return (cells[0][y] & LEFT_MASK ) == 0;
-		} else if (x == 7) {
-			return (cells[6][y] & RIGHT_MASK) == 0;
 		} else {
-			return (cells[x-1][y] & RIGHT_MASK) == 0;
+		  return (cells[x-1][y] & RIGHT_MASK) == 0;
 		}
 	}
 
 	public boolean canSetHorizontalEdge(int x, int y) {
 		if (y == 0) {
 			return (cells[x][0] & BOTTOM_MASK) == 0;
-		} else if (y == 7) {
-			return (cells[x][6] & TOP_MASK) == 0;
 		} else {
 			return (cells[x][y-1] & TOP_MASK) == 0;
 		}
@@ -152,6 +148,10 @@ public class State {
 		return Integer.bitCount(cells[x][y]);
 	}
 
+  public int edgeCount(Box box) {
+    return edgeCount(box.x, box.y);
+  }
+
 	public void copyFrom(State model) {
 		for (int y=0;y<7;y++) {
 			for (int x=0;x<7;x++) {
@@ -161,4 +161,35 @@ public class State {
 		scores[0] = model.scores[0];
 		scores[1] = model.scores[1];
 	}
+
+  public int cell(int x, int y) {
+    return cells[x][y];
+  }
+
+  public int set(Box box, Dir dir) {
+    if (dir == null) {
+      throw new IllegalArgumentException("Error setting "+box+" with dir null!");
+    }
+    switch(dir) {
+    case BOTTOM:
+      return setHorizontalEdge(box.x, box.y);
+    case LEFT:
+      return setVerticalEdge(box.x, box.y);
+    case RIGHT:
+      return setVerticalEdge(box.x+1, box.y);
+    case TOP:
+      return setHorizontalEdge(box.x, box.y+1);
+    default:
+      throw new RuntimeException("Unknown dir "+dir);
+    }
+  }
+
+  public int cell(Box box) {
+    return cells[box.x][box.y];
+  }
+
+  public boolean hasEdge(Box box, Dir dir) {
+    return (cell(box) & dir.mask) == dir.mask;
+  }
+
 }
