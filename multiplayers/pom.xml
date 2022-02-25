@@ -32,5 +32,6 @@
   	<module>xmashrush2</module>
   	<module>acoiaf</module>
   	<module>connect4</module>
+  	<module>botg</module>
   </modules>
 </project>
