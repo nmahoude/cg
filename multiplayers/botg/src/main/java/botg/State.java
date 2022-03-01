@@ -3,25 +3,44 @@ package botg;
 import java.util.ArrayList;
 import java.util.List;
 
+import botg.ai.StrategyFactory;
+import botg.units.Bush;
+import botg.units.Hero;
+import botg.units.Unit;
 import fast.read.FastReader;
 
 public class State {
-  List<Item> items = new ArrayList<>();
+  public static int myTeam;
+  
+  public Agent me = new Agent();
+  public Agent opp = new Agent();
+  
+  private static List<Hero> allHeroes = new ArrayList<>(); // to reuse them
+  
+  public List<Bush> bushes = new ArrayList<>();
+  public List<Item> items = new ArrayList<>();
   
   int roundType;
   int enemyGold;
-  int gold;
+  public int gold;
 
   public void readInit(FastReader in) {
-    int myTeam = in.nextInt();
+    myTeam = in.nextInt();
     int bushAndSpawnPointCount = in.nextInt(); // useful from wood1, represents the number of bushes and the number of places where neutral units can spawn
     for (int i = 0; i < bushAndSpawnPointCount; i++) {
         String entityType = in.next(); // BUSH, from wood1 it can also be SPAWN
-        int x = in.nextInt();
+        int x = trans(in.nextInt());
         int y = in.nextInt();
         int radius = in.nextInt();
+        
+        if ("BUSH".equals(entityType)) {
+          Bush bush = new Bush();
+          bush.pos = Pos.from(State.trans(x), y);
+          bush.radius = radius;
+        }
     }
-    int itemCount = in.nextInt(); // useful from wood2  
+    
+    int itemCount = in.nextInt();
     for (int i = 0; i < itemCount; i++) {
         Item item = Item.from(in);
         items.add(item);
@@ -29,6 +48,10 @@ public class State {
   }
 
   public void read(FastReader in) {
+    me.clear();
+    opp.clear();
+    
+    
     gold = in.nextInt();
     enemyGold = in.nextInt();
     roundType = in.nextInt();
@@ -37,8 +60,9 @@ public class State {
       int unitId = in.nextInt();
       int team = in.nextInt();
       String unitType = in.next(); // UNIT, HERO, TOWER, can also be GROOT from wood1
-      int x = in.nextInt();
+      int x = trans(in.nextInt());
       int y = in.nextInt();
+      Pos pos = Pos.from(x, y);
       int attackRange = in.nextInt();
       int health = in.nextInt();
       int maxHealth = in.nextInt();
@@ -56,7 +80,59 @@ public class State {
       String heroType = in.next(); // DEADPOOL, VALKYRIE, DOCTOR_STRANGE, HULK, IRONMAN
       int isVisible = in.nextInt(); // 0 if it isn't
       int itemsOwned = in.nextInt(); // useful from wood1
+      
+      Agent agent = team == myTeam ? me : opp;
+      
+      switch(unitType) {
+        case "TOWER" : 
+          
+          agent.tower.pos = pos;
+          agent.tower.range = attackRange;
+          break;
+          
+        case "HERO" : 
+          System.err.println(unitId + " @ "+pos);
+          
+          Hero hero = allHeroes.stream().filter(h -> h.unitId == unitId).findFirst().orElse(null);
+          if (hero == null) {
+            hero = new Hero();
+            allHeroes.add(hero);
+            hero.strategy = StrategyFactory.forHero(heroType);
+          }
+          
+          hero.unitId = unitId;
+          hero.name = heroType;
+          hero.pos = pos;
+          hero.health = health;
+          hero.maxHealth = maxHealth;
+          hero.range = attackRange;
+          hero.damage = attackDamage;
+          hero.itemsOwned = itemsOwned;
+          hero.mana = mana;
+          
+          hero.coolDowns[0] = countDown1;
+          hero.coolDowns[1] = countDown2;
+          hero.coolDowns[2] = countDown3;
+          
+          agent.heroes.add(hero);
+          break;
+        case "UNIT":
+            Unit unit = new Unit();
+            unit.unitId = unitId;
+            unit.pos = pos;
+            unit.health = health;
+            
+            agent.units.add(unit);
+            break;
+          default: 
+            System.err.println("*** TODO *** "+ unitType);
+      }
+      
+
     }
   }
 
+  static int trans(int x) {
+    if (myTeam == 1) return 1920 - x; else return x;
+  }
 }

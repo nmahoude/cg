@@ -4,16 +4,16 @@ import fast.read.FastReader;
 
 public class Item {
 
-  String name;
-  int cost;
-  int damage;
-  int health;
-  int maxHealth;
-  int mana;
-  int maxMana;
-  int moveSpeed;
-  int manaRegeneration;
-  int isPotion;
+  public String name;
+  public int cost;
+  public int damage;
+  public int health;
+  public int maxHealth;
+  public int mana;
+  public int maxMana;
+  public int moveSpeed;
+  public int manaRegeneration;
+  public int isPotion;
 
   public static Item from(FastReader in) {
     Item item = new Item();
