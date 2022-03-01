@@ -5,6 +5,7 @@ import java.util.List;
 
 import botg.ai.StrategyFactory;
 import botg.units.Bush;
+import botg.units.Groot;
 import botg.units.Hero;
 import botg.units.Unit;
 import fast.read.FastReader;
@@ -16,9 +17,12 @@ public class State {
   public Agent opp = new Agent();
   
   private static List<Hero> allHeroes = new ArrayList<>(); // to reuse them
+  public List<Groot> originalGroots = new ArrayList<>();
   
   public List<Bush> bushes = new ArrayList<>();
+  public List<Groot> groots = new ArrayList<>();
   public List<Item> items = new ArrayList<>();
+  public List<Pos> spawnPoints = new ArrayList<>();
   
   int roundType;
   int enemyGold;
@@ -37,6 +41,8 @@ public class State {
           Bush bush = new Bush();
           bush.pos = Pos.from(State.trans(x), y);
           bush.radius = radius;
+        } else if ("SPAWN".equals(entityType)) {
+          spawnPoints.add(Pos.from(State.trans(x), y));
         }
     }
     
@@ -48,8 +54,7 @@ public class State {
   }
 
   public void read(FastReader in) {
-    me.clear();
-    opp.clear();
+    clear();
     
     
     gold = in.nextInt();
@@ -84,6 +89,18 @@ public class State {
       Agent agent = team == myTeam ? me : opp;
       
       switch(unitType) {
+        case "GROOT":
+          Groot groot = originalGroots.stream().filter(g -> g.unitId == unitId).findFirst().orElse(null);
+          if (groot == null) {
+            groot = new Groot();
+            groot.unitId = unitId;
+            groot.spawnPoint = pos;
+            originalGroots.add(groot);    
+          }
+          groot.pos = pos;
+          groot.range = attackRange;
+          this.groots.add(groot);
+          break;
         case "TOWER" : 
           
           agent.tower.pos = pos;
@@ -130,6 +147,12 @@ public class State {
       
 
     }
+  }
+
+  private void clear() {
+    groots.clear();
+    me.clear();
+    opp.clear();
   }
 
   static int trans(int x) {

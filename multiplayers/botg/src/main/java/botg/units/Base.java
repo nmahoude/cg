@@ -4,6 +4,8 @@ import botg.Pos;
 
 public class Base {
   public Pos pos;
+  public int unitId;
+  
   public int range;
   
   public boolean inRange(Base opp) {

@@ -14,7 +14,6 @@ public class Hero extends Base {
     }
   };  
   
-  public int unitId;
   public int health;
   public int maxHealth;
   public int damage;

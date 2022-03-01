@@ -1,70 +1,28 @@
 package botg.ai;
 
-import botg.Action;
-import botg.Agent;
-import botg.State;
-import botg.units.Hero;
+import java.util.Arrays;
 
-public class IronmanStrategy extends RangeHeroStrategy {
+import botg.ai.handlers.AttackNearestUnitHandler;
+import botg.ai.handlers.BuyStuffHandler;
+import botg.ai.handlers.DoLastHitHandler;
+import botg.ai.handlers.MoveBackHandler;
+import botg.ai.handlers.RangedHeroAttackHandler;
+import botg.ai.handlers.HandleGrootHandler;
+import botg.ai.handlers.ironman.CastBurnHandler;
+import botg.ai.handlers.ironman.CastFireballHandler;
 
-  @Override
-  protected Action _think(Hero hero, State state, int actionIndex) {
-    Agent opp = state.opp;
-    
-    if ((action = moveBack(state, hero))!= null) {
-      return action;
-    }
+public class IronmanStrategy extends Strategy {
 
-    if ((action = doLastHit()) != null) {
-      System.err.println("Do last hit !");
-      return action;
-    }
-
-
-    if ((action = shouldBuyStuff())!= null) {
-      return action;
-    }
-    
-    Hero toAttack = opp.heroes.stream().sorted((h1, h2) -> Integer.compare(h1.health, h2.health))
-        .filter(h -> h.pos.dist(opp.tower.pos) > opp.tower.range)
-        .findFirst().orElse(Hero.DEAD_HERO);
-
-    if (toAttack != Hero.DEAD_HERO) {
-      if ((action = castFireball(toAttack)) != null) {
-        return action;
-      }
-      
-      if ((action = castBurn(toAttack)) != null) {
-        return action;
-      }
-    }
-    
-    if ((action = shouldAttack(toAttack)) != null) {
-      return action;
-    }
-    
-    action = attackNearestUnit(state, hero);
-    
-    
-    return action;
+  public IronmanStrategy() {
+    handlers = Arrays.asList(
+        new HandleGrootHandler(),
+        new MoveBackHandler(),
+        new DoLastHitHandler(),
+        new BuyStuffHandler(),
+        new CastFireballHandler(),
+        new CastBurnHandler(),
+        new RangedHeroAttackHandler(),
+        new AttackNearestUnitHandler()
+        );
   }
-
-  private Action castBurn(Hero toAttack) {
-    if (hero.mana >= 50 && hero.coolDowns[2] == 0) {
-      if (toAttack.dist(hero) < 250) {
-        return Action.on("BURNING", toAttack.pos);
-      }
-    }
-    return null;
-  }
-
-  private Action castFireball(Hero toAttack) {
-    if (hero.mana >= 60 && hero.coolDowns[1] == 0) {
-      if (toAttack.dist(hero) < 900) {
-        return Action.on("FIREBALL", toAttack.pos);
-      }
-    }
-    return null;
-  }
-
 }
