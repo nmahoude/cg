@@ -48,4 +48,8 @@ public class Action {
   public static Action on(String actionName, int unitId) {
     return new Action(actionName+" "+unitId);
   }
+
+  public static Action sell(String name) {
+    return new Action("SELL "+name);
+  }
 }

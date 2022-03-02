@@ -9,6 +9,8 @@ public class BuyStuffHandler extends Handler{
 
   @Override
   protected Action _think(State state, Hero hero) {
+    if (hero.willDie()) return null;
+    
     if (hero.itemsOwned < 4 && state.gold > 0) {
       int bestScore = 0;
       Item bestItem = null;
@@ -27,6 +29,7 @@ public class BuyStuffHandler extends Handler{
       if (bestItem != null) {
         System.err.println("buying item " + bestItem.name + " with score " + bestScore + " for hero " + hero);
         state.gold -= bestItem.cost;
+        hero.addItem(bestItem);
         return new Action("BUY " + bestItem.name, "buy item !");
       }
     }
