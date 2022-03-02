@@ -13,10 +13,25 @@ public class Point {
   public Point(Point position) {
     this(position.x, position.y);
   }
-
+  
+  public static Point from(double x, double y) {
+    return new Point(x,y);
+  }
   @Override
   public String toString() {
     return "P("+x+","+y+")";
+  }
+  
+  /** move towards the target, but only radius length
+   * 
+   * @param target
+   * @param radius
+   * @return
+   */
+  public Point moveTowards(Point target, double radius) {
+    Vector v = target.sub(this);
+    v.normalize().dot(radius);
+    return this.add(v);
   }
   
   public Point add(Point addedPoint) {
