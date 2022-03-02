@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import botg.ai.StrategyFactory;
+import botg.units.Base;
 import botg.units.Bush;
 import botg.units.Groot;
 import botg.units.Hero;
@@ -112,7 +113,7 @@ public class State {
           
           Hero hero = allHeroes.stream().filter(h -> h.unitId == unitId).findFirst().orElse(null);
           if (hero == null) {
-            hero = new Hero();
+            hero = new Hero(this);
             allHeroes.add(hero);
             hero.strategy = StrategyFactory.forHero(heroType);
           }
@@ -157,5 +158,14 @@ public class State {
 
   static int trans(int x) {
     if (myTeam == 1) return 1920 - x; else return x;
+  }
+
+  public int enemyLine() {
+    int maxX = 0;
+    for (Base unit : this.me.units) {
+      if (unit.pos.x > maxX)
+        maxX = unit.pos.x;
+    }
+    return maxX;
   }
 }

@@ -8,7 +8,7 @@ public class Base {
   
   public int range;
   
-  public boolean inRange(Base opp) {
+  public boolean inRangeForAttack(Base opp) {
     return this.range * this.range > pos.sqDist(opp.pos);
   }
   

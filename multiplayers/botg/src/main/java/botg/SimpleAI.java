@@ -55,7 +55,7 @@ public class SimpleAI {
     if (index == 1) { // hulk !?
       System.err.println("Hulk cooldown of shield is "+hero.coolDowns[1]);
 
-      long inRange = opp.heroes.stream().filter(hero::inRange).count();
+      long inRange = opp.heroes.stream().filter(hero::inRangeForAttack).count();
       System.err.println("In range =  "+inRange);
       if (inRange > 0 && hero.coolDowns[1] == 0 && hero.mana >= 30) {
         action = new Action("EXPLOSIVESHIELD");
@@ -64,7 +64,7 @@ public class SimpleAI {
     }
     
     if (index == 2) { // deadpool !?
-      long inRange = opp.heroes.stream().filter(hero::inRange).count();
+      long inRange = opp.heroes.stream().filter(hero::inRangeForAttack).count();
       System.err.println("In range =  "+inRange);
       if (inRange > 0 && hero.coolDowns[0]  == 0 && hero.mana > 40) {
         action = new Action("COUNTER");

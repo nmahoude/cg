@@ -13,7 +13,8 @@ public class CastShieldHandler extends Handler {
     if (friend == Hero.DEAD_HERO) return null;
     
     if (hero.mana >= 40 && hero.coolDowns[1] == 0) {
-      if (friend.dist(hero) < 500 && friend.health < friend.maxHealth) {
+      if (friend.dist(hero) < 500 && friend.health < friend.maxHealth 
+          && (friend.pos.x > state.enemyLine() || friend.nextToEnnemies())) {
         return Action.on("SHIELD", hero.unitId);
       }
     }

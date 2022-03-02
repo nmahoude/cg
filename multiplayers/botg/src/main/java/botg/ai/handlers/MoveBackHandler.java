@@ -3,18 +3,14 @@ package botg.ai.handlers;
 import botg.Action;
 import botg.Pos;
 import botg.State;
-import botg.units.Base;
 import botg.units.Hero;
 
 public class MoveBackHandler extends Handler {
 
   @Override
   protected Action _think(State state, Hero hero) {
-    int maxX = 0;
-    for (Base unit : state.me.units) {
-      if (unit.pos.x > maxX)
-        maxX = unit.pos.x;
-    }
+
+    int maxX = state.enemyLine();
     if (hero.pos.x > maxX) {
       System.err.println("Should move back to " + maxX + "!");
 
