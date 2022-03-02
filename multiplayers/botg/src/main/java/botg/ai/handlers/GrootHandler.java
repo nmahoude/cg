@@ -6,7 +6,7 @@ import botg.State;
 import botg.units.Groot;
 import botg.units.Hero;
 
-public class HandleGrootHandler extends Handler {
+public class GrootHandler extends Handler {
 
   @Override
   protected Action _think(State state, Hero hero) {
