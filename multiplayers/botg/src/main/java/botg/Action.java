@@ -1,5 +1,7 @@
 package botg;
 
+import trigonometry.Point;
+
 public class Action {
   public static final Action CHOOSE_HULK = new Action("HULK");
   public static final Action WAIT = new Action("WAIT");
@@ -37,11 +39,11 @@ public class Action {
     return new Action("ATTACK "+unitId);
   }
 
-  public static Action moveTo(Pos pos) {
+  public static Action moveTo(Point pos) {
     return new Action("MOVE "+State.trans(pos.x)+" "+pos.y);
   }
 
-  public static Action on(String actionName, Pos target) {
+  public static Action on(String actionName, Point target) {
     return new Action(actionName+" "+State.trans(target.x)+" "+target.y);
   }
 
@@ -51,5 +53,9 @@ public class Action {
 
   public static Action sell(String name) {
     return new Action("SELL "+name);
+  }
+
+  public static Action moveAndAttack(int unitId, Point pos) {
+    return new Action("MOVE_ATTACK "+State.trans(pos.x)+" "+pos.y+" "+unitId);
   }
 }

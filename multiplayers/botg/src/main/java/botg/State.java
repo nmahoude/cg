@@ -10,6 +10,7 @@ import botg.units.Groot;
 import botg.units.Hero;
 import botg.units.Unit;
 import fast.read.FastReader;
+import trigonometry.Point;
 
 public class State {
   public static int myTeam;
@@ -23,7 +24,7 @@ public class State {
   public List<Bush> bushes = new ArrayList<>();
   public List<Groot> groots = new ArrayList<>();
   public List<Item> items = new ArrayList<>();
-  public List<Pos> spawnPoints = new ArrayList<>();
+  public List<Point> spawnPoints = new ArrayList<>();
   
   int roundType;
   int enemyGold;
@@ -40,10 +41,10 @@ public class State {
         
         if ("BUSH".equals(entityType)) {
           Bush bush = new Bush();
-          bush.pos = Pos.from(State.trans(x), y);
+          bush.pos = Point.from(State.trans(x), y);
           bush.radius = radius;
         } else if ("SPAWN".equals(entityType)) {
-          spawnPoints.add(Pos.from(State.trans(x), y));
+          spawnPoints.add(Point.from(State.trans(x), y));
         }
     }
     
@@ -68,7 +69,7 @@ public class State {
       String unitType = in.next(); // UNIT, HERO, TOWER, can also be GROOT from wood1
       int x = trans(in.nextInt());
       int y = in.nextInt();
-      Pos pos = Pos.from(x, y);
+      Point pos = Point.from(x, y);
       int attackRange = in.nextInt();
       int health = in.nextInt();
       int maxHealth = in.nextInt();
@@ -127,6 +128,8 @@ public class State {
           hero.damage = attackDamage;
           hero.itemsOwned = itemsOwned;
           hero.mana = mana;
+          hero.maxMana = maxMana;
+          hero.movementSpeed = movementSpeed;
           
           hero.coolDowns[0] = countDown1;
           hero.coolDowns[1] = countDown2;
@@ -156,12 +159,12 @@ public class State {
     opp.clear();
   }
 
-  static int trans(int x) {
-    if (myTeam == 1) return 1920 - x; else return x;
+  static int trans(double x) {
+    if (myTeam == 1) return (int)(1920 - x); else return (int)x;
   }
 
-  public int enemyLine() {
-    int maxX = 0;
+  public double enemyLine() {
+    double maxX = 0;
     for (Base unit : this.me.units) {
       if (unit.pos.x > maxX)
         maxX = unit.pos.x;

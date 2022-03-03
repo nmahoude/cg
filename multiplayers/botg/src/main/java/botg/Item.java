@@ -13,7 +13,7 @@ public class Item {
   public int maxMana;
   public int moveSpeed;
   public int manaRegeneration;
-  public int isPotion;
+  public boolean isPotion;
 
   public static Item from(FastReader in) {
     Item item = new Item();
@@ -27,7 +27,7 @@ public class Item {
     item.maxMana = in.nextInt();
     item.moveSpeed = in.nextInt(); // keyword BOOTS is present if the most important item stat is moveSpeed
     item.manaRegeneration = in.nextInt();
-    item.isPotion = in.nextInt(); // 0 if it's not instantly consumed
+    item.isPotion = in.nextInt() != 0; // 0 if it's not instantly consumed
 
     
     return item;

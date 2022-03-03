@@ -1,8 +1,8 @@
 package botg.units;
 
-import botg.Pos;
+import trigonometry.Point;
 
 public class Groot extends Base {
 
-  public Pos spawnPoint;
+  public Point spawnPoint;
 }

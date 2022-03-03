@@ -1,9 +1,9 @@
 package botg.units;
 
-import botg.Pos;
+import trigonometry.Point;
 
 public class Bush {
-  public Pos pos;
+  public Point pos;
   public int radius;
   
 }

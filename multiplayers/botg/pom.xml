@@ -49,12 +49,12 @@
 		</dependency>
 		<dependency>
 			<groupId>nmahoude.codingame</groupId>
-			<artifactId>cgutils</artifactId>
+			<artifactId>trigonometry</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>nmahoude.codingame</groupId>
-			<artifactId>cgutils</artifactId>
+			<artifactId>trigonometry</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<classifier>sources</classifier>
 		</dependency>

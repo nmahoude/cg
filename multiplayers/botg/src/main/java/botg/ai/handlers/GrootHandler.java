@@ -1,10 +1,10 @@
 package botg.ai.handlers;
 
 import botg.Action;
-import botg.Pos;
 import botg.State;
 import botg.units.Groot;
 import botg.units.Hero;
+import trigonometry.Point;
 
 public class GrootHandler extends Handler {
 
@@ -16,13 +16,13 @@ public class GrootHandler extends Handler {
     }
     
     
-    Groot groot = state.groots.stream().filter(g -> hero.inRange(g, g.range)).findFirst().orElse(null);
+    Groot groot = state.groots.stream().filter(g -> hero.inRange(g, g.range+100)).findFirst().orElse(null);
     if (groot == null) return null;
     
     // TODO if we can kill it, juste kill it for the gold
     // TODO move to at least 300 from spawn point of the groot
     System.err.println("TODO should flee groot !");
-    return Action.moveTo(Pos.from(hero.pos.x, 750));
+    return Action.moveTo(Point.from(hero.pos.x, 750));
     
   }
 

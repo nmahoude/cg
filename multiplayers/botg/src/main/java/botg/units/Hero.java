@@ -5,15 +5,15 @@ import java.util.List;
 
 import botg.Action;
 import botg.Item;
-import botg.Pos;
 import botg.State;
 import botg.ai.Strategy;
+import trigonometry.Point;
 
 public class Hero extends Base {
   public static final Hero DEAD_HERO = new Hero(null) {
     void init() {
       this.health = -10000;
-      this.pos = Pos.from(-100000, -100000); // won't be in range
+      this.pos = Point.from(-100000, -100000); // won't be in range
       
     }
   };  
@@ -24,13 +24,17 @@ public class Hero extends Base {
   public int maxHealth;
   public int damage;
   public int mana;
+  public int maxMana;
   public Strategy strategy;
+  public int movementSpeed;
 
   public int[] coolDowns = new int[3];
 
 
   public int itemsOwned;
   public List<Item> items = new ArrayList<>();
+
+
 
   public Hero(State state) {
     this.state = state;
@@ -73,6 +77,10 @@ public class Hero extends Base {
 
   public boolean willDie() {
     return this.health < 0.05 * this.maxHealth;
+  }
+
+  public boolean isSafeToGo(Point pos) {
+    return this.pos.x < (1920-500);
   }
 
 }
