@@ -30,8 +30,8 @@ public class Point {
    */
   public Point moveTowards(Point target, double radius) {
     Vector v = target.sub(this);
-    v.normalize().dot(radius);
-    return this.add(v);
+    
+    return this.add(v.normalize().dot(radius));
   }
   
   public Point add(Point addedPoint) {
