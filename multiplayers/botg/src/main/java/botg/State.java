@@ -129,7 +129,7 @@ public class State {
           hero.itemsOwned = itemsOwned;
           hero.mana = mana;
           hero.maxMana = maxMana;
-          hero.movementSpeed = movementSpeed;
+          hero.setMovementSpeed(movementSpeed);
           
           hero.coolDowns[0] = countDown1;
           hero.coolDowns[1] = countDown2;
@@ -164,7 +164,7 @@ public class State {
   }
 
   public double enemyLine() {
-    double maxX = 0;
+    double maxX = -1;
     for (Base unit : this.me.units) {
       if (unit.pos.x > maxX)
         maxX = unit.pos.x;

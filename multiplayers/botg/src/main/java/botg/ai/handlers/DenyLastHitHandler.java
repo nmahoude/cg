@@ -4,19 +4,23 @@ import botg.Action;
 import botg.State;
 import botg.units.Hero;
 import botg.units.Unit;
-import trigonometry.Point;
 
-public class DoLastHitHandler extends Handler {
+public class DenyLastHitHandler extends Handler {
 
   @Override
   protected Action _think(State state, Hero hero) {
- // find the unit to do the last hit !
-    int maxDist = hero.moveRangeForAttack;;
+    // find the unit to do the last hit !
+    int maxDist = hero.moveRangeForAttack;
     
     Unit toLastHit = null;
     boolean directAttack = false;
-    for( Unit u : opp.units) {
+    for( Unit u : me.units) {
       if (u.health <= 0 || u.health > hero.damage) continue;
+      
+      long canDoLastHitCount = opp.heroes.stream().filter(h -> h.inRangeForAttack(u.pos)).count();
+      if (canDoLastHitCount == 0) continue;
+      
+      
       
       if (u.inRange(hero, hero.range)) {
         toLastHit = u;
@@ -31,17 +35,12 @@ public class DoLastHitHandler extends Handler {
       
     }
     if (toLastHit != null) {
-      System.err.println("Can lastHit unit "+toLastHit.unitId+" with "+toLastHit.health+" health left!"+ " with hero damage "+hero.damage);
+      System.err.println("Can deny last Hit unit "+toLastHit.unitId+" with "+toLastHit.health+" health left!");
       toLastHit.health = -1;
       if (directAttack) {
         return Action.attack(toLastHit.unitId);
       } else {
-        Point moveTowards = hero.pos.moveTowards(toLastHit.pos, hero.dist(toLastHit) - hero.range);
-        if (opp.tower.inRangeForAttack(moveTowards)) {
-          System.err.println("To close to enemy tower");
-          return null;
-        }
-        return Action.moveAndAttack(toLastHit.unitId, moveTowards);
+        return Action.moveAndAttack(toLastHit.unitId, hero.pos.moveTowards(toLastHit.pos, hero.dist(toLastHit) - hero.range));
       }
     } else {
       return null;

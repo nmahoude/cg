@@ -8,6 +8,9 @@ import botg.units.Hero;
 
 public class CastFireballHandler extends Handler {
 
+  private static final int FIREBALL_RANGE = 900;
+  private static final double AGGRO_RANGE = 300;
+
   @Override
   protected Action _think(State state, Hero hero) {
     
@@ -15,7 +18,11 @@ public class CastFireballHandler extends Handler {
       Base toAttack = heroToAttack();
       if (toAttack == Hero.DEAD_HERO) return null;
       
-      if (toAttack.dist(hero) < 900) {
+      long countUnit = opp.units.stream().filter(u -> u.health > 0 && u.dist(hero) < AGGRO_RANGE).count();
+      
+      if (countUnit > 0) return null;
+      
+      if (toAttack.dist(hero) < FIREBALL_RANGE) {
         return Action.on("FIREBALL", toAttack.pos);
       }
     }

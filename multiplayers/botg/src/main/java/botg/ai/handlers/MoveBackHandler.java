@@ -9,8 +9,14 @@ public class MoveBackHandler extends Handler {
 
   @Override
   protected Action _think(State state, Hero hero) {
-
+    if (opp.units.size() == 0) {
+      // no units to check for line
+      return null;
+    }
+    
+    
     double maxX = state.enemyLine();
+    
     if (hero.pos.x > maxX) {
       System.err.println("Should move back to " + maxX + "!");
 

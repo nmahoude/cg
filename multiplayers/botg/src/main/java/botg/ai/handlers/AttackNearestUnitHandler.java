@@ -31,9 +31,19 @@ public class AttackNearestUnitHandler extends Handler{
     if (best != null) {
       return Action.attack(best.unitId);
     } else {
-      if (nearest != null && hero.isSafeToGo(nearest.pos)) {
-        return Action.ATTACK_NEAREST_UNIT;
+      if (nearest == null) return null;
+      
+      if (nearest.dist(hero) > hero.range && opp.tower.inRangeForAttack(hero.pos.moveTowards(nearest.pos, 1.0))) {
+        // ok can move, we are far and won't fall in tower range if moving
+        return Action.attack(nearest.unitId);
+      } else if (
+          !opp.tower.inRangeForAttack(nearest) // don't go in tower viccinity
+          && hero.isSafeToGo(nearest.pos)
+          ) {
+        // ok move, we are still safe
+        return Action.attack(nearest.unitId);
       } else {
+        System.err.println("Can't attack nearest unit : "+nearest+" .." +opp.tower.inRangeForAttack(nearest) + " "+hero.isSafeToGo(nearest.pos));
         return null;
       }
     }

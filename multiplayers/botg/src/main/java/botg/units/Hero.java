@@ -26,7 +26,8 @@ public class Hero extends Base {
   public int mana;
   public int maxMana;
   public Strategy strategy;
-  public int movementSpeed;
+  private int movementSpeed;
+  public int moveRangeForAttack;
 
   public int[] coolDowns = new int[3];
 
@@ -50,6 +51,10 @@ public class Hero extends Base {
   }
   
   
+  public void setMovementSpeed(int speed) {
+    movementSpeed = speed;
+    moveRangeForAttack = (int)(0.9 * speed);
+  }
 
   public Action think(State state, int actionIndex) {
     return strategy.think(this, state, actionIndex);

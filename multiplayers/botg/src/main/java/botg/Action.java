@@ -1,5 +1,6 @@
 package botg;
 
+import botg.units.Hero;
 import trigonometry.Point;
 
 public class Action {
@@ -51,11 +52,25 @@ public class Action {
     return new Action(actionName+" "+unitId);
   }
 
-  public static Action sell(String name) {
-    return new Action("SELL "+name);
+  public static Action sell(State state, Hero hero, Item item) {
+    state.gold += item.cost / 2;
+    if (!item.isPotion) {
+      hero.items.remove(item);
+    }
+    return new Action("SELL "+item.name);
   }
 
   public static Action moveAndAttack(int unitId, Point pos) {
     return new Action("MOVE_ATTACK "+State.trans(pos.x)+" "+pos.y+" "+unitId);
   }
+  
+  public static Action buy(State state, Hero hero, Item item) {
+    state.gold -= item.cost;
+    if (!item.isPotion) {
+      hero.addItem(item);
+    }
+
+    return new Action("BUY " + item.name, "buy item !");
+  }
+  
 }

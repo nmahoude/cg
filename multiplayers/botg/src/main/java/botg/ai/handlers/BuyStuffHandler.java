@@ -19,8 +19,8 @@ public class BuyStuffHandler extends Handler{
         int score = 0;
         
         if (item.isPotion) {
-          if (hero.maxHealth - hero.health >= item.health -50 ) score += 200 * item.health;
-          if (hero.maxMana - hero.mana>= item.mana -50 ) score += 200 * item.mana;
+          if (hero.maxHealth - hero.health >= item.health - 25 ) score += 200 * item.health;
+          if (hero.maxMana - hero.mana>= item.mana - 25 ) score += 100 * item.mana;
           
         } else {
           if (item.health > 0) score += 100 * item.health;
@@ -36,11 +36,7 @@ public class BuyStuffHandler extends Handler{
       }
       if (bestItem != null) {
         System.err.println("buying item " + bestItem.name + " with score " + bestScore + " for hero " + hero);
-        state.gold -= bestItem.cost;
-        if (!bestItem.isPotion) {
-          hero.addItem(bestItem);
-        }
-        return new Action("BUY " + bestItem.name, "buy item !");
+        return Action.buy(state, hero, bestItem);
       }
     }
     return null;

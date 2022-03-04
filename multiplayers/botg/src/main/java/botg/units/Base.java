@@ -9,8 +9,13 @@ public class Base {
   public int range;
   
   public boolean inRangeForAttack(Base opp) {
-    return this.range * this.range > pos.squareDistance(opp.pos);
+    return inRangeForAttack(opp.pos);
   }
+  
+  public boolean inRangeForAttack(Point pos) {
+    return this.range * this.range > pos.squareDistance(pos);
+  }
+
   
   public double dist(Base other) {
     return pos.distTo(other.pos);
