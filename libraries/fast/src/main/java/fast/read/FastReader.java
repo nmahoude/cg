@@ -45,18 +45,6 @@ public class FastReader {
     return new String(buf, 0, cnt);
   }
 
-  public String nextString() {
-    StringBuffer str = new StringBuffer();
-    
-    byte c = read();
-    while (c <= ' ') {
-      str.append(c);
-      c = read();
-    }
-    
-    return str.toString();
-  }
-  
   public int nextInt() {
     int ret = 0;
     byte c = read();
@@ -140,14 +128,41 @@ public class FastReader {
     }
   }
 
+  public String nextString() {
+    return next();
+  }
+  
   public String next()  {
-    int c;
-    StringBuffer sBuf = new StringBuffer(64);
-    while ((c = read()) != -1) {
+    byte c;
+    StringBuilder sBuf = new StringBuilder(64);
+
+    do {
+      c = read();
+    } while (c <= ' ');
+    
+    do {
       if (c == '\n' || c == ' ')
         break;
       sBuf.append((char)c);
-    }
+    } while ((c = read()) != -1);
+    
+    return sBuf.toString();
+  }
+
+  public String nextLine()  {
+    byte c;
+    StringBuilder sBuf = new StringBuilder(64);
+
+    do {
+      c = read();
+    } while (c <= ' ');
+    
+    do {
+      if (c == '\n')
+        break;
+      sBuf.append((char)c);
+    } while ((c = read()) != -1);
+    
     return sBuf.toString();
   }
 
