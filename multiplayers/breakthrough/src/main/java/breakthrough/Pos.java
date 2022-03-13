@@ -22,7 +22,7 @@ public class Pos {
   
   @Override
   public String toString() {
-    return String.format("(%d, %d)", x, y);
+    return String.format("(%c%d)", (char)(x+'a'), (Player.firstPlayer ? y+1 : 8-y));
   }
   
   public static Pos from(int x, int y) {
@@ -47,5 +47,9 @@ public class Pos {
     char lx = (char)('a'+x);
     char ly = (char)('1'+ (Player.firstPlayer ? y : 7-y));
     return ""+lx+""+ly;
+  }
+
+  public static Pos from(int offset) {
+    return positions[offset];
   }
 }
