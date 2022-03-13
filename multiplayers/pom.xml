@@ -33,5 +33,6 @@
   	<module>acoiaf</module>
   	<module>connect4</module>
   	<module>botg</module>
+  	<module>breakthrough</module>
   </modules>
 </project>
