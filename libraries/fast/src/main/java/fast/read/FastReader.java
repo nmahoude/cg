@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class FastReader {
-  final private int BUFFER_SIZE = 1 << 16;
+  final private static int BUFFER_SIZE = 1 << 16;
   private DataInputStream din;
   private byte[] buffer;
   private int bufferPointer, bytesRead;
@@ -28,12 +28,19 @@ public class FastReader {
     bytesRead = inputs.length;
   }
 
-  public FastReader(String filename) throws IOException {
-    din = new DataInputStream(new FileInputStream(filename));
-    buffer = new byte[BUFFER_SIZE];
-    bufferPointer = bytesRead = 0;
+  public static FastReader fromString(String input) {
+    return new FastReader(input.getBytes());
   }
 
+  
+  public static FastReader fromFile(String filename) throws IOException {
+    FastReader reader = new FastReader();
+    reader.din = new DataInputStream(new FileInputStream(filename));
+    reader.buffer = new byte[BUFFER_SIZE];
+    reader.bufferPointer = reader.bytesRead = 0;
+    return reader;
+  }
+  
   public String readLine()  {
     byte[] buf = new byte[64]; // line length
     int cnt = 0, c;
