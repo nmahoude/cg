@@ -8,7 +8,7 @@ import samegame.Pos;
 import samegame.State;
 
 public class BeamSearch {
-  public static final int MAX_LAYERS = 10;
+  public static int MAX_LAYERS = 100;
   final static BSLayer[] layers = new BSLayer[MAX_LAYERS];
   static {
     for (int i=0;i<MAX_LAYERS;i++) {
@@ -24,20 +24,23 @@ public class BeamSearch {
     StateCache.reset();
     
     long start = System.currentTimeMillis();
-    int maxIndex = 0;
-    
+    if (Player.turn == 1) {
+      MAX_LAYERS = 10;
+      BSLayer.MAX_NODES = 200;
+    } else {
+      MAX_LAYERS = 10;
+      BSLayer.MAX_NODES = 40;
+    }
     State best = original;
     
     layers[0].init(original);
     for (int i=1;i<MAX_LAYERS;i++) {
       layers[i].expand(layers[i-1]);
       System.err.println("Nodes count @ layer "+i+" is "+layers[i].statesFE);
-      maxIndex = i;
       if (layers[i].statesFE == 0) {
-        maxIndex = i-1;
         break;
       } else {
-        if (layers[i].states[0].aiScore > best.aiScore) {
+        if (layers[i].states[0].score >= best.score) {
           best = layers[i].states[0];
         }
       }
@@ -48,7 +51,7 @@ public class BeamSearch {
   
     if (Player.turn == 1) {
       precalculatedPositions.clear();
-      State current = layers[maxIndex].states[0];
+      State current = best;
       while (current != original) {
         precalculatedPositions.add(0, current.picked);
         current = current.parent;

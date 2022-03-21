@@ -6,7 +6,7 @@ import samegame.Pos;
 import samegame.State;
 
 public class BSLayer {
-  public final static int MAX_NODES  = 40;
+  public static int MAX_NODES  = 225;
   private static State expandStates[] = new State[10_000];
   private static int expandStatesFE = 0;
   
