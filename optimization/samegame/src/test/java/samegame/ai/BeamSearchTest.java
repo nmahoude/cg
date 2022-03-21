@@ -33,6 +33,10 @@ public class BeamSearchTest {
     
     BeamSearch bs = new BeamSearch();
 
+    bs.think(state);
+    bs.think(state);
+
+    
     for (int i =0;i<1000;i++) {
       bs.think(state);
     }

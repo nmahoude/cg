@@ -8,7 +8,7 @@ import samegame.Pos;
 import samegame.State;
 
 public class BeamSearch {
-  public static final int MAX_LAYERS = 8;
+  public static final int MAX_LAYERS = 10;
   final static BSLayer[] layers = new BSLayer[MAX_LAYERS];
   static {
     for (int i=0;i<MAX_LAYERS;i++) {
@@ -21,6 +21,7 @@ public class BeamSearch {
   
   public Pos think(State original) {
     original.aiScore = 0;
+    StateCache.reset();
     
     long start = System.currentTimeMillis();
     int maxIndex = 0;
