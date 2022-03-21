@@ -1,14 +1,12 @@
 package samegame.ai;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import samegame.Pos;
 import samegame.State;
 
 public class BSLayer {
-  public final static int MAX_NODES  = 40;
+  public final static int MAX_NODES  = 80;
   private static State expandStates[] = new State[10_000];
   private static int expandStatesFE = 0;
   
@@ -44,6 +42,8 @@ public class BSLayer {
   }
 
 
+  Pos[] positions = new Pos[15*15];
+  int positionsFE = 0;
   private void expand(State state) {
     toCheckCurrentId++;
     
@@ -52,23 +52,21 @@ public class BSLayer {
     }
     
     
-    List<Pos> positions = new ArrayList<>(15*15);
     
-    for (int y = 0; y < 15; y++) {
+    for (int y = 14; y >= 0; y--) {
       for (int x = 0; x < 15; x++) {
         if (toCheck[x+15*y]  == toCheckCurrentId) continue;
-        if (state.grid[x+15*y] == -1 ) continue;
+        if (state.grid[x+15*y] == State.EMPTY_CELL ) continue;
 
-        positions.clear();
-        floodfill(state, state.grid[x+15*y], x,y,toCheck, positions );
+        positionsFE = 0;
+        floodfill(state, state.grid[x+15*y], x,y);
         
-        int count = positions.size();
+        int count = positionsFE;
         if (count >= 2) {
           State newState = StateCache.get();
           newState.copyFrom(state);
-          newState.remove(positions);
-          newState.aiScore = state.aiScore + layer * (0.1 + newState.score);
-          
+          newState.remove(positions, positionsFE);
+          newState.aiScore = 1 + newState.score;
           newState.picked = Pos.from(x, y);
           newState.parent =state;
           expandStates[expandStatesFE++] = newState;
@@ -78,19 +76,19 @@ public class BSLayer {
   }
   
   
-  private void floodfill(State state, int color, int x, int y, int[] toCheck, List<Pos> positions) {
+  private void floodfill(State state, int color, int x, int y) {
     if (state.grid[x+15*y] != color) return ;
     if (toCheck[x+15*y] == toCheckCurrentId) return;
     
     
     toCheck[x+15*y] = toCheckCurrentId;
-    positions.add(Pos.from(x, y));
+    positions[positionsFE++] = Pos.from(x, y);
     
-    if (x>0) floodfill(state, color, x-1, y, toCheck, positions);
-    if (y>0) floodfill(state, color, x, y-1, toCheck, positions);
+    if (x>0) floodfill(state, color, x-1, y );
+    if (y>0) floodfill(state, color, x, y-1);
     
-    if (x<14) floodfill(state, color, x+1, y, toCheck, positions);
-    if (y<14) floodfill(state, color, x, y+1, toCheck, positions);
+    if (x<14) floodfill(state, color, x+1, y);
+    if (y<14) floodfill(state, color, x, y+1);
     
   }
 

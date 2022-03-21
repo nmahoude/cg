@@ -20,10 +20,7 @@ public class Player {
       state.read(in);
       turn++;
       System.err.println("turn = "+turn);
-      if (turn == 1) {
-        state.print();
-      } else {
-      }
+      state.print();
       
       Pos bestChild = bs.think(state);
       

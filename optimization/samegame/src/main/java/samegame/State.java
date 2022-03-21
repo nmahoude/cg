@@ -1,13 +1,13 @@
 package samegame;
 
-import java.util.List;
 import java.util.Scanner;
 
 public class State {
   public static final int EMPTY_CELL = -1;
 
   public int[] grid = new int[15*15];
-
+  public int[] colorCount = new int[5];
+  
   public double aiScore;
   
   public int score;
@@ -18,9 +18,15 @@ public class State {
   public Pos picked;
   
   public void read(Scanner in) {
+    for (int i=0;i<5;i++) {
+      colorCount[i] = 0;
+    }
     for (int y = 14; y >= 0; y--) {
       for (int x = 0; x < 15; x++) {
         int color = in.nextInt(); // Color of the tile
+        if (color != -1) {
+          colorCount[color]++;
+        }
         grid[x+15*y] = color;
       }
     }
@@ -29,10 +35,17 @@ public class State {
   public void copyFrom(State model) {
     this.score = model.score;
     System.arraycopy(model.grid, 0, this.grid, 0, 15*15);
+    System.arraycopy(model.colorCount, 0, this.colorCount, 0, 5);
     this.finished = model.finished;
   }
   
   public void print() {
+    for (int i=0;i<5;i++) {
+      System.err.print(colorCount[i]);
+      System.err.print("-");
+    }
+    System.err.println();
+    
     for (int y = 14; y >= 0; y--) {
       for (int x = 0; x < 15; x++) {
         int color = grid[x+15*y];
@@ -49,13 +62,18 @@ public class State {
    * the simulation !
    * @param positions
    */
-  public void remove(List<Pos> positions) {
-    score += (positions.size() - 2 )*(positions.size() - 2 );
+  public void remove(Pos[] positions, int positionsFE) {
+    score += (positionsFE - 2 )*(positionsFE - 2 );
+    colorCount[grid[positions[0].offset]] -= positionsFE;
     
-    for (Pos pos : positions) {
-      grid[pos.offset] = EMPTY_CELL;
+    for (int i=0;i<positionsFE;i++) {
+      grid[positions[i].offset] = EMPTY_CELL;
     }
     
+    squash();
+  }
+
+  private void squash() {
     int currentX = 0;
     
     for (int x = 0; x < 15; x++) {
@@ -91,7 +109,6 @@ public class State {
       score += 1000; // cleaned !
       finished = true;
     }
-    
   }
 
   public State childOf(State original) {
@@ -100,4 +117,5 @@ public class State {
     }
     return this;
   }
+
 }

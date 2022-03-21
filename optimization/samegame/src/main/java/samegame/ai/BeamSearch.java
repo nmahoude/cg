@@ -30,7 +30,7 @@ public class BeamSearch {
     layers[0].init(original);
     for (int i=1;i<MAX_LAYERS;i++) {
       layers[i].expand(layers[i-1]);
-      //System.err.println("Nodes count @ layer "+i+" is "+layers[i].statesFE);
+      System.err.println("Nodes count @ layer "+i+" is "+layers[i].statesFE);
       maxIndex = i;
       if (layers[i].statesFE == 0) {
         maxIndex = i-1;
