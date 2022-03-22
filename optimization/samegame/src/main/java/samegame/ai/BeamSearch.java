@@ -25,14 +25,27 @@ public class BeamSearch {
     
     long start = System.currentTimeMillis();
     if (Player.turn == 1) {
-      MAX_LAYERS = 10;
-      BSLayer.MAX_NODES = 200;
+      MAX_LAYERS = 30;
+      BSLayer.MAX_NODES = 1000;
     } else {
       MAX_LAYERS = 10;
       BSLayer.MAX_NODES = 40;
     }
-    State best = original;
+
+    // resimulate the precalculated moves !
+//    State precaculated = new State();
+//    precaculated.copyFrom(original);
+//    for (Pos pos : precalculatedPositions) {
+//      
+//      precaculated.remove(positions, positionsFE);
+//    }
     
+    
+    
+    
+    
+    
+    State best = original;
     layers[0].init(original);
     for (int i=1;i<MAX_LAYERS;i++) {
       layers[i].expand(layers[i-1]);

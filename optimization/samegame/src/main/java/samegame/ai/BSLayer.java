@@ -6,8 +6,8 @@ import samegame.Pos;
 import samegame.State;
 
 public class BSLayer {
-  public static int MAX_NODES  = 225;
-  private static State expandStates[] = new State[10_000];
+  public static int MAX_NODES  = 10_000;
+  private static State expandStates[] = new State[100_000];
   private static int expandStatesFE = 0;
   
   private static int[] checked = new int[15*15];
@@ -55,7 +55,6 @@ public class BSLayer {
         if (checked[x+15*y]  == toCheckCurrentId) continue;
         if (state.grid[x+15*y] == State.EMPTY_CELL ) continue;
 
-        positionsFE = 0;
         floodfill(state, state.grid[x+15*y], x,y);
         
         int count = positionsFE;
@@ -97,7 +96,8 @@ public class BSLayer {
   static int toCheckFE;
   
   private void floodfill(State state, int color, int startX, int startY) {
-    
+    positionsFE = 0;
+
     toCheck[0] = Pos.from(startX, startY);
     toCheckFE = 1;
     
