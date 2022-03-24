@@ -3,8 +3,8 @@ package searchrace;
 import java.util.Scanner;
 
 public class State {
-  static int checkpointX[];
-  static int checkpointY[];
+  public static int checkpointX[];
+  public static int checkpointY[];
 
   static double cosinuses[] = new double[361];
   static double sinuses[] = new double[361];
@@ -15,12 +15,12 @@ public class State {
     }
   }
   
-  int checkpointIndex;
-  int x;
-  int y;
-  int vx;
-  int vy;
-  int angle;
+  public int checkpointIndex;
+  public int x;
+  public int y;
+  public int vx;
+  public int vy;
+  public int angle;
 
   public static void readInit(Scanner in) {
     int checkpoints = in.nextInt(); // Count of checkpoints to read

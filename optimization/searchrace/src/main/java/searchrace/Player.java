@@ -2,13 +2,15 @@ package searchrace;
 
 import java.util.Scanner;
 
+import searchrace.ag.AG;
+
 public class Player {
-  static long start;
+  public static long start;
   
   State state = new State();
   State work = new State();
   
-  MC mc = new MC();
+  AG mc = new AG();
   
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
