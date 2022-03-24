@@ -11,5 +11,6 @@
     <module>2048</module>
     <module>acraft</module>
     <module>marsLander</module>
+    <module>searchrace</module>
   </modules>
 </project>
