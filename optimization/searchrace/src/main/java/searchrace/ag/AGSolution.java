@@ -7,8 +7,17 @@ import searchrace.State;
 
 public class AGSolution {
   private static final int DEPTH = 10;
-  private static final Random random = ThreadLocalRandom.current();
+  private static final int MAX_SPEED = 200;
 
+  private static final Random random = ThreadLocalRandom.current();
+  private static double[] depthFactor = new double[DEPTH];
+  static {
+    depthFactor[0] = 1.0;
+    for (int i=1;i<DEPTH;i++) {
+      depthFactor[i] = 0.6 * depthFactor[i-1];
+    }
+  }
+  
   int angles[] = new int[DEPTH];
   int thrusts[] = new int[DEPTH];
   double score;
@@ -24,15 +33,55 @@ public class AGSolution {
       }
       
       double rThrust = random.nextDouble();
-      thrusts[t] = random.nextInt(201);
+      if (rThrust > 0.7) {
+        thrusts[t] = 200;
+      } else if (rThrust > 0.5) {
+        thrusts[t] = 100 + random.nextInt(101);
+      } else {
+        thrusts[t] = random.nextInt(100);
+      }
     }
   }
 
   public void apply(State work) {
+    score = 0.0;
     for (int i=0;i<DEPTH;i++) {
       work.apply(angles[i], thrusts[i]);
-      if (work.finished) break;
+      score += depthFactor[i] * eval(i, work);
     }
+  }
+
+  private double eval(int depth, State current) {
+      double distToNextCheckPoint =Math.sqrt( 
+          (current.x - State.checkpointX[current.checkpointIndex])*(current.x - State.checkpointX[current.checkpointIndex])
+          + (current.y - State.checkpointY[current.checkpointIndex])*(current.y - State.checkpointY[current.checkpointIndex])
+          )
+          ;
+      
+      // 200 -> 0
+      double speed = Math.sqrt(current.vx * current.vx + current.vy * current.vy);
+      
+      // 1 = same dir
+      // -1 = opposite dir
+      double directionToNextCheckpoint = 
+              1.0 * ((State.checkpointX[current.checkpointIndex] - current.x) * current.vx
+              + (State.checkpointY[current.checkpointIndex] - current.y) * current.vy)
+          / (speed * distToNextCheckPoint);
+          
+      
+      double score = 0.0;
+      //score += 1000 * (current.checkpointIndex - original.checkpointIndex );
+      
+      score -= 2000 * 
+          (State.distanceRemaining[current.checkpointIndex] + distToNextCheckPoint);
+      
+//      score -= 1 * distToNextCheckPoint;
+      
+      //score += 100 * directionToNextCheckpoint;
+      //score += 1.0 * speed / MAX_SPEED;
+      //score += 10.0 * exitSpeedFeature(original, current);
+      score += current.finished ? 1_000_000 : 0;
+      return score;
   }
 
   public void updateScore(double eval) {

@@ -12,8 +12,6 @@ public class AG {
   private static final int POPULATION_POOL_TOTAL = 50;
   
   
-  private static final int MAX_SPEED = 200;
-  
   private static final Random random = ThreadLocalRandom.current();
   private static final State work = new State();
   
@@ -52,10 +50,9 @@ end:
         int p1 = random.nextInt(POPULATION_BEST_POOL);
         int p2 = random.nextInt(POPULATION_BEST_POOL);
   
-        population[p].merge(population[0], population[p2]);
+        population[p].merge(population[p1], population[p2]);
         work.copyFrom(state);
         population[p].apply(work);
-        population[p].updateScore(eval(state, work));
         
         if (population[p].score > best.score) {
           best.copyFrom(population[p]);
@@ -77,45 +74,6 @@ end:
       work.copyFrom(original);
       population[i].pseudoRandom();
       population[i].apply(work);
-      population[i].updateScore(eval(original, work));
     }
-  }
-
-
-  private double eval(State original, State current) {
-    double distToNextCheckPoint =Math.sqrt( 
-        (current.x - State.checkpointX[current.checkpointIndex])*(current.x - State.checkpointX[current.checkpointIndex])
-        + (current.y - State.checkpointY[current.checkpointIndex])*(current.y - State.checkpointY[current.checkpointIndex])
-        )
-        ;
-    
-    // 200 -> 0
-    double speed = Math.sqrt(current.vx * current.vx + current.vy * current.vy);
-    
-    // 1 = same dir
-    // -1 = opposite dir
-    double directionToNextCheckpoint = 
-            ((State.checkpointX[current.checkpointIndex] - current.x) * current.vx
-            + (State.checkpointY[current.checkpointIndex] - current.y) * current.vy)
-        / (speed * distToNextCheckPoint);
-        
-    
-    double score = 0.0;
-    //score += 1000 * (current.checkpointIndex - original.checkpointIndex );
-    score -= 100 * (current.distanceRemaining[current.checkpointIndex] + 0.3 * distToNextCheckPoint);
-    
-    score += 100 * directionToNextCheckpoint;
-    score += 100.0 * speed / MAX_SPEED;
-    score += 10.0 * exitSpeedFeature(original, current);
-    score += current.finished ? 1_000_000 : 0;
-    return score;
-  }
-  
-  private double exitSpeedFeature(State init, State current) {
-    if (current.checkpointIndex == init.checkpointIndex) return 0.0;
-    
-
-    double speed = Math.sqrt(current.vx * current.vx + current.vy * current.vy);
-    return speed / MAX_SPEED;
   }
 }

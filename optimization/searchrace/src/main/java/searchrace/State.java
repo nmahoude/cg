@@ -6,6 +6,7 @@ public class State {
   public static int checkpointX[];
   public static int checkpointY[];
   public static int distanceRemaining[];
+  public static int distanceDone[];
   
 
   static double cosinuses[] = new double[361];
@@ -31,6 +32,7 @@ public class State {
     checkpointX = new int[checkpointsCount+2];
     checkpointY = new int[checkpointsCount+2];
     distanceRemaining = new int[checkpointsCount+2];
+    distanceDone= new int[checkpointsCount+2];
     
     for (int i = 0; i < checkpointsCount; i++) {
       int cpX = in.nextInt(); // Position X
@@ -39,8 +41,8 @@ public class State {
       checkpointY[i] = cpY;
     }
 
-    checkpointX[checkpointsCount] = Integer.MAX_VALUE;
-    checkpointY[checkpointsCount] = Integer.MAX_VALUE;
+    checkpointX[checkpointsCount] = checkpointX[checkpointsCount-1];
+    checkpointY[checkpointsCount] = checkpointY[checkpointsCount-1];
 
     for (int i = checkpointsCount-1; i > 0 ; i--) {
       int dist = (int)Math.sqrt(
@@ -48,8 +50,16 @@ public class State {
                 + (checkpointY[i] - checkpointY[i-1])*(checkpointY[i] - checkpointY[i-1])
                 );
       distanceRemaining[i-1] = distanceRemaining[i] + dist;
-    
     }
+    
+    for (int i = 1; i < checkpointsCount ; i++) {
+      int dist = (int)Math.sqrt(
+                (checkpointX[i] - checkpointX[i-1])*(checkpointX[i] - checkpointX[i-1])
+                + (checkpointY[i] - checkpointY[i-1])*(checkpointY[i] - checkpointY[i-1])
+                );
+      distanceDone[i-1] = distanceDone[i] + dist;
+    }
+    
   }
 
   public void read(Scanner in) {
@@ -59,6 +69,8 @@ public class State {
     vx = in.nextInt();
     vy = in.nextInt();
     angle = in.nextInt();
+    
+//    if (checkpointIndex == 3) throw new RuntimeException("debug");
   }
 
   public void copyFrom(State model) {
@@ -77,6 +89,10 @@ public class State {
    *  thrust will be [0,200]
    */
   public void apply(int angleOffset, int thrust) {
+    if (finished) return;
+    apply(angleOffset, thrust, false);
+  }
+  public void apply(int angleOffset, int thrust, boolean debug) {
     this.angle += angleOffset;
     
     if (this.angle > 360) {
@@ -87,22 +103,48 @@ public class State {
     double dirx = thrust * cosinuses[angle];
     double diry = thrust * sinuses[angle];
     
-    x += this.vx + dirx;
-    y += this.vy + diry;
+    double Bx = this.x + this.vx + dirx;
+    double By = this.y + this.vy + diry;
     
     vx = (int) (0.85 * (this.vx + dirx));
     vy = (int) (0.85 * (this.vy + diry));
     
-    
-    int distToCp2 = (checkpointX[checkpointIndex] - x)*(checkpointX[checkpointIndex] - x) + 
-        (checkpointY[checkpointIndex] - y)*(checkpointY[checkpointIndex] - y);
-    
-    if (distToCp2 < 600*600) {
-      checkpointIndex++;
-      if (checkpointIndex == checkpointsCount) {
-        finished = true;
+    boolean crossCheckPoint = false;
+    do {
+      crossCheckPoint = false;
+      
+      double ACx = State.checkpointX[checkpointIndex] - x;
+      double ACy = State.checkpointY[checkpointIndex] - y;
+      
+      double ABx = Bx - x;
+      double ABy = By - y;
+      double AB2 = ABx*ABx+ABy*ABy;
+      double AC2 = ACx*ACx+ACy*ACy;
+      
+      double ABAC = ABx*ACx + ABy*ACy;
+      double coeff = ABAC / (Math.sqrt(AB2) * Math.sqrt(AC2));
+      
+      double CPx = x + ABx * coeff; 
+      double CPy = y + ABy * coeff; 
+      
+      double length2 = (CPx-State.checkpointX[checkpointIndex])*(CPx-State.checkpointX[checkpointIndex]) + (CPy-State.checkpointY[checkpointIndex])*(CPy-State.checkpointY[checkpointIndex]);
+      if (length2 <= 600*600) {
+        if (debug) {
+          System.err.println("Collision with "+checkpointIndex+" @ "+coeff);
+        }
+        checkpointIndex++;
+        if (checkpointIndex == checkpointsCount) {
+          finished = true;
+        } else {
+          crossCheckPoint = true;
+        }
       }
-    }
+      
+    } while (crossCheckPoint);
+    
+    this.x = (int)Bx;
+    this.y = (int)By;
+    
   }
 
   public void debug() {
