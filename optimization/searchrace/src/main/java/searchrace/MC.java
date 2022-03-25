@@ -59,6 +59,26 @@ public class MC {
       
         score += depthFactor[t] * (- 0.000001 * distToCurrentCheckPoint );
         score += depthFactor[t] * (1_000_000 * (current.checkpointIndex - lastCheckpoint ));
+        
+        if (current.checkpointIndex != lastCheckpoint) {
+          double distToNextCheckPoint =Math.sqrt( 
+              (current.x - State.checkpointX[current.checkpointIndex])*(current.x - State.checkpointX[current.checkpointIndex])
+              + (current.y - State.checkpointY[current.checkpointIndex])*(current.y - State.checkpointY[current.checkpointIndex])
+              )
+              ;
+          
+          // 200 -> 0
+          double speed = Math.sqrt(current.vx * current.vx + current.vy * current.vy);
+          
+          // 1 = same dir
+          // -1 = opposite dir
+          double directionToNextCheckpoint = 
+                  1.0 * ((State.checkpointX[current.checkpointIndex] - current.x) * current.vx
+                  + (State.checkpointY[current.checkpointIndex] - current.y) * current.vy)
+              / (speed * distToNextCheckPoint) ;
+          
+          score += depthFactor[t] * 1_000 * directionToNextCheckpoint;
+        }
 
       }
       if (score > bestScore) {

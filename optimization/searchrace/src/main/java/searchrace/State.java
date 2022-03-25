@@ -124,11 +124,12 @@ public class State {
       double ABAC = ABx*ACx + ABy*ACy;
       double coeff = ABAC / (Math.sqrt(AB2) * Math.sqrt(AC2));
       
+      if (coeff < 0 || coeff > 1) break;
       double CPx = x + ABx * coeff; 
       double CPy = y + ABy * coeff; 
       
       double length2 = (CPx-State.checkpointX[checkpointIndex])*(CPx-State.checkpointX[checkpointIndex]) + (CPy-State.checkpointY[checkpointIndex])*(CPy-State.checkpointY[checkpointIndex]);
-      if (length2 <= 600*600) {
+      if (length2 < 600*600) {
         if (debug) {
           System.err.println("Collision with "+checkpointIndex+" @ "+coeff);
         }
