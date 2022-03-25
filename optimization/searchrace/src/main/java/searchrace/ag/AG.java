@@ -83,7 +83,7 @@ end:
 
 
   private double eval(State original, State current) {
-    double distToCurrentCheckPoint =Math.sqrt( 
+    double distToNextCheckPoint =Math.sqrt( 
         (current.x - State.checkpointX[current.checkpointIndex])*(current.x - State.checkpointX[current.checkpointIndex])
         + (current.y - State.checkpointY[current.checkpointIndex])*(current.y - State.checkpointY[current.checkpointIndex])
         )
@@ -97,15 +97,17 @@ end:
     double directionToNextCheckpoint = 
             ((State.checkpointX[current.checkpointIndex] - current.x) * current.vx
             + (State.checkpointY[current.checkpointIndex] - current.y) * current.vy)
-        / (speed * distToCurrentCheckPoint);
+        / (speed * distToNextCheckPoint);
         
     
     double score = 0.0;
-    score -= 0.03 * distToCurrentCheckPoint ;
-    score += 1000 * (current.checkpointIndex - original.checkpointIndex );
+    //score += 1000 * (current.checkpointIndex - original.checkpointIndex );
+    score -= 100 * (current.distanceRemaining[current.checkpointIndex] + 0.3 * distToNextCheckPoint);
+    
     score += 100 * directionToNextCheckpoint;
     score += 100.0 * speed / MAX_SPEED;
     score += 10.0 * exitSpeedFeature(original, current);
+    score += current.finished ? 1_000_000 : 0;
     return score;
   }
   

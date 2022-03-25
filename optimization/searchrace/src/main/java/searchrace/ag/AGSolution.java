@@ -31,6 +31,7 @@ public class AGSolution {
   public void apply(State work) {
     for (int i=0;i<DEPTH;i++) {
       work.apply(angles[i], thrusts[i]);
+      if (work.finished) break;
     }
   }
 
