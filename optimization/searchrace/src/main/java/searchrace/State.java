@@ -34,6 +34,9 @@ public class State {
     distanceRemaining = new int[checkpointsCount+2];
     distanceDone= new int[checkpointsCount+2];
     
+    System.err.println("Nb of checkpoints : "+checkpointsCount);
+    
+    
     for (int i = 0; i < checkpointsCount; i++) {
       int cpX = in.nextInt(); // Position X
       int cpY = in.nextInt(); // Position Y
@@ -43,6 +46,8 @@ public class State {
 
     checkpointX[checkpointsCount] = checkpointX[checkpointsCount-1];
     checkpointY[checkpointsCount] = checkpointY[checkpointsCount-1];
+    checkpointX[checkpointsCount+1] = checkpointX[checkpointsCount-1];
+    checkpointY[checkpointsCount+1] = checkpointY[checkpointsCount-1];
 
     for (int i = checkpointsCount-1; i > 0 ; i--) {
       int dist = (int)Math.sqrt(
@@ -89,10 +94,12 @@ public class State {
    *  thrust will be [0,200]
    */
   public void apply(int angleOffset, int thrust) {
-    if (finished) return;
     apply(angleOffset, thrust, false);
   }
+
   public void apply(int angleOffset, int thrust, boolean debug) {
+    if (finished) return;
+    
     this.angle += angleOffset;
     
     if (this.angle > 360) {
@@ -113,39 +120,59 @@ public class State {
     do {
       crossCheckPoint = false;
       
-      double ACx = State.checkpointX[checkpointIndex] - x;
-      double ACy = State.checkpointY[checkpointIndex] - y;
-      
-      double ABx = Bx - x;
-      double ABy = By - y;
-      double AB2 = ABx*ABx+ABy*ABy;
-      double AC2 = ACx*ACx+ACy*ACy;
-      
-      double ABAC = ABx*ACx + ABy*ACy;
-      double coeff = ABAC / (Math.sqrt(AB2) * Math.sqrt(AC2));
-      
-      if (coeff < 0 || coeff > 1) break;
-      double CPx = x + ABx * coeff; 
-      double CPy = y + ABy * coeff; 
-      
-      double length2 = (CPx-State.checkpointX[checkpointIndex])*(CPx-State.checkpointX[checkpointIndex]) + (CPy-State.checkpointY[checkpointIndex])*(CPy-State.checkpointY[checkpointIndex]);
-      if (length2 < 600*600) {
-        if (debug) {
-          System.err.println("Collision with "+checkpointIndex+" @ "+coeff);
-        }
+      if (intersection(debug, Bx, By)) {
+        crossCheckPoint = true;
         checkpointIndex++;
-        if (checkpointIndex == checkpointsCount) {
-          finished = true;
-        } else {
-          crossCheckPoint = true;
-        }
+        if (checkpointIndex == checkpointsCount) finished = true;
       }
-      
-    } while (crossCheckPoint);
+    } while (!finished && crossCheckPoint);
     
     this.x = (int)Bx;
     this.y = (int)By;
     
+  }
+
+  private boolean intersection(boolean debug, double bx, double by) {
+    
+    double dx = bx - x;
+    double dy = by - y;
+    
+    double cx = checkpointX[checkpointIndex];
+    double cy = checkpointY[checkpointIndex];
+
+    double distToCP = (bx-cx)*(bx-cx) + (by-cy)*(by-cy);
+    if (distToCP < 600*600) return true; // inside
+    
+    
+    double fx = cx - x;
+    double fy = cy - y;
+    
+    
+    double A = dx*dx+dy*dy;
+    double B = 2 * fx*dx+fy*dy;
+    double C = fx*fx+fy*fy - 600*600;
+    
+    double discriminant = B*B - 4*A*C;
+    if (discriminant < 0) return false;
+    discriminant = Math.sqrt(discriminant);
+    
+    double t1 = (-B - discriminant) / (2*A);
+    double t2 = (-B + discriminant) / (2*A);
+    if (debug) {
+      System.err.println("T1 = "+t1);
+      System.err.println("T2 = "+t2);
+    }
+    
+    boolean collision = false;
+    if (t1 >= 0 && t1 <= 1) {
+      if (debug) System.err.println("Collision @ "+t1);
+      collision = true;
+    }
+    if (t2 >= 0 && t2 <= 1) {
+      if (debug) System.err.println("Collision @ "+t2);
+      collision = true;
+    }
+    return collision;
   }
 
   public void debug() {
