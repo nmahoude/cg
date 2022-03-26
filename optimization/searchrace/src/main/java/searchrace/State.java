@@ -21,8 +21,8 @@ public class State {
   public int checkpointIndex;
   public int x;
   public int y;
-  public int vx;
-  public int vy;
+  public double vx;
+  public double vy;
   public int angle;
   public boolean finished;
   private static int checkpointsCount;
@@ -35,7 +35,6 @@ public class State {
     distanceDone= new int[checkpointsCount+2];
     
     System.err.println("Nb of checkpoints : "+checkpointsCount);
-    
     
     for (int i = 0; i < checkpointsCount; i++) {
       int cpX = in.nextInt(); // Position X
@@ -74,6 +73,8 @@ public class State {
     vx = in.nextInt();
     vy = in.nextInt();
     angle = in.nextInt();
+
+    System.err.println("Current cp is "+checkpointIndex+ " @ "+checkpointX[checkpointIndex]+" "+checkpointY[checkpointIndex]);
     
 //    if (checkpointIndex == 3) throw new RuntimeException("debug");
   }
@@ -107,68 +108,63 @@ public class State {
     } else if (this.angle < 0) {
       this.angle += 360;
     }
-    double dirx = thrust * cosinuses[angle];
-    double diry = thrust * sinuses[angle];
     
-    double Bx = this.x + this.vx + dirx;
-    double By = this.y + this.vy + diry;
-    
-    vx = (int) (0.85 * (this.vx + dirx));
-    vy = (int) (0.85 * (this.vy + diry));
+    vx = vx + thrust * cosinuses[angle];
+    vy = vy + thrust * sinuses[angle];
     
     boolean crossCheckPoint = false;
     do {
       crossCheckPoint = false;
       
-      if (intersection(debug, Bx, By)) {
+      if (intersection(debug)) {
         crossCheckPoint = true;
         checkpointIndex++;
         if (checkpointIndex == checkpointsCount) finished = true;
       }
     } while (!finished && crossCheckPoint);
     
-    this.x = (int)Bx;
-    this.y = (int)By;
+    vx = (int) (0.85 * vx);
+    vy = (int) (0.85 * vy);
+    this.x = (int)(this.x + this.vx);
+    this.y = (int)(this.y + this.vy);
     
   }
 
-  private boolean intersection(boolean debug, double bx, double by) {
+  private boolean intersection(boolean debug) {
+    double ux = checkpointX[checkpointIndex];
+    double uy = checkpointY[checkpointIndex];
     
-    double dx = bx - x;
-    double dy = by - y;
     
-    double cx = checkpointX[checkpointIndex];
-    double cy = checkpointY[checkpointIndex];
+    double x2 = x - ux;
+    double y2 = y - uy;
+    double r2 = 600;
+    double vx2 = vx - 0;
+    double vy2 = vy - 0;
 
-    double distToCP = (bx-cx)*(bx-cx) + (by-cy)*(by-cy);
-    if (distToCP < 600*600) return true; // inside
-    
-    
-    double fx = cx - x;
-    double fy = cy - y;
-    
-    
-    double A = dx*dx+dy*dy;
-    double B = 2 * fx*dx+fy*dy;
-    double C = fx*fx+fy*fy - 600*600;
-    
-    double discriminant = B*B - 4*A*C;
-    if (discriminant < 0) return false;
-    discriminant = Math.sqrt(discriminant);
-    
-    double t1 = (-B - discriminant) / (2*A);
-    double t2 = (-B + discriminant) / (2*A);
+    double a = vx2 * vx2 + vy2 * vy2;
+
+    double b = 2.0 * (x2 * vx2 + y2 * vy2);
+    double c = x2 * x2 + y2 * y2 - r2 * r2;
+    double delta = b * b - 4.0 * a * c;
+
+    if (delta < 0.0) {
+        return false;
+    }
+
+    double t1 = (-b - Math.sqrt(delta)) / (2.0 * a);
+    double t2 = (-b + Math.sqrt(delta)) / (2.0 * a);
+
     if (debug) {
-      System.err.println("T1 = "+t1);
-      System.err.println("T2 = "+t2);
+      System.err.println("Times : "+t1+ " "+t2);
     }
     
     boolean collision = false;
-    if (t1 >= 0 && t1 <= 1) {
+    if (t1 >= 0.0 && t1 <= 1.0) {
       if (debug) System.err.println("Collision @ "+t1);
       collision = true;
     }
-    if (t2 >= 0 && t2 <= 1) {
+
+    if (t2 >= 0.0 && t2 <= 1.0) {
       if (debug) System.err.println("Collision @ "+t2);
       collision = true;
     }

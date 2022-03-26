@@ -4,11 +4,12 @@ import java.util.Scanner;
 
 public class Player {
   public static long start;
+  public static int turn;
   
   State state = new State();
   State work = new State();
   
-  MC mc = new MC();
+  MC ai = new MC();
   
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
@@ -21,39 +22,30 @@ public class Player {
 
     // game loop
     while (true) {
+      turn++;
+      
       state.read(in);
       start = System.currentTimeMillis();
+      if (turn == 1) {
+        start -= 500;
+      }
       
       state.debug();
 
-      mc.think(state);
+      ai.think(state);
   
+      
       work.copyFrom(state);
-      work.apply(mc.bestAngle, mc.bestThrust, true);
-      System.err.println("nex turn : ");
-      work.debug();
-      if (work.finished) {
-        System.err.println("Race is finished ! ");
-      }
+      ai.best.debug(work);
       
-      if (work.checkpointIndex != state.checkpointIndex) {
-        System.err.println("Validating checkpoint ************");
-        System.err.println(state.checkpointIndex+" => "+work.checkpointIndex);
-        System.err.println(State.checkpointX[state.checkpointIndex]+" "+State.checkpointY[state.checkpointIndex]);
-        System.err.println(State.checkpointX[work.checkpointIndex]+" "+State.checkpointY[work.checkpointIndex]);
-        
-        double distToCp2 = 1.0 * (State.checkpointX[work.checkpointIndex] - work.x)*(State.checkpointX[work.checkpointIndex] - work.x) / 600*600+ 
-            1.0 * (State.checkpointY[work.checkpointIndex] - work.y)*(State.checkpointY[work.checkpointIndex] - work.y)  / 600*600;
-        
-        System.err.println("Dist to cp squared : "+distToCp2);
-        System.err.println("along x : "+(State.checkpointX[work.checkpointIndex] - work.x));
-        System.err.println("along y : "+(State.checkpointY[work.checkpointIndex] - work.y));
-        if (distToCp2 < 1.0) {
-          System.err.println("inside ! "+(600*600));
-        }
-      }
       
-      System.out.println("EXPERT "+mc.bestAngle+" "+mc.bestThrust);
+      System.err.println("************");
+      work.copyFrom(state);
+      work.apply(ai.bestAngle, ai.bestThrust, true);
+      
+      
+      
+      System.out.println("EXPERT "+ai.bestAngle+" "+ai.bestThrust);
 
     }
   }

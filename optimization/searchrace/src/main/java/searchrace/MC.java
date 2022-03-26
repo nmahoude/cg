@@ -8,19 +8,11 @@ public class MC {
   State current = new State();
   Random random = ThreadLocalRandom.current();
   
-  int angles[] = new int[100];
-  int thrusts[] = new int[100];
+  AISolution solution = new AISolution();
+  AISolution best = new AISolution();
   
   int bestAngle;
   int bestThrust;
-  
-  private static double[] depthFactor = new double[DEPTH];
-  static {
-    depthFactor[0] = 1.0;
-    for (int i=1;i<DEPTH;i++) {
-      depthFactor[i] = 0.9 * depthFactor[i-1];
-    }
-  }
   
   public void think(State original) {
     double bestScore = Double.NEGATIVE_INFINITY;
@@ -28,66 +20,68 @@ public class MC {
     bestThrust = 0;
     int sims = 0;
     
+    if (Player.turn > 1) {
+      solution.reinitFromLast(best);
+      current.copyFrom(original);
+      solution.apply(current);
+      if (solution.aiScore > bestScore) {
+        bestScore = solution.aiScore;
+        best.copyFrom(solution);
+      }
+    }
+    
+    
     while(true) {
       sims ++;
       if ((sims & 1024-1) == 0 && System.currentTimeMillis() - Player.start > 45) {
         break;
       }
+      solution.pseudoRandom();
       current.copyFrom(original);
+      solution.apply(current);
       
-      double score = 0.0;
-      for (int t=0;t<DEPTH;t++) {
-        int lastCheckpoint = current.checkpointIndex;
-        if (random.nextDouble() > 0.5) {
-          angles[t] = random.nextInt(11) - 5;
-        } else {
-          angles[t] = random.nextInt(36+1) - 18;
-        }
-        
-        if (random.nextDouble() > 0.7) {
-          thrusts[t] = 200;
-        } else {
-          thrusts[t] = random.nextInt(201);
-        }
-        current.apply(angles[t], thrusts[t]);
-      
-        int distToCurrentCheckPoint = 
-          (current.x - current.checkpointX[current.checkpointIndex])*(current.x - current.checkpointX[current.checkpointIndex])
-          + (current.y - current.checkpointY[current.checkpointIndex])*(current.y - current.checkpointY[current.checkpointIndex])
-          
-          ;
-      
-        score += depthFactor[t] * (- 0.000001 * distToCurrentCheckPoint );
-        score += depthFactor[t] * (1_000_000 * (current.checkpointIndex - lastCheckpoint ));
-        
-        if (current.checkpointIndex != lastCheckpoint) {
-          double distToNextCheckPoint =Math.sqrt( 
-              (current.x - State.checkpointX[current.checkpointIndex])*(current.x - State.checkpointX[current.checkpointIndex])
-              + (current.y - State.checkpointY[current.checkpointIndex])*(current.y - State.checkpointY[current.checkpointIndex])
-              )
-              ;
-          
-          // 200 -> 0
-          double speed = Math.sqrt(current.vx * current.vx + current.vy * current.vy);
-          
-          // 1 = same dir
-          // -1 = opposite dir
-          double directionToNextCheckpoint = 
-                  1.0 * ((State.checkpointX[current.checkpointIndex] - current.x) * current.vx
-                  + (State.checkpointY[current.checkpointIndex] - current.y) * current.vy)
-              / (speed * distToNextCheckPoint) ;
-          
-          score += depthFactor[t] * 1_000 * directionToNextCheckpoint;
-        }
-
-      }
-      if (score > bestScore) {
-        bestScore = score;
-        bestAngle = angles[0];
-        bestThrust = thrusts[0];
+      if (solution.aiScore > bestScore) {
+        bestScore = solution.aiScore;
+        best.copyFrom(solution);
       }
     }
-    
+
+    bestAngle = best.angles[0];
+    bestThrust = best.thrusts[0];
+
     System.err.println("Sims : "+sims);
+  }
+
+  private double eval(State current, int lastCheckpoint) {
+    double score = 0.0; 
+    int distToCurrentCheckPoint = 
+        (current.x - current.checkpointX[current.checkpointIndex])*(current.x - current.checkpointX[current.checkpointIndex])
+        + (current.y - current.checkpointY[current.checkpointIndex])*(current.y - current.checkpointY[current.checkpointIndex])
+        
+        ;
+    
+      score += (- 0.000001 * distToCurrentCheckPoint );
+      score += (1_000_000 * (current.checkpointIndex - lastCheckpoint ));
+      
+      if (current.checkpointIndex != lastCheckpoint) {
+        double distToNextCheckPoint =Math.sqrt( 
+            (current.x - State.checkpointX[current.checkpointIndex])*(current.x - State.checkpointX[current.checkpointIndex])
+            + (current.y - State.checkpointY[current.checkpointIndex])*(current.y - State.checkpointY[current.checkpointIndex])
+            )
+            ;
+        
+        // 200 -> 0
+        double speed = Math.sqrt(current.vx * current.vx + current.vy * current.vy);
+        
+        // 1 = same dir
+        // -1 = opposite dir
+        double directionToNextCheckpoint = 
+                1.0 * ((State.checkpointX[current.checkpointIndex] - current.x) * current.vx
+                + (State.checkpointY[current.checkpointIndex] - current.y) * current.vy)
+            / (speed * distToNextCheckPoint) ;
+        
+        score += 1_000 * directionToNextCheckpoint;
+      }
+      return score;
   }
 }

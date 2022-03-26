@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import searchrace.AISolution;
 import searchrace.Player;
 import searchrace.State;
 
@@ -18,12 +19,12 @@ public class AG {
   public int bestAngle;
   public int bestThrust;
 
-  AGSolution best = new AGSolution();
-  AGSolution[] population = new AGSolution[POPULATION_POOL_TOTAL];
+  public AISolution best = new AISolution();
+  AISolution[] population = new AISolution[POPULATION_POOL_TOTAL];
   
   public AG() {
     for (int i=0;i<POPULATION_POOL_TOTAL;i++) {
-      population[i] = new AGSolution();
+      population[i] = new AISolution();
     }
   }
   
@@ -33,8 +34,8 @@ public class AG {
     
     
     initPopulation(state);
-    Arrays.sort(population, (s1, s2) -> Double.compare(s2.score, s1.score));
-    if (population[0].score > best.score) {
+    Arrays.sort(population, (s1, s2) -> Double.compare(s2.aiScore, s1.aiScore));
+    if (population[0].aiScore > best.aiScore) {
       best.copyFrom(population[0]);
     }
 
@@ -44,7 +45,7 @@ end:
   while(true) {
       for (int p=POPULATION_BEST_POOL;p<POPULATION_POOL_TOTAL;p++) {
         sims ++;
-        if ((sims & 1024-1) == 0 && System.currentTimeMillis() - Player.start > 40) {
+        if ((sims & 4096-1) == 0 && System.currentTimeMillis() - Player.start > 40) {
           break end;
         }
         int p1 = random.nextInt(POPULATION_BEST_POOL);
@@ -54,11 +55,11 @@ end:
         work.copyFrom(state);
         population[p].apply(work);
         
-        if (population[p].score > best.score) {
+        if (population[p].aiScore > best.aiScore) {
           best.copyFrom(population[p]);
         }
       }
-      Arrays.sort(population, (s1, s2) -> Double.compare(s2.score, s1.score));
+      Arrays.sort(population, (s1, s2) -> Double.compare(s2.aiScore, s1.aiScore));
     }
     
     System.err.println("Sims : "+(sims));
@@ -67,10 +68,13 @@ end:
   }
 
   private void initPopulation(State original) {
-    population[0].copyFrom(best);
-    population[0].decal();
+    for (int i=0;i<POPULATION_BEST_POOL;i++) {
+      population[i].reinitFromLast(population[i]);
+      work.copyFrom(original);
+      population[i].apply(work);
+    }
     
-    for (int i=1;i<POPULATION_POOL_TOTAL;i++) {
+    for (int i=POPULATION_BEST_POOL;i<POPULATION_POOL_TOTAL;i++) {
       work.copyFrom(original);
       population[i].pseudoRandom();
       population[i].apply(work);
