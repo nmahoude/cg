@@ -33,7 +33,7 @@ public class MC {
     
     while(true) {
       sims ++;
-      if ((sims & 1024-1) == 0 && System.currentTimeMillis() - Player.start > 45) {
+      if ((sims & 1024-1) == 0 && System.currentTimeMillis() - Player.start > 40) {
         break;
       }
       solution.pseudoRandom();

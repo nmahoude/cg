@@ -2,6 +2,8 @@ package searchrace;
 
 import java.util.Scanner;
 
+import searchrace.ag.AG;
+
 public class Player {
   public static long start;
   public static int turn;
@@ -9,7 +11,7 @@ public class Player {
   State state = new State();
   State work = new State();
   
-  MC ai = new MC();
+  AG ai = new AG();
   
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
