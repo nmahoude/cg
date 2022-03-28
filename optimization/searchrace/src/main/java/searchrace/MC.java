@@ -4,7 +4,6 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MC {
-  private static final int DEPTH = 10;
   State current = new State();
   Random random = ThreadLocalRandom.current();
   
@@ -36,7 +35,7 @@ public class MC {
       if ((sims & 1024-1) == 0 && System.currentTimeMillis() - Player.start > 40) {
         break;
       }
-      solution.pseudoRandom();
+      solution.random();
       current.copyFrom(original);
       solution.apply(current);
       

@@ -76,7 +76,7 @@ end:
     
     for (int i=POPULATION_BEST_POOL;i<POPULATION_POOL_TOTAL;i++) {
       work.copyFrom(original);
-      population[i].pseudoRandom();
+      population[i].random();
       population[i].apply(work);
     }
   }

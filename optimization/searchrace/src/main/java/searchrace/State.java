@@ -138,12 +138,10 @@ public class State {
     double x2 = x - ux;
     double y2 = y - uy;
     double r2 = 600;
-    double vx2 = vx - 0;
-    double vy2 = vy - 0;
 
-    double a = vx2 * vx2 + vy2 * vy2;
+    double a = vx * vx + vy * vy;
 
-    double b = 2.0 * (x2 * vx2 + y2 * vy2);
+    double b = 2.0 * (x2 * vx + y2 * vy);
     double c = x2 * x2 + y2 * y2 - r2 * r2;
     double delta = b * b - 4.0 * a * c;
 
@@ -174,7 +172,23 @@ public class State {
   public void debug() {
     System.err.println("(x,y) = "+x+" "+y);
     System.err.println("(vx,vy) = "+vx+" "+vy);
-    System.err.println("(angle) = "+angle);
+    System.err.println("(angle) = "+angle );
+    System.err.println("Angle to next checkpoint : "+angleToNextCheckpoint());
   }
   
+  
+  public double angleToNextCheckpoint() {
+    return 1.0 * (
+        (State.checkpointX[checkpointIndex] - x) * State.cosinuses[angle] 
+      + (State.checkpointY[checkpointIndex] - y) * State.sinuses[angle] 
+    ) / (distToNextCheckPoint() );
+  }
+
+  private double distToNextCheckPoint() {
+    return Math.sqrt( 
+        (x - State.checkpointX[checkpointIndex])*(x - State.checkpointX[checkpointIndex])
+        + (y - State.checkpointY[checkpointIndex])*(y - State.checkpointY[checkpointIndex])
+        )
+        ;
+  }
 }
