@@ -12,5 +12,6 @@
     <module>acraft</module>
     <module>marsLander</module>
     <module>searchrace</module>
+    <module>numbershifting</module>
   </modules>
 </project>
