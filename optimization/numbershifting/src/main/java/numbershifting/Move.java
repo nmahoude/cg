@@ -1,13 +1,25 @@
 package numbershifting;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Move {
   Pos from;
   Pos to;
+  int fromValue;
   boolean addition;
+  int toValue;
 
-  public Move(Pos from, Pos to ) {
+  Move parent;
+  List<Move> children = new ArrayList<>();
+  
+  
+  public Move(Pos from, int fromValue, Pos to, int toValue, boolean addition ) {
     this.from = from;
+    this.fromValue = fromValue;
     this.to = to;
+    this.toValue = toValue;
+    this.addition = addition;
   }
 
   public String output() {

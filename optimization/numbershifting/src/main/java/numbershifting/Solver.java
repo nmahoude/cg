@@ -27,7 +27,7 @@ public class Solver {
         moves = state.possibleMoves();
         if (moves.isEmpty()) break;
         Move chosenMove = moves.get(0);
-        state.apply(chosenMove, false);
+        state.apply(chosenMove);
         System.out.println(chosenMove.output());
       } while(true);
       
