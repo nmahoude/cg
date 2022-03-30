@@ -33,4 +33,8 @@ public class Move {
     return output;
   }
 
+  
+  public int value() {
+    return from.x + 1000 * from.y + (addition ? 0 : 1_000_000);  
+  }
 }

@@ -36,13 +36,18 @@ public class State {
         
         int value = grid[from.offset];
         if (value == 0) continue;
-        
+  
+        int currentCount = moves.size();
         addMovesIfPossible(moves, from, Pos.from(x, y+value));
         addMovesIfPossible(moves, from, Pos.from(x, y-value));
         addMovesIfPossible(moves, from, Pos.from(x+value, y));
         addMovesIfPossible(moves, from, Pos.from(x-value, y));
+        
+        //if (moves.size() == currentCount) return Collections.emptyList(); // no possibility for this one, dead end
       }
     }
+    
+    moves.sort((m1, m2) -> Integer.compare(m2.value(), m1.value()));
     
     return moves;
   }
