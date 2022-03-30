@@ -86,7 +86,15 @@ class Player {
                 + "1 1 R -\r\n"
                 + "1 0 D -");
             break;
-
+        case 9:
+            System.out.println("4 1 R +\r\n"
+                + "2 1 L +\r\n"
+                + "0 1 R -\r\n"
+                + "4 3 R +\r\n"
+                + "5 3 L -\r\n"
+                + "5 2 U -\r\n"
+                + "6 0 L -");
+            break;
           default:
           System.out.println("0 0 U +");
           break;

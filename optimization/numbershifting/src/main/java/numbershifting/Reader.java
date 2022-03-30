@@ -1,24 +1,22 @@
 package numbershifting;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Reader {
 
-  public static void main(String[] args) {
-    String input = "Code for next level (level 11): qffmkiddphmqutkptjhwpnraapcrjodh\r\n"
-        + "8 5\r\n"
-        + "0 0 0 0 0 0 0 0\r\n"
-        + "7 0 1 0 0 0 6 0\r\n"
-        + "3 0 1 0 0 0 0 0\r\n"
-        + "6 0 0 0 2 1 9 0\r\n"
-        + "2 0 0 0 0 0 0 0";
-    
-    Scanner in = new Scanner(input);
+  public static void main(String[] args) throws FileNotFoundException, URISyntaxException {
+    Scanner in = new Scanner(new File(Reader.class.getClassLoader().getResource("level.txt").toURI()));
 
-    String level = in.nextLine();
-    System.out.println(level);
+    String levelStr = in.nextLine();
+    String levelAsString = levelStr.substring(levelStr.indexOf("(")+7, levelStr.indexOf(")"));
+    System.out.println("level  :"+levelAsString);
+    int level = Integer.parseInt(levelAsString);
+    System.out.println(levelStr);
     
     State state = new State();
     state.read(in);
@@ -27,7 +25,8 @@ public class Reader {
     findSol(state);
     
     if (! solution.isEmpty()) {
-      System.out.println("case xx:");
+      System.out.println("case "+level+":");
+      System.out.println("System.err.println(\""+levelStr+"\");");
       for (Move m : solution) {
         System.out.println("System.out.println(\""+m.output()+"\");");
       }
