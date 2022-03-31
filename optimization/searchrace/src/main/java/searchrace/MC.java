@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MC {
-  State current = new State();
+  State currentState = new State();
   Random random = ThreadLocalRandom.current();
   
   AISolution solution = new AISolution();
@@ -13,31 +13,27 @@ public class MC {
   int bestAngle;
   int bestThrust;
   
-  public void think(State original) {
+  public void think(State originalState) {
     double bestScore = Double.NEGATIVE_INFINITY;
     bestAngle = 0;
     bestThrust = 0;
     int sims = 0;
     
     if (Player.turn > 1) {
-      solution.reinitFromLast(best);
-      current.copyFrom(original);
-      solution.apply(current);
-      if (solution.aiScore > bestScore) {
-        bestScore = solution.aiScore;
-        best.copyFrom(solution);
-      }
+      bestScore = reevaluateLastSolution(originalState, bestScore);
     }
     
     
     while(true) {
       sims ++;
-      if ((sims & 1024-1) == 0 && System.currentTimeMillis() - Player.start > 40) {
+      if ((sims & 1024-1) == 0 && System.currentTimeMillis() - Player.start > Player.MAX_TIME_TO_THINK) {
         break;
       }
-      solution.random();
-      current.copyFrom(original);
-      solution.apply(current);
+
+      
+      solution.createRandom();
+      currentState.copyFrom(originalState);
+      solution.applyOn(currentState);
       
       if (solution.aiScore > bestScore) {
         bestScore = solution.aiScore;
@@ -45,10 +41,20 @@ public class MC {
       }
     }
 
+    System.err.println("Sims : "+sims);
     bestAngle = best.angles[0];
     bestThrust = best.thrusts[0];
+  }
 
-    System.err.println("Sims : "+sims);
+  private double reevaluateLastSolution(State original, double bestScore) {
+    solution.reinitFromLast(best);
+    currentState.copyFrom(original);
+    solution.applyOn(currentState);
+    if (solution.aiScore > bestScore) {
+      bestScore = solution.aiScore;
+      best.copyFrom(solution);
+    }
+    return bestScore;
   }
 
   private double eval(State current, int lastCheckpoint) {

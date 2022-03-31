@@ -45,7 +45,7 @@ public class AISolution {
   }
   
   
-  public void apply(State work) {
+  public void applyOn(State work) {
     aiScore = 0.0;
     hasCrossedCheckpoint = false;
     
@@ -155,7 +155,7 @@ public class AISolution {
 
   public void merge(AISolution sol1, AISolution sol2) {
     if ((sol1 == sol2 || random.nextDouble() > 0.9)) {
-      random(); // TODO find better ?
+      createRandom(); // TODO find better ?
     } else {
       for (int i=0;i<DEPTH;i++) {
         
@@ -176,7 +176,7 @@ public class AISolution {
     this.thrusts[DEPTH-1] = 0;
   }
 
-  public void random() {
+  public void createRandom() {
     pseudoRandomFar();
   }
 

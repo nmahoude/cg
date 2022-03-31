@@ -53,7 +53,7 @@ end:
   
         population[p].merge(population[p1], population[p2]);
         work.copyFrom(state);
-        population[p].apply(work);
+        population[p].applyOn(work);
         
         if (population[p].aiScore > best.aiScore) {
           best.copyFrom(population[p]);
@@ -71,13 +71,13 @@ end:
     for (int i=0;i<POPULATION_BEST_POOL;i++) {
       population[i].reinitFromLast(population[i]);
       work.copyFrom(original);
-      population[i].apply(work);
+      population[i].applyOn(work);
     }
     
     for (int i=POPULATION_BEST_POOL;i<POPULATION_POOL_TOTAL;i++) {
       work.copyFrom(original);
-      population[i].random();
-      population[i].apply(work);
+      population[i].createRandom();
+      population[i].applyOn(work);
     }
   }
 }

@@ -63,7 +63,6 @@ public class State {
                 );
       distanceDone[i-1] = distanceDone[i] + dist;
     }
-    
   }
 
   public void read(Scanner in) {
@@ -73,10 +72,6 @@ public class State {
     vx = in.nextInt();
     vy = in.nextInt();
     angle = in.nextInt();
-
-    System.err.println("Current cp is "+checkpointIndex+ " @ "+checkpointX[checkpointIndex]+" "+checkpointY[checkpointIndex]);
-    
-//    if (checkpointIndex == 3) throw new RuntimeException("debug");
   }
 
   public void copyFrom(State model) {
@@ -89,16 +84,15 @@ public class State {
     this.finished = model.finished;
   }
   
-  /*
-   * Assume 
-   *  angle will be [-18,+18]
-   *  thrust will be [0,200]
+  /**
+   * SIMULATION 
+   * 
+   * 
+   * @param angleOffset will be [-18,+18]
+   * @param thrust will be [0,200]
+   * @param debug 
    */
   public void apply(int angleOffset, int thrust) {
-    apply(angleOffset, thrust, false);
-  }
-
-  public void apply(int angleOffset, int thrust, boolean debug) {
     if (finished) return;
     
     this.angle += angleOffset;
@@ -116,7 +110,7 @@ public class State {
     do {
       crossCheckPoint = false;
       
-      if (intersection(debug)) {
+      if (intersection()) {
         crossCheckPoint = true;
         checkpointIndex++;
         if (checkpointIndex == checkpointsCount) finished = true;
@@ -130,7 +124,7 @@ public class State {
     
   }
 
-  private boolean intersection(boolean debug) {
+  private boolean intersection() {
     double ux = checkpointX[checkpointIndex];
     double uy = checkpointY[checkpointIndex];
     
@@ -152,18 +146,13 @@ public class State {
     double t1 = (-b - Math.sqrt(delta)) / (2.0 * a);
     double t2 = (-b + Math.sqrt(delta)) / (2.0 * a);
 
-    if (debug) {
-      System.err.println("Times : "+t1+ " "+t2);
-    }
     
     boolean collision = false;
     if (t1 >= 0.0 && t1 <= 1.0) {
-      if (debug) System.err.println("Collision @ "+t1);
       collision = true;
     }
 
     if (t2 >= 0.0 && t2 <= 1.0) {
-      if (debug) System.err.println("Collision @ "+t2);
       collision = true;
     }
     return collision;

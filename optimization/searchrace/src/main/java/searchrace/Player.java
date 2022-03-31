@@ -5,6 +5,8 @@ import java.util.Scanner;
 import searchrace.ag.AG;
 
 public class Player {
+  public static final long MAX_TIME_TO_THINK = 40;
+  
   public static long start;
   public static int turn;
   public static int MAX_SPEED = 200;
@@ -78,7 +80,7 @@ public class Player {
       
       System.err.println(" *** Collision debug ");
       work.copyFrom(state);
-      work.apply(ai.bestAngle, ai.bestThrust, true);
+      work.apply(ai.bestAngle, ai.bestThrust);
       
       
       
