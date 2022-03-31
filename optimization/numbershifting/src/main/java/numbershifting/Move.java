@@ -35,6 +35,10 @@ public class Move {
 
   
   public int value() {
-    return from.x + 1000 * from.y + (addition ? 0 : 1_000_000);  
+    if (addition) {
+      return fromValue + toValue;
+    } else {
+      return Math.abs(fromValue - toValue);
+    }
   }
 }

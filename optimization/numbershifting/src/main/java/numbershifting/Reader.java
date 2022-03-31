@@ -38,6 +38,7 @@ public class Reader {
 
   static boolean stop = false;
   static List<Move> solution = new ArrayList<>();
+  static long sims = 0;
   
   private static void findSol(State state) {
     if (state.elementCount == 0) {
@@ -48,15 +49,24 @@ public class Reader {
     
     List<Move> moves = state.possibleMoves();
     for (Move m : moves) {
-      state.apply(m);
-      
-      findSol(state);
-      if (stop) {
-        solution.add(0, m);
-        return;
+      sims++;
+      if ((sims & 0b1111111111111111111) == 0) {
+        System.err.println(sims);
       }
+      boolean notDeadEnd = state.apply(m);
       
-      state.unapply(m);
+      if (!notDeadEnd) {
+        state.unapply(m);
+        return;
+      } else {
+        findSol(state);
+        if (stop) {
+          solution.add(0, m);
+          return;
+        }
+        
+        state.unapply(m);
+      }
     }
   }
   

@@ -37,17 +37,15 @@ public class State {
         int value = grid[from.offset];
         if (value == 0) continue;
   
-        int currentCount = moves.size();
         addMovesIfPossible(moves, from, Pos.from(x, y+value));
         addMovesIfPossible(moves, from, Pos.from(x, y-value));
         addMovesIfPossible(moves, from, Pos.from(x+value, y));
         addMovesIfPossible(moves, from, Pos.from(x-value, y));
         
-        //if (moves.size() == currentCount) return Collections.emptyList(); // no possibility for this one, dead end
       }
     }
     
-    moves.sort((m1, m2) -> Integer.compare(m2.value(), m1.value()));
+    moves.sort((m1, m2) -> Integer.compare(m1.value(), m2.value()));
     
     return moves;
   }
@@ -65,7 +63,12 @@ public class State {
     
   }
 
-  public void apply(Move move) {
+  /**
+   * return false if there is a dead end (none empty cell with noone on same row + col)
+   * @param move
+   * @return
+   */
+  public boolean apply(Move move) {
     int value = grid[move.from.offset];
     grid[move.from.offset] = 0;
     elementCount--; // from
@@ -74,8 +77,23 @@ public class State {
       grid[move.to.offset] += value; 
     } else {
       grid[move.to.offset] = Math.abs(grid[move.to.offset] - value);
-      if (grid[move.to.offset] == 0) elementCount--; // result is zero
     }
+    
+    if (grid[move.to.offset] == 0) {
+      elementCount--; // result is zero
+      return true;
+    } else {
+      // check if there is still neighbors ...
+      boolean found = false;
+      for (int y=0;y<height && !found;y++) {
+        if (grid[move.to.x+1000*y] != 0) found = true;
+      }
+      for (int x=0;x<width && !found;x++) {
+        if (grid[x+1000*move.to.y] != 0) found = true;
+      }
+      return found;
+    }
+    
   }
 
   // restore initial values
