@@ -18,6 +18,7 @@
 		<module>cgalgorithms</module>
 		<module>cgutils</module>
 		<module>fast</module>
+		<module>cgfx</module>
 	</modules>
 
 	<build>
