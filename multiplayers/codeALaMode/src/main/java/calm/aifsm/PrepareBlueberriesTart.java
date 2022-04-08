@@ -29,7 +29,12 @@ public class PrepareBlueberriesTart extends Executor {
       return me.getRidOff();
     }
     
-    if (state.ovenContents.hasRawTart() || state.ovenContents.hasBlueBerriesTart()) {
+    
+    boolean rawTartIsInOvenAndIsMine = state.ovenContents.hasRawTart() && state.ovenIsMine;
+    boolean pieInOvenAndHimNotClose = state.ovenContents.hasBlueBerriesTart() && !state.oppNextToOven();
+    System.err.println("rawTartIsInOvenAndIsMine = "+rawTartIsInOvenAndIsMine);
+    System.err.println("pieInOvenAndHimNotClose = "+pieInOvenAndHimNotClose);
+    if (rawTartIsInOvenAndIsMine || pieInOvenAndHimNotClose ) {
       return Order.use(Player.map.ovenAsEquipment);
     }
     if (!me.hands.isEmpty()) {

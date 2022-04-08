@@ -231,5 +231,11 @@ public class State {
   }
 
 
+  public boolean oppNextToOven() {
+    int distance = Player.map.distanceFromTo(him.pos, Player.map.ovenAsEquipment.pos, me.pos);
+    return distance < 2;
+  }
+
+
 
 }

@@ -2,6 +2,7 @@ package calm;
 
 public class ItemMask {
   public static final int NOTHING = 0b0;
+  public static final int EMPTY = NOTHING;
   
   public static final int EQUIPMENT_DISH = 0b1;
   public static final int EQUIPMENT_OVEN = 0b10;
@@ -24,6 +25,7 @@ public class ItemMask {
   public static final int RAW_TART = 0b100000000000000000;
   public static final int FLOOR = 0b1000000000000000000;
   public static final int LAST = FLOOR;
+
   
   public static int fromString(String input) {
     int value = 0;

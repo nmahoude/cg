@@ -20,8 +20,8 @@ public class FSMAI {
     this.state = state;
     
    
-    List<Desert> mayBeDoing = desertHeMayBeDoing(state);
     Desert desert = null;
+    List<Desert> mayBeDoing = desertHeMayBeDoing(state);
     if (mayBeDoing.size() <= 1) {
       System.err.println("Deciding on new desert based on his sole possibility ...");
       desert = chooseDesert(state, mayBeDoing);
@@ -30,6 +30,10 @@ public class FSMAI {
       System.err.println("Choosing the best desert whatever");
       desert = chooseDesert(state, Collections.emptyList());
     }
+    
+    
+    
+    
     System.err.println("*** preparing "+desert);
     System.err.println("*** my hands "+state.me.hands);
     Order order = null;
@@ -89,6 +93,7 @@ public class FSMAI {
     
     for (int i=0;i<3;i++) {
       Desert desert = state.deserts[i];
+      System.err.println("Checking desert points "+desert);
       if (oppDoing.contains(desert)) continue; // do not try to do the same desert
       
       // TODO do better to know what we are preparing
@@ -98,24 +103,29 @@ public class FSMAI {
       clean.mask = (clean.mask & ~ItemMask.RAW_TART);
       clean.mask = (clean.mask & ~ItemMask.STRAWBERRIES);
     
-      if ((clean.mask & ~desert.item.mask) == 0 ) {
-        System.err.println("Desert award "+desert.award+" for "+desert.toString());
-        int score = desert.award;
-        if (current != null && current.desert.item.mask == desert.item.mask) {
-          score += 100;
+      
+      double score = 0.1 * (3000-desert.award);
+      
+      int commonMaskCount = Integer.bitCount(desert.item.mask & state.me.hands.mask);
+      System.err.println("Common ingredients "+commonMaskCount);
+      score += 10 * commonMaskCount;
+
+      if (current != null && current.desert.item.mask == desert.item.mask) {
+        System.err.println("  => current desert is done ");
+        score += 3_000;
+      }
+      
+      System.err.println("Desert score for "+desert.toString()+" is "+score);
+      
+      if (Player.turnsRemaining > 0) {
+        if (best == null || score > bestScore) {
+          best = desert;
+          bestScore = score;
         }
-        
-        
-        if (Player.turnsRemaining > 0) {
-          if (best == null || score > bestScore) {
-            best = desert;
-            bestScore = score;
-          }
-        } else {
-          if (best == null || score < bestScore) {
-            best = desert;
-            bestScore = score;
-          }
+      } else {
+        if (best == null || score < bestScore) {
+          best = desert;
+          bestScore = score;
         }
       }
     }

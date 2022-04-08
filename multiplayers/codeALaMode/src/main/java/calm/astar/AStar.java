@@ -26,7 +26,7 @@ public class AStar {
 			  return null;
 			}
 			if (best != null && best.getTotalTurns() < current.getTotalTurns()) {
-				continue;
+				break;
 			}
 			if (Player.DEBUG_ASTAR) System.err.println("Visiting "+current.debug());
 			current.find(goal);

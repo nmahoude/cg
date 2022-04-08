@@ -20,7 +20,15 @@ public class DesertMakerAStar {
   
   
   public P find(Desert desert) {
+    if (state.me.hands.mask == desert.item.mask) {
+      System.err.println("nothing to find, we already have it ! ");
+      return Player.map.bell.pos;
+    }
+    
+    
     System.err.println("Launching astar with desert "+desert.item);
+    
+    
     target = desert.item.mask;
     ingredientsCount = Integer.bitCount(target);
     
