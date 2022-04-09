@@ -1,6 +1,8 @@
 package othello;
 
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 public class State {
   final static int BOARDSIZE = 8;
@@ -103,17 +105,8 @@ public class State {
   }
 
   // TODO optimize
-  public int countNeighbors(int sx, int sy, int id) {
-    int count = 0;
-    for (int y=-1;y<=1;y++) {
-      for (int x=-1;x<=1;x++) {
-        if (x == 0 && y == 0) continue;
-        Pos p = Pos.from(x + sx, y + sy);
-        if (p == Pos.VOID) continue;
-        if ((grids[id] & 1L << p.offset) != 0) count++;
-      }
-    }
-    return count;
+  public int countNeighbors(Pos pos, int id) {
+    return Long.bitCount(grids[id] & PosMask.neighbors8Masks[pos.offset]);
   }
   
   public void outputTestValues() {
@@ -137,6 +130,7 @@ public class State {
       }
       System.err.println();
     }
+    System.err.println("Points définitif : "+countPionsDefinitif(myId)+"  /  " + countPionsDefinitif(oppId) );
   }
 
   public int tileAt(int x, int y) {
@@ -148,5 +142,33 @@ public class State {
 
   public boolean hasOppNeighbor(Pos pos, int id) {
     return (grids[1-id] & PosMask.neighbors8Masks[pos.offset]) != 0;
+  }
+  
+  public int countPionsDefinitif(int id) {
+    Set<Pos> definitifs = new HashSet<>();
+    long grid = grids[id];
+
+    Set<Pos> newPions = new HashSet<>();
+    if ((grid & PosMask.positionMasks[Pos.from(0, 0).offset]) != 0) newPions.add(Pos.from(0, 0));
+    if ((grid & PosMask.positionMasks[Pos.from(0, Pos.HEIGHT-1).offset]) != 0) newPions.add(Pos.from(0, Pos.HEIGHT-1));
+    if ((grid & PosMask.positionMasks[Pos.from(Pos.WIDTH-1, 0).offset]) != 0) newPions.add(Pos.from(Pos.WIDTH-1, 0));
+    if ((grid & PosMask.positionMasks[Pos.from(Pos.WIDTH-1, Pos.HEIGHT-1).offset]) != 0) newPions.add(Pos.from(Pos.WIDTH-1, Pos.HEIGHT-1));
+    
+    while (newPions.size() != 0) {
+      definitifs.addAll(newPions);
+
+      newPions.clear();
+      for (Pos p : definitifs) {
+        for (Pos n : p.neighbors8) {
+          if (definitifs.contains(n)) continue;
+          
+          if ((grid & PosMask.positionMasks[n.offset]) != 0) newPions.add(n);
+        }
+      }
+    }
+    
+    
+    
+    return definitifs.size();
   }
 }
