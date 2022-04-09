@@ -16,10 +16,11 @@ public class Player {
 
   private void play(Scanner in) {
     state.readInit(in);
-
+    
     // game loop
     while (true) {
       state.read(in);
+      state.outputTestValues();
       state.debug();
       
       

@@ -4,17 +4,31 @@ public class Depth1AI {
   State work = new State();
   
   public String think(State originalState) {
-
+    System.err.println("Current state : ");
+    originalState.debug();
+    
     int bestScore = Integer.MIN_VALUE;
     String bestAction = "";
 
     for (int y = 0; y < State.BOARDSIZE; y++) {
       for (int x = 0; x < State.BOARDSIZE; x++) {
-        if (originalState.grid[x][y] != -1) continue;
+        Pos pos = Pos.from(x, y);
+
+        if (originalState.tileAt(x,y) != -1) continue;
+        boolean hasAtLeastAnOppTile = originalState.hasOppNeighbor(pos, State.myId);
+        if (! hasAtLeastAnOppTile) continue;
         
         work.copyFrom(originalState);
-        int swapped = work.putTile(x, y, State.id);
+        int swapped = work.putTile(x, y, State.myId);
+        System.err.println("Swapped @ "+pos+" is "+swapped);
+        
         if (swapped == 0) continue;
+
+        System.err.println("Testing : "+pos+ " with opp swapped tiles "+swapped);
+        System.err.println("State : ");
+        work.debug();
+        
+        
         
         int score = 0;
         
