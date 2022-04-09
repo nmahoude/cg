@@ -34,5 +34,6 @@
   	<module>connect4</module>
   	<module>botg</module>
   	<module>breakthrough</module>
+  	<module>othello</module>
   </modules>
 </project>
