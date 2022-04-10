@@ -1,10 +1,12 @@
 package cgutils.logger;
 
 public enum Level {
-	NONE(0),
-	ERROR(1),
-	INFO(2),
-	DEBUG(3);
+	NONE(100),
+	ERROR(50),
+	INFO(10),
+	DEBUG(0),
+  DISABLED(-1)
+  ;
 
   private int priority;
 

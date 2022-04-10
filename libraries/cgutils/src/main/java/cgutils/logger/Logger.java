@@ -10,6 +10,7 @@ public class Logger {
 
   private boolean appendLogName = false;
   private boolean appendTime = false;
+  public boolean disabled;
 
   private Logger(String name, Level levelSpecific) {
     this.logName = name;
@@ -39,7 +40,11 @@ public class Logger {
     private String name;
     private boolean appendTime;
     private boolean appendLogName;
+    private boolean disabled;
 
+    public LoggerBuilder() {
+    }
+    
     public LoggerBuilder(String name) {
       this.name = name;
     }
@@ -67,24 +72,30 @@ public class Logger {
       Logger logger = new Logger(name, level); 
       logger.appendTime = this.appendTime;
       logger.appendLogName = this.appendLogName;
+      logger.disabled = this.disabled;
       return logger;
+    }
+
+    public LoggerBuilder disabled() {
+      this.disabled = true;
+      return this;
     }
   }
   
   
-  public void error(Object... s) {
+  public void error(String... s) {
     if (getLoggerLevel().isInferiorOrEqualTo(Level.INFO)) {
       print("[ERROR]", s);
     }
   }
 
-  public void info(Object... s) {
+  public void info(String... s) {
     if (getLoggerLevel().isInferiorOrEqualTo(Level.INFO)) {
       print("[INFO ]",s);
     }
   }
 
-  public void debug(Object... s) {
+  public void debug(String... s) {
     if (getLoggerLevel().isInferiorOrEqualTo(Level.DEBUG)) {
       print("[DEBUG]", s);
     }
@@ -92,22 +103,27 @@ public class Logger {
 
   private static StringBuilder sb = new StringBuilder(5000);
 
-  protected void print(Object... s) {
+  protected void print(String level, String... s) {
+    if (disabled) return;
+    
     sb.delete(0, sb.length());
     
     if (appendTime ) {
+      sb.append('[');
       sb.append(new Date());
-      sb.append(' ');
+      sb.append(']');
     }
     
     if (appendLogName ) {
+      sb.append("[");
       sb.append(logName);
-      sb.append(" : ");
+      sb.append("]");
     }
     
+    sb.append(level).append(' ');
     int i = 0;
     for (Object o : s) {
-      sb.append(o == null ? "null" : o.toString());
+      sb.append(o);
       if (++i < s.length) {
         sb.append(' ');
       }
@@ -124,6 +140,9 @@ public class Logger {
   }
   
   public static void setGlobalLevel(Level level) {
+    if (level == Level.DISABLED) {
+      throw new IllegalArgumentException("Can't set global level to disabled");
+    }
     globalLevel = level;
   }
 
