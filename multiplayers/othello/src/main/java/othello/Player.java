@@ -8,6 +8,7 @@ public class Player {
   Depth1AI ai = new Depth1AI();
   
   State state = new State();
+  static int turn;
 
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
@@ -19,6 +20,7 @@ public class Player {
     
     // game loop
     while (true) {
+      turn++;
       state.read(in);
       state.outputTestValues();
       state.debug();

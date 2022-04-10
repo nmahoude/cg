@@ -64,7 +64,9 @@ public class State {
   
   public int putTile(int sx, int sy, int id) {
     int oppId = 1 - id;
+    
     grids[id] |= 1L << Pos.from(sx, sy).offset;
+    scores[id]++;
     
     int score = 0;
     for (int d = 0;d<dx.length;d++) {
@@ -104,7 +106,6 @@ public class State {
     return ""+(char)('a'+x)+""+(char)(y+'1');
   }
 
-  // TODO optimize
   public int countNeighbors(Pos pos, int id) {
     return Long.bitCount(grids[id] & PosMask.neighbors8Masks[pos.offset]);
   }
@@ -130,7 +131,7 @@ public class State {
       }
       System.err.println();
     }
-    System.err.println("Points définitif : "+countPionsDefinitif(myId)+"  /  " + countPionsDefinitif(oppId) );
+    System.err.println("Points définitif : "+countStableDiscs(myId)+"  /  " + countStableDiscs(oppId) );
   }
 
   public int tileAt(int x, int y) {
@@ -144,31 +145,18 @@ public class State {
     return (grids[1-id] & PosMask.neighbors8Masks[pos.offset]) != 0;
   }
   
-  public int countPionsDefinitif(int id) {
-    Set<Pos> definitifs = new HashSet<>();
+  public int countStableDiscs(int id) {
     long grid = grids[id];
+    Set<Pos> safe = new HashSet<>();
 
-    Set<Pos> newPions = new HashSet<>();
-    if ((grid & PosMask.positionMasks[Pos.from(0, 0).offset]) != 0) newPions.add(Pos.from(0, 0));
-    if ((grid & PosMask.positionMasks[Pos.from(0, Pos.HEIGHT-1).offset]) != 0) newPions.add(Pos.from(0, Pos.HEIGHT-1));
-    if ((grid & PosMask.positionMasks[Pos.from(Pos.WIDTH-1, 0).offset]) != 0) newPions.add(Pos.from(Pos.WIDTH-1, 0));
-    if ((grid & PosMask.positionMasks[Pos.from(Pos.WIDTH-1, Pos.HEIGHT-1).offset]) != 0) newPions.add(Pos.from(Pos.WIDTH-1, Pos.HEIGHT-1));
+    Set<Pos> newSafe = new HashSet<>();
+    if ((grid & PosMask.positionMasks[Pos.from(0, 0).offset]) != 0) newSafe.add(Pos.from(0, 0));
+    if ((grid & PosMask.positionMasks[Pos.from(0, Pos.HEIGHT-1).offset]) != 0) newSafe.add(Pos.from(0, Pos.HEIGHT-1));
+    if ((grid & PosMask.positionMasks[Pos.from(Pos.WIDTH-1, 0).offset]) != 0) newSafe.add(Pos.from(Pos.WIDTH-1, 0));
+    if ((grid & PosMask.positionMasks[Pos.from(Pos.WIDTH-1, Pos.HEIGHT-1).offset]) != 0) newSafe.add(Pos.from(Pos.WIDTH-1, Pos.HEIGHT-1));
     
-    while (newPions.size() != 0) {
-      definitifs.addAll(newPions);
+    safe.addAll(newSafe);
 
-      newPions.clear();
-      for (Pos p : definitifs) {
-        for (Pos n : p.neighbors8) {
-          if (definitifs.contains(n)) continue;
-          
-          if ((grid & PosMask.positionMasks[n.offset]) != 0) newPions.add(n);
-        }
-      }
-    }
-    
-    
-    
-    return definitifs.size();
+    return safe.size();
   }
 }
