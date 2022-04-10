@@ -1,29 +1,32 @@
 package othello;
 
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 public class State {
   final static int BOARDSIZE = 8;
 
-  static int id;
+  static int myId;
   static int oppId;
 
-  int[][] grid;
+  long[] grids = new long[2];
   int[] scores = new int[2];
   
   public State() {
-    grid = new int[BOARDSIZE][BOARDSIZE];
+    grids[0] = grids[1] = 0;
   }
   
   public void readInit(Scanner in) {
-    id = in.nextInt();
-    oppId = 1-id;
+    myId = in.nextInt();
+    oppId = 1-myId;
     
     in.nextInt(); // board size ignore
   }
 
   public void read(Scanner in) {
     scores[0] = scores[1] = 0;
+    grids[0] = grids[1] = 0;
     
     for (int y = 0; y < BOARDSIZE; y++) {
       String line = in.next(); // rows from top to bottom (viewer perspective).
@@ -37,8 +40,8 @@ public class State {
         } else {
           cell = charAt - '0';
           scores[cell]++;
+          grids[cell] |= (1L << Pos.from(x,y).offset);
         }
-        grid[x][y] = cell;
       }
     }
     
@@ -49,11 +52,8 @@ public class State {
   }
 
   public void copyFrom(State model) {
-    for (int y = 0; y < BOARDSIZE; y++) {
-      for (int x=0;x<BOARDSIZE;x++) {
-        grid[x][y] = model.grid[x][y];
-      }
-    }
+    grids[0] = model.grids[0];
+    grids[1] = model.grids[1];
     scores[0] = model.scores[0];
     scores[1] = model.scores[1];
   }
@@ -64,7 +64,7 @@ public class State {
   
   public int putTile(int sx, int sy, int id) {
     int oppId = 1 - id;
-    grid[sx][sy] = id;
+    grids[id] |= 1L << Pos.from(sx, sy).offset;
     
     int score = 0;
     for (int d = 0;d<dx.length;d++) {
@@ -72,19 +72,24 @@ public class State {
       int s = 0;
       int x = sx + dx[d];
       int y = sy + dy[d];
-      while (isOnBoard(x,y)) {
-
-        if (grid[x][y] == -1) {
+      Pos p;
+      while ((p = Pos.secureFrom(x, y)) != Pos.VOID) {
+        long mask = 1L << p.offset;
+        long notMask = ~(1L << p.offset);
+        
+        if ((grids[id] & mask) != 0) /* my tile */ {
+          score += s;
           break;
-        } else if (grid[x][y] == oppId) {
-          grid[x][y] = id;
+        } else if ((grids[oppId] & mask) != 0) /* opp tile */{
+          grids[oppId] &= notMask;
+          grids[id] |=mask;
           scores[oppId]--;
           scores[id]++;
           s++; 
-        } else if (grid[x][y] == id){
-          score += s;
+        } else {
           break;
         }
+        
         x += dx[d];
         y += dy[d];
 
@@ -99,31 +104,71 @@ public class State {
     return ""+(char)('a'+x)+""+(char)(y+'1');
   }
 
-  public static boolean isOnBoard(int x, int y) {
-    if (x < 0 || x>=BOARDSIZE) return false;
-    if (y<=0  || y>=BOARDSIZE) return false;
-    return true;
-  }
-
-  public int countNeighbors(int sx, int sy, int id) {
-    int count = 0;
-    for (int y=-1;y<=1;y++) {
-      for (int x=-1;x<=1;x++) {
-        if (x == 0 && y == 0) continue;
-        if (!isOnBoard(x + sx, y + sy)) continue;
-        if (grid[x+sx][y+sy] == id) count++;
-      }
-    }
-    return count;
+  // TODO optimize
+  public int countNeighbors(Pos pos, int id) {
+    return Long.bitCount(grids[id] & PosMask.neighbors8Masks[pos.offset]);
   }
   
+  public void outputTestValues() {
+    System.err.println("state.grids[0]="+this.grids[0]+"L;");
+    System.err.println("state.grids[1]="+this.grids[1]+"L;");
+    System.err.println("state.scores[0]="+this.scores[0]+";");
+    System.err.println("state.scores[1]="+this.scores[1]+";");
+  }
   
   public void debug() {
     for (int y = 0; y < BOARDSIZE; y++) {
       for (int x=0;x<BOARDSIZE;x++) {
-        System.err.print(grid[x][y] == -1 ? " " : grid[x][y]);
+        long mask = 1L << Pos.from(x,y).offset; 
+        if ((grids[0] & mask) != 0) {
+          System.err.print("0");
+        } else if ((grids[1] & mask) != 0) {
+          System.err.print("1");
+        } else {
+          System.err.print(" ");
+        }
       }
       System.err.println();
     }
+    System.err.println("Points définitif : "+countPionsDefinitif(myId)+"  /  " + countPionsDefinitif(oppId) );
+  }
+
+  public int tileAt(int x, int y) {
+    long mask = 1L << Pos.from(x,y).offset;
+    if ((grids[0] & mask) != 0) return 0;
+    if ((grids[1] & mask) != 0) return 1;
+    return -1;
+  }
+
+  public boolean hasOppNeighbor(Pos pos, int id) {
+    return (grids[1-id] & PosMask.neighbors8Masks[pos.offset]) != 0;
+  }
+  
+  public int countPionsDefinitif(int id) {
+    Set<Pos> definitifs = new HashSet<>();
+    long grid = grids[id];
+
+    Set<Pos> newPions = new HashSet<>();
+    if ((grid & PosMask.positionMasks[Pos.from(0, 0).offset]) != 0) newPions.add(Pos.from(0, 0));
+    if ((grid & PosMask.positionMasks[Pos.from(0, Pos.HEIGHT-1).offset]) != 0) newPions.add(Pos.from(0, Pos.HEIGHT-1));
+    if ((grid & PosMask.positionMasks[Pos.from(Pos.WIDTH-1, 0).offset]) != 0) newPions.add(Pos.from(Pos.WIDTH-1, 0));
+    if ((grid & PosMask.positionMasks[Pos.from(Pos.WIDTH-1, Pos.HEIGHT-1).offset]) != 0) newPions.add(Pos.from(Pos.WIDTH-1, Pos.HEIGHT-1));
+    
+    while (newPions.size() != 0) {
+      definitifs.addAll(newPions);
+
+      newPions.clear();
+      for (Pos p : definitifs) {
+        for (Pos n : p.neighbors8) {
+          if (definitifs.contains(n)) continue;
+          
+          if ((grid & PosMask.positionMasks[n.offset]) != 0) newPions.add(n);
+        }
+      }
+    }
+    
+    
+    
+    return definitifs.size();
   }
 }

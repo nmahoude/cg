@@ -34,11 +34,13 @@ public class Pos {
   }
 
   /* Cardinal neighbors are 4 in the cardinal direction */
-  public List<Pos> neighbors = new ArrayList<>();
+  public List<Pos> neighbors;
   private static void initCardinalNeighbors() {
+        
     for (int y=0;y<HEIGHT;y++) {
       for (int x=0;x<WIDTH;x++) {
         Pos p = positions[x+WIDTH*y];
+        p.neighbors = new ArrayList<>();
         if (x>0) p.neighbors.add(Pos.from(x-1, y)); 
         if (y>0) p.neighbors.add(Pos.from(x, y-1)); 
         if (x<WIDTH-1) p.neighbors.add(Pos.from(x+1, y)); 
@@ -49,12 +51,12 @@ public class Pos {
   /* */
   
   /* 8 neighbors, in all direction */
-  public List<Pos> neighbors8 = new ArrayList<>();
+  public List<Pos> neighbors8;
   public static void init8Neighbors() {
     for (int sy=0;sy<HEIGHT;sy++) {
       for (int sx=0;sx<WIDTH;sx++) {
         Pos p = positions[sx+WIDTH*sy];
-        
+        p.neighbors8 = new ArrayList<>();
         for (int dy=-1;dy<=1;dy++) {
           for (int dx=-1;dx<=1;dx++) {
             if (dx == 0 && dy == 0) continue;
