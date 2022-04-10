@@ -5,7 +5,7 @@
 	<groupId>org.nmx.codingame</groupId>
 
 	<parent>
-		<groupId>nmahoude.codingame</groupId>
+		<groupId>org.nmx.codingame</groupId>
 		<artifactId>librairies</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>

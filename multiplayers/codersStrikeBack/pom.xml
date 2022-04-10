@@ -3,7 +3,7 @@
   <artifactId>codersStrikeBack</artifactId>
 
   <parent>
-    <groupId>nmahoude.codingame</groupId>
+    <groupId>org.nmx.codingame</groupId>
     <artifactId>multiplayers</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>

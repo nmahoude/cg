@@ -29,12 +29,12 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>nmahoude.codingame</groupId>
+			<groupId>org.nmx.codingame</groupId>
 			<artifactId>trigonometry</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>nmahoude.codingame</groupId>
+			<groupId>org.nmx.codingame</groupId>
 			<artifactId>trigonometry</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<classifier>sources</classifier>
