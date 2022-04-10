@@ -1,18 +1,18 @@
-= Optimiser liste des entités: 
+= Optimiser liste des entitÃ©s: 
 
-=== dans state, garder la liste complete de toutes les entités (à renommer entityCache)
-=== chips redevient un FastArray qui ne contient que les entités vivantes au début du tour
+=== dans state, garder la liste complete de toutes les entitï¿½s (ï¿½ renommer entityCache)
+=== chips redevient un FastArray qui ne contient que les entitï¿½s vivantes au dï¿½but du tour
 === BC : gain de perf
 
 == Features
-=== Avant d'attaquer une bouboule, il faudrait s'assurer qu'a l'arrivée, elle sera pas plus grosse que nous
+=== Avant d'attaquer une bouboule, il faudrait s'assurer qu'a l'arrivï¿½e, elle sera pas plus grosse que nous
 
 === Comment prendre en compte que les bouboules adverses vont vouloir nous manger si on passe trop pret (elles ne restent pas statiques)
 	==> ajouter un malus si on est trop pret d'une grosse bouboule ?
 	
 === en ce moment, on en gere pas les vitesses relatives dans le score 
-	si on se rapproche ou s'éloigne d'une chip, ca ne fait pas de diff sur le bonus/malus
-	==> Ajouter la vitesse relative dans l'equation (est-ce qu'on s'éloigne ou se rapproche)
-	A priori : bonus si on se rapporhce des plus petites (attention à la limite), malus si plus grosses)
+	si on se rapproche ou s'ï¿½loigne d'une chip, ca ne fait pas de diff sur le bonus/malus
+	==> Ajouter la vitesse relative dans l'equation (est-ce qu'on s'ï¿½loigne ou se rapproche)
+	A priori : bonus si on se rapporhce des plus petites (attention ï¿½ la limite), malus si plus grosses)
 
    
