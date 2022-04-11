@@ -2,7 +2,6 @@ package cgfx.sample1.components;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
 
 import cgfx.wrappers.GameWrapper;
 
@@ -13,11 +12,11 @@ public class Sample1GameWrapper extends GameWrapper {
   }
 
   @Override
-  protected void readGlobal(Scanner in) {
+  protected void readGlobalInput(String in) {
   }
 
   @Override
-  protected void readTurn(Scanner in) {
+  protected void readTurnInput(String in) {
   }
 
   @Override
