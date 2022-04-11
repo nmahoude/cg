@@ -3,7 +3,6 @@ package cgfx.wrappers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
-import java.util.Scanner;
 
 public abstract class GameWrapper extends Observable {
 
@@ -11,8 +10,8 @@ public abstract class GameWrapper extends Observable {
 	
 	protected abstract void _copyFrom(GameWrapper gameWrapper);
 
-	protected abstract void readGlobal(Scanner in) ;
-	protected abstract void readTurn(Scanner in);
+	protected abstract void readGlobalInput(String in) ;
+	protected abstract void readTurnInput(String in);
 	protected abstract List<String> _calculateAIListOfActions();
 	protected abstract void _think();
 	protected abstract void _resetFromBase();
@@ -47,16 +46,15 @@ public abstract class GameWrapper extends Observable {
 
 	
 	public void readGlobal(String input) {
-		try (Scanner in = new Scanner(input)) {
-			readGlobal(in);
-			readTurn(in);
-		}
+		readGlobalInput(input);
+		readTurnInput(input);
+		
 		setChanged();
 		notifyObservers();
 	}
 
 	public void readTurn(String input) {
-		readTurn(new Scanner(input));
+		readTurnInput(input);
 		setChanged();
 		notifyObservers();
 	}
