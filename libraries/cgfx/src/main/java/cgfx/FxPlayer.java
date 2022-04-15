@@ -36,7 +36,6 @@ public class FxPlayer {
   private int currentWhatIfDepth;
 
   private TextArea stderrView;
-  private int maxTurns;
   private Canvas evaluator;
   private ActionsList actionList;
 
@@ -54,12 +53,12 @@ public class FxPlayer {
     newGV = factory.createGameViewer(newGW);
     replayer = new Replayer(gameReader, newGW, newGV);
     replayer.addViewer(turn -> updateGameTurn(turn));
-    
 
   }
   
   public void start(Stage primaryStage) throws Exception {
     setupScene(primaryStage);
+    replayer.setTurn(1);
   }
 
   private void setupScene(Stage primaryStage) {
@@ -173,16 +172,4 @@ public class FxPlayer {
     refreshWhatIf();
 
   }
-
-  public static class Point {
-    public final int x;
-    public final int y;
-
-    public Point(int x, int y) {
-      super();
-      this.x = x;
-      this.y = y;
-    }
-  }
-
 }
