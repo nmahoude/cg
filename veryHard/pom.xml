@@ -9,5 +9,6 @@
   <packaging>pom</packaging>
   <modules>
     <module>ShadowsOfTheKnight2</module>
+    <module>marslander3</module>
   </modules>
 </project>
