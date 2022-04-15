@@ -1,36 +1,66 @@
 package cgfx;
 
 import javafx.scene.Group;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
-public class CellBoard {
+public class CellBoard extends Board {
 
-	private int width;
-	private int height;
-	private Canvas[][] canvases;
+  private int cellSize;
 	
-	public CellBoard(Group parent, int width, int height) {
-		this.width = width;
-		this.height = height;
-		canvases = new Canvas[width][height];
-		
-		for (int y=0;y<height;y++) {
-			for (int x=0;x<width;x++) {
-				Canvas canvas = new Canvas(32, 32);
-				canvases[x][y] = canvas;
-				canvas.setTranslateX(32 * x);
-				canvas.setTranslateY(32 * y);
-				parent.getChildren().add(canvas);
-			}
-		}
+	public CellBoard(Group parent, int cellSize, int width, int height) {
+	  super(parent, cellSize * width, cellSize * height);
+	  this.cellSize = cellSize;
 	}
 	
-	public Canvas getCanvas(int x, int y) {
-		return canvases[x][y];
-	}
-	
-	public GraphicsContext getGc(int x, int y) {
-		return getCanvas(x,y).getGraphicsContext2D();
-	}
+  public void drawCellAt(Color color, int x, int y, Inset inset) {
+    drawCellAt(color, Cell.at(x, y), inset);
+  }
+
+  public void drawCellAt(Color color, Cell cell, Inset inset) {
+    drawRect(color, Pos.from(cellSize * cell.x+inset.l+cellSize / 2, cellSize * cell.y + inset.l+cellSize / 2), 
+                    Length.of(cellSize-inset.l*2, cellSize-inset.l*2));
+  }
+
+  public void fillCellAt(Color color, Cell cell, Inset inset) {
+    fillRect(color, color, 
+        Pos.from(cellSize * cell.x+cellSize / 2+inset.l, cellSize * cell.y +cellSize / 2 + inset.l), 
+        Length.of(cellSize-inset.l*2, cellSize-inset.l*2));
+  }
+
+  
+  public void drawCellText(Color color, Cell cell, String text) {
+    drawCellText(color, cell, Length.NO, text);
+  }
+
+  public void drawCellText(Color color, Cell cell, Length decal, String text) {
+    super.drawText(color, Pos.from(cellSize * cell.x + decal.dx, cellSize * cell.y+decal.dy+16), text);
+  }
+
+  public void drawCellCircle(Color color, Cell cell) {
+    strokeCellCircle(color, cell, Inset.NO, cellSize / 2);
+  }
+
+  public void drawCellCircle(Color color, Cell cell, Inset inset) {
+    strokeCellCircle(color, cell, inset, cellSize / 2);
+  }
+
+  private void strokeCellCircle(Color color, Cell cell, Inset inset, int radius) {
+    drawCellCircle(color, null, cell, inset, radius);
+  }
+
+  public void drawCellCircle(Color color, Color fill, Cell cell, Inset inset, int radius) {
+    drawCircle(color, fill, Pos.from(cell.x * cellSize + inset.l,
+                               cell.y * cellSize + inset.l), 
+                      Length.of(0, 0), radius - inset.l);
+  }
+
+  public void drawCellCircle(Color color, Color fill, Cell cell, Inset inset) {
+    drawCellCircle(color,  fill,  cell, inset, cellSize / 2);
+  }
+
+  public void fillCellCircle(Color color, Cell cell, Inset inset) {
+    drawCellCircle(color, color, cell, inset, cellSize/2);
+  }
+
+
 }
