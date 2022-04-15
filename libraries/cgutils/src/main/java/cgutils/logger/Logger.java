@@ -10,7 +10,10 @@ public class Logger {
 
   private boolean appendLogName = false;
   private boolean appendTime = false;
-  public boolean disabled;
+  private boolean disabled;
+  private String prefix;
+
+  private boolean showLevel = true;
 
   private Logger(String name, Level levelSpecific) {
     this.logName = name;
@@ -41,6 +44,8 @@ public class Logger {
     private boolean appendTime;
     private boolean appendLogName;
     private boolean disabled;
+    private String prefix = null;
+    private boolean showLevel = true;
 
     public LoggerBuilder() {
     }
@@ -68,16 +73,28 @@ public class Logger {
       return this;
     }
     
+    public LoggerBuilder withShowLevel(boolean showLevel) {
+      this.showLevel = showLevel;
+      return this;
+    }
+
     public Logger build() {
       Logger logger = new Logger(name, level); 
       logger.appendTime = this.appendTime;
       logger.appendLogName = this.appendLogName;
       logger.disabled = this.disabled;
+      logger.prefix = this.prefix;
+      logger.showLevel = this.showLevel ;
       return logger;
     }
 
     public LoggerBuilder disabled() {
       this.disabled = true;
+      return this;
+    }
+
+    public LoggerBuilder withPrefix(String prefix) {
+      this.prefix = prefix;
       return this;
     }
   }
@@ -108,6 +125,10 @@ public class Logger {
     
     sb.delete(0, sb.length());
     
+    if (prefix != null) {
+      sb.append(prefix);
+    }
+    
     if (appendTime ) {
       sb.append('[');
       sb.append(new Date());
@@ -120,7 +141,10 @@ public class Logger {
       sb.append("]");
     }
     
-    sb.append(level).append(' ');
+    if (showLevel ) {
+      sb.append(level).append(' ');
+    }
+    
     int i = 0;
     for (Object o : s) {
       sb.append(o);
@@ -131,6 +155,10 @@ public class Logger {
     outputSb();
   }
 
+  public void disable() {
+    this.disabled = true;
+  }
+  
   protected void outputSb() {
     System.err.println(sb);
   }
@@ -151,5 +179,13 @@ public class Logger {
       return globalLevel;
     }
     return level;
+  }
+
+  public static Logger inputLogger() {
+    return new Logger.LoggerBuilder().withName("input")
+                      .withLevel(Level.DEBUG)
+                      .withPrefix("^")
+                      .withShowLevel(false)
+                      .build();
   }
 }
