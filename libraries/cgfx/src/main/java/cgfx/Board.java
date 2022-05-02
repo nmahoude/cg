@@ -8,16 +8,24 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class Board {
-	int width;
-	int height;
+	final int width;
+	final int height;
+	final double scale;
+	
 	Canvas canvas;
 	GraphicsContext gc;
-	
-	public Board(Group parent, int width, int height) {
+
+	 public Board(Group parent, int width, int height) {
+	    this(parent, width, height, 1.0);
+	  }
+
+	public Board(Group parent, int width, int height, double scale) {
 		this.width = width;
 		this.height = height;
-		this.canvas = new Canvas(width, height);
+		this.scale = scale;
+		this.canvas = new Canvas(width * scale, height * scale);
 		this.gc = canvas.getGraphicsContext2D();
+
 		parent.getChildren().add(canvas);
 	}
 	
@@ -28,23 +36,25 @@ public class Board {
 	public GraphicsContext getGc() {
 		return gc;
 	}
-	
-	@Deprecated()
-	/**
-	 * {@link Deprecated} Use Pos for start & end
-	 */
-	public void drawLine(Color color, int sx, int sy, int dx, int dy) {
-	  drawLine(color, Pos.from(sx, sy), Pos.from(dx, dy));
-	}
 
   public void drawLine(Color color, Pos start, Pos end) {
-    gc.setLineWidth(1.0);
+    drawLine(color, 1.0, start, end);
+  }
+  public void drawLine(Color color, double size, Pos start, Pos end) {
+    gc.setLineWidth(size);
     gc.setStroke(color);
-    gc.moveTo(start.x, start.y);
-    gc.lineTo(end.x, end.y);
-    gc.stroke();
+    gc.strokeLine(start.x * scale, start.y * scale, end.x * scale, end.y * scale);
+
   }
 
+  public void strokeLine(Color color, double sx, double sy, double ex, double ey) {
+    drawLine(color, Pos.from(sx,  sy), Pos.from(ex, ey));
+  }
+  public void strokeLine(Color color, double size, double sx, double sy, double ex, double ey) {
+    drawLine(color, size, Pos.from(sx,  sy), Pos.from(ex, ey));
+  }
+
+  
 	public void drawRect(Color stroke, Color fill, Pos center, Length length) {
 	  drawRect(stroke, fill, center, length, Inset.NO);
 	}
@@ -53,40 +63,50 @@ public class Board {
     drawRect(stroke, stroke, center, length, Inset.NO);
   }
 
-  public void drawRect(Color stroke, Color fill, Pos center, Length length, Inset inset) {
+  public void drawRect(Color stroke, Color fill, Pos start, Length length, Inset inset) {
     gc.setStroke(stroke);
 		gc.setFill(fill);
-    gc.strokeRect(center.x - length.dx/2 +inset.l, center.y - length.dy/2 +inset.l, length.dx - 2*inset.l, length.dy - 2 * inset.l);
+    gc.strokeRect((start.x + inset.l) * scale, 
+                  (start.y + inset.l) * scale, 
+                  (length.dx - 2*inset.l) * scale, 
+                  (length.dy - 2 * inset.l) * scale);
 	}
 
-  public void fillRect(Color stroke, Color fill, Pos center, Length length) {
-    fillRect(stroke, fill, center, length, Inset.NO);
+  public void fillRect(Color stroke, Color fill, Pos start, Length length) {
+    fillRect(stroke, fill, start, length, Inset.NO);
   }
   
-  public void fillRect(Color stroke, Color fill, Pos center, Length length, Inset inset) {
+  public void fillRect(Color stroke, Color fill, Pos start, Length length, Inset inset) {
     gc.setStroke(stroke);
     gc.setFill(fill);
-    gc.fillRect(center.x - length.dx/2 +inset.l, center.y - length.dy/2 +inset.l, length.dx - 2*inset.l, length.dy - 2 * inset.l);
+    gc.fillRect((start.x + inset.l) * scale, 
+        (start.y + inset.l) * scale, 
+        (length.dx - 2*inset.l) * scale, 
+        (length.dy - 2 * inset.l) * scale);
   }
 
 	public void clear() {
-		gc.clearRect(0, 0, width, height);
+		gc.clearRect(0, 0, width * scale, height * scale);
 	}
 
   public void drawText(Color color, Pos pos, String text) {
     gc.setFill(color);
     gc.setFont(Font.font(16));
-    gc.fillText(text, pos.x, pos.y);
+    gc.fillText(text, pos.x * scale, pos.y * scale);
   }
 
 	public void drawCircle(Color color, Pos center, int radius) {
-		drawCircle(color, color, center, Length.of(0,0), radius);
+		drawCircle(color, null, center, Length.of(0,0), radius);
 	}
 
   public void strokeCircle(Color color, Pos center, Length decal, int radius) {
     drawCircle(color, null, center, decal, radius);
   }
   
+  public void fillCircle(Color color, Pos center, int radius) {
+    drawCircle(color, color, center, Length.NO, radius);
+  }
+
   public void fillCircle(Color color, Pos center, Length decal, int radius) {
     drawCircle(color, color, center, decal, radius);
   }
@@ -95,25 +115,26 @@ public class Board {
 		gc.setStroke(stroke);
 		if (fill != null) {
       gc.setFill(fill);
-  		gc.fillOval(center.x + decal.dx, center.y  + decal.dy, 2*radius, 2*radius);
+  		gc.fillOval((center.x - radius + decal.dx) * scale, (center.y - radius + decal.dy) * scale, 2*radius* scale, 2*radius* scale);
 		} else {
-      gc.strokeOval(center.x + decal.dx, center.y  + decal.dy, 2*radius, 2*radius);
+      gc.strokeOval((center.x - radius + decal.dx) * scale, (center.y - radius + decal.dy) * scale, 2*radius* scale, 2*radius* scale);
 		}
 	}
 
 	public void drawHexagon(int radius, int centerX, int centerY) {
 		gc.setLineWidth(1.0);
 		gc.setStroke(Color.BLACK);
-		gc.moveTo(centerX, centerY-radius);
-		gc.lineTo(centerX+radius, centerY-0.5*radius);
-		gc.lineTo(centerX+radius, centerY+0.5*radius);
-		gc.lineTo(centerX, centerY+1.0*radius);
-		gc.lineTo(centerX-radius, centerY+0.5*radius);
-		gc.lineTo(centerX-radius, centerY-0.5*radius);
-		gc.lineTo(centerX, centerY-radius);
+		gc.moveTo((centerX) * scale, (centerY-radius) * scale);
+		gc.lineTo((centerX+radius) * scale, (centerY-0.5*radius) * scale);
+		gc.lineTo((centerX+radius) * scale, (centerY+0.5*radius) * scale);
+		gc.lineTo((centerX) * scale, (centerY+1.0*radius) * scale);
+		gc.lineTo((centerX-radius) * scale, (centerY+0.5*radius) * scale);
+		gc.lineTo((centerX-radius) * scale, (centerY-0.5*radius) * scale);
+		gc.lineTo((centerX) * scale, (centerY-radius) * scale);
 		gc.stroke();
 		
 	}
+
 
 	
 }

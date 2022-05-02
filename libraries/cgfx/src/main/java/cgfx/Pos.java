@@ -15,6 +15,10 @@ public class Pos {
     return new Pos(x,y);
   }
 
+  public static Pos from(double x, double y) {
+    return from((int)x,(int)y);
+  }
+  
   @Override
   public int hashCode() {
     return Objects.hash(x, y);
