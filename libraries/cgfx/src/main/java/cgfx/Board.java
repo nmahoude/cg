@@ -7,7 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public class Board {
+public class Board implements BoardDrawer {
 	final int width;
 	final int height;
 	final double scale;
