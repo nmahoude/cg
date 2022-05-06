@@ -35,5 +35,6 @@
   	<module>botg</module>
   	<module>breakthrough</module>
   	<module>othello</module>
+  	<module>spring2022</module>
   </modules>
 </project>
