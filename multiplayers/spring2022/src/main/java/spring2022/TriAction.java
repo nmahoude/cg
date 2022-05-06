@@ -1,9 +1,7 @@
 package spring2022;
 
-import spring2022.Action;
-
 public class TriAction {
-  public Action[] actions = new Action[3];
+  public final Action[] actions = new Action[3];
   
   public TriAction() {
     actions[0] = new Action();

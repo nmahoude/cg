@@ -17,6 +17,7 @@ public class State {
   public static final int MOB_MOVE = 400;
 
   public static final int BASE_TARGET_DIST = 5000;
+  public static final int BASE_VIEW_DIST = 6000;
   public static final int BASE_TARGET_DIST2 = BASE_TARGET_DIST * BASE_TARGET_DIST;
   public static final int BASE_KILL_RADIUS = 300;
   public static final int BASE_TARGET_KILL2 = BASE_KILL_RADIUS * BASE_KILL_RADIUS;
