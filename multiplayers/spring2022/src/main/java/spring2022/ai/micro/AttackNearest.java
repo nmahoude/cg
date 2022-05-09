@@ -12,10 +12,10 @@ public class AttackNearest implements MicroAI {
   static final MobInterceptor mobInterceptor = new MobInterceptor();
   
   public Action think(State state, Hero hero) {
-    return think(state, hero, 100_000);
+    return think(state, hero, hero.pos, 100_000);
   }
 
-  public Action think(State state, Hero hero, int maxDist) {
+  public Action think(State state, Hero hero, Pos nearestFrom, int maxDist) {
    
     double bestScore = Double.NEGATIVE_INFINITY;
     Unit best = null;
@@ -37,7 +37,9 @@ public class AttackNearest implements MicroAI {
       // Player.draw.drawLine(Color.BLACK, hero.pos, interceptPos);
       // draw.drawText(Color.BLACK, interceptPos, ""+mobsCount);
       
-      double score =  10 * ( 100 - mobInterceptor.interceptSteps) + mobsCount ; // low steps is better, then mobsCount is better
+      int dist = nearestFrom.fastDist(unit.pos);
+      
+      double score = -100*dist + 10 * ( 100 - mobInterceptor.interceptSteps) + mobsCount ; // low steps is better, then mobsCount is better
       if (unit.isInFog()) {
         score -= 5; // in fog is worst
       }

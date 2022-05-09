@@ -2,7 +2,7 @@ package spring2022;
 
 
 import fast.read.FastReader;
-import spring2022.ai.state.AIState;
+import spring2022.ai.state.Role;
 
 public class Hero {
   public int id;
@@ -15,7 +15,7 @@ public class Hero {
   // values for simulator
   private boolean inFog;
   public double dx, dy;
-  public AIState role;
+  public Role role;
 
   public Hero() {
   }

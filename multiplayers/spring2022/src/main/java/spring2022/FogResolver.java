@@ -106,11 +106,16 @@ public class FogResolver {
   }
  
   private boolean shouldSee(State state, Pos pos) {
+    if (pos.isInRange(State.myBase, State.BASE_VIEW_DIST)) {
+      return true;
+    }
+    
     for (Hero hero : state.myHeroes) {
       if (hero.isInRange(pos, State.HERO_VIEW_RADIUS)) {
         return true;
       }
     }
+    
     return false;
   }
 
