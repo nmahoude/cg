@@ -23,6 +23,7 @@ public class Unit {
   public final Pos controlTarget = new Pos();
   public int controlNextTargetCount;
   public final Pos controlNextTarget = new Pos();
+  public boolean spellCast;
   
   @Override
   public String toString() {
@@ -39,7 +40,8 @@ public class Unit {
     speed.vy = in.nextInt();
     nearBase = in.nextInt() == 1;
     threatFor = in.nextInt();
-
+    spellCast = false;
+    
     dx = dy = 0;
 
     if (Player.inversed) {
@@ -142,6 +144,10 @@ public class Unit {
 
   public boolean forbiddenToHit() {
     return health <= 0 ||  isInRange(State.oppBase, State.BASE_TARGET_DIST);
+  }
+
+  public boolean willAttackOppBase() {
+    return !nearBase && threatFor == 2;
   }
 
   

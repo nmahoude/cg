@@ -11,7 +11,8 @@ public class Player {
   public static int turn = 0;
   public static long start;
   
-  public State state = new State();
+  private final AI AI = new AI();
+  public final State state = new State();
   TerrainHistory terrain = new TerrainHistory();
   
   public static void main(String[] args) {
@@ -31,7 +32,7 @@ public class Player {
   }
 
   private void think() {
-    TriAction action = new AI().think(state);
+    TriAction action = AI.think(state);
     action.output();
   }
 

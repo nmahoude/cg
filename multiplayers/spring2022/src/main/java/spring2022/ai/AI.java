@@ -5,11 +5,15 @@ import spring2022.Hero;
 import spring2022.Player;
 import spring2022.State;
 import spring2022.TriAction;
+import spring2022.Unit;
 import spring2022.ai.micro.InitPatrol;
 import spring2022.ai.state.Role;
 
 public class AI {
   public boolean ennemyAttacker = false;
+  
+  Role roles[] = new Role[] { Role.FARM, Role.FARM, Role.FARM };
+  
   
   public TriAction think(State state) {
     TriAction actions = new TriAction();
@@ -17,25 +21,35 @@ public class AI {
     updateState(state);
 
     for (int i=0;i<3;i++) {
-      state.myHeroes[i].role = Role.FARM;
+      state.myHeroes[i].role = roles[i];
     }
 
-    state.myHeroes[0].role = Role.DEFEND;
+    state.myHeroes[0].role = Role.DEFEND; // always defend
     if (ennemyAttacker) {
       state.myHeroes[1].role = Role.DEFEND;
     }
     
-    if (Player.turn > 40) {
-      state.myHeroes[2].role = Role.ATTACK;
+    if (Player.turn == 40) {
+      state.myHeroes[2].role = Role.ATTACK; // switch to attack @ 40
     }
     
     for (int i=0;i<3;i++) {
       Hero hero = state.myHeroes[i];
 
       Action action = think(state, hero);
-      
+      if (action.isSpell() && action.targetEntity != -1) { // only shield & control :/
+        Unit unit = state.findUnitById(action.targetEntity);
+        if (unit != null) unit.spellCast = true;
+      }
       actions.actions[i].copyFrom(action);
     }
+    
+    // save roles
+    for (int i=0;i<3;i++) {
+      roles[i] = state.myHeroes[i].role;
+    }
+    
+    
     
     return actions;
   }

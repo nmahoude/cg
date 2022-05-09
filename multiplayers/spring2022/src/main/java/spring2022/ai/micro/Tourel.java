@@ -10,12 +10,12 @@ public class Tourel implements MicroAI{
 
   @Override
   public Action think(State state, Hero hero) {
-    Pos target = Pos.get(5000, 3000);
+    Pos tourels[] = new Pos[] { Pos.get(5500, 2000), Pos.get(3000, 4500) };
 
-    if (hero.pos.isInRange(target, 400)) {
+    if (hero.pos.isInRange(tourels[hero.id], 400)) {
       return Action.WAIT;
     } else {
-      return Action.doMove(target);
+      return Action.doMove(tourels[hero.id]);
     }
   }
 

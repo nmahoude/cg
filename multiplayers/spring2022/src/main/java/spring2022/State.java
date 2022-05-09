@@ -372,5 +372,29 @@ public class State {
     unit.copyFrom(anotherMob);
     fastUnits[unitsFE++] = unit;
   }
+
+  public int countUnitNear(Pos pos, int range) {
+    int count = 0;
+    for (int u=0;u<unitsFE;u++) {
+      Unit unit = fastUnits[u];
+      if (unit.isInRange(pos, range)) count++;
+    }
+    
+    return count;
+  }
+
+  public boolean isOppInRange(Pos pos, int range) {
+    for (int i=0;i<3;i++) {
+      if (oppHeroes[i].isInRange(pos, range)) return true;
+    }
+    return false;
+  }
+
+  public Hero getOppInRange(Pos pos, int range) {
+    for (int i=0;i<3;i++) {
+      if (oppHeroes[i].isInRange(pos, range)) return oppHeroes[i];
+    }
+    return null;
+  }
 }
   
