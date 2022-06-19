@@ -1,5 +1,7 @@
 package spring2022.ai;
 
+import java.util.Arrays;
+
 import spring2022.Action;
 import spring2022.Hero;
 import spring2022.Player;
@@ -13,7 +15,7 @@ public class AI {
   public boolean ennemyAttacker = false;
   
   Role roles[] = new Role[] { Role.FARM, Role.FARM, Role.FARM };
-  
+  Hero heroes[] = new Hero[3];
   
   public TriAction think(State state) {
     TriAction actions = new TriAction();
@@ -26,22 +28,41 @@ public class AI {
 
     state.myHeroes[0].role = Role.DEFEND; // always defend
     if (ennemyAttacker) {
-      state.myHeroes[1].role = Role.DEFEND;
+      state.myHeroes[1].role = Role.DEFEND_PUSHERS;
     }
     
     if (Player.turn == 40) {
       state.myHeroes[2].role = Role.ATTACK; // switch to attack @ 40
     }
+
+    if (state.mana[0] < 40) {
+      state.myHeroes[2].role = Role.FARM; // back to farm
+    }
+    if (state.myHeroes[2].role == Role.FARM && state.mana[0] > 60) {
+      state.myHeroes[2].role = Role.ATTACK; // back to attack
+    }
+    
+    
+    // copy heroes
+    for (int i=0;i<3;i++) {
+      heroes[i] = state.myHeroes[i];
+    }
+    // sort heroes
+    Arrays.sort(heroes, (h1, h2) -> Integer.compare(h1.pos.fastDist(State.myBase), h2.pos.fastDist(State.myBase)));
+    
     
     for (int i=0;i<3;i++) {
-      Hero hero = state.myHeroes[i];
+      Hero hero = heroes[i];
 
       Action action = think(state, hero);
-      if (action.isSpell() && action.targetEntity != -1) { // only shield & control :/
-        Unit unit = state.findUnitById(action.targetEntity);
-        if (unit != null) unit.spellCast = true;
+      if (action.isSpell()) {
+        state.mana[0]-= 10;
+        if (action.targetEntity != -1) { // only shield & control :/
+          Unit unit = state.findUnitById(action.targetEntity);
+          if (unit != null) unit.spellCast = true;
+        }
       }
-      actions.actions[i].copyFrom(action);
+      actions.actions[hero.index()].copyFrom(action);
     }
     
     // save roles
@@ -74,7 +95,7 @@ public class AI {
     if (Player.turn < 10) {
       if ((action = new InitPatrol().think(state, hero)) != Action.WAIT) return action;
     }
-    System.err.println("#"+hero.id+" role: "+hero.role);
+    System.err.println("#"+hero.id()+" role: "+hero.role);
     return hero.role.think(state, hero);
   }
 

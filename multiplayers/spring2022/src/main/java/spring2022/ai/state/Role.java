@@ -17,7 +17,7 @@ public enum Role {
     public Action think(State state, Hero hero) {
       Action action;
 
-      if ((action = new AttackNearest().think(state, hero)) != Action.WAIT) return action;
+      if ((action = new AttackNearest().think(state, hero, State.myBase, 12000)) != Action.WAIT) return action;
       if ((action = new InitPatrol().think(state, hero)) != Action.WAIT) return action;
       return Action.WAIT;
     }
@@ -88,11 +88,27 @@ public enum Role {
       if ((action = Defense.panicShield(state, hero)) != Action.WAIT) return action;
       
       
-      
       if ((action = new AttackNearest().think(state, hero, State.myBase, 7000)) != Action.WAIT) return action;
       return new Tourel().think(state, hero);
     }
-  };
+  },
+  DEFEND_PUSHERS {
+    @Override
+    public Action think(State state, Hero hero) {
+      Action action;
+      
+      if ((action = Defense.defenseWind(state, hero)) != Action.WAIT) return action;
+      if ((action = new PanicWind().think(state, hero)) != Action.WAIT) return action;
+      if ((action = Defense.panicShield(state, hero)) != Action.WAIT) return action;
+      
+      if ((action = new AttackNearest().think(state, hero, new Pos(5500, 1000), 2000)) != Action.WAIT) return action;
+      return Action.doMove(5500, 1000);
+    }
+  }
+  
+  
+  
+  ;
   
   
   public abstract Action think(State state, Hero hero);

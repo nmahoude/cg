@@ -24,7 +24,7 @@ public class AttackNearest implements MicroAI {
       Unit unit = state.fastUnits[u];
 
       if (unit.forbiddenToHit()) continue;
-      if (!unit.isInRange(State.myBase, maxDist)) continue;
+      if (!unit.isInRange(nearestFrom, maxDist)) continue;
       
       mobInterceptor.stepsAndPosToIntercept(state, hero, unit);
       Pos interceptPos = mobInterceptor.interceptPosition;

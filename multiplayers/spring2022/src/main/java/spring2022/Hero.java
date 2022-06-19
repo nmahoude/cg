@@ -5,7 +5,7 @@ import fast.read.FastReader;
 import spring2022.ai.state.Role;
 
 public class Hero {
-  public int id;
+  protected int id;
   public int owner;
   
   public final Pos pos = new Pos();
@@ -25,6 +25,9 @@ public class Hero {
     return "H("+id+","+owner+") @" +pos;
   }
   
+  public int index() {
+    if (id < 3) return id; else return id -3;
+  }
   
   public void copyFrom(Hero model) {
     this.id = model.id;
@@ -102,5 +105,9 @@ public class Hero {
 
   public boolean isInRange(Hero hero, int range) {
     return isInRange(hero.pos, range);
+  }
+
+  public int id() {
+    return id;
   }
 }

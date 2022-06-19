@@ -13,9 +13,8 @@ public class InitPatrol implements MicroAI {
   
   
   public Action think(State state, Hero hero) {
-    int id = hero.id >= 3 ? hero.id - 3 : hero.id;
     
-    return Action.doMove(positions[id]);
+    return Action.doMove(positions[hero.index()]);
     
   }
 }

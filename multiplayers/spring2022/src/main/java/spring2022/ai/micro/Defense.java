@@ -20,7 +20,7 @@ public class Defense {
       if (!unit.isInRange(hero, State.SHIELD_RANGE)) continue;
       
 
-      if (state.isOppInRange(unit.pos, State.SHIELD_RANGE)) {
+      if (state.isOppInRange(unit.pos, State.WIND_RANGE)) {
         System.err.println("Doing panic shield to protect unit ");
         return Action.doShield(unit.id);
       }      
@@ -37,6 +37,7 @@ public class Defense {
    * @return
    */
   public static Action defenseWind(State state, Hero hero) {
+    System.err.println("defenseWind ....");
     if (state.mana[0] < 10) return Action.WAIT;
     
     int monsterInWindRange = 0;
@@ -45,6 +46,7 @@ public class Defense {
     if (opp == null) return Action.WAIT;
     if (opp.hasShield()) return Action.WAIT;
     
+    System.err.println("DefenseWind : opp in neighboroud ... ");
     for (int u= 0;u<state.unitsFE;u++) {
       Unit monster = state.fastUnits[u];
 
@@ -57,8 +59,10 @@ public class Defense {
     
     if (monsterInWindRange > 0) {
       // TODO do better angle ... ?
-      System.err.println("Monsters in my base & opp hero too, defense wind");
+      System.err.println("DefenseWind : Monsters in my base & opp hero too, defense wind");
       return Action.doWind(State.oppBase);
+    } else {
+      System.err.println("DefenseWind : no mobs in neighboord");
     }
     
     

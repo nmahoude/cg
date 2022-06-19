@@ -18,12 +18,14 @@ public class PanicWind implements MicroAI {
       Unit monster = state.fastUnits[u];
 
       if (monster.isDead()) continue;
-
-      int dist2Base = State.myBase.dist2(monster.pos);
-      int dist2ToHero = hero.pos.dist2(monster.pos);
-      if (dist2ToHero < State.WIND_RANGE2 
-          && dist2Base < 1000*1000
-          && monster.shieldLife <= 0 ) {
+      if (monster.hasShield()) continue;
+      
+      int distBase = State.myBase.fastDist(monster.pos);
+      int distToHero = hero.pos.fastDist(monster.pos);
+      
+      if (distToHero < State.WIND_RANGE 
+          && distBase < 1500
+          ) {
         monsterInWindRange++;
       }
     }

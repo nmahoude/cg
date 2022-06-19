@@ -80,6 +80,8 @@ public class FastArray<T> implements Iterable<T> {
   /**
    * Warning super slow methods ! 
    * in critical parts, use elements directly
+   * 
+   * TODO Performances Analysées avant de dire ça ?
    */
   public Iterator<T> iterator() {
     return new FastArrayIterator<T>(this);
@@ -106,5 +108,17 @@ public class FastArray<T> implements Iterable<T> {
       }
     }
     return -1;
+  }
+
+  public void addAll(FastArray<T> array) {
+    for (int i=0;i<array.length;i++) {
+      this.elements[length++] = array.elements[i];
+    }
+  }
+  
+  public void addAll(T[] elements, int elementsFE) {
+    for (int i=0;i<elementsFE;i++) {
+      this.elements[length++] = elements[i];
+    }
   }
 }

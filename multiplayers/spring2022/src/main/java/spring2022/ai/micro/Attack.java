@@ -37,8 +37,10 @@ public class Attack {
       if (unit.health < 13) continue;
       
       if (!unit.isInRange(hero, State.WIND_RANGE))  continue; // too far
-
+      
       Pos pos = getWindProjectionPos(unit, State.oppBase);
+      if (pos.fastDist(State.oppBase) > State.BASE_TARGET_DIST) continue; // will not fall in opp base dist
+      
       System.err.println("wind projection for unit "+unit+" is "+pos);
       // check if units in near the positions
       int unitCount = State.future.get(1).countUnitNear(pos, 800);
