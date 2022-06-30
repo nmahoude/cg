@@ -172,6 +172,19 @@ public class FastReader {
     
     return sBuf.toString();
   }
+  
+  public void nextLinePass()  {
+    byte c;
+
+    do {
+      c = read();
+    } while (c <= ' ');
+    
+    do {
+      if (c == '\n')
+        break;
+    } while ((c = read()) != -1);
+  }
 
   public byte nextByte()  {
     return nextBytes()[0];

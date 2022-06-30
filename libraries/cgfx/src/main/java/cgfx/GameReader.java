@@ -17,6 +17,16 @@ public class GameReader {
 	List<String> stderr = new ArrayList<>();
 	List<String> inputs = new ArrayList<>();
 
+	public static class Frame {
+	  public int agentId;
+	  public JsonObject fullContent;
+    public String stdout;
+	  
+	  
+	}
+	public List<Frame> frames = new ArrayList<>();
+	
+	
 	public void readReplayFromString(String replay) {
 		Gson gson = new Gson();
 		JsonObject fromJson = gson.fromJson(replay, JsonObject.class);
@@ -45,6 +55,24 @@ public class GameReader {
 		JsonElement frames = fromJson.get("frames");
 		frames.getAsJsonArray().forEach(
 				el -> {
+				  
+				  Frame frame = new Frame();
+				  frame.fullContent = el.getAsJsonObject();
+				  frame.agentId = frame.fullContent.get("agentId").getAsInt();
+				  
+				  JsonElement stdoutElement = frame.fullContent.get("stdout");
+          if (stdoutElement != null) {
+            frame.stdout = stdoutElement.getAsString().trim();
+          }
+				  
+          
+          this.frames.add(frame);
+				  
+				  
+				  
+				  
+				  
+				  
 					JsonObject object = el.getAsJsonObject();
 					JsonElement jsonElement = object.get("stderr");
 					if (jsonElement != null) {
