@@ -147,7 +147,7 @@ public class Logger {
     
     int i = 0;
     for (Object o : s) {
-      sb.append(o);
+      if (o != null) sb.append(o.toString()); else sb.append("null");
       if (++i < s.length) {
         sb.append(' ');
       }
