@@ -117,7 +117,7 @@ public class FxPlayer {
       refreshWhatIf();
     });
 
-    Scene scene = new Scene(new HBox(vbox, boards), 1560, 1024);
+    Scene scene = new Scene(new HBox(vbox, boards), 1200, 768);
 
     primaryStage.setScene(scene);
     primaryStage.show();

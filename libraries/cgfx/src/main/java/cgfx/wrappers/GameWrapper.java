@@ -47,7 +47,6 @@ public abstract class GameWrapper extends Observable {
 	
 	public void readGlobal(String input) {
 		readGlobalInput(input);
-		readTurnInput(input);
 		
 		setChanged();
 		notifyObservers();
