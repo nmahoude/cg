@@ -1,14 +1,10 @@
 package connect4;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 public class ZobristHash {
 	static long[] player0Hashes = createHashes(101L);
 	static long[] player1Hashes = createHashes(101010L);
-	
-	static Map<Long, Position> zobrist = new HashMap<>();
 	
 	private static long[] createHashes(long seed) {
 		Random random = new Random(seed);
@@ -30,21 +26,4 @@ public class ZobristHash {
 		}
 	}
 
-	public static Position contains(long hash) {
-		return zobrist.get(hash);
-	}
-
-	public static void add(long hash, long mine, long opp, double score) {
-		Position position = Position.getFromCache();
-		position.mine = mine;
-		position.opp = opp;
-		position.score = score;
-				
-		zobrist.put(hash, position);
-	}
-
-	public static void clear() {
-		zobrist.clear();
-		Position.resetCache();
-	}
 }

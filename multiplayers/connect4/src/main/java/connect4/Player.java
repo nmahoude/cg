@@ -17,7 +17,6 @@ public class Player {
 
 	public static void main(String args[]) {
 		FastReader in = new FastReader(System.in);
-		StateCache.reset();
 		new Player().play(in);
 	}
 

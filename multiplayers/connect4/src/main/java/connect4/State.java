@@ -3,20 +3,11 @@ package connect4;
 import fast.read.FastReader;
 
 public class State {
+  int turn;
+  
+  private static final long ALL_COLUMNFILLED_MASK = (long)Math.pow(2, 63);
 
-  State parent;
-  State childs[] = new State[9];
-  int childsFE = 0;
-  
-  public int possibleColumns[] = new int[9];
-  public int possibleColumnsFE = 0;
-  
-  long wins;
-  long count;
-  boolean turn;
-  
   long zobrist;
-  
   
   long mine;
   long opp;
@@ -31,10 +22,6 @@ public class State {
     state.mine = 0L;
     state.opp = 0L;
     
-    state.possibleColumnsFE =0;
-    for (int i=0;i<9;i++) {
-      state.possibleColumns[state.possibleColumnsFE++] = i;
-    }
     return state;
 	}
 	
@@ -45,17 +32,12 @@ public class State {
     winner = -1;
     this.mine = 0L;
     this.opp = 0L;
-    this.turn = true;
     
-    possibleColumnsFE = 0;
     for (int y = 6; y >= 0; y--) {
       char[] boardRow = in.nextChars(); // one row of the board (from top to bottom)
       for (int x = 0; x < 9; x++) {
         char v = boardRow[x];
         if (v == '.') {
-          if (y == 6) {
-            possibleColumns[possibleColumnsFE++] = x;
-          }
         } else {
           boolean myCell = ((v == '0' || v == 'O') && ! Player.inverse) || ((v == '1' || v== 'X') && Player.inverse);
           
@@ -80,18 +62,6 @@ public class State {
 
 	public void put(int col, boolean player) {
 		int r = firstEmptyCell(col);
-
-		if (r == 6) {
-			// remove column from possible
-			for (int i = 0; i < possibleColumnsFE; i++) {
-				if (possibleColumns[i] == col) {
-					possibleColumns[i] = possibleColumns[possibleColumnsFE - 1];
-					possibleColumnsFE--;
-					break;
-				}
-			}
-		}
-		
 		zobrist = zobrist ^ ZobristHash.get(player, col, r); 
 		
 		long mask = 1L << (7 * col + r);
@@ -106,7 +76,8 @@ public class State {
 			winner = player ? 0 : 1;
 		}
 
-		if (possibleColumnsFE == 0) {
+		long total = mine | opp;
+		if ((total & ALL_COLUMNFILLED_MASK) == ALL_COLUMNFILLED_MASK) { 
 			winner = 2; // draw
 		}
 	}
@@ -137,12 +108,8 @@ public class State {
 
   public void remove(int col, boolean player) {
     int r = lastFilledCell(col);
-    if (r == 6) {
-      // remettre dans les possibilités
-		possibleColumns[possibleColumnsFE++] = col;
-    }
     
-	zobrist = zobrist ^ ZobristHash.get(player, col, r); 
+    zobrist = zobrist ^ ZobristHash.get(player, col, r); 
 
     
     long notMask = ~(1L << (7*col+r));
@@ -178,18 +145,6 @@ public class State {
     return r-1;
   }
 
-  public void init(State parent) {
-    this.parent = parent;
-    this.childsFE = 0;
-    
-    this.wins = 0;
-    this.count = 0;
-    
-    this.mine = parent.mine;
-    this.opp = parent.opp;
-    this.winner = parent.winner;
-  }
-
   public boolean canPutOn(int col) {
     return firstEmptyCell(col) != 7;
   }
@@ -222,14 +177,6 @@ public class State {
   }
 
   public void debugColumns() {
-    System.err.println("Possible columns count is "+possibleColumnsFE);
-    for (int c=0;c<possibleColumnsFE;c++) {
-      System.err.print(possibleColumns[c]);
-      System.err.print(" , ");
-    }
-    System.err.println();
-    
-    
     System.err.println("Col height are: ");
     for (int c=0;c<9;c++) {
       System.err.println(""+firstEmptyCell(c)+" , ");

@@ -1,8 +1,5 @@
 package connect4;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -40,8 +37,6 @@ void shouldNotFindWin() throws Exception {
 	
   public static void main(String[] args) {
 	
-    StateCache.reset();
-    
     String input = "0 "
         + "...O.....\r\n"
         + "...X.....\r\n"
@@ -71,7 +66,7 @@ void shouldNotFindWin() throws Exception {
     
     System.err.println("Start .... ");
     
-    for (int i=0;i<500;i++) {
+    for (int i=0;i<1000;i++) {
 		col = max.think(state);
     }
 
