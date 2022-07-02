@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import meanmax.Game;
 import meanmax.entities.Entity;
-import meanmax.entities.Tanker;
 import meanmax.simulation.Action;
 import meanmax.simulation.Simulation;
 
@@ -17,7 +16,7 @@ public class EvalV2Test {
   static Entity entities[] = new Entity[100];
   Simulation simulation;
   Action actions[] = new Action[9];
-  EvalOrigin eval;
+  Eval eval;
   private int currentAction;
   
   @Before
@@ -25,7 +24,7 @@ public class EvalV2Test {
     Game.DEBUG_INPUT = false;
     Game.turnInit();
 
-    eval = new EvalOrigin();
+    eval = new Eval();
     simulation = new Simulation();
     for (int i = 0; i < 9; i++) {
       actions[i] = new Action();
@@ -55,9 +54,8 @@ public class EvalV2Test {
     read(17,3,-1,3.0,800.0,3625.0,-8019.0,-165.0,364.0,1,8);
     
     
-    EvalV2 eval = new EvalV2();
+    Eval eval = new Eval();
     
-    Tanker tanker = eval.getBestTanker();
     eval.eval();
     eval.debug();
   }

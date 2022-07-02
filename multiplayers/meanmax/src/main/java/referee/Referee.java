@@ -10,7 +10,6 @@ import java.util.Random;
 import meanmax.Game;
 import meanmax.Player;
 import meanmax.ai.ag.AG;
-import meanmax.ai.eval.EvalV2;
 import meanmax.entities.Entity;
 import meanmax.entities.Tanker;
 import meanmax.simulation.Action;
@@ -81,22 +80,6 @@ public class Referee {
     ai1.MAX_TIME = 20_000_000;
     ai2.MAX_TIME = 20_000_000;
     
-    if (ai0.eval instanceof EvalV2) {
-      EvalV2 eval = (EvalV2)ai0.eval;
-      eval.TOTAL_SCORE_WEIGHT                     = 200.0;
-      eval.TOTAL_RAGE_WEIGHT                      = 0.05;
-      eval.GLOBAL_WATER_ON_FIELD_WEIGHT           = 1.5;
-      eval.MALUS_TO_EXPECTED_OIL_WEIGHT           = 1.0;
-      eval.REAPER_DISTANCE_TO_CLOSESTDOOF_WEIGHT = 0.01;
-      eval.REAPER_SUROUNDING_WEIGHT               = 1.0;
-      eval.REAPER_DISTANCE_TO_CENTER_WEIGHT      = 0.1;
-      eval.REAPER_NOWRECK_DISTANCE_WEIGHT        = 1.0;
-      eval.REAPER_NOWRECK_SPEED_WEIGHT           = 1.0;
-      eval.REAPER_BESTWRECK_DISTANCE_WEIGHT     = 1.0;
-      eval.REAPER_BESTWRECK_SPEED_WEIGHT        = 0.001; // rien trouvé
-      eval.DESTROYER_BEST_TANKER_DISTANCE_WEIGHT = 1.0;
-      eval.DOOF_DISTANCE_TO_ENNEMY_REAPER_WEIGHT = 1.0; // rien trouvé
-    }
   }
 
   public void playOneGame() {

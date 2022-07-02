@@ -4,12 +4,11 @@ import meanmax.Game;
 import meanmax.Player;
 import meanmax.ai.ag.AGSolution;
 import meanmax.ai.eval.Eval;
-import meanmax.ai.eval.EvalV2;
 import meanmax.simulation.Simulation;
 
 public class MC {
   public int MAX_TIME = 35_000_000;
-  public Eval eval = new EvalV2();
+  public Eval eval = new Eval();
       
   public AGSolution bestSolution = new AGSolution(eval); // not used directly, will be swapped in place
   private AGSolution solution = new AGSolution(eval);
