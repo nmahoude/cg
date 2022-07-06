@@ -36,5 +36,6 @@
   	<module>breakthrough</module>
   	<module>othello</module>
   	<module>spring2022</module>
+  	<module>codersStikeBackReboot3</module>
   </modules>
 </project>
