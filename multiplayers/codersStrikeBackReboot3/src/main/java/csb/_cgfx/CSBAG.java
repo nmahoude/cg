@@ -117,7 +117,6 @@ public class CSBAG extends Application {
       wrapper.state.restore();
       ag.resetAG();
       ag.initFullRandomPopulation(wrapper.state);
-      ag.doOnePly(wrapper.state);
       
       updateList(ag);
     });
@@ -318,11 +317,11 @@ public class CSBAG extends Application {
 				^ 6339 4314
 				^ 7821 839
         
-				^ 1228 7814 0 0 348 2
-				^ 4866 5128 48 -29 278 1
+				^ 53 0 0 
+				^ 1228 7814 100 0 0 2
+				^ 4866 5128 100 0 180 1
 				^ 13839 4005 226 222 77 3
 				^ 14575 6776 205 342 84 3
-				^ 53 0 0 
         """);
     
     

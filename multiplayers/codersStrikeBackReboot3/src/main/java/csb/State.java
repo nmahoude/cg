@@ -1,6 +1,5 @@
 package csb;
 
-import csb.ai.Evaluator;
 import csb.entities.CheckPoint;
 import csb.entities.Pod;
 import csb.entities.Team;
@@ -13,7 +12,7 @@ public class State {
   public static CheckPoint[] checkPoints;
   public static int checkpointCount;
   
-  int turn;
+  public int turn;
   private int b_turn;
 
   public static int laps;
@@ -63,6 +62,8 @@ public class State {
   private static final Vector DIR_X = new Vector(1,0);
 	public void readTurn(FastReader in) {
   	turn++;
+    debugStateToStdErr();
+
     for (int i = 0; i < 4; i++) {
       int x = in.nextInt();
       int y = in.nextInt();
@@ -71,24 +72,17 @@ public class State {
       int angle = in.nextInt();
       int nextCheckPointId = in.nextInt();
 
-      if (turn == 1) {
-        if (nextCheckPointId == -1) nextCheckPointId = 1;
+      if (turn == 1 && i< 2) {
         // get the angle as it pleases us, it's first turn
         Vector dir = new Vector(State.checkPoints[1].x - x, State.checkPoints[1].y - y).normalize();
-        angle = (int) (Math.signum(dir.ortho().dot(DIR_X)) * Math.acos(dir.dot(DIR_X)) * 180 / Math.PI);
+        angle = (int) (-Math.signum(dir.ortho().dot(DIR_X)) * Math.acos(dir.dot(DIR_X)) * 180 / Math.PI);
+        if (angle < 0 ) angle += 360;
       }
 
       pods[i].readInput(x, y, vx, vy, angle, nextCheckPointId);
-      
-      
 
     }
     backup();
-    debugStateToStdErr();
-    
-    for (int i=0;i<2;i++) {
-    	System.err.println("Distance to end for "+i+" is "+Evaluator.distToFinishLine(pods[i]));
-    }
     
   }
 

@@ -33,7 +33,8 @@ public class CSBGameViewer extends GameViewer {
     for (int i=0;i<2;i++) {
       Pod pod = wrapper.state.pods[i];
 			board.fillCircle(Color.ORANGE, Pos.from(pod.x, pod.y), 400);
-      board.drawLine(Color.BLUE, Pos.from(pod.x, pod.y), Pos.from(pod.x + pod.vx , pod.y + pod.vy));
+      board.drawLine(Color.BLUE, Pos.from(pod.x, pod.y), Pos.from(pod.x + 10 * pod.vx , pod.y + 10 * pod.vy));
+      board.drawLine(Color.DARKGREEN, Pos.from(pod.x, pod.y), Pos.from(pod.x + 1000 * pod.direction.vx , pod.y + 1000 * pod.direction.vy));
     }
 
     for (int i=2;i<4;i++) {

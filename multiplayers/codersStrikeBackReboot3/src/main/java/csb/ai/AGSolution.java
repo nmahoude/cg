@@ -84,6 +84,7 @@ public class AGSolution {
     state.restore();
     
     
+    
     Vector dot1 = state.pods[0].direction.rotate(getAngle(0)).dot(1000.0);
     if (getThrust(0) < 0) {
       System.out.println(""+(int)(state.pods[0].x+dot1.vx)
@@ -91,9 +92,15 @@ public class AGSolution {
           +" SHIELD");
       state.pods[0].shield = 3;
     } else {
-      System.out.println(""+(int)(state.pods[0].x+dot1.vx)
+      if (state.turn == 1) {
+      	System.out.println(""+(int)(state.pods[0].x+dot1.vx)
+            +" "+(int)(state.pods[0].y+dot1.vy)
+            +" "+"BOOST");
+      } else {
+      	System.out.println(""+(int)(state.pods[0].x+dot1.vx)
               +" "+(int)(state.pods[0].y+dot1.vy)
               +" "+(int)getThrust(0));
+      }
     }
     
     Vector dot2 = state.pods[1].direction.rotate(getAngle(DEPTH+0)).dot(1000.0);

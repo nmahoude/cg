@@ -88,8 +88,11 @@ public class AG {
 
 
   public void initFullRandomPopulation(State state) {
-    for (int i=0;i<POPULATION_SIZE;i++) {
-      state.restore();
+  	int start = 0;
+  	cp3v(start++, state);
+  	
+  	
+    for (int i=start;i<POPULATION_SIZE;i++) {
       solutions[i].pseudoRandom();
       solutions[i].apply(state);
     }
@@ -98,7 +101,13 @@ public class AG {
   }
 
   
-  private void sortPopulationAndUpdateBest() {
+  private void cp3v(int index, State state) {
+    solutions[index].pseudoRandom();
+    solutions[index].apply(state);
+	}
+
+
+	private void sortPopulationAndUpdateBest() {
     // java sort create object on the heap ==>  timeout ?
     //private static final Comparator<? super AGSolution> solComparator = (s1, s2) -> Double.compare(s2.score, s1.score);
     //Arrays.sort(solutions, solComparator);
