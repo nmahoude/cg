@@ -126,7 +126,7 @@ public class Pod extends Entity {
     this.vy = model.vy;
     this.direction = model.direction;
     this.nextCheckPointId = model.nextCheckPointId;
-    
+    this.lap = model.lap;
   }
 
 }

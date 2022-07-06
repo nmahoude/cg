@@ -1,14 +1,21 @@
 package csb;
 
+import csb.ai.Evaluator;
 import csb.entities.CheckPoint;
 import csb.entities.Pod;
 import csb.entities.Team;
 import csb.game.PhysicsEngine;
 import fast.read.FastReader;
+import trigonometry.Vector;
 
 public class State {
   public final PhysicsEngine physicsEngine = new PhysicsEngine();
   public static CheckPoint[] checkPoints;
+  public static int checkpointCount;
+  
+  int turn;
+  private int b_turn;
+
   public static int laps;
   public static double lapLength;
   public static double cpLengths[];
@@ -20,8 +27,9 @@ public class State {
   }
   
   public void readInit(FastReader in) {
+  	turn = 0;
     laps = in.nextInt();
-    int checkpointCount = in.nextInt();
+    checkpointCount = in.nextInt();
     System.err.println(String.format("^ %d %d", laps, checkpointCount));
     checkPoints = new CheckPoint[checkpointCount];
     for (int i = 0; i < checkpointCount; i++) {
@@ -48,9 +56,13 @@ public class State {
       cpLengths[i] = length;
       lapLength += length;
     }
+    
+    System.err.println("Lap length is "+lapLength);
   }
   
-  public void readTurn(FastReader in) {
+  private static final Vector DIR_X = new Vector(1,0);
+	public void readTurn(FastReader in) {
+  	turn++;
     for (int i = 0; i < 4; i++) {
       int x = in.nextInt();
       int y = in.nextInt();
@@ -58,13 +70,37 @@ public class State {
       int vy = in.nextInt();
       int angle = in.nextInt();
       int nextCheckPointId = in.nextInt();
+
+      if (turn == 1) {
+        if (nextCheckPointId == -1) nextCheckPointId = 1;
+        // get the angle as it pleases us, it's first turn
+        Vector dir = new Vector(State.checkPoints[1].x - x, State.checkPoints[1].y - y).normalize();
+        angle = (int) (Math.signum(dir.ortho().dot(DIR_X)) * Math.acos(dir.dot(DIR_X)) * 180 / Math.PI);
+      }
+
       pods[i].readInput(x, y, vx, vy, angle, nextCheckPointId);
+      
+      
+
     }
     backup();
+    debugStateToStdErr();
+    
+    for (int i=0;i<2;i++) {
+    	System.err.println("Distance to end for "+i+" is "+Evaluator.distToFinishLine(pods[i]));
+    }
+    
   }
 
+  public void readState(FastReader in) {
+  	this.turn = in.nextInt();
+  	pods[0].lap = in.nextInt();
+  	pods[1].lap = in.nextInt();
+  	backup();
+  }
   
   public void backup() {
+  	b_turn = turn;
     teams[0].backup();
     teams[1].backup();
     
@@ -77,6 +113,7 @@ public class State {
   }
 
   public void restore() {
+  	turn = b_turn;
     teams[0].restore();
     teams[1].restore();
 
@@ -101,6 +138,10 @@ public class State {
     pods[1].copyFrom(model.pods[1]);
     pods[2].copyFrom(model.pods[2]);
     pods[3].copyFrom(model.pods[3]);
-    
+    backup();
   }
+
+	public void debugStateToStdErr() {
+		System.err.println(String.format("^ %d %d %d ", this.turn, pods[0].lap, pods[1].lap));
+	}
 }

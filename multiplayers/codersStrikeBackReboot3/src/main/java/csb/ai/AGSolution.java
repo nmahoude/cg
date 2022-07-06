@@ -29,11 +29,40 @@ public class AGSolution {
     }
   }
 
+  
+  public void pseudoRandom() {
+    for (int t=0;t<2 * DEPTH;t++) {
+    	double choice;
+			
+    	choice = random.nextDouble();
+    	if (choice < 0.5) {
+    		angles[t] = 0.5; // straight
+    	} else {
+    		angles[t] = random.nextDouble();  // 0->1 linear
+    	}
+      
+    	choice = random.nextDouble();
+      if (choice < 0.05) {
+        thrusts[t] = -1; // shield
+      } else if (choice < 0.5) {
+      	thrusts[t] = 1.0; // full speed
+      } else {
+        thrusts[t] = random.nextDouble(); // 0->1  linear
+      }
+    }
+  }
+  
   public double apply(State state) {
+    state.restore();
+
     score = 0.0;
     
     for (int d=0;d<DEPTH;d++) {
       apply(state, d);
+      if (state.pods[0].lap == 3 || state.pods[1].lap == 3 ) {
+      	score = 10_000_000+ (DEPTH - d);
+      	return score;
+      }
       score += EVALUATOR.evaluate(state, this, d);
     }
     return score;
@@ -93,5 +122,77 @@ public class AGSolution {
       return thrust * 200;
     }
   }
+
+	public static void merge(AGSolution parent1, 
+													 AGSolution parent2, 
+													 AGSolution child1,
+													 AGSolution child2) {
+		
+		double chance = random.nextDouble();
+		if (chance < 0.4) {
+			child1.pseudoRandom();
+			child2.pseudoRandom();
+		} else if (chance < 0.6) {
+			child1.oneRandom(parent1);
+			child2.oneRandom(parent2);
+		} else if (chance < 0.7) {
+			mix(parent1, parent2, child1, child2);
+		} else {
+			child1.swap(parent1, parent2);
+			child2.swap(parent2, parent1);
+		}
+	}
+
+	public static void randomize(AGSolution parent1, 
+			 AGSolution parent2, 
+			 AGSolution child1,
+			 AGSolution child2) {
+		
+		child1.pseudoRandom();
+		child2.pseudoRandom();
+		
+		
+	}
+
+	
+	private static void mix(AGSolution parent1, AGSolution parent2, AGSolution child1, AGSolution child2) {
+		double coef = random.nextDouble();
+
+		for (int i=0;i<2*DEPTH;i++) {
+			child1.angles[i] = coef * parent1.angles[i] + (1-coef)*parent2.angles[i];
+			child1.thrusts[i] = coef * parent1.thrusts[i] + (1-coef)*parent2.thrusts[i];
+
+		
+			child2.angles[i] = (1.0 - coef) * parent1.angles[i] + coef*parent2.angles[i];
+			child2.thrusts[i] = (1.0 - coef) * parent1.thrusts[i] + coef*parent2.thrusts[i];
+		
+		
+		}
+
+	}
+
+	private void oneRandom(AGSolution parent) {
+
+		for (int i=0;i<2*DEPTH;i++) {
+			this.angles[i] = parent.angles[i];
+			this.thrusts[i] = parent.thrusts[i];
+		}
+		
+		int index = random.nextInt(2*DEPTH);
+		this.angles[index] = random.nextDouble();
+		this.thrusts[index] = random.nextDouble();
+	}
+
+	private void swap(AGSolution parent1, AGSolution parent2) {
+		for (int i=0;i<DEPTH;i++) {
+			this.angles[i] = parent1.angles[i];
+			this.thrusts[i] = parent1.thrusts[i];
+		}
+		for (int i=DEPTH;i<DEPTH*2;i++) {
+			this.angles[i] = parent2.angles[i];
+			this.thrusts[i] = parent2.thrusts[i];
+		}
+	}
+
 
 }

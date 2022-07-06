@@ -8,7 +8,9 @@
 	<artifactId>codersStrikeBackReboot3</artifactId>
 
 	<properties>
-		<java.version>17</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+    	<maven.compiler.target>17</maven.compiler.target>
+    	
 		<cglib.version>0.0.1-SNAPSHOT</cglib.version>
 
 	</properties>

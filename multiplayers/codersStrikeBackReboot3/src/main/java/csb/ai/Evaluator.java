@@ -22,29 +22,76 @@ public class Evaluator {
     Pod hisBlocker = state.pods[3];
     
     
-    double myRunnerDist = 3*State.lapLength - distToFinishLine(myRunner);
-    double energy = 0.0
-        // runner
-        + 5000*myRunnerDist
-        + 0.5*exitSpeedFeature(myRunner)
-        - 100*(myRunner.shield > 0 ? 1.0 : 0.0)
-        
-        // blocker
-        - 100*(myBlocker.shield > 0 ? 1.0 : 0.0)
-        + 3.0 * distanceToCheckPointFeature(state.checkPoints[hisRunner.nextCheckPointId], myBlocker)
-        + 1.0 * distance2ToPodFeature(myBlocker, hisRunner)
-        - 1.0 * checkPointPassedFeature(hisRunner)
-        + 0.5*distanceToCheckPointFeature(state.checkPoints[hisRunner.nextCheckPointId], hisRunner)
-        + 3.0*distance2ToPodFeature(myRunner, hisBlocker)
-        ;
+    double myRunnerDist = (3*State.lapLength - distToFinishLine(myRunner)) / State.lapLength;
+    double myBlockerDist = (3*State.lapLength - distToFinishLine(myBlocker)) / State.lapLength;
     
-    if (myRunner.lap >=3) {
-      energy = 1_000_000;
-    }
+    
+    int myRunnerCheckpoints = myRunner.lap * (State.checkpointCount) + (myRunner.nextCheckPointId == 0 ? State.checkpointCount : myRunner.nextCheckPointId);
+    int myBlockerCheckpoints = myBlocker.lap * (State.checkpointCount) + (myBlocker.nextCheckPointId  == 0 ? State.checkpointCount : myBlocker.nextCheckPointId);
+    
+    
+    
+		double runnerCoeff;
+		double blockerCoeff;
+		if (myRunnerCheckpoints > myBlockerCheckpoints) {
+			runnerCoeff = 0.9;
+			blockerCoeff = 0.1;
+		} else if (myRunnerCheckpoints < myBlockerCheckpoints) {
+			runnerCoeff = 0.1;
+			blockerCoeff = 0.9;
+		} else {
+			runnerCoeff = 0.5;
+			blockerCoeff = 0.5;
+		}
+		
+		
+		
+		double energy = 0.0
+        // runner
+				+ runnerCoeff * (
+	    		+ 5_000.0 * myRunnerCheckpoints
+	        + -10.0 * distanceToCheckPoint(myRunner)
+	        + 1.0 * directionToNextCheckpointScore(myRunner)
+        )
+				+ blockerCoeff * (
+	    		+ 5_000.0 * myBlockerCheckpoints
+	    		+ -10.0 * distanceToCheckPoint(myBlocker)
+	        + 1.0 * directionToNextCheckpointScore(myBlocker)
+    		)
+    		;
+    
+    
+    
     return patience [depth] * energy;
   }
   
-  private double distance2ToPodFeature(Pod pod, Pod target) {
+  private double distanceToCheckPoint(Pod myRunner) {
+  	CheckPoint cp = State.checkPoints[myRunner.nextCheckPointId];
+  	double length;
+  	if (myRunner.nextCheckPointId == 0) {
+  		length = State.cpLengths[State.checkpointCount-1];
+  	} else {
+  		length = State.cpLengths[myRunner.nextCheckPointId-1];
+  	}
+  	
+  	return Math.sqrt( (cp.x - myRunner.x) * (cp.x - myRunner.x) + (cp.y - myRunner.y)*(cp.y - myRunner.y)) / length;  
+	}
+
+	private double speedOf(Pod myRunner) {
+		return Math.sqrt(myRunner.vx*myRunner.vx + myRunner.vy*myRunner.vy);
+	}
+
+	private double directionToNextCheckpointScore(Pod pod) {
+  	CheckPoint nextCP = State.checkPoints[pod.nextCheckPointId];
+  	double dist = Math.sqrt((nextCP.x - pod.x)*(nextCP.x - pod.x) + (nextCP.y - pod.y) * (nextCP.y - pod.y));
+  	double speed = Math.sqrt(pod.vx*pod.vx + pod.vy*pod.vy);
+  	if (speed == 0) speed = 1.0;
+  	if (dist == 0) dist = 1.0;
+  	
+  	return ((nextCP.x - pod.x) * pod.vx + (nextCP.y - pod.y) * pod.vy) / (dist * speed); 
+  }
+
+	private double distance2ToPodFeature(Pod pod, Pod target) {
     final int MAX_DIST = 16000*16000+9000*9000;
     double dist2 = VectorLib.distance2(pod.x-target.x, pod.y-target.y);
     return (MAX_DIST - Math.min(MAX_DIST, dist2)) / MAX_DIST;
@@ -76,7 +123,7 @@ public class Evaluator {
     return (MAX_DIST - Math.min(MAX_DIST, dist2)) / MAX_DIST;
   }
   
-  public double distToFinishLine(Pod pod) {
+  public static double distToFinishLine(Pod pod) {
     double l = Math.max(0, (2 - pod.lap) * State.lapLength);
     
     l += VectorLib.length(pod.x-State.checkPoints[pod.nextCheckPointId].x, pod.y-State.checkPoints[pod.nextCheckPointId].y);

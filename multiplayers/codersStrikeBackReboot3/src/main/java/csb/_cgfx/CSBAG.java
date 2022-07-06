@@ -36,8 +36,6 @@ public class CSBAG extends Application {
   private ListView<String> listOfSteps;
   private ObservableList<String> stepItems = FXCollections.observableArrayList ();
   
-  
-  private State state;
   private int selectedSolution = -1;
   public static void main(String[] args) throws FileNotFoundException {
     
@@ -81,7 +79,7 @@ public class CSBAG extends Application {
     Button nextStep = new Button("Next");
     nextStep.setOnAction(value -> {
       Player.start = System.currentTimeMillis();
-      ag.doOnePly(state);
+      ag.doOnePly(wrapper.state);
 
       updateList(ag);
     });
@@ -91,7 +89,7 @@ public class CSBAG extends Application {
     next100Step.setOnAction(value -> {
       Player.start = System.currentTimeMillis();
       for (int i=0;i<100;i++) {
-        ag.doOnePly(state);
+        ag.doOnePly(wrapper.state);
       }
 
       updateList(ag);
@@ -101,7 +99,7 @@ public class CSBAG extends Application {
     next1000Step.setOnAction(value -> {
       Player.start = System.currentTimeMillis();
       for (int i=0;i<1000;i++) {
-        ag.doOnePly(state);
+        ag.doOnePly(wrapper.state);
       }
 
       updateList(ag);
@@ -116,9 +114,11 @@ public class CSBAG extends Application {
     Button fullRandomStep = new Button("Random");
     fullRandomStep.setOnAction(value -> {
       Player.start = System.currentTimeMillis();
+      wrapper.state.restore();
       ag.resetAG();
-      ag.initFullRandomPopulation(state);
-
+      ag.initFullRandomPopulation(wrapper.state);
+      ag.doOnePly(wrapper.state);
+      
       updateList(ag);
     });
     buttons.getChildren().add(fullRandomStep);
@@ -178,11 +178,10 @@ public class CSBAG extends Application {
     
     depthSlider.valueProperty().addListener(new ChangeListener<Number>() {
       public void changed(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
-        State state = wrapper2.state;
+      	wrapper.state.restore();
+        State state = wrapper2.player.state;
         state.copyFrom(wrapper.player.state);
 
-
-        
         Pos[] previousPos = new Pos[] { new Pos(), new Pos() };
         
         previousPos[0].copyFrom(state.pods[0].x, state.pods[0].y);
@@ -277,7 +276,7 @@ public class CSBAG extends Application {
         color = new Color(0, 0.0, perc, 1.0); // blues
       } else {
         drawSize = 1;
-        color = new Color(perc, 0.0, 0, 1.0); // reds
+        color = new Color(0.0, perc, 0, 1.0); // reds
       }
       drawSolution(viewer, solution, color, drawSize);
     }
@@ -289,6 +288,7 @@ public class CSBAG extends Application {
   }
 
   private void drawSolution(CSBGameViewer viewer, AGSolution solution, Color color, double drawSize) {
+    wrapper.player.state.restore();
     State state = new State();
     state.copyFrom(wrapper.player.state);
     
@@ -310,29 +310,29 @@ public class CSBAG extends Application {
 
   private void readGame() {
     wrapper.readFromInput(true, """
-        ^ 3 4
-        ^ 5409 2835
-        ^ 10322 3337
-        ^ 11182 5420
-        ^ 7266 6638
+				^ 3 6
+				^ 7654 5991
+				^ 3139 7542
+				^ 9496 4377
+				^ 14495 7808
+				^ 6339 4314
+				^ 7821 839
         
-        ^ 5460 2338 0 0 -1 1
-        ^ 5358 3332 0 0 -1 1
-        ^ 5561 1343 0 0 -1 1
-        ^ 5257 4327 0 0 -1 1
-        
+				^ 1228 7814 0 0 348 2
+				^ 4866 5128 48 -29 278 1
+				^ 13839 4005 226 222 77 3
+				^ 14575 6776 205 342 84 3
+				^ 53 0 0 
         """);
+    
     
     // now that data are read, consider we are not inversed anymore !
     
     Player.start = System.currentTimeMillis() + 100;
 
-    //AGSolution.evaluator = new AGEvaluatorDebug();
-    this.state = new State();
-    state.copyFrom(wrapper.player.state);
-    
     ag.resetAG();
     ag.initFullRandomPopulation(wrapper.state);
+    wrapper.state.restore();
     
 //    ag.information.update(wrapper.state());
 //    ag.initSpeedStraight(state, State.HERO_MAX_MOVE);

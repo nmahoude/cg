@@ -58,6 +58,9 @@ public class CSBGameWrapper extends GameWrapper {
     FastReader in = FastReader.fromString(input.replace("^", ""));
     player.readGlobal(in);
     player.readTurn(in);
+    player.readState(in);
+    
+
   }
 
 }
