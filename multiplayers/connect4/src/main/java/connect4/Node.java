@@ -8,8 +8,7 @@ public class Node {
   // score
   public double score;
   
-  @Override
-  public boolean equals(Object obj) {
+  public boolean isEquals(Object obj) {
     Node other = (Node)obj;
     return other.me == this.me && other.opp == this.opp;
   }

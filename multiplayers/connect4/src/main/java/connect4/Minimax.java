@@ -15,18 +15,16 @@ public class Minimax {
     int bestCol = -1;
     double bestScore = Double.NEGATIVE_INFINITY;
     for (int col : columnsOrder) {
-      if (!root.canPutOn(col)) {
-        continue;
-      }
 
-      root.put(col, true);
-      double score = alphaBeta(root, Integer.MIN_VALUE, Integer.MAX_VALUE, false, MAX_DEPTH - 1);
-      System.err.println("New way " + col + " => " + score);
-      if (score > bestScore) {
-        bestScore = score;
-        bestCol = col;
+      if (root.checkAndPut(col, true)) {
+        double score = alphaBeta(root, Integer.MIN_VALUE, Integer.MAX_VALUE, false, MAX_DEPTH - 1);
+        System.err.println("New way " + col + " => " + score);
+        if (score > bestScore) {
+          bestScore = score;
+          bestCol = col;
+        }
+        root.remove(col, true);
       }
-      root.remove(col, true);
 
     }
 
@@ -45,11 +43,9 @@ public class Minimax {
     double bestScore = maximizingScore ? Integer.MIN_VALUE : Integer.MAX_VALUE;
     for (int cc = 0; cc < 9; cc++) {
       int col = columnsOrder[cc];
-      if (!node.canPutOn(col)) {
-        continue;
-      }
 
-      node.put(col, maximizingScore);
+      if (! node.checkAndPut(col, maximizingScore)) continue;
+      
       fakeNode.me = node.mine;
       fakeNode.opp = node.opp;
       Node cached = TranspositionTable.get((int)node.zobrist, fakeNode);
@@ -59,10 +55,7 @@ public class Minimax {
         score = cached.score;
       } else {
         score = alphaBeta(node, alpha, beta, !maximizingScore, depth - 1);
-        Node tnode = NodeCache.get();
-        tnode.me = node.mine;
-        tnode.opp = node.opp;
-        tnode.score = score;
+        Node tnode = NodeCache.get(node.mine, node.opp, score);
         TranspositionTable.put((int)node.zobrist, tnode);
       }
       node.remove(col, maximizingScore);

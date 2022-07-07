@@ -15,8 +15,14 @@ public class NodeCache {
     nodesFE = 0;
   }
   
-  public static Node get() {
-    return nodes[nodesFE++];
+  public static Node get(long mine, long opp, double score) {
+    Node node = nodes[nodesFE++];
+
+    node.me = mine;
+    node.opp = opp;
+    node.score = score;
+
+    return node;
   }
   
   public static Node getWithParent(Node parent) {

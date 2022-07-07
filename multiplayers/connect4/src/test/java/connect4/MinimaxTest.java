@@ -37,12 +37,12 @@ void shouldNotFindWin() throws Exception {
 	
   public static void main(String[] args) {
 	
-    String input = "0 "
-        + "...O.....\r\n"
-        + "...X.....\r\n"
-        + ".O.O.XO..\r\n"
-        + ".X.O.XXX.\r\n"
-        + ".X.O.OOO.\r\n"
+    String input = "10 "
+        + ".........\r\n"
+        + ".........\r\n"
+        + ".........\r\n"
+        + ".....X.X.\r\n"
+        + ".X.O...O.\r\n"
         + ".O.X.XXX.\r\n"
         + "OOOX.OXX."
         + "\r\n"

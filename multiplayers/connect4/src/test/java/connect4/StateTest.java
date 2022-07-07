@@ -182,20 +182,32 @@ public class StateTest {
   
   @Test
   void debug() throws Exception {
-    String input = "0 "
-        + ".......X.\r\n"
-        + "...X...O.\r\n"
-        + "...XO..O.\r\n"
-        + "XXOOXO.OX\r\n"
-        + "OXXXOXOXO\r\n"
-        + "OOOXXXOXO\r\n"
-        + "OXXOOXXXO\r\n"
+    String input = "58 "
+        + "OXOO.OOXX\r\n"
+        + "XXOX.OXOO\r\n"
+        + "XOXO.XOXX\r\n"
+        + "XOOO.OOXO\r\n"
+        + "OXXX.XXOX\r\n"
+        + "XXOX.OOXO\r\n"
+        + "XXXOOXOOX\r\n"
         
         + "0 0 ";
     FastReader in = new FastReader(input.getBytes());
     
     State state = State.emptyState();
     state.read(in);
+    
+    state.checkAndPut(4, true);
+    state.checkAndPut(4, true);
+    state.checkAndPut(4, true);
+    state.checkAndPut(4, true);
+    state.checkAndPut(4, true);
+    state.debugColumns();
+    state.checkAndPut(4, true);
+    state.debugColumns();
+
+    assertThat(state.winner).isEqualTo(2);
+    
     
   }
   

@@ -1,17 +1,17 @@
 package connect4;
 
+import java.util.Arrays;
 
 public class TranspositionTable {
-  private static final int MAX_BITS = 18;
+  private static final int MAX_BITS = 24;
   private static final int MAX_ENCONDING = (int)Math.pow(2, MAX_BITS);
   private static final int MAX_BITS_MASK = (int)Math.pow(2, MAX_BITS)-1;
   
-  static Node[] empty = new Node[MAX_ENCONDING];
   static Node[] nodes = new Node[MAX_ENCONDING];
   public static int totalCollisions = 0;
   
   public static void clear() {
-    System.arraycopy(empty, 0, nodes, 0, MAX_ENCONDING);
+    Arrays.fill(nodes, null);
     totalCollisions = 0;
   }
   
@@ -25,8 +25,9 @@ public class TranspositionTable {
     
     Node cachedNode = nodes[hash & MAX_BITS_MASK];
     if (cachedNode != null) {
-      if (!cachedNode.equals(node)) {
-        // replace old node ?
+      if (!cachedNode.isEquals(node)) {
+        // replace old node or keep them ?
+        // put(hash, node);
         return null; 
       }
       

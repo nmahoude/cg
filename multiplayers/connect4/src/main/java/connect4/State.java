@@ -26,7 +26,7 @@ public class State {
 	}
 	
   public void read(FastReader in) {
-    int turnIndex = in.nextInt(); // starts from 0; As the game progresses, first player gets [0,2,4,...] and second player gets [1,3,5,...]
+    turn = in.nextInt(); // starts from 0; As the game progresses, first player gets [0,2,4,...] and second player gets [1,3,5,...]
     
     zobrist = 0;
     winner = -1;
@@ -60,54 +60,54 @@ public class State {
 
   }
 
-	public void put(int col, boolean player) {
-		int r = firstEmptyCell(col);
-		zobrist = zobrist ^ ZobristHash.get(player, col, r); 
-		
-		long mask = 1L << (7 * col + r);
-		if (player) {
-			mine |= mask;
-		} else {
-			opp |= mask;
-		}
+  public boolean checkAndPut(int col, boolean player) {
+    int r = firstEmptyCell(col);
+    if (r > 6) return false;
+    
+    zobrist = zobrist ^ ZobristHash.get(player, col, r); 
+    turn++;
+    
+    long mask = 1L << (7 * col + r);
+    if (player) {
+      mine |= mask;
+    } else {
+      opp |= mask;
+    }
 
-		boolean result = Connect4Checker.is4Connected(player ? mine : opp, col, r);
-		if (result) {
-			winner = player ? 0 : 1;
-		}
+    boolean result = Connect4Checker.is4Connected(player ? mine : opp, col, r);
+    if (result) {
+      winner = player ? 0 : 1;
+    }
 
-		long total = mine | opp;
-		if ((total & ALL_COLUMNFILLED_MASK) == ALL_COLUMNFILLED_MASK) { 
-			winner = 2; // draw
-		}
-	}
-	  
+    if (turn == 9*7+1) { 
+      winner = 2; // draw
+    }
+    return true;
+  }
+
+	
   int firstEmptyCell(int col) {
-	long all = mine | opp;
+    long all = mine | opp;
 	  
     int column = (int)((all >> 7*col) & 0b1111111);
-    
-    return lookupColumn(column);
+
+    switch (column) {
+    case 0b0: return 0;
+    case 0b1: return 1;
+    case 0b11: return 2;
+    case 0b111: return 3;
+    case 0b1111: return 4;
+    case 0b11111: return 5;
+    case 0b111111: return 6;
+    case 0b1111111: return 7;
+    default: return 128;
+    }
   }
 	
   
-  private static int lookup[] = new int[128];
-  static {
-    lookup[0b0] = 0;
-    lookup[0b1] = 1;
-    lookup[0b11] = 2;
-    lookup[0b111] = 3;
-    lookup[0b1111] = 4;
-    lookup[0b11111] = 5;
-    lookup[0b111111] = 6;
-    lookup[0b1111111] = 7; // not in the grid
-  }
-	private int lookupColumn(int column) {
-    return lookup[column];
-  }
-
   public void remove(int col, boolean player) {
     int r = lastFilledCell(col);
+    turn--;
     
     zobrist = zobrist ^ ZobristHash.get(player, col, r); 
 
@@ -120,6 +120,7 @@ public class State {
   }
 
   public void debug() {
+    System.err.println("Turn = "+turn);
     printGrid(mine, opp);
   }
 
@@ -162,7 +163,7 @@ public class State {
   }
 
   public void put(int x, int playerId) {
-    put(x, playerId == 0);
+    checkAndPut(x, playerId == 0);
   }
 
   public int getCellPlayerAt(int x, int y) {
@@ -177,7 +178,7 @@ public class State {
   }
 
   public void debugColumns() {
-    System.err.println("Col height are: ");
+    System.err.println("Turn is "+turn+" Col height are: ");
     for (int c=0;c<9;c++) {
       System.err.println(""+firstEmptyCell(c)+" , ");
     }
