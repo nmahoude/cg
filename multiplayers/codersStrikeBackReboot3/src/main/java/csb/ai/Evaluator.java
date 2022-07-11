@@ -6,15 +6,8 @@ import csb.entities.CheckPoint;
 import csb.entities.Pod;
 
 public class Evaluator {
-  private static double PATIENCE_COEFF = 0.9;
-  private static double[] patience = new double[AGSolution.DEPTH];
-  static {
-    for (int i=0;i<patience.length;i++) {
-      patience[i] = Math.pow(PATIENCE_COEFF, i);
-    }
-  }
   
-  public double evaluate(State state, AGSolution sol, int depth) {
+  public double evaluate(State state, AGSolution sol) {
     
     Pod myRunner   = state.pods[0];
     Pod myBlocker  = state.pods[1];
@@ -62,7 +55,7 @@ public class Evaluator {
     
     
     
-    return patience [depth] * energy;
+    return energy;
   }
   
   private double distanceToCheckPoint(Pod myRunner) {

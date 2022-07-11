@@ -55,7 +55,7 @@ public class CSBAG extends Application {
     listOfSolutions.setItems(solutionItems);
 
     listOfSteps = new ListView<>();
-    for (int i=0;i<AG.DEPTH;i++) {
+    for (int i=0;i<AGSolution.DEPTH;i++) {
       stepItems.add("Depth "+i);
     }
     listOfSteps.setItems(stepItems);
@@ -66,7 +66,7 @@ public class CSBAG extends Application {
     
     Slider depthSlider = new Slider();
     depthSlider.setMin(0);
-    depthSlider.setMax(AG.DEPTH);
+    depthSlider.setMax(AGSolution.DEPTH);
     depthSlider.setShowTickLabels(true);
     depthSlider.setShowTickMarks(true);
     depthSlider.setMajorTickUnit(1);
@@ -296,7 +296,7 @@ public class CSBAG extends Application {
     previousPos[0].copyFrom(state.pods[0]);
     previousPos[1].copyFrom(state.pods[1]);
     
-    for (int depth=0;depth<AG.DEPTH;depth++) {
+    for (int depth=0;depth<AGSolution.DEPTH;depth++) {
       solution.apply(state, depth);
       listOfSteps.getItems().set(depth, "Depth "+depth+" => "+solution.score);
       
@@ -309,19 +309,18 @@ public class CSBAG extends Application {
 
   private void readGame() {
     wrapper.readFromInput(true, """
-				^ 3 6
-				^ 7654 5991
-				^ 3139 7542
-				^ 9496 4377
-				^ 14495 7808
-				^ 6339 4314
-				^ 7821 839
+				^ 3 5
+				^ 6588 7861
+				^ 7483 1367
+				^ 12696 7079
+				^ 4046 4676
+				^ 13024 1893
         
-				^ 53 0 0 
-				^ 1228 7814 100 0 0 2
-				^ 4866 5128 100 0 180 1
-				^ 13839 4005 226 222 77 3
-				^ 14575 6776 205 342 84 3
+				^ 31 0 0 
+				^ 9164 1300 743 94 20 4
+				^ 10558 637 187 -366 48 4
+				^ 12328 4989 -367 419 167 0
+				^ 11220 3159 232 48 285 3
         """);
     
     

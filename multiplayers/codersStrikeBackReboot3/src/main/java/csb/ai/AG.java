@@ -10,7 +10,6 @@ public class AG {
 	
   public static final int POPULATION_SIZE = 30;
   public static final int SURVIVOR_SIZE = 4;
-  public static final int DEPTH = 10;
   
   public AGSolution solutions[] = new AGSolution[POPULATION_SIZE];
   
@@ -86,12 +85,20 @@ public class AG {
   }
 
 
+  
 
   public void initFullRandomPopulation(State state) {
   	int start = 0;
-  	cp3v(start++, state);
+  	for (int ev = -3;ev<=-3;ev++) {
+			cp3v(start++, state, ev, 0.2);
+			cp3v(start++, state, ev, 0.8);
+			cp3v(start++, state, ev, 1.0);
+  	}
   	
-  	
+//  	cp3v(start++, state, -3, 1.0);
+//  	while (start < POPULATION_SIZE) {
+//  		cp3v(start++, state, 0, 0.0);
+//  	}
     for (int i=start;i<POPULATION_SIZE;i++) {
       solutions[i].pseudoRandom();
       solutions[i].apply(state);
@@ -101,8 +108,9 @@ public class AG {
   }
 
   
-  private void cp3v(int index, State state) {
-    solutions[index].pseudoRandom();
+  private void cp3v(int index, State state, int ev, double thrust) {
+  	
+    solutions[index].directBot(state, ev, thrust);
     solutions[index].apply(state);
 	}
 

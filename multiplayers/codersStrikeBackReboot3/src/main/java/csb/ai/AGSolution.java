@@ -3,14 +3,24 @@ package csb.ai;
 import java.util.concurrent.ThreadLocalRandom;
 
 import csb.State;
+import csb.entities.CheckPoint;
+import csb.entities.Pod;
 import trigonometry.Vector;
 
 public class AGSolution {
   private static final Evaluator EVALUATOR = new Evaluator();
-
+  private static double PATIENCE_COEFF = 0.9;
+  private static double[] patience = new double[AGSolution.DEPTH];
+  static {
+    for (int i=0;i<patience.length;i++) {
+      patience[i] = Math.pow(PATIENCE_COEFF, i);
+    }
+  }
+  
+  
   private static final ThreadLocalRandom random = ThreadLocalRandom.current();
   
-  public static final int DEPTH = 10;
+  public static final int DEPTH = 6;
   public double angles[] = new double[DEPTH * 2];
   public double thrusts[] = new double[DEPTH * 2];
 
@@ -63,7 +73,7 @@ public class AGSolution {
       	score = 10_000_000+ (DEPTH - d);
       	return score;
       }
-      score += EVALUATOR.evaluate(state, this, d);
+    	score += patience[d] * EVALUATOR.evaluate(state, this);
     }
     return score;
   }
@@ -199,6 +209,32 @@ public class AGSolution {
 			this.angles[i] = parent2.angles[i];
 			this.thrusts[i] = parent2.thrusts[i];
 		}
+	}
+
+
+	public void directBot(State state, int ev, double thrust) {
+		state.restore();
+		for (int i=0;i<DEPTH;i++) {
+			for (int p=0;p<2;p++) {
+				Pod pod = state.pods[p];
+				CheckPoint cp = State.checkPoints[pod.nextCheckPointId];
+				// target + ev * speed
+				double targetx = cp.x; // + ev * pod.vx;
+				double targety = cp.y; // + ev * pod.vy;
+				
+				Vector target = new Vector(targetx - pod.x, targety - pod.y).normalize();
+		    double desiredAngle = Math.acos(state.pods[0].direction.dot(target)); // rads -PI -> PI
+	
+		    double angle = Math.min(Math.max(0.5 + Math.signum(state.pods[0].direction.ortho().dot(target)) * (desiredAngle / Math.PI), 0.0), 1.0);
+
+		    this.angles[i + p*DEPTH] = angle; 
+		    this.thrusts[i + p*DEPTH] = thrust; 
+			}
+			state.apply(this.angles[i],this.thrusts[i], this.angles[i+DEPTH],this.thrusts[i+DEPTH]);
+		}
+		
+		
+		
 	}
 
 
