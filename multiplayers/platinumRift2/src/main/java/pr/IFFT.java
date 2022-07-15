@@ -219,7 +219,6 @@ public class IFFT {
       		}
       		System.err.println("For a total of "+total);
       		
-      		
       		int totalMoved = 0;
       		for (int i=0;i<toExplore.size();i++) {
       			Cell toEx = toExplore.get(i);
