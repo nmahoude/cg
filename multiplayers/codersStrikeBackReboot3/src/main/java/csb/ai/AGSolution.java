@@ -38,29 +38,6 @@ public class AGSolution {
       }
     }
   }
-
-  
-  public void pseudoRandom() {
-    for (int t=0;t<2 * DEPTH;t++) {
-    	double choice;
-			
-    	choice = random.nextDouble();
-    	if (choice < 0.5) {
-    		angles[t] = 0.5; // straight
-    	} else {
-    		angles[t] = random.nextDouble();  // 0->1 linear
-    	}
-      
-    	choice = random.nextDouble();
-      if (choice < 0.05) {
-        thrusts[t] = -1; // shield
-      } else if (choice < 0.5) {
-      	thrusts[t] = 1.0; // full speed
-      } else {
-        thrusts[t] = random.nextDouble(); // 0->1  linear
-      }
-    }
-  }
   
   public double apply(State state) {
     state.restore();
@@ -127,16 +104,26 @@ public class AGSolution {
   }
   
   public double getAngle(int depth) {
-    double angle = (0.5 - angles[depth]) * 2; // [-1 ; 1]
+  	double genome = angles[depth];
+  	if (genome <= 0.2) genome = -1.0;
+  	else if (genome >= 0.4 && genome <= 0.6) genome = 0.0;
+  	else if (genome >= 0.8) genome = 1.0;
+  	else if (genome <= 0.4) genome = -1.0 + (genome - 0.2) * 5;
+  	else if (genome >= 0.6) genome = 0.0 + (genome - 0.6) * 5;
+  	
+  	
+    double angle = genome; // [-1 ; 1]
     return angle * Math.PI / 10;
   }
   public double getThrust(int depth) {
     // TODO handle shield and BOOST
-    double thrust = thrusts[depth];
-    if (thrust < 0) {
+    double genome = thrusts[depth];
+    if (genome < 0) {
       return -1;
+    } else if (genome > 0.6) {
+    	return 200;
     } else {
-      return thrust * 200;
+      return (genome / 0.6) * 200;
     }
   }
 
@@ -147,8 +134,8 @@ public class AGSolution {
 		
 		double chance = random.nextDouble();
 		if (chance < 0.4) {
-			child1.pseudoRandom();
-			child2.pseudoRandom();
+			child1.fullRandom();
+			child2.fullRandom();
 		} else if (chance < 0.6) {
 			child1.oneRandom(parent1);
 			child2.oneRandom(parent2);
@@ -165,8 +152,8 @@ public class AGSolution {
 			 AGSolution child1,
 			 AGSolution child2) {
 		
-		child1.pseudoRandom();
-		child2.pseudoRandom();
+		child1.fullRandom();
+		child2.fullRandom();
 		
 		
 	}

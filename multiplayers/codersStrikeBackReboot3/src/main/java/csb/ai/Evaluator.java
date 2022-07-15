@@ -44,12 +44,12 @@ public class Evaluator {
 				+ runnerCoeff * (
 	    		+ 5_000.0 * myRunnerCheckpoints
 	        + -10.0 * distanceToCheckPoint(myRunner)
-	        + 1.0 * directionToNextCheckpointScore(myRunner)
+	        + 2.0 * directionToNextCheckpointScore(myRunner)
         )
 				+ blockerCoeff * (
 	    		+ 5_000.0 * myBlockerCheckpoints
 	    		+ -10.0 * distanceToCheckPoint(myBlocker)
-	        + 1.0 * directionToNextCheckpointScore(myBlocker)
+	        + 2.0 * directionToNextCheckpointScore(myBlocker)
     		)
     		;
     

@@ -100,7 +100,7 @@ public class AG {
 //  		cp3v(start++, state, 0, 0.0);
 //  	}
     for (int i=start;i<POPULATION_SIZE;i++) {
-      solutions[i].pseudoRandom();
+      solutions[i].fullRandom();
       solutions[i].apply(state);
     }
 

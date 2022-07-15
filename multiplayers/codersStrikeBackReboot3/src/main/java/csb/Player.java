@@ -5,7 +5,7 @@ import fast.read.FastReader;
 
 public class Player {
   private static final AG ai = new AG();
-  public static long start;
+  public static long start = 0L;
   
   public final State state = new State();
 
