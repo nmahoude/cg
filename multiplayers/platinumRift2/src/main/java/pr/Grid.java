@@ -105,4 +105,8 @@ public class Grid {
       System.err.println("Cluster size is "+c.cells.size() + " frontier is "+frontierSize);
     }
   }
+
+	public int cellCount() {
+		return cellCount;
+	}
 }

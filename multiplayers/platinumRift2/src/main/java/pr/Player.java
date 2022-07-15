@@ -89,6 +89,9 @@ public class Player {
       // update platinum if cell is visible
       if (visible) {
         cell.platinum = platinum;
+        // update counter part cell
+        Cell symetricCell = grid.getById(grid.cellCount() - 1 - zID);
+        symetricCell.platinum = platinum;
       }
       cell.atWar = playerOnCellCount > 1;
     }

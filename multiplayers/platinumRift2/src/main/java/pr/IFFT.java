@@ -121,8 +121,9 @@ public class IFFT {
       for (Cell v : neighborsByPlatinum) {
       	if (v.isForbiden()) continue;
       	
-        if (v.threathen.isEmpty())
-          continue;
+        if (v.threathen.isEmpty()) continue;
+        if (v.platinum == 0) continue;
+        
         if (Player.DEBUG_CALCULATION) {
           System.err.println("Helping sister "+v+" in distress ");
         }
