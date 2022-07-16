@@ -16,5 +16,6 @@
     <module>marsLander</module>
     <module>searchrace</module>
     <module>numbershifting</module>
+    <module>blockthespreadingfire</module>
   </modules>
 </project>
