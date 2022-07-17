@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Player {
-	static final Random random = new Random(2);
+	static final Random random = new Random(4);
 	
 	static final int BULL = 2;
   static final int NOT_HERE = 1;
@@ -48,7 +48,7 @@ public class Player {
         debugPositionPerDigits();
         
         
-        random(proposition);
+        random(proposition, bulls);
         //uct(proposition);
     }
 	}
@@ -100,20 +100,44 @@ public class Player {
 	
 	}	
 	
-	
-	private static void random(int[] proposition) {
+	static int lastProposition[] = new int[10];
+	private static void random(int[] proposition, int lastBulls) {
 		boolean free = false;
 		boolean searchAgain;
 		do  {
 			searchAgain = false;
 		  int disponible[] = new int[10];
+
+		  for (int index=0;index<numberLength;index++) {
+		  	lastProposition[index] = proposition[index];
+		  	proposition[index] = -1;
+		  }
 		  
+		  // place the bulls
 		  for (int index=0;index<numberLength;index++) {
 		  	if (bulls[index] != -1) {
 		  		proposition[index] = bulls[index];
 		  		disponible[bulls[index]] = -1;
-		  	} else {
-			  	// check we can find a free number ...
+		  		lastBulls--;
+		  	}
+		  }
+		  
+		  // take the last bulls remaining
+//		  for (int index=0;index<numberLength;index++) {
+//		  	if (proposition[index] != -1) continue;
+//		  	if (lastBulls <= 0) break;
+//		  	
+//		  	proposition[index] = lastProposition[index];
+//		  	disponible[lastProposition[index]] = -1;
+//		  	lastBulls--;
+//		  }
+		  
+		  
+		  // take back the last lastBulls proposition start
+		  for (int index=0;index<numberLength;index++) {
+		  	if (proposition[index] != -1) continue;
+
+		  	// check we can find a free number ...
 			  	free = false;
 			  	for (int j=0;j<10;j++) {
 			  		if (disponible[j] == -1) continue;
@@ -132,7 +156,6 @@ public class Player {
 			  	
 			  	proposition[index] = rand;
 			  	disponible[rand] = -1; // not usable anymore
-		  	}
 		  }
 		  
 		  if (hasAlreadyBeenDone(proposition)) {
@@ -159,6 +182,7 @@ public class Player {
 	private static void checkLastProposition(int[] proposition, int bulls, int cows) {
 		if (bulls == -1) return;
 		
+		int originalBulls = bulls;
 		
 		for (int i=0;i<numberLength;i++) {
 			int digit = proposition[i];
@@ -167,10 +191,19 @@ public class Player {
 			UCT[digit][i][2] += 1;
 		}
 		
+		// remove known bulls
+		for (int index=0;index<numberLength;index++) {
+			if (Player.bulls[index] != -1) {
+				bulls--;
+			}
+		}
+		
 		
 		if (bulls == 0 && cows == 0) {
 			// no digits in the solution !
 			for (int i=0;i<numberLength;i++) {
+				if (Player.bulls[i] != -1) continue;
+				
 				int notUsed = proposition[i];
 				for (int j=0;j<10;j++) {
 					positionsPerDigits[notUsed][j] = NOTUSED;
@@ -182,6 +215,7 @@ public class Player {
 		if (bulls == 0) {
 			// no number can be used at the given position
 			for (int i=0;i<numberLength;i++) {
+				if (Player.bulls[i] != -1) continue;
 				int notUsed = proposition[i];
 				positionsPerDigits[notUsed][i] = NOTUSED;
 			}
@@ -199,8 +233,7 @@ public class Player {
 			}
 		}
 		
-		
-		if (cows+bulls == numberLength) {
+		if (cows+originalBulls == numberLength) {
 			// all digits are used, so no other !
 			for (int other=0;other<10;other++) {
 				if (inProposition(other, proposition)) continue;
@@ -212,30 +245,46 @@ public class Player {
 			}
 		}
 		
-		// check for unicity in column
-		boolean found;
-		do {
-			found = false;
-			for (int index=0;index<numberLength;index++) {
-				if (Player.bulls[index] != -1) continue;
-				
-				int solutions = 0;
-				int lastDigit = -1;
-				for (int d=0;d<10;d++) {
-					if (positionsPerDigits[d][index] != NOTUSED) {
-						solutions++;
-						lastDigit = d;
-					}
-				}
-				if (solutions == 1) {
-					System.err.println("Found a single digit in column "+index);
-					setBull(index, lastDigit);
-					found = true;
-				}
-			}
-		} while (found);
+		checkUnicityInColumns();
+
+		checkUnicityInRows();
 		
-		// check row unicity (only when 10 digits) 
+		
+		// now check with past propositions
+//		int canBeBull[] = new int[10];
+//		int totalStllCanBeBulls = numberLength;
+//		if (originalBulls > 0) {
+//			for (int index=0;index<numberLength;index++) {
+//				for (Proposition prop : allProposition) {
+//					if (prop.digits[index] == proposition[index] && prop.bulls == 0) {
+//						// can't be this one !
+//						canBeBull[index] = -1;
+//						totalStllCanBeBulls--;
+//						break;
+//					}
+//				}
+//			}
+//			System.err.println("Proposition history is "+allProposition.size()+" found "+totalStllCanBeBulls+" that can be bull out of "+bulls);
+//			if (totalStllCanBeBulls == bulls) {
+//				System.err.println("Setting bulls ! ");
+//				for (int index=0;index<numberLength;index++) {
+//					if (canBeBull[index] == 0) {
+//						setBull(index, proposition[index]);
+//					}
+//				}
+//			}
+//		}
+		
+		
+		// not working as expected :(
+		// checkPotentials(proposition, bulls, cows);
+		
+		
+		
+	}
+
+	private static void checkUnicityInRows() {
+		boolean found;
 		if (numberLength == 10) {
 			do {
 				found = false;
@@ -261,33 +310,111 @@ public class Player {
 			} while (found);
 			
 		}
-		
-		
-		// now check with past propositions
-		int canBeBull[] = new int[10];
-		int totalStllCanBeBulls = numberLength;
-		if (bulls > 0) {
+	}
+
+	private static void checkUnicityInColumns() {
+		boolean found;
+		do {
+			found = false;
 			for (int index=0;index<numberLength;index++) {
-				for (Proposition prop : allProposition) {
-					if (prop.digits[index] == proposition[index] && prop.bulls == 0) {
-						// can't be this one !
-						canBeBull[index] = -1;
-						totalStllCanBeBulls--;
-						break;
+				if (Player.bulls[index] != -1) continue;
+				
+				int solutions = 0;
+				int lastDigit = -1;
+				for (int d=0;d<10;d++) {
+					if (positionsPerDigits[d][index] != NOTUSED) {
+						solutions++;
+						lastDigit = d;
 					}
 				}
-			}
-			System.err.println("Proposition history is "+allProposition.size()+" found "+totalStllCanBeBulls+" that can be bull out of "+bulls);
-			if (totalStllCanBeBulls == bulls) {
-				System.err.println("Setting bulls ! ");
-				for (int index=0;index<numberLength;index++) {
-					if (canBeBull[index] == 0) {
-						setBull(index, proposition[index]);
-					}
+				if (solutions == 1) {
+					System.err.println("Found a single digit in column "+index);
+					setBull(index, lastDigit);
+					found = true;
 				}
 			}
+		} while (found);
+	}
+
+	private static void checkPotentials(int[] proposition, int bulls, int cows) {
+		if (bulls ==0 ) return;
+		
+		// 1. check only one
+		chooseSolutions = 0;
+		
+		int disposable[] = new int[10];
+		
+		int[] mask = prepareMask();
+		int grandTotal = choose(disposable,  mask, numberLength, 0);
+		
+	}
+
+	static int chooseSolutions;
+	static int[] bestChooseSolutions = new int[10];
+	static int choose(int[] disposable, int[] mask, int remainingSlots, int index) {
+		
+		if (remainingSlots == 0) {
+			boolean allCorrect = checkAllPastPropositionForBull(mask);
+			if (allCorrect) {
+				chooseSolutions++;
+				// System.err.println("Valid solution : " + Arrays.toString(mask));
+				if (chooseSolutions == 1) {
+					// only copy the first because if several we are not interested
+					System.arraycopy(mask, 0, bestChooseSolutions, 0, numberLength);
+				}
+			}
+			return 1;
 		}
 		
+		if (index == numberLength) {
+			return 0;  // not all chosen
+		}
+
+		// choosing
+		int total = 0;
+		
+		for (int i = 0; i<10;i++) {
+			if (positionsPerDigits[i][index] == NOTUSED) continue;
+			if (disposable[i] == -1) continue;
+			
+			disposable[i] = -1;
+			mask[index] = i;
+			remainingSlots--;
+				int subTotal = choose(disposable, mask, remainingSlots, index+1);
+				if (subTotal == 0) {
+					// no solution after this point ... remove it !
+					// System.err.println("No possibilities after "+Arrays.toString(mask));
+					positionsPerDigits[i][index] = NOTUSED;
+				}
+				total += subTotal;
+			mask[index] = -1;
+			remainingSlots++;
+			disposable[i] = 0;
+		}
+
+		return total;
+	}
+	
+	
+	
+	private static boolean checkAllPastPropositionForBull(int[] mask) {
+		boolean allCorrect = true;
+		for (Proposition p : allProposition) {
+			if (p.inlinedWith(mask)) {
+			} else {
+				allCorrect = false;
+				break;
+			}
+		}
+		return allCorrect;
+	}
+
+	private static int[] prepareMask() {
+		int mask[] = new int[numberLength];
+		for (int i=0;i<numberLength;i++) {
+			mask[i] = -1;
+		}
+		return mask;
 	}
 
 	private static boolean isAlreadyBull(int d) {
@@ -312,6 +439,8 @@ public class Player {
 			positionsPerDigits[i][index] = NOTUSED;
 		}
 		
+		checkUnicityInColumns();
+		checkUnicityInRows();
 		
 	}
 
