@@ -41,26 +41,76 @@ public class Player {
         }
         
         
-        
-        int disponible[] = new int[10];
-        
-        for (int index=0;index<numberLength;index++) {
-        	
-        	int rand;
-        	do {
-        		rand = random.nextInt(10);
-        	}	while (disponible[rand] == -1 || positionsPerDigits[rand][index] == NOTUSED);
-        	
-        	proposition[index] = rand;
-        	disponible[rand] = -1; // not usable anymore
-        	
-        }
-        
-
-        long guess = guess(proposition, numberLength);
-				System.out.println(guess); // number with numberLength count of digits
+        random(proposition);
+        // TODO ? uct(proposition);
     }
-}
+	}
+
+	private static void uct(int[] proposition) {
+	  int disponible[] = new int[10];
+
+	  for (int index=0;index<numberLength;index++) {
+	  	// 1. pick the number disponible with maximum uct
+	  	int bestDigit = -1;
+	  	double bestScore = Double.NEGATIVE_INFINITY;
+	  	for (int d=0;d<9;d++) {
+	  		if (disponible[d] == -1) continue;
+	  		if (positionsPerDigits[d][index] == NOTUSED) continue;
+
+	  		double score;
+	  		if (UCT[d][index][2] == 0) {
+	  			score = 2.0;
+	  		} else {
+	  			score = 1.0 * (2 * UCT[d][index][0] + UCT[d][index][1]) / (UCT[d][index][2]);
+	  		}
+	  		if (score > bestScore) {
+	  			bestScore = score;
+	  			bestDigit = d;
+	  		}
+	  		
+	  	}
+	  	
+	  	proposition[index] = bestDigit;
+	  	disponible[bestDigit] = -1;
+	  }		
+
+	  long guess = guess(proposition, numberLength);
+		System.out.println(guess); // number with numberLength count of digits
+	
+	}	
+	
+	
+	private static void random(int[] proposition) {
+		boolean free = false;
+		do  {
+		  int disponible[] = new int[10];
+		  
+		  for (int index=0;index<numberLength;index++) {
+		  	// check we can find a free number ...
+		  	free = false;
+		  	for (int j=0;j<10;j++) {
+		  		if (disponible[j] == -1) continue;
+		  		if (positionsPerDigits[j][index] == NOTUSED) continue;
+		  		free = true;
+		  		break;
+		  	}
+		  	if (!free) {
+		  		break;
+		  	}
+		  	int rand;
+		  	do {
+		  		rand = random.nextInt(10);
+		  	}	while (disponible[rand] == -1 || positionsPerDigits[rand][index] == NOTUSED);
+		  	
+		  	proposition[index] = rand;
+		  	disponible[rand] = -1; // not usable anymore
+		  }
+		} while( !free);
+		
+
+		long guess = guess(proposition, numberLength);
+		System.out.println(guess); // number with numberLength count of digits
+	}
 
 	private static void checkLastProposition(int[] proposition, int bulls, int cows) {
 		if (bulls == -1) return;
