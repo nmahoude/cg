@@ -2,14 +2,14 @@ package blockthespreadingfire;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 import fast.read.FastReader;
 
 public class Player {
 
 	private static final State STATE = new State();
-	private static final ThreadLocalRandom random = ThreadLocalRandom.current();
+	private static final Random random =  new Random(System.currentTimeMillis());
 	private static final boolean DEBUG = false;
 	
 	public static void main(String args[]) {
@@ -22,7 +22,7 @@ public class Player {
 
 		System.err.println("calulating burn bfs ...");
 		BFS bfs = new BFS();
-		bfs.calculate(STATE.grid, State.fireStart, State.houseFireDuration, State.treeFireDuration, State.fireStart, Integer.MAX_VALUE);
+		bfs.calculate(STATE.grid, State.fireStart, State.treeFireDuration , State.treeFireDuration, State.fireStart, Integer.MAX_VALUE);
 		if (DEBUG) {
 			bfs.debug();
 		}
@@ -34,13 +34,15 @@ public class Player {
 
 		int bestScore =  -1;
 		List<Pos> bestBoundary = new ArrayList<>();
+		Pos bestStartPos = null;
+		int bestRadius = -1;
 		
 		while (System.currentTimeMillis() - start < 4900) {
 		//for (int tries=0;tries<1000;tries++) {
 		
 			Pos startPos = Pos.from(1+random.nextInt(State.width-2), 1+random.nextInt(State.height-2));
 			int maxRadius = Math.max(Math.max(State.width-startPos.x-1, startPos.x-1), Math.max(State.height-startPos.y-1, startPos.y-1));
-			int radius = 1+random.nextInt(maxRadius);
+			int radius = 1+ random.nextInt(maxRadius);
 			if (STATE.grid[startPos.offset] == State.SAFE) continue;
 			if (startPos == State.fireStart) continue;
 			
@@ -75,6 +77,8 @@ public class Player {
 			
 			if (score > bestScore) {
 				bestScore= score;
+				bestStartPos = startPos;
+				bestRadius = radius;
 				bestBoundary.clear();
 				bestBoundary.addAll(distBfs.boundary);
 			}
@@ -82,6 +86,7 @@ public class Player {
 		
 
 		System.err.println("Best score is "+bestScore);
+		System.err.println("Start pos "+bestStartPos+" / "+bestRadius);
 		System.err.println("Best boundary is "+bestBoundary);
 		
 		
