@@ -17,5 +17,6 @@
     <module>searchrace</module>
     <module>numbershifting</module>
     <module>blockthespreadingfire</module>
+    <module>bullsandcows</module>
   </modules>
 </project>
