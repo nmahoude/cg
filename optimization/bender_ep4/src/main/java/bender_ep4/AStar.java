@@ -40,28 +40,36 @@ public class AStar {
   	
   }
   
-  static final int[][] dirs = {{1,0}, {-1,0},{0,1}, {1,0}};
+  static final int[][] dirs = {{1,0}, {-1,0},{0,1}, {0, -1}};
 
 	private int currentMaxDepth;
   
   public List<Pos> compute(State state, Pos start, Pos target) {
   	init(start, target);
-    
+  	
+  	state.debug();
+  	
     while(!openSet.isEmpty()) {
       AStarNode current = openSet.poll();
+      
+      System.err.println("Polling : "+current.pos);
+      
       if (current.pos == target) {
       	currentMaxDepth = gScore[current.pos.offset];
       	continue;
       }
       
       if (fScore[current.pos.offset] > currentMaxDepth ) {
-      	return solutions(target);
+      	break; // on ne trouvera plus de meilleure solution
       }
 
       for (int[] decal : dirs) {
       	Pos next = current.pos.decal(decal[0], decal[1]);
       	int nextOffset = next.offset;
-				if (State.grid[nextOffset] == 1) continue;
+				
+      	if (state.grid[nextOffset] == 1) continue; // wall
+      	if (state.grid[nextOffset] == 2) continue; // garbage
+				if (state.grid[nextOffset] == 3) continue; // open field
       	
     		int tentativeGScore = gScore[current.pos.offset] + 1;
     		if (tentativeGScore < gScore[nextOffset]) {

@@ -10,8 +10,8 @@ public class State {
 	
 	static int switchCount;
 	static Pos[] switches = new Pos[10];
-	static Pos[] blocks = new Pos[10];
-	static int grid[] = new int[21*21];
+	static Pos[] fields = new Pos[10];
+	int grid[] = new int[21*21];
 	
 	
 	int switchState = 0; // bit representation of switch state
@@ -24,8 +24,11 @@ public class State {
 			String line = in.nextLine();
 			for (int x=0;x<width;x++) {
 				Pos pos = Pos.from(x, y);
-				grid[pos.offset] = (line.charAt(x) == '#' ? 1 : 0);
-			}
+				char c = line.charAt(x);
+				if (c == '#') grid[pos.offset] = 1;
+				if (c == '+') grid[pos.offset] = 2;
+				if (c == '.') grid[pos.offset] = 0;
+			}				
 		}
 		State.start = Pos.from(in.nextInt(), in.nextInt());
 		State.target = Pos.from(in.nextInt(), in.nextInt());
@@ -33,12 +36,24 @@ public class State {
 		State.switchCount = in.nextInt();
 		for (int i = 0; i < switchCount; i++) {
 			State.switches[i] = Pos.from(in.nextInt(), in.nextInt());
-			State.blocks[i] = Pos.from(in.nextInt(), in.nextInt());
+			State.fields[i] = Pos.from(in.nextInt(), in.nextInt());
 			int initialState = in.nextInt(); // 1 if blocking, 0 otherwise
 			
+			
 			if (initialState == 1) {
+				grid[State.fields[i].offset] = 3;
 				switchState |= (1 << i);
 			}
+		}
+	}
+
+	public void debug() {
+		System.err.println("State grid:  ");
+		for (int y = 0; y < height; y++) {
+			for (int x=0;x<width;x++) {
+				System.err.print(grid[Pos.from(x, y).offset] == 0 ? ' ' : 'x');
+			}
+			System.err.println();
 		}
 	}
 
