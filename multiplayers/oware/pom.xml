@@ -1,0 +1,103 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nmx.codingame</groupId>
+    <artifactId>multiplayers</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>oware</artifactId>
+  
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+      <maven.compiler.target>17</maven.compiler.target>
+      
+    <cglib.version>0.0.1-SNAPSHOT</cglib.version>
+
+  </properties>
+
+  <dependencies>
+
+    <!-- personal cg stuff -->
+    <dependency>
+      <groupId>org.nmx.codingame</groupId>
+      <artifactId>cgfx</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nmx.codingame</groupId>
+      <artifactId>fast</artifactId>
+      <classifier>sources</classifier>
+      <version>${cglib.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nmx.codingame</groupId>
+      <artifactId>fast</artifactId>
+      <version>${cglib.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nmx.codingame</groupId>
+      <artifactId>cgutils</artifactId>
+      <classifier>sources</classifier>
+      <version>${cglib.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nmx.codingame</groupId>
+      <artifactId>cgutils</artifactId>
+      <version>${cglib.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.nmx.codingame</groupId>
+      <artifactId>trigonometry</artifactId>
+      <version>${cglib.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nmx.codingame</groupId>
+      <artifactId>trigonometry</artifactId>
+      <version>${cglib.version}</version>
+      <classifier>sources</classifier>
+    </dependency>
+    
+    
+    
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>11.0.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.8.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.8.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.21.0</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.ndx.codingame</groupId>
+        <artifactId>codingame-simpleclass-maven-plugin</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>assemble</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
