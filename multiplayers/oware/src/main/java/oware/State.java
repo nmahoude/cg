@@ -22,7 +22,8 @@ public class State {
 		score[1] = model.score[1];
 	}
 	
-	public void playHouse(int player, int index) {
+	public void playHouse(int player, int originalIndex) {
+		int index = originalIndex;
 		int currentSeeds = seeds[index];
 		if (currentSeeds == 0) {
 			score[player] = -999;
@@ -31,6 +32,8 @@ public class State {
 		
 		while (currentSeeds > 0) {
 			index++;
+			if (index == originalIndex) continue;
+			
 			if (index == 12) index = 0;
 			if (seeds[index] == 12) {
 				continue;
