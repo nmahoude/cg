@@ -198,9 +198,9 @@ public class Gui extends Application {
     controller.init(seed);
 //    controller.referee.physics.collisionSimualtion = false;
     
-    controller.setAI1(new AGAI(System.currentTimeMillis()+100));
+    controller.setAI1(new AGAI());
     
-    agai = new AGAI(System.currentTimeMillis()+100);
+    agai = new AGAI();
     controller.setAI2(agai);
     
     agaiUI = new AGAIRepresentation();

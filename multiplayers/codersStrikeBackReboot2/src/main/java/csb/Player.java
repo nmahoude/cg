@@ -14,6 +14,7 @@ public class Player {
   public static GameState state = new GameState();
   public static int totalLaps;
   private static int round;
+  private static AGAI2 ag = new AGAI2();
   
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
@@ -48,10 +49,9 @@ public class Player {
         System.out.println(""+(int)state.checkPoints[1].x+" "+(int)state.checkPoints[1].y+" BOOST");
         continue;
       }
-      AGAI2 ag = new AGAI2(start+140);
       ag.setState(state);
       
-      AISolution best = ag.evolve();
+      AISolution best = ag.evolve(System.currentTimeMillis()+40);
       String[] output = best.output();
 
       long end= System.currentTimeMillis();

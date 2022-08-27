@@ -11,7 +11,7 @@ public class DummyAI implements AI {
   }
 
   @Override
-  public AISolution evolve() {
+  public AISolution evolve(long stopTime) {
     DummySolution solution = new DummySolution();
     CheckPoint cp = state.checkPoints[state.pods[0].nextCheckPointId];
     solution.target1 = new Point(cp.x, cp.y);

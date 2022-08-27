@@ -23,7 +23,7 @@ public class Controller {
   public static void main(String[] args) throws Exception {
     Random rand = new Random(System.currentTimeMillis());
 
-    AI ai1 = new AGAI(System.currentTimeMillis()+100);
+    AI ai1 = new AGAI();
     AI ai2 = new DummyAI();
     List<AI> ais = Arrays.asList(ai1, ai2);
     
@@ -113,8 +113,8 @@ public class Controller {
   }
 
   public void playOneTurn() throws Exception {
-    String[] output1 = ai1.evolve().output();
-    String[] output2 = ai2.evolve().output();
+    String[] output1 = ai1.evolve(System.currentTimeMillis()+100).output();
+    String[] output2 = ai2.evolve(System.currentTimeMillis()+100).output();
     
     referee.handlePlayerOutput(0, round, 0, output1[0]);
     referee.handlePlayerOutput(0, round, 1, output1[1]);

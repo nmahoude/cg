@@ -17,11 +17,11 @@ public class AGEvaluator {
   GameState state;
   
   
-  AGEvaluator(GameState state) {
-    this.state = state;
+  AGEvaluator() {
   }
 
-  public void evaluate(AGSolution sol, int depth) {
+  public void evaluate(GameState state, AGSolution sol, int depth) {
+    this.state = state;
     double myRunnerDist = 3*state.lapLength - state.distToFinishLine(state.myRunner);
     double energy = 0.0
         // runner

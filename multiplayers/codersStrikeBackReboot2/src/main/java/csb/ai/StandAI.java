@@ -8,7 +8,7 @@ public class StandAI implements AI{
   private GameState state;
 
   @Override
-  public AISolution evolve() {
+  public AISolution evolve(long stopTime) {
     DummySolution solution= new DummySolution();
     solution.target1 = new Point(0,0);
     solution.thrust1 = 0;

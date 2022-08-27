@@ -21,16 +21,15 @@ public class AGAI2 implements AI {
   public static final int SURVIVOR_POP_SIZE = 20;
   public AGSolution[] population = new AGSolution[POPULATION];
   AGSolution best;
-  AGEvaluator evaluator = new AGEvaluator(state);
-
+  AGEvaluator evaluator = new AGEvaluator();
   private long stopTime;
 
-  public AGAI2(long stopTime) {
-    this.stopTime = stopTime;
+  public AGAI2() {
   }
 
   @Override
-  public AISolution evolve() {
+  public AISolution evolve(long stopTime) {
+    this.stopTime = stopTime;
     // setup physics engine
     engine.pods = state.pods;
     engine.checkPoints = state.checkPoints;
@@ -69,7 +68,7 @@ public class AGAI2 implements AI {
         state.pods[1].apply(sol.getAngle(AGSolution.DEPTH + i), sol.getThrust(AGSolution.DEPTH + i));
         engine.simulate();
         
-        evaluator.evaluate(sol, i);
+        evaluator.evaluate(state, sol, i);
       }
       sol.finalPosition0 = new Point(state.pods[0].x, state.pods[0].y);
       sol.finalPosition1 = new Point(state.pods[1].x, state.pods[1].y);
@@ -148,7 +147,7 @@ public class AGAI2 implements AI {
       state.pods[1].apply(sol.getAngle(AGSolution.DEPTH + i), sol.getThrust(AGSolution.DEPTH + i));
       engine.simulate();
       
-      evaluator.evaluate(sol, i);
+      evaluator.evaluate(sol.state, sol, i);
     }
     sol.finalPosition0 = new Point(state.pods[0].x, state.pods[0].y);
     sol.finalPosition1 = new Point(state.pods[1].x, state.pods[1].y);
@@ -158,7 +157,6 @@ public class AGAI2 implements AI {
   @Override
   public void setState(GameState state) {
     this.state = state;
-    evaluator = new AGEvaluator(state);
   }
 
   private void createPopulation(GameState state) {
