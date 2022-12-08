@@ -38,5 +38,6 @@
   	<module>spring2022</module>
   	<module>codersStikeBackReboot3</module>
   	<module>oware</module>
+  	<module>spaceShooter</module>
   </modules>
 </project>

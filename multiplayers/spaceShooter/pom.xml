@@ -1,0 +1,95 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nmx.codingame</groupId>
+    <artifactId>multiplayers</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>spaceShooter</artifactId>
+  
+  
+   <properties>
+      <maven.compiler.source>17</maven.compiler.source>
+      <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+  
+  <dependencies>
+  
+    <!-- personal cg stuff -->
+    <dependency>
+      <groupId>org.nmx.codingame</groupId>
+      <artifactId>cgfx</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nmx.codingame</groupId>
+      <artifactId>fast</artifactId>
+      <classifier>sources</classifier>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nmx.codingame</groupId>
+      <artifactId>fast</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nmx.codingame</groupId>
+      <artifactId>cgutils</artifactId>
+      <classifier>sources</classifier>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nmx.codingame</groupId>
+      <artifactId>cgutils</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>11.0.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.9.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.9.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.23.1</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.ndx.codingame</groupId>
+        <artifactId>codingame-simpleclass-maven-plugin</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>assemble</goal>
+              </goals>
+        <!--<configuration>
+          <removeComments>true</removeComments>
+        </configuration>-->
+            </execution>
+          </executions>
+          
+      </plugin>
+
+      <plugin>
+        <groupId>com.fizzed</groupId>
+        <artifactId>fizzed-watcher-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>
