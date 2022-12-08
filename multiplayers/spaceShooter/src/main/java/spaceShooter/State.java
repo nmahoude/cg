@@ -10,18 +10,31 @@ public class State {
 	Unit me;
 	Unit opp;
 	int gunCooldown;
+	int missileCount = 8;
 	
+	Unit myMissiles[] = new Unit[8];
+	int myMissilesFE = 0;
+	
+	Unit oppMissiles[] = new Unit[8];
+	int oppMissilesFE = 0;
+
 	public State() {
 		me = new Unit();
 		opp = new Unit();
 		for (int i=0;i<units.length;i++) {
 			units[i] = new Unit();
 		}
+		for (int i=0;i<8;i++) {
+			myMissiles[i] = new Unit();
+			oppMissiles[i] = new Unit();
+		}
 	}
 	
 	public void read(FastReader in) {
 		int unitsCount = in.nextInt(); // number of units on the map
 		unitsFE = 0;
+		myMissilesFE = 0;
+		oppMissilesFE = 0;
 		
 		for (int i = 0; i < unitsCount; i++) {
 			int unitId = in.nextInt(); // unit's unique ID
@@ -44,6 +57,12 @@ public class State {
 				} else {
 					current=opp;
 				}
+			} else if (unitType[0] == 'M') {
+				if (faction == 1) {
+					current = myMissiles[myMissilesFE++];
+				} else {
+					current = oppMissiles[oppMissilesFE++];
+				}
 			} else {
 				current = units[unitsFE++];
 			}
@@ -51,6 +70,9 @@ public class State {
 			current.pos.set(positionX, positionY);
 			current.vec.set(velocityX, velocityY);
 		}
+		
+		System.err.println("My missiles FE "+myMissilesFE);
+		System.err.println("Opp missiles FE "+oppMissilesFE);
 	}
 
 }
