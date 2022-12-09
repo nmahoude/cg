@@ -59,7 +59,7 @@ public class State {
 			}
 			
 		} else {
-			while (index > 0 && index < 6 && (seeds[index] == 2 || seeds[index] == 3)) {
+			while (index >= 0 && index < 6 && (seeds[index] == 2 || seeds[index] == 3)) {
 				captured += seeds[index];
 				seeds[index] = 0;
 				index--;
@@ -92,6 +92,10 @@ public class State {
 		}
 		System.err.println();
 		System.err.println("Scores : "+score[0]+" "+score[1]);
+	}
+
+	public boolean end() {
+		return win() != -1 ;
 	}
 	
 }

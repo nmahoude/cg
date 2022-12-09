@@ -9,8 +9,8 @@ public class State {
 	static Pos target;
 	
 	static int switchCount;
-	static Pos[] switches = new Pos[10];
-	static Pos[] fields = new Pos[10];
+	static Pos[] switches = new Pos[12];
+	static Pos[] fields = new Pos[12];
 	int grid[] = new int[21*21];
 	
 	
@@ -39,12 +39,13 @@ public class State {
 			State.fields[i] = Pos.from(in.nextInt(), in.nextInt());
 			int initialState = in.nextInt(); // 1 if blocking, 0 otherwise
 			
-			
+			grid[State.switches[i].offset] = 10 + i;
 			if (initialState == 1) {
-				grid[State.fields[i].offset] = 3;
+				grid[State.fields[i].offset] = 30 + i;
 				switchState |= (1 << i);
 			}
 		}
+		System.err.println("Switch state is "+Integer.toBinaryString(switchState)+" ( "+switchState+")");
 	}
 
 	public void debug() {

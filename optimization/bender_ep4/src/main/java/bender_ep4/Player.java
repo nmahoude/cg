@@ -12,7 +12,7 @@ public class Player {
 
 		state.read(in);
 
-		AStar astar = new AStar();
+		AStar2 astar = new AStar2();
 		List<Pos> path = astar.compute(state, State.start, State.target);
 		System.err.println("Path : ");
 		for (Pos p : path) {
