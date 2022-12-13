@@ -23,10 +23,15 @@ public class CellBoard extends Board {
 
   public void fillCellAt(Color color, Cell cell, Inset inset) {
     fillRect(color, color, 
-        Pos.from(cellSize * cell.x+cellSize / 2+inset.l, cellSize * cell.y +cellSize / 2 + inset.l), 
+        Pos.from(cellSize * cell.x+inset.l, cellSize * cell.y + inset.l), 
         Length.of(cellSize-inset.l*2, cellSize-inset.l*2));
   }
 
+  public void fillCellAt(Color border, Color inside, Cell cell, Inset inset) {
+    fillRect(border, inside, 
+        Pos.from(cellSize * cell.x+inset.l, cellSize * cell.y + inset.l), 
+        Length.of(cellSize-inset.l*2, cellSize-inset.l*2));
+  }
   
   public void drawCellText(Color color, Cell cell, String text) {
     drawCellText(color, cell, Length.NO, text);
@@ -49,8 +54,8 @@ public class CellBoard extends Board {
   }
 
   public void drawCellCircle(Color color, Color fill, Cell cell, Inset inset, int radius) {
-    drawCircle(color, fill, Pos.from(cell.x * cellSize + inset.l,
-                               cell.y * cellSize + inset.l), 
+    drawCircle(color, fill, Pos.from(cell.x * cellSize + cellSize / 2 + inset.l/4,
+                               cell.y * cellSize + cellSize / 2 + inset.l/4), 
                       Length.of(0, 0), radius - inset.l);
   }
 
