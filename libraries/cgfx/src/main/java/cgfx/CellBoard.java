@@ -6,10 +6,16 @@ import javafx.scene.paint.Color;
 public class CellBoard extends Board {
 
   private int cellSize;
+	private Length l;
 	
 	public CellBoard(Group parent, int cellSize, int width, int height) {
-	  super(parent, cellSize * width, cellSize * height);
-	  this.cellSize = cellSize;
+		this(parent, cellSize, width, height, Length.NO);
+	}
+
+	public CellBoard(Group parent, int cellSize, int width, int height, Length inset) {
+		super(parent, cellSize * width, cellSize * height);
+		this.l = inset;
+		this.cellSize = cellSize;
 	}
 	
   public void drawCellAt(Color color, int x, int y, Inset inset) {
@@ -17,19 +23,19 @@ public class CellBoard extends Board {
   }
 
   public void drawCellAt(Color color, Cell cell, Inset inset) {
-    drawRect(color, Pos.from(cellSize * cell.x+inset.l+cellSize / 2, cellSize * cell.y + inset.l+cellSize / 2), 
+    drawRect(color, Pos.from(l.dx + cellSize * cell.x+inset.l+cellSize / 2, l.dy + cellSize * cell.y + inset.l+cellSize / 2), 
                     Length.of(cellSize-inset.l*2, cellSize-inset.l*2));
   }
 
   public void fillCellAt(Color color, Cell cell, Inset inset) {
     fillRect(color, color, 
-        Pos.from(cellSize * cell.x+inset.l, cellSize * cell.y + inset.l), 
+        Pos.from(l.dx + cellSize * cell.x+inset.l, l.dy + cellSize * cell.y + inset.l), 
         Length.of(cellSize-inset.l*2, cellSize-inset.l*2));
   }
 
   public void fillCellAt(Color border, Color inside, Cell cell, Inset inset) {
     fillRect(border, inside, 
-        Pos.from(cellSize * cell.x+inset.l, cellSize * cell.y + inset.l), 
+        Pos.from(l.dx + cellSize * cell.x+inset.l, l.dy + cellSize * cell.y + inset.l), 
         Length.of(cellSize-inset.l*2, cellSize-inset.l*2));
   }
   
@@ -38,7 +44,7 @@ public class CellBoard extends Board {
   }
 
   public void drawCellText(Color color, Cell cell, Length decal, String text) {
-    super.drawText(color, Pos.from(cellSize * cell.x + decal.dx, cellSize * cell.y+decal.dy+16), text);
+    super.drawText(color, Pos.from(l.dx + cellSize * cell.x + decal.dx, l.dy + cellSize * cell.y+decal.dy+16), text);
   }
 
   public void drawCellCircle(Color color, Cell cell) {
@@ -54,8 +60,8 @@ public class CellBoard extends Board {
   }
 
   public void drawCellCircle(Color color, Color fill, Cell cell, Inset inset, int radius) {
-    drawCircle(color, fill, Pos.from(cell.x * cellSize + cellSize / 2 + inset.l/4,
-                               cell.y * cellSize + cellSize / 2 + inset.l/4), 
+    drawCircle(color, fill, Pos.from(l.dx + cell.x * cellSize + cellSize / 2 + inset.l/4,
+    									l.dy + cell.y * cellSize + cellSize / 2 + inset.l/4), 
                       Length.of(0, 0), radius - inset.l);
   }
 
