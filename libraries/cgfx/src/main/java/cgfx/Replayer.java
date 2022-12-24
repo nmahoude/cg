@@ -39,7 +39,7 @@ public class Replayer extends VBox {
     this.setMargin(buttons, new Insets(10.0));
     
     first = new Button("<<");
-    first.setOnAction(value -> setTurn(1));
+    first.setOnAction(value -> setTurn(0));
 
     prev = new Button("<");
     prev.setOnAction(value -> setTurn(turn-1));
@@ -63,7 +63,7 @@ public class Replayer extends VBox {
     this.getChildren().add(gameViewer);
     this.getChildren().add(buttons);
 
-    setTurn(1);
+    setTurn(0);
     setMaxturn(gameReader.getMaxTurn());
   }
 

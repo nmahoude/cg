@@ -35,6 +35,10 @@ public class Pos {
     Pos other = (Pos) obj;
     return x == other.x && y == other.y;
   }
+
+	public Pos add(int dx, int dy) {
+		return from(x+dx, y+dy);
+	}
   
   
 }

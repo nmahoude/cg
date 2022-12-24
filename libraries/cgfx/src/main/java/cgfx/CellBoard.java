@@ -13,7 +13,7 @@ public class CellBoard extends Board {
 	}
 
 	public CellBoard(Group parent, int cellSize, int width, int height, Length inset) {
-		super(parent, cellSize * width, cellSize * height);
+		super(parent, cellSize * width + inset.dx, cellSize * height + inset.dy);
 		this.l = inset;
 		this.cellSize = cellSize;
 	}
@@ -23,7 +23,7 @@ public class CellBoard extends Board {
   }
 
   public void drawCellAt(Color color, Cell cell, Inset inset) {
-    drawRect(color, Pos.from(l.dx + cellSize * cell.x+inset.l+cellSize / 2, l.dy + cellSize * cell.y + inset.l+cellSize / 2), 
+    drawRect(color, Pos.from(l.dx + cellSize * cell.x+inset.l, l.dy + cellSize * cell.y + inset.l), 
                     Length.of(cellSize-inset.l*2, cellSize-inset.l*2));
   }
 
