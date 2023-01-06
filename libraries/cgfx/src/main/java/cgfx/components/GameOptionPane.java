@@ -4,12 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
 
 public abstract class GameOptionPane extends VBox{
 
 	private final Map<String, CheckBox> checkBoxes = new HashMap<>();
+	private Map<String , Slider> sliders = new HashMap<>();
 	
 	public void addCheckBox(String name, String displayName, boolean defaultValue) {
 		CheckBox cb = new CheckBox(displayName);
@@ -31,6 +35,38 @@ public abstract class GameOptionPane extends VBox{
 		}
 	}
 
+	public int sliderValue(String name) {
+		Slider slider = sliders.get(name);
+		if( slider == null) {
+			System.err.println("Slider inconnu : "+name);
+			return 0;
+		} else {
+			return (int)slider.getValue();
+		}
+	}
+	
+	public Slider addSlider(String name, int minValue, int maxValue) {
+		Slider posAtSlider = new Slider();
+		posAtSlider.setMin(minValue);
+		posAtSlider.setMax(maxValue);
+		posAtSlider.setValue(minValue);
+		posAtSlider.setShowTickLabels(true);
+		posAtSlider.setShowTickMarks(true);
+		posAtSlider.setMajorTickUnit(1);
+		posAtSlider.setMinorTickCount(0);
+		posAtSlider.setBlockIncrement(1);
+	    
+		posAtSlider.valueProperty().addListener(new ChangeListener<Number>() {
+      public void changed(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
+  			observable.notifyObservers();
+      	
+      }
+		});
+
+		this.getChildren().add(posAtSlider);
+		sliders.put(name, posAtSlider);
+		return posAtSlider;
+	}
 	
   protected static class MyObservable extends Observable {
     @Override
