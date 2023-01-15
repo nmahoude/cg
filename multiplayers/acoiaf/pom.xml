@@ -5,6 +5,12 @@
     <artifactId>multiplayers</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
+  
+  <properties>
+      <maven.compiler.source>17</maven.compiler.source>
+      <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+  
   <artifactId>acoiaf</artifactId>
   
   <dependencies>
@@ -49,7 +55,12 @@
 			<version>5.7.0</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+		<dependency>
+		    <groupId>org.nmx.codingame</groupId>
+		    <artifactId>cgfx</artifactId>
+		    <version>0.0.2-SNAPSHOT</version>
+		</dependency>
+  </dependencies>
 
 	<build>
 		<plugins>
@@ -58,7 +69,7 @@
 				<artifactId>codingame-simpleclass-maven-plugin</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 				<configuration>
-					<removeComments>false</removeComments>
+					<removeComments>true</removeComments>
 				</configuration>
 				<executions>
 					<execution>

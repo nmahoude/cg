@@ -1,5 +1,7 @@
 package acoiaf;
 
+import java.util.List;
+
 import fast.read.FastReader;
 
 /**
@@ -8,7 +10,8 @@ import fast.read.FastReader;
  **/
 public class Player {
 	State state = new State();
-
+	public static AI ai = new AI();
+	
 	public static void main(String args[]) {
 		FastReader in = new FastReader(System.in);
 
@@ -16,7 +19,6 @@ public class Player {
 	}
 
 	private void play(FastReader in) {
-		FloodFill ff = new FloodFill();
 
 		State.readInit(in);
 
@@ -24,15 +26,12 @@ public class Player {
 		while (true) {
 			state.read(in);
 
-			System.err.println("I can reach ");
-			ff.calculate(state, Pos.get(0, 0), 0);
-			System.err.println(ff.reachableFE);
+			List<Action> actions = ai.think(state);
 
-			System.err.println("HE can reach ");
-			ff.calculate(state, Pos.get(11, 11), 1);
-			System.err.println(ff.reachableFE);
-
-			System.out.println("WAIT");
+			for (Action a : actions) {
+				System.out.print(a+";");
+			}
+			System.out.println("MSG T:"+State.turn);
 		}
 	}
 }
