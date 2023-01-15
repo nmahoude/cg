@@ -8,16 +8,19 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class Board implements BoardDrawer {
+	private static Font initFont = Font.font(16);
+
 	final int width;
 	final int height;
 	final double scale;
+	private Font currentFont = Font.font(16);
 	
 	Canvas canvas;
 	GraphicsContext gc;
 
-	 public Board(Group parent, int width, int height) {
-	    this(parent, width, height, 1.0);
-	  }
+	public Board(Group parent, int width, int height) {
+		this(parent, width+5, height+5, 1.0);
+	}
 
 	public Board(Group parent, int width, int height, double scale) {
 		this.width = width;
@@ -35,6 +38,14 @@ public class Board implements BoardDrawer {
 	
 	public GraphicsContext getGc() {
 		return gc;
+	}
+	
+	public void resetFont() {
+		currentFont = initFont;
+	}
+	
+	public void setFontSize(int size) {
+		currentFont = Font.font(size);
 	}
 
   public void drawLine(Color color, Pos start, Pos end) {
@@ -91,7 +102,7 @@ public class Board implements BoardDrawer {
 
   public void drawText(Color color, Pos pos, String text) {
     gc.setFill(color);
-    gc.setFont(Font.font(16));
+    gc.setFont(currentFont);
     gc.fillText(text, pos.x * scale, pos.y * scale);
   }
 

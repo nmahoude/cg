@@ -36,4 +36,8 @@ public class Decal {
     Pos other = (Pos) obj;
     return dx == other.x && dy == other.y;
   }
+
+	public Decal add(Decal decal) {
+		return new Decal(this.dx + decal.dx, this.dy + decal.dy);
+	}
 }

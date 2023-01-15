@@ -7,15 +7,36 @@ public class CellBoard extends Board {
 
   private int cellSize;
 	private Decal boardDecal;
+	private boolean showCoordinates;
 	
 	public CellBoard(Group parent, int cellSize, int width, int height) {
-		this(parent, cellSize, width, height, Decal.NO);
+		this(parent, cellSize, width, height, false);
 	}
 
-	public CellBoard(Group parent, int cellSize, int width, int height, Decal d) {
-		super(parent, cellSize * width + d.dx, cellSize * height + d.dy);
-		this.boardDecal = d;
+	public CellBoard(Group parent, int cellSize, int width, int height, boolean showCoordinates) {
+		this(parent, cellSize, width, height, showCoordinates, Decal.NO);
+	}
+	public CellBoard(Group parent, int cellSize, int width, int height, boolean showCoordinates, Decal decal) {
+		super(parent, cellSize * width + (showCoordinates ? 16+decal.dx : 0), cellSize * height + (showCoordinates ? 16+decal.dy : 0));
+		this.showCoordinates = showCoordinates;
+		
+		this.boardDecal = showCoordinates ? Decal.of(16, 16).add(decal) : decal; 
 		this.cellSize = cellSize;
+	}
+	
+	
+	@Override
+	public void clear() {
+		super.clear();
+		
+		if (showCoordinates) {
+			for (int x=0;x<width;x++) {
+				this.drawText(Color.BLACK, cgfx.Pos.from(boardDecal.dx + cellSize/2 + cellSize * x, boardDecal.dy-2), ""+x);
+			}
+			for (int y=0;y<height;y++) {
+				this.drawText(Color.BLACK, cgfx.Pos.from(0, boardDecal.dy + cellSize / 2 + cellSize * y), ""+y);
+			}
+		}
 	}
 	
   public void drawCellAt(Color color, int x, int y, Inset inset) {
