@@ -7,8 +7,8 @@ import java.util.Set;
 public class State {
   final static int BOARDSIZE = 8;
 
-  static int myId;
-  static int oppId;
+  static int myId = 0;
+  static int oppId = 1;
 
   long[] grids = new long[2];
   int[] scores = new int[2];
@@ -75,18 +75,28 @@ public class State {
       int x = sx + dx[d];
       int y = sy + dy[d];
       Pos p;
+
+      long currentP0Mask = grids[id];  
+      long currentP1Mask = grids[oppId];  
+
+      
       while ((p = Pos.secureFrom(x, y)) != Pos.VOID) {
         long mask = 1L << p.offset;
         long notMask = ~(1L << p.offset);
         
+        
         if ((grids[id] & mask) != 0) /* my tile */ {
           score += s;
+    
+          // register all changes
+          scores[oppId]-=s;
+          scores[id]+=s;
+          grids[id] = currentP0Mask;
+          grids[oppId] = currentP1Mask;
           break;
         } else if ((grids[oppId] & mask) != 0) /* opp tile */{
-          grids[oppId] &= notMask;
-          grids[id] |=mask;
-          scores[oppId]--;
-          scores[id]++;
+          currentP1Mask &= notMask;
+          currentP0Mask |=mask;
           s++; 
         } else {
           break;
@@ -100,7 +110,9 @@ public class State {
     return score;
   }
   
-  
+  public static String toBoardCoordinates(Pos p) {
+    return toBoardCoordinates(p.x, p.y);
+  }  
   
   public static String toBoardCoordinates(int x, int y) {
     return ""+(char)('a'+x)+""+(char)(y+'1');
@@ -134,6 +146,9 @@ public class State {
     System.err.println("Points définitif : "+countStableDiscs(myId)+"  /  " + countStableDiscs(oppId) );
   }
 
+  public int tileAt(Pos p) {
+    return tileAt(p.x, p.y);
+  }
   public int tileAt(int x, int y) {
     long mask = 1L << Pos.from(x,y).offset;
     if ((grids[0] & mask) != 0) return 0;
@@ -158,5 +173,9 @@ public class State {
     safe.addAll(newSafe);
 
     return safe.size();
+  }
+  
+  public Phase phase() {
+    return Player.turn <= 20 ? Phase.OPENING : Player.turn <= 40  ? Phase.MIDDLE : Phase.ENDGAME;
   }
 }
