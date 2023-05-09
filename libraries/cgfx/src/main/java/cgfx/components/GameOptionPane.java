@@ -87,4 +87,10 @@ public abstract class GameOptionPane extends VBox{
     observable.addObserver(observer);
   }
 
+  
+  public static GameOptionPane empty() {
+    return new GameOptionPane() {
+      
+    };
+  }
 }

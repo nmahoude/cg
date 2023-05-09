@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import cgfx.components.GameViewer;
+import cgfx.frames.GameReader;
 import cgfx.wrappers.GameWrapper;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;

@@ -3,6 +3,7 @@ package cgfx;
 import cgfx.components.CGFactory;
 import cgfx.components.EvalChart;
 import cgfx.components.GameViewer;
+import cgfx.frames.GameReader;
 import cgfx.wrappers.EvaluationWrapper;
 import cgfx.wrappers.GameWrapper;
 import javafx.application.Application;
@@ -49,7 +50,7 @@ public class FXEvaluation extends Application {
 		EvalChart chart = new EvalChart(eWrapper);
 		
 		int index = 0;
-		while (index < gameReader.inputs.size()-1) {
+		while (index < gameReader.getMaxTurn()) {
 			chart.update(index, wrapper);
 			index++;
 			wrapper.readTurn(gameReader.getInput(index));

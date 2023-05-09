@@ -1,4 +1,4 @@
-package cgfx;
+package cgfx.frames;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,17 +13,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
+/**
+ * Read a full game from a json file 
+ * and transform it into frames
+ * 
+ * @author nmahoude
+ *
+ */
 public class GameReader {
-	List<String> stderr = new ArrayList<>();
-	List<String> inputs = new ArrayList<>();
-
-	public static class Frame {
-	  public int agentId;
-	  public JsonObject fullContent;
-    public String stdout;
-	  
-	  
-	}
 	public List<Frame> frames = new ArrayList<>();
 	
 	
@@ -48,46 +45,28 @@ public class GameReader {
 	}
 
 	private void read(JsonObject fromJson) {
-		stderr.clear();
-		inputs.clear();
-		
 		
 		JsonElement frames = fromJson.get("frames");
 		frames.getAsJsonArray().forEach(
 				el -> {
 				  
 				  Frame frame = new Frame();
-				  frame.fullContent = el.getAsJsonObject();
-				  frame.agentId = frame.fullContent.get("agentId").getAsInt();
+
+				  JsonObject content = el.getAsJsonObject();
+				  frame.agentId = content.get("agentId").getAsInt();
 				  
-				  JsonElement stdoutElement = frame.fullContent.get("stdout");
+				  JsonElement stdoutElement = content.get("stdout");
           if (stdoutElement != null) {
             frame.stdout = stdoutElement.getAsString().trim();
           }
 				  
-          
-          this.frames.add(frame);
-				  
-				  
-				  
-				  
-				  
-				  
-					JsonObject object = el.getAsJsonObject();
-					JsonElement jsonElement = object.get("stderr");
-					if (jsonElement != null) {
-						String complete = jsonElement.getAsString();
-						stderr.add(complete);
-
-						StringBuffer buf = new StringBuffer();
-						String[] lines = complete.split("\n");
-						for (String line : lines) {
-							if (line.startsWith("^")) {
-								buf.append(line.substring(1)+" \r\n");
-							}
-						}
-						inputs.add(buf.toString());
+					JsonElement stdErrElement = content.get("stderr");
+					if (stdErrElement != null) {
+						String complete = stdErrElement.getAsString();
+						frame.stderr = complete;
 					}
+					
+          this.frames.add(frame);
 				}
 		);
 	}
@@ -99,15 +78,17 @@ public class GameReader {
 	 * @return
 	 */
 	public String getInput(int turn) {
-		return inputs.get(turn);
+	  return frames.get(turn).cleanStderr();
 	}
 	
 	public String getStderr(int turn) {
-		return stderr.get(turn);
+    return frames.get(turn).stderr;
 	}
 
 
   public int getMaxTurn() {
-    return inputs.size()-1;
+    return frames.size()-1;
   }
+
+
 }

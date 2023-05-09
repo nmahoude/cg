@@ -7,6 +7,7 @@ import java.util.Optional;
 import cgfx.components.ActionsList;
 import cgfx.components.CGFactory;
 import cgfx.components.GameViewer;
+import cgfx.frames.GameReader;
 import cgfx.wrappers.EvaluationWrapper;
 import cgfx.wrappers.GameWrapper;
 import javafx.application.Application;

@@ -6,6 +6,7 @@ import cgfx.components.ActionsList;
 import cgfx.components.CGFactory;
 import cgfx.components.GameOptionPane;
 import cgfx.components.GameViewer;
+import cgfx.frames.GameReader;
 import cgfx.wrappers.GameWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
