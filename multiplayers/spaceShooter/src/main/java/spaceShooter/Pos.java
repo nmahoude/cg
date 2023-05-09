@@ -17,8 +17,13 @@ public class Pos {
 	}
 	
 	public boolean inRadius(Pos pos, double radius) {
-		double dist = (this.x-pos.x)*(this.x-pos.x) + (this.y-pos.y)*(this.y-pos.y);
+		double dist2 = (this.x-pos.x)*(this.x-pos.x) + (this.y-pos.y)*(this.y-pos.y);
 		
-		return dist <= radius*radius;
+		return dist2 <= radius*radius;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("[%.0f, %.0f]", x, y);
 	}
 }
