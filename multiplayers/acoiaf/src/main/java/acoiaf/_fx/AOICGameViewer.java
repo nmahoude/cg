@@ -1,11 +1,14 @@
 package acoiaf._fx;
 
+import static cgfx.CellBoard.HALF_CELL_SIZE;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import acoiaf.Action;
 import acoiaf.DiffusionMap;
 import acoiaf.DistanceDMap;
+import acoiaf.Frontier;
 import acoiaf.O;
 import acoiaf.Pos;
 import acoiaf.State;
@@ -19,19 +22,22 @@ import javafx.scene.paint.Color;
 
 public class AOICGameViewer extends GameViewer {
 
-	private static final int CELL_SIZE = 64;
-	private static final int HALF_CELL_SIZE = 32;
+	
 	private static final Color MINE_COLOR = new Color(0.3,0.3,0.3,1.0);
 	private GameOptionPane options;
-	private CellBoard board = new CellBoard(this, CELL_SIZE, 12, 12, true);
+	private CellBoard board = new CellBoard(this, 0.5, 12, 12, true);
 	private AOICGameWrapper wrapper;
 	private State state;
 	
 	List<Action> actions = new ArrayList<>();
 	
-	public AOICGameViewer(AOICGameWrapper wrapper) {
+	public AOICGameViewer(AOICGameWrapper wrapper, GameOptionPane options) {
 		this.wrapper = wrapper;
 		this.state = wrapper.state;
+		
+    this.setOptionsPane(options);
+    options.register(this);
+
 	}
 
 	@Override
@@ -48,10 +54,38 @@ public class AOICGameViewer extends GameViewer {
 		if (options.isSelected(AOICGameOptionPane.OPP_FLOODFILL)) drawOppFloodFill();
 		if (options.isSelected(AOICGameOptionPane.COMBINED_FLOODFILL)) drawCombinedFloodFill();
 		if (options.isSelected(AOICGameOptionPane.DRAW_ACTIONS)) drawActions();
+		if (options.isSelected(AOICGameOptionPane.DRAW_FRONTIER)) drawFrontier();
 		
 	}
 
 	
+	private void drawFrontier() {
+		List<Pos>  myPos = new ArrayList<>();
+		List<Pos>  oppPos = new ArrayList<>();
+		for (Pos pos : Pos.allPositions) {
+			if (state.owner[pos.offset] == O.OPP) {
+				oppPos.add(pos);
+			}
+			if (state.owner[pos.offset] == O.ME) {
+				myPos.add(pos);
+			}
+		}
+
+		DistanceDMap myMap = new DistanceDMap();
+		myMap.calculate(state, myPos);
+
+		DistanceDMap oppMap = new DistanceDMap();
+		oppMap.calculate(state, oppPos);
+
+		Frontier frontier = new Frontier();
+		frontier.calculate(state, myMap, oppMap);
+		
+		for (Pos pos : frontier.frontier()) {
+			board.drawCellAt(Color.GREEN, cellAt(pos), Inset.of(0));
+		}
+		
+	}
+
 	public void drawActions() {
 		for (Action a : actions) {
 			if (a.type() == Action.MOVE) {
@@ -62,7 +96,7 @@ public class AOICGameViewer extends GameViewer {
 						break;
 					}
 				}
-				board.drawLine(Color.BLUE, cellPos(current).add(HALF_CELL_SIZE, HALF_CELL_SIZE), cellPos(a.pos()).add(HALF_CELL_SIZE, HALF_CELL_SIZE));
+				board.drawLine(Color.BLUE, cellPos(current).add(CellBoard.HALF_CELL_SIZE, HALF_CELL_SIZE), cellPos(a.pos()).add(HALF_CELL_SIZE, HALF_CELL_SIZE));
 			}
 			if (a.type() == Action.TRAIN) {
 				board.drawCellText(Color.WHITE, cellAt(a.pos()), Decal.of(4, 40), "+"+a.info());
@@ -89,8 +123,8 @@ public class AOICGameViewer extends GameViewer {
 			}
 		}
 		
-		DiffusionMap map = new DistanceDMap(myPos);
-		map.calculate(state);
+		DistanceDMap map = new DistanceDMap();
+		map.calculate(state, myPos);
 		
 		drawDiffuseMap(map);		
 	}
@@ -103,8 +137,8 @@ public class AOICGameViewer extends GameViewer {
 			}
 		}
 		
-		DiffusionMap map = new DistanceDMap(oppPos);
-		map.calculate(state);
+		DistanceDMap map = new DistanceDMap();
+		map.calculate(state, oppPos);
 		
 		drawDiffuseMap(map);		
 	}
@@ -121,11 +155,11 @@ public class AOICGameViewer extends GameViewer {
 			}
 		}
 
-		DiffusionMap myMap = new DistanceDMap(myPos);
-		myMap.calculate(state);
+		DistanceDMap myMap = new DistanceDMap();
+		myMap.calculate(state, myPos);
 
-		DiffusionMap oppMap = new DistanceDMap(oppPos);
-		oppMap.calculate(state);
+		DistanceDMap oppMap = new DistanceDMap();
+		oppMap.calculate(state, oppPos);
 		
 		
 		myMap.sub(oppMap);
@@ -148,7 +182,7 @@ public class AOICGameViewer extends GameViewer {
 
 	private void drawDiffuseMap(DiffusionMap map) {
 		for (Pos pos : Pos.allPositions) {
-			if (state.owner[pos.offset] == -99) continue;
+			if (state.owner[pos.offset] == O.VOID) continue;
 			
 			board.setFontSize(12);
 			board.drawCellText(Color.WHITE, cellAt(pos), Decal.of(40, 40), ""+map.grid[pos.offset]);
@@ -166,9 +200,17 @@ public class AOICGameViewer extends GameViewer {
 				if (state.owner[pos.offset] != O.VOID) {
 					Color color = new Color(0.8, 0.8, 0.8, 1.0);
 					if (state.owner[pos.offset] == 0) {
-						color = new Color(0,0,0.7,1.0);
+					  if (state.active[pos.offset]) {
+					    color = new Color(0,0,0.7,1.0);
+					  } else {
+					    color = new Color(0.5,0.5,1.0,1.0);
+					  }
 					} else if (state.owner[pos.offset] == 1) {
-						color = new Color(0.7,0,0.0,1.0);
+            if (state.active[pos.offset]) {
+              color = new Color(0.7,0,0.0,1.0);
+            } else {
+              color = new Color(1.0,0.5,0.5,1.0);
+            }
 					}
 					
 					board.fillCellAt(color, Cell.at(x, y), Inset.of(1));
@@ -190,15 +232,15 @@ public class AOICGameViewer extends GameViewer {
 
 				int buildingType = state.buildingType[pos.offset];
 				if (buildingType == State.SOLDIER) {
-					board.fillCellAt(color, Cell.at(x,y), Inset.of(20));
+					board.fillCellAt(color, Cell.at(x,y), Inset.of(40));
 					board.drawCellText(Color.WHITE, Cell.at(x, y), Decal.of(24, 20), ""+state.unitId[pos.offset]);
 				} else if (buildingType == State.MINE) {
 					board.drawCellCircle(color, color, cellAt(pos), Inset.of(10));
 				} else if (buildingType == State.TOWER) {
-					board.fillCellAt(color, Cell.at(x,y), Inset.of(10));
+					board.fillCellAt(color, Cell.at(x,y), Inset.of(40));
 					board.drawCellText(Color.WHITE, Cell.at(x, y), Decal.of(30, 28), ""+"T");
 				} else if (buildingType == State.HQ) {
-					board.fillCellAt(color, Cell.at(x,y), Inset.of(10));
+					board.fillCellAt(color, Cell.at(x,y), Inset.of(40));
 					board.drawCellText(Color.WHITE, Cell.at(x, y), Decal.of(30, 28), ""+"H");
 				}
 			}

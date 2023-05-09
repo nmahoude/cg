@@ -23,7 +23,7 @@ public abstract class DiffusionMap {
 			for (Pos p : toVisit) {
 
 				for (Pos n : p.neighbors4dirs) {
-					if (!state.canMove(n)) continue;
+					if (!state.isWalkable(n)) continue;
 					
 					double value = diffuse(grid[p.offset]);
 					if (needToDiffuse(state, p, n, grid[n.offset], value)) {

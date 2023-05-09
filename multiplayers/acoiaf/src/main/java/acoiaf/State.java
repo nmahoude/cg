@@ -18,11 +18,14 @@ public class State {
 	
 	public static Pos mines[] = new Pos[25];
 	public static int minesFE = 0;
+  public static Pos oppHQ, myHQ;
 
 	public int gold[] = new int[2];
 	public int income[] = new int[2];
 
 	public int[] owner = new int[12*12];
+	public boolean[] active = new boolean[12*12];
+	public boolean[] oppProtected = new boolean[12*12];
 	public int[] unitId = new int[12*12];
 	public int[] level = new int[12*12];
 	public int[] buildingType = new int[12*12];
@@ -34,9 +37,11 @@ public class State {
 		this.income[1] = model.income[1];
 		
 		System.arraycopy(model.owner, 0, this.owner, 0, 144);
+		System.arraycopy(model.active, 0, this.active, 0, 144);
 		System.arraycopy(model.unitId, 0, this.unitId, 0, 144);
 		System.arraycopy(model.level, 0, this.level, 0, 144);
 		System.arraycopy(model.buildingType, 0, this.buildingType, 0, 144);
+		System.arraycopy(model.oppProtected, 0, this.oppProtected, 0, 144);
 	}
 	
 	
@@ -69,7 +74,7 @@ public class State {
 		gold[1] = in.nextInt();
 		income[1] = in.nextInt();
 
-		saveGlobal();
+		saveInit();
 		saveOptional();
 		System.err.println("TURN");
 		System.err.println("^ "+gold[0]+" "+income[0]+" "+gold[1]+" "+income[1]);
@@ -87,11 +92,14 @@ public class State {
 				int offset = Pos.get(x, y).offset;
 				unitId[offset] = -1;
 				buildingType[offset] = VOID;
+				oppProtected[offset] = false;
 				
 				if (line[x] == 'O' || line[x] == 'o') {
 					owner[offset] = O.ME;
+					active[offset] = (line[x] == 'O');
 				} else if (line[x] == 'X' || line[x] == 'x') {
 					owner[offset] = O.OPP;
+					active[offset] = (line[x] == 'X');
 				} else if (line[x] == '.'){
 					owner[offset] = O.NEUTRAL; // neutral
 				} else {
@@ -110,9 +118,22 @@ public class State {
 			int y = in.nextInt();
 			
 			System.err.println("^ "+o+" "+bType+" "+x+" "+y);
-			int offset = Pos.get(x, y).offset;
+			Pos pos = Pos.get(x, y);
+			int offset = pos.offset;
 			this.owner[offset] = o;
 			this.buildingType[offset] = bType;
+			
+			if (bType == HQ) {
+			  if (o == O.OPP) oppHQ = pos; else myHQ = pos;
+			}
+			
+			if (bType == TOWER && o == O.OPP) {
+				oppProtected[pos.offset] = true;
+				for (Pos n : pos.neighbors4dirs) {
+					oppProtected[n.offset] = true;
+				}
+			}
+			
 		}
 
 		int unitCount = in.nextInt();
@@ -133,7 +154,7 @@ public class State {
 		}
 	}
 
-	private static void saveGlobal() {
+	private static void saveInit() {
 		System.err.println("GLOBAL");
 		System.err.print("^"+minesFE+" ");
 		for (int i = 0; i < minesFE; i++) {
@@ -153,7 +174,34 @@ public class State {
 		System.err.println("debugPackedState : TODO");
 	}
 
-	public boolean canMove(Pos p) {
-		return owner[p.offset] != VOID;
+	public boolean isWalkable(Pos p) {
+		return owner[p.offset] != O.VOID;
 	}
+
+	public boolean isTrainable(Pos p) {
+	  if (unitId[p.offset] >= 0) return false;
+	  
+	  for (Pos n : p.neighbors4dirs) {
+	    if (owner[n.offset] == O.ME && active[n.offset]) return true;
+	  }
+	  return false;
+	  
+	}
+
+  public void apply(Action action) {
+    if (action.type == Action.TRAIN) {
+      this.gold[0] -=10;
+      this.owner[action.pos.offset] = O.ME;
+      this.unitId[action.pos.offset] = O.NEXTUNIT_ID;
+      this.active[action.pos.offset] = true;
+      this.level[action.pos.offset] = action.info;
+    } else if (action.type == Action.MOVE) {
+      this.unitId[action.from.offset] = -1;
+      
+      this.unitId[action.pos.offset] = action.info;
+      this.owner[action.pos.offset] = O.ME;
+      this.active[action.pos.offset] = true;
+    }
+  }
+
 }

@@ -6,10 +6,10 @@ public class DistanceDMap extends DiffusionMap {
 
 	private List<Pos> myCells;
 
-	public DistanceDMap(List<Pos> myCells) {
+	public void calculate(State state, List<Pos> myCells) {
 		this.myCells = myCells;
+		super.calculate(state);
 	}
-	
 	
 	@Override
 	boolean isHearth(State state, Pos p) {

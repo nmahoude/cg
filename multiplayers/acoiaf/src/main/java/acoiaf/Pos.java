@@ -54,4 +54,15 @@ public class Pos {
 	public static Pos from(int offset) {
 		return positions[offset];
 	}
+	
+	@Override
+	public String toString() {
+	  return "("+x+","+y+")";
+	}
+
+  public Pos safeGet(int x, int y) {
+    if (x < 0 || x>= 12) return VOID;
+    if (y < 0 || y>= 12) return VOID;
+    return get(x,y);
+  }
 }

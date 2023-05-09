@@ -18,6 +18,7 @@ public class Action {
 	int type;
 	int info;
 	Pos pos;
+	Pos from;
 	
 	private Action() {
 	}
@@ -32,10 +33,11 @@ public class Action {
 	}
 	
 	
-	public static Action move(int id, Pos to) {
+	public static Action move(int id, Pos from, Pos to) {
 		Action a = cache[cacheFE++];
 		a.type = MOVE;
 		a.info = id;
+		a.from = from;
 		a.pos = to;
 		return a;
 	}

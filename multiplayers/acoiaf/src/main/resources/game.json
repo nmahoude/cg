@@ -1,0 +1,1355 @@
+{
+  "frames": [
+    {
+      "gameInformation": "",
+      "summary": "",
+      "view": " 0\n{\"global\":{\"entitymodule\":{\"width\":1920,\"height\":1080}},\"frame\":{\"duration\":400,\"entitymodule\":\"CG;R;R;R;R;R;R;R;R;R;R;R;R;R;R;R;R;R;R;R;R;R;R;R;R;R;R;S;S;T;T;T;T;G;S;S;T;T;T;T;G;S;T;G;S;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;S;G;S;G;S;G\\nU154 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;371 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;410 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;372 1 sx 1 sy 1 v 1 ch 371 x 765 y 0 z 1;464 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;297 1 sx 1 sy 1 v 1 ch 296 x 510 y 935;164 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;203 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;230 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;439 1 bw 85 i MINE_NEUTRAL.png v 1 bh 85 z 5;265 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;238 1 bw 85 i MINE_NEUTRAL.png v 1 bh 85 z 5;251 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;454 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;52 1 bw 85 i MINE_NEUTRAL.png v 1 bh 85 z 5;352 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;64 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;343 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;184 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;364 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;163 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;68 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;313 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;55 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;480 1 bw 85 i HQ_BLUE.png v 1 x -42 y -42 bh 85;287 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;59 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;303 1 sx 1 sy 1 v 1 ch 302 x 595 y 85 z 1;231 1 sx 1 sy 1 v 1 ch 230 x 425 y 85;404 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;256 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;336 1 sx 1 sy 1 v 1 ch 335 x 680 y 0;127 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;440 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;270 1 sx 1 sy 1 v 1 ch 269 x 510 y 170 z 1;143 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;150 1 sx 1 sy 1 v 1 ch 149 x 170 y 850 z 1;459 1 sx 1 sy 1 v 1 ch 458 x 935 y 425;217 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;350 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;241 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;323 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;445 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;137 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;329 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;132 1 sx 1 sy 1 v 1 ch 131 x 170 y 340;416 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;67 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;460 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;257 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;367 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;449 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;6 1 f 0 v 1 w 3 x 340 y 0 h 1020 z 2;360 1 sx 1 sy 1 v 1 ch 359 x 680 y 680 z 1;436 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;115 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;182 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;359 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;316 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;162 1 sx 1 sy 1 v 1 ch 161 x 255 y 170;434 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;197 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;271 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;312 1 sx 1 sy 1 v 1 ch 311 x 595 y 340 z 1;348 1 sx 1 sy 1 v 1 ch 347 x 680 y 340 z 1;365 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;450 1 sx 1 sy 1 v 1 ch 449 x 935 y 170 z 1;189 1 sx 1 sy 1 v 1 ch 188 x 255 y 935;173 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;339 1 sx 1 sy 1 v 1 ch 338 x 680 y 85 z 1;453 1 sx 1 sy 1 v 1 ch 452 x 935 y 255;69 1 sx 1 sy 1 v 1 ch 68 x 0 y 595;72 1 sx 1 sy 1 v 1 ch 71 x 0 y 680;368 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;421 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;148 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;244 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;308 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;324 1 sx 1 sy 1 v 1 ch 323 x 595 y 680 z 1;353 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;124 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;366 1 sx 1 sy 1 v 1 ch 365 x 680 y 850;88 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;165 1 sx 1 sy 1 v 1 ch 164 x 255 y 255 z 1;168 1 sx 1 sy 1 v 1 ch 167 x 255 y 340 z 1;326 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;233 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;92 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;220 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;345 1 sx 1 sy 1 v 1 ch 344 x 680 y 255 z 1;465 1 sx 1 sy 1 v 1 ch 464 x 935 y 595;306 1 sx 1 sy 1 v 1 ch 305 x 595 y 170 z 1;373 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;262 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;263 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;260 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;11 1 f 0 v 1 w 3 x 765 y 0 h 1020 z 2;149 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;169 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;358 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;425 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;473 1 bw 85 i CELL_BLUE_ACTIVE.png v 1 bh 85 z 1;1 1 sx 1 sy 1 v 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,195,456,330,57,417,303,24,231,477,3,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,132,60,315,222,243,207,20,216,144,6,240,12,264,357,258,276,360,471,201,51,273,438,285,23,18,105,162,423,312,348,402,450,25,87,123,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,129,138,27,204,408,63,141,7,2,11,252,420,369,117,219,84,255,387,447,375,111,468,81,354,393,108,17,399,309 x 855 y 42 z 0;227 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;89 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;468 1 sx 1 sy 1 v 1 ch 467 x 935 y 680;470 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;205 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;354 1 sx 1 sy 1 v 1 ch 353 x 680 y 510;337 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;17 1 f 0 v 1 w 1020 x 0 y 170 h 3 z 2;259 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;301 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;448 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;152 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;118 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;122 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;48 1 sx 1 sy 1 v 1 ch 47 x 0 y 0 z 1;385 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;481 1 sx 1 sy 1 v 1 ch 480 x 976 y 976 z 10;299 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;413 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;250 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;296 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;166 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;390 1 sx 1 sy 1 v 1 ch 389 x 765 y 510;19 1 f 0 v 1 w 1020 x 0 y 340 h 3 z 2;232 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;394 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;278 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;75 1 sx 1 sy 1 v 1 ch 74 x 0 y 765 z 1;210 1 sx 1 sy 1 v 1 ch 209 x 340 y 510 z 1;249 1 sx 1 sy 1 v 1 ch 248 x 425 y 595 z 1;172 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;476 1 bw 85 i CELL_BLUE_ACTIVE.png v 1 bh 85 z 1;398 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;112 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;39 1 f 16777215 ay 0.5 v 1 ax 0.5 S 4 x 427 y 849 s 40 T 'Income: +2' sc 0;209 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;125 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;24 1 f 0 v 1 w 1020 x 0 y 765 h 3 z 2;97 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;29 1 ay 0 i HUD_RED.png v 1 ax 0 x 88 y 112;176 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;14 1 f 0 v 1 w 3 x 1020 y 0 h 1020 z 2;412 1 bw 85 i MINE_NEUTRAL.png v 1 bh 85 z 5;474 1 sx 1 sy 1 v 1 ch 473 x 935 y 850 z 1;120 1 sx 1 sy 1 v 1 ch 119 x 170 y 0 z 1;349 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;294 1 sx 1 sy 1 v 1 ch 293 x 510 y 850;342 1 sx 1 sy 1 v 1 ch 341 x 680 y 170 z 1;156 1 sx 1 sy 1 v 1 ch 155 x 255 y 0;192 1 sx 1 sy 1 v 1 ch 191 x 340 y 0;418 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;269 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;441 1 sx 1 sy 1 v 1 ch 439,440 x 850 y 935 z 1;188 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;155 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;58 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;272 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;46 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;320 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;20 1 f 0 v 1 w 1020 x 0 y 425 h 3 z 2;455 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;202 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;281 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;178 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;264 1 sx 1 sy 1 v 1 ch 263 x 510 y 0;392 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;31 1 f 16777215 ay 0.5 v 1 ax 0.5 S 4 x 427 y 267 s 40 T 'Gold: 20' sc 0;130 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;51 1 sx 1 sy 1 v 1 ch 50 x 0 y 85 z 1;23 1 f 0 v 1 w 1020 x 0 y 680 h 3 z 2;328 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;18 1 f 0 v 1 w 1020 x 0 y 255 h 3 z 2;71 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;376 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;25 1 f 0 v 1 w 1020 x 0 y 850 h 3 z 2;87 1 sx 1 sy 1 v 1 ch 86 x 85 y 85 z 1;91 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;135 1 sx 1 sy 1 v 1 ch 134 x 170 y 425;134 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;167 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;78 1 sx 1 sy 1 v 1 ch 77 x 0 y 850 z 1;422 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;66 1 sx 1 sy 1 v 1 ch 65 x 0 y 510;21 1 f 0 v 1 w 1020 x 0 y 510 h 3 z 2;5 1 f 0 v 1 w 3 x 255 y 0 h 1020 z 2;356 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;239 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;291 1 sx 1 sy 1 v 1 ch 290 x 510 y 765 z 1;74 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;362 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;98 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;196 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;334 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;86 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;363 1 sx 1 sy 1 v 1 ch 362 x 680 y 765;13 1 f 0 v 1 w 3 x 935 y 0 h 1020 z 2;458 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;331 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;457 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;96 1 sx 1 sy 1 v 1 ch 95 x 85 y 340;213 1 sx 1 sy 1 v 1 ch 212 x 340 y 595 z 1;419 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;45 1 x 0 i GRID_1920.jpg y 0 v 1 z -1;110 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;42 1 ay 0 i HUD_TURN.png v 1 ax 0 x 225 y 456;408 1 sx 1 sy 1 v 1 ch 407 x 850 y 0 z 1;61 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;49 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;7 1 f 0 v 1 w 3 x 425 y 0 h 1020 z 2;208 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;407 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;223 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;424 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;369 1 sx 1 sy 1 v 1 ch 368 x 680 y 935;117 1 sx 1 sy 1 v 1 ch 116 x 85 y 935 z 1;219 1 sx 1 sy 1 v 1 ch 218 x 340 y 765 z 1;379 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;73 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;431 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;111 1 sx 1 sy 1 v 1 ch 110,109 x 85 y 765 z 1;108 1 sx 1 sy 1 v 1 ch 107 x 85 y 680 z 1;311 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;429 1 sx 1 sy 1 v 1 ch 428 x 850 y 595;383 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;275 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;370 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;40 1 f 16777215 ay 0.5 v 1 ax 0.5 S 4 x 427 y 899 s 35 T  sc 0;106 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;174 1 sx 1 sy 1 v 1 ch 173 x 255 y 510;462 1 sx 1 sy 1 v 1 ch 461 x 935 y 510;194 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;82 1 bw 85 i MINE_NEUTRAL.png v 1 bh 85 z 5;304 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;327 1 sx 1 sy 1 v 1 ch 326 x 595 y 765 z 1;183 1 sx 1 sy 1 v 1 ch 182 x 255 y 765 z 1;427 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;443 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;396 1 sx 1 sy 1 v 1 ch 395 x 765 y 680 z 1;435 1 sx 1 sy 1 v 1 ch 434 x 850 y 765 z 1;101 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;307 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;9 1 f 0 v 1 w 3 x 595 y 0 h 1020 z 2;126 1 sx 1 sy 1 v 1 ch 125 x 170 y 170 z 1;384 1 sx 1 sy 1 v 1 ch 383 x 765 y 340;218 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;195 1 sx 1 sy 1 v 1 ch 194 x 340 y 85;456 1 sx 1 sy 1 v 1 ch 455 x 935 y 340;325 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;191 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;57 1 sx 1 sy 1 v 1 ch 56 x 0 y 255;242 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;293 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;477 1 sx 1 sy 1 v 1 ch 476 x 935 y 935 z 1;3 1 f 0 v 1 w 3 x 85 y 0 h 1020 z 2;181 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;451 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;437 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;26 1 f 0 v 1 w 1020 x 0 y 935 h 3 z 2;65 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;279 1 sx 1 sy 1 v 1 ch 278 x 510 y 425 z 1;300 1 sx 1 sy 1 v 1 ch 299 x 595 y 0;103 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;226 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;386 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;15 1 f 0 v 1 w 1020 x 0 y 0 h 3 z 2;206 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;277 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;321 1 sx 1 sy 1 v 1 ch 320 x 595 y 595 z 1;225 1 sx 1 sy 1 v 1 ch 224 x 340 y 935;333 1 sx 1 sy 1 v 1 ch 332 x 595 y 935;409 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;446 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;315 1 sx 1 sy 1 v 1 ch 314 x 595 y 425 z 1;243 1 sx 1 sy 1 v 1 ch 242 x 425 y 425 z 1;50 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;388 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;236 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;170 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;211 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;151 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;240 1 sx 1 sy 1 v 1 ch 239,238 x 425 y 340 z 1;161 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;357 1 sx 1 sy 1 v 1 ch 356 x 680 y 595 z 1;292 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;415 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;201 1 sx 1 sy 1 v 1 ch 200 x 340 y 255 z 1;116 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;295 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;100 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;340 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;469 1 bw 85 i MINE_NEUTRAL.png v 1 bh 85 z 5;285 1 sx 1 sy 1 v 1 ch 284,283 x 510 y 595 z 1;105 1 sx 1 sy 1 v 1 ch 104 x 85 y 595;193 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;298 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;338 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;402 1 sx 1 sy 1 v 1 ch 401 x 765 y 850 z 1;136 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;214 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;90 1 sx 1 sy 1 v 1 ch 89 x 85 y 170 z 1;224 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;347 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;54 1 sx 1 sy 1 v 1 ch 53,52 x 0 y 170 z 1;397 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;411 1 sx 1 sy 1 v 1 ch 410 x 850 y 85 z 1;145 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;179 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;400 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;377 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;432 1 sx 1 sy 1 v 1 ch 431 x 850 y 680;290 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;332 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;34 1 sx 1 sy 1 v 1 ch 31,29,32,33,28,30 x 0 y 0;44 1 sx 1 sy 1 v 1 ch 42,43 x 0 y 0;475 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;228 1 sx 1 sy 1 v 1 ch 227 x 425 y 0;430 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;160 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;33 1 f 16777215 ay 0.5 v 1 ax 0.5 S 4 x 427 y 367 s 35 T  sc 0;351 1 sx 1 sy 1 v 1 ch 350 x 680 y 425;70 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;77 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;153 1 sx 1 sy 1 v 1 ch 152 x 170 y 935 z 1;318 1 sx 1 sy 1 v 1 ch 317 x 595 y 510 z 1;119 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;83 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;129 1 sx 1 sy 1 v 1 ch 128 x 170 y 255 z 1;466 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;133 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;204 1 sx 1 sy 1 v 1 ch 203 x 340 y 340 z 1;63 1 sx 1 sy 1 v 1 ch 62 x 0 y 425;395 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;212 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;305 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;109 1 bw 85 i MINE_NEUTRAL.png v 1 bh 85 z 5;310 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;403 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;389 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;84 1 sx 1 sy 1 v 1 ch 83,82 x 85 y 0 z 1;53 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;387 1 sx 1 sy 1 v 1 ch 386 x 765 y 425;215 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;393 1 sx 1 sy 1 v 1 ch 392 x 765 y 595;85 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;289 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;399 1 sx 1 sy 1 v 1 ch 398 x 765 y 765 z 1;139 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;157 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;175 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;246 1 sx 1 sy 1 v 1 ch 245 x 425 y 510 z 1;234 1 sx 1 sy 1 v 1 ch 233 x 425 y 170 z 1;185 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;10 1 f 0 v 1 w 3 x 680 y 0 h 1020 z 2;128 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;261 1 sx 1 sy 1 v 1 ch 260 x 425 y 935;286 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;4 1 f 0 v 1 w 3 x 170 y 0 h 1020 z 2;187 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;405 1 sx 1 sy 1 v 1 ch 404 x 765 y 935 z 1;142 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;426 1 sx 1 sy 1 v 1 ch 425 x 850 y 510;284 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;452 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;467 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;102 1 sx 1 sy 1 v 1 ch 101 x 85 y 510;288 1 sx 1 sy 1 v 1 ch 287 x 510 y 680 z 1;442 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;177 1 sx 1 sy 1 v 1 ch 176 x 255 y 595 z 1;114 1 sx 1 sy 1 v 1 ch 113 x 85 y 850 z 1;147 1 sx 1 sy 1 v 1 ch 146 x 170 y 765 z 1;186 1 sx 1 sy 1 v 1 ch 185 x 255 y 850 z 1;479 1 sx 1 sy 1 v 1 ch 478 x 41 y 41 z 10;62 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;274 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;322 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;335 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;330 1 sx 1 sy 1 v 1 ch 329 x 595 y 850;30 1 f 16712453 ay 0.5 v 1 ax 0.5 S 4 x 427 y 197 s 60 T $0 sc 0;107 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;406 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;417 1 sx 1 sy 1 v 1 ch 416 x 850 y 255 z 1;140 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;159 1 sx 1 sy 1 v 1 ch 158 x 255 y 85;43 1 f 16777215 ay 0.5 v 1 ax 0.5 S 4 x 427 y 531 s 60 T 'Turn 0' sc 0;245 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;41 1 sx 1 sy 1 v 1 ch 37,36,35,38,39,40 x 0 y 0;268 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;401 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;444 1 sx 1 sy 1 v 1 ch 443 x 935 y 0;131 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;146 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;190 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;8 1 f 0 v 1 w 3 x 510 y 0 h 1020 z 2;158 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;247 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;317 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;199 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;381 1 sx 1 sy 1 v 1 ch 380 x 765 y 255 z 1;344 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;80 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;267 1 sx 1 sy 1 v 1 ch 266 x 510 y 85;380 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;60 1 sx 1 sy 1 v 1 ch 59 x 0 y 340;319 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;222 1 sx 1 sy 1 v 1 ch 221 x 340 y 850 z 1;207 1 sx 1 sy 1 v 1 ch 206 x 340 y 425 z 1;355 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;248 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;216 1 sx 1 sy 1 v 1 ch 215 x 340 y 680 z 1;302 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;144 1 sx 1 sy 1 v 1 ch 143 x 170 y 680 z 1;361 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;12 1 f 0 v 1 w 3 x 850 y 0 h 1020 z 2;47 1 bw 85 i CELL_RED_ACTIVE.png v 1 bh 85 z 1;113 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;38 1 f 16777215 ay 0.5 v 1 ax 0.5 S 4 x 427 y 799 s 40 T 'Gold: 20' sc 0;258 1 sx 1 sy 1 v 1 ch 257 x 425 y 850;276 1 sx 1 sy 1 v 1 ch 275 x 510 y 340 z 1;471 1 sx 1 sy 1 v 1 ch 470,469 x 935 y 765 z 1;273 1 sx 1 sy 1 v 1 ch 272 x 510 y 255 z 1;438 1 sx 1 sy 1 v 1 ch 437 x 850 y 850 z 1;28 1 bw 188 ay 0 i $0 v 1 ax 0 x 50 y 187 bh 188 z 20;283 1 bw 85 i MINE_NEUTRAL.png v 1 bh 85 z 5;428 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;423 1 sx 1 sy 1 v 1 ch 422 x 850 y 425;235 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;37 1 f 2537957 ay 0.5 v 1 ax 0.5 S 4 x 427 y 729 s 60 T $1 sc 0;341 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;254 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;123 1 sx 1 sy 1 v 1 ch 122 x 170 y 85 z 1;478 1 bw 85 i HQ_RED.png v 1 x -42 y -42 bh 85;104 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;237 1 sx 1 sy 1 v 1 ch 236 x 425 y 255 z 1;280 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;282 1 sx 1 sy 1 v 1 ch 281 x 510 y 510 z 1;221 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;472 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;32 1 f 16777215 ay 0.5 v 1 ax 0.5 S 4 x 427 y 317 s 40 T 'Income: +1' sc 0;378 1 sx 1 sy 1 v 1 ch 377 x 765 y 170 z 1;171 1 sx 1 sy 1 v 1 ch 170 x 255 y 425;461 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;433 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;99 1 sx 1 sy 1 v 1 ch 98 x 85 y 425;200 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;414 1 sx 1 sy 1 v 1 ch 413,412 x 850 y 170 z 1;229 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;180 1 sx 1 sy 1 v 1 ch 179 x 255 y 680 z 1;22 1 f 0 v 1 w 1020 x 0 y 595 h 3 z 2;16 1 f 0 v 1 w 1020 x 0 y 85 h 3 z 2;56 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;198 1 sx 1 sy 1 v 1 ch 197 x 340 y 170 z 1;346 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;94 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;314 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;374 1 bw 85 i CELL_NEUTRAL.png v 1 bh 85 z 1;266 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;93 1 sx 1 sy 1 v 1 ch 92 x 85 y 255;463 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;138 1 sx 1 sy 1 v 1 ch 137 x 170 y 510;27 1 f 0 v 1 w 1020 x 0 y 1020 h 3 z 2;253 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;95 1 bw 85 i CELL_VOID.png v 1 bh 85 z 1;391 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;141 1 sx 1 sy 1 v 1 ch 140 x 170 y 595;2 1 f 0 v 1 w 3 x 0 y 0 h 1020 z 2;79 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;252 1 sx 1 sy 1 v 1 ch 251 x 425 y 680 z 1;36 1 ay 0 i HUD_BLUE.png v 1 ax 0 x 88 y 644;420 1 sx 1 sy 1 v 1 ch 419 x 850 y 340;121 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;255 1 sx 1 sy 1 v 1 ch 254 x 425 y 765 z 1;447 1 sx 1 sy 1 v 1 ch 446 x 935 y 85 z 1;375 1 sx 1 sy 1 v 1 ch 374 x 765 y 85 z 1;382 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;81 1 sx 1 sy 1 v 1 ch 80 x 0 y 935;35 1 bw 188 ay 0 i $1 v 1 ax 0 x 50 y 719 bh 188 z 20;76 1 bw 85 i MINE_NEUTRAL.png v 0 bh 85 z 5;309 1 sx 1 sy 1 v 1 ch 308 x 595 y 255 z 1\\nW1\",\"tooltips\":[{\"129\":\"x: 2\\ny: 3\",\"396\":\"x: 9\\ny: 8\",\"270\":\"x: 6\\ny: 2\",\"399\":\"x: 9\\ny: 9\",\"144\":\"x: 2\\ny: 8\",\"273\":\"x: 6\\ny: 3\",\"402\":\"x: 9\\ny: 10\",\"147\":\"x: 2\\ny: 9\",\"276\":\"x: 6\\ny: 4\",\"405\":\"x: 9\\ny: 11\",\"150\":\"x: 2\\ny: 10\",\"279\":\"x: 6\\ny: 5\",\"408\":\"x: 10\\ny: 0\",\"153\":\"x: 2\\ny: 11\",\"282\":\"x: 6\\ny: 6\",\"411\":\"x: 10\\ny: 1\",\"285\":\"MINE SPOT\\nx: 6\\ny: 7\",\"414\":\"MINE SPOT\\nx: 10\\ny: 2\",\"288\":\"x: 6\\ny: 8\",\"417\":\"x: 10\\ny: 3\",\"291\":\"x: 6\\ny: 9\",\"165\":\"x: 3\\ny: 3\",\"168\":\"x: 3\\ny: 4\",\"303\":\"x: 7\\ny: 1\",\"48\":\"x: 0\\ny: 0\",\"177\":\"x: 3\\ny: 7\",\"306\":\"x: 7\\ny: 2\",\"51\":\"x: 0\\ny: 1\",\"435\":\"x: 10\\ny: 9\",\"180\":\"x: 3\\ny: 8\",\"309\":\"x: 7\\ny: 3\",\"54\":\"MINE SPOT\\nx: 0\\ny: 2\",\"438\":\"x: 10\\ny: 10\",\"183\":\"x: 3\\ny: 9\",\"312\":\"x: 7\\ny: 4\",\"441\":\"MINE SPOT\\nx: 10\\ny: 11\",\"186\":\"x: 3\\ny: 10\",\"315\":\"x: 7\\ny: 5\",\"318\":\"x: 7\\ny: 6\",\"447\":\"x: 11\\ny: 1\",\"321\":\"x: 7\\ny: 7\",\"450\":\"x: 11\\ny: 2\",\"324\":\"x: 7\\ny: 8\",\"198\":\"x: 4\\ny: 2\",\"327\":\"x: 7\\ny: 9\",\"201\":\"x: 4\\ny: 3\",\"75\":\"x: 0\\ny: 9\",\"204\":\"x: 4\\ny: 4\",\"78\":\"x: 0\\ny: 10\",\"207\":\"x: 4\\ny: 5\",\"210\":\"x: 4\\ny: 6\",\"339\":\"x: 8\\ny: 1\",\"84\":\"MINE SPOT\\nx: 1\\ny: 0\",\"213\":\"x: 4\\ny: 7\",\"342\":\"x: 8\\ny: 2\",\"87\":\"x: 1\\ny: 1\",\"471\":\"MINE SPOT\\nx: 11\\ny: 9\",\"216\":\"x: 4\\ny: 8\",\"345\":\"x: 8\\ny: 3\",\"90\":\"x: 1\\ny: 2\",\"474\":\"x: 11\\ny: 10\",\"219\":\"x: 4\\ny: 9\",\"348\":\"x: 8\\ny: 4\",\"477\":\"x: 11\\ny: 11\",\"222\":\"x: 4\\ny: 10\",\"479\":\"HQ\\nx: 0\\ny: 0\",\"481\":\"HQ\\nx: 11\\ny: 11\",\"357\":\"x: 8\\ny: 7\",\"360\":\"x: 8\\ny: 8\",\"234\":\"x: 5\\ny: 2\",\"108\":\"x: 1\\ny: 8\",\"237\":\"x: 5\\ny: 3\",\"111\":\"MINE SPOT\\nx: 1\\ny: 9\",\"240\":\"MINE SPOT\\nx: 5\\ny: 4\",\"114\":\"x: 1\\ny: 10\",\"243\":\"x: 5\\ny: 5\",\"372\":\"x: 9\\ny: 0\",\"117\":\"x: 1\\ny: 11\",\"246\":\"x: 5\\ny: 6\",\"375\":\"x: 9\\ny: 1\",\"120\":\"x: 2\\ny: 0\",\"249\":\"x: 5\\ny: 7\",\"378\":\"x: 9\\ny: 2\",\"123\":\"x: 2\\ny: 1\",\"252\":\"x: 5\\ny: 8\",\"381\":\"x: 9\\ny: 3\",\"126\":\"x: 2\\ny: 2\",\"255\":\"x: 5\\ny: 9\"}]}}\n",
+      "keyframe": true,
+      "agentId": -1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "TRAIN 1 1 0;TRAIN 1 2 0;MSG T:0\n",
+      "stderr": "GLOBAL\n^8 1 0 0 2 10 2 5 4 6 7 1 9 11 9 10 11 \nINTERNAL\n^0\nTURN\n^ 21 1 20 2\n^O..######..#\n^...####.....\n^...#........\n^##.........#\n^###......###\n^####....####\n^####....####\n^###......###\n^#.........##\n^........#...\n^.....####..X\n^#..######..X\n^2\n^ 0 0 0 0\n^ 1 0 11 11\n^ 0\n",
+      "summary": "",
+      "view": " 1\n{\"entitymodule\":\"U43 0 f 16712453 Γ T 'Turn 1';31 1 T 'Gold: 21';33 1 T T:0\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 trained a unit in (1, 0)\n",
+      "view": " 2\n{\"entitymodule\":\"CS;G\\nU83 1 i CELL_RED_ACTIVE.png;31 1 T 'Gold: 11';482 1 bw 85 i UNIT_1_RED.png v 1 x -42 y -42 bh 85;483 1 sx 1 sy 1 v 1 ch 482 x 126 y 41 z 10;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,195,456,330,57,417,303,24,231,477,3,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,132,60,315,222,243,207,20,216,144,6,240,12,264,357,258,276,360,471,201,51,273,438,285,23,18,105,162,423,312,348,402,450,25,87,123,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,129,138,27,204,408,483,63,141,7,2,11,252,420,369,117,219,84,255,387,447,375,111,468,81,354,393,108,17,399,309\\nW1\",\"tooltips\":[{\"483\":\"id: 1\\nlevel: 1\\nx: 1\\ny: 0\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 trained a unit in (2, 0)\n",
+      "view": " 3\n{\"entitymodule\":\"CS;G\\nU31 1 T 'Gold: 1';484 1 bw 85 i UNIT_1_RED.png v 1 x -42 y -42 bh 85;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,195,456,330,57,417,303,24,231,477,3,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,132,60,315,222,243,207,20,216,144,6,240,12,264,357,258,276,360,471,201,51,273,438,285,23,18,105,162,423,312,348,402,450,25,87,123,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,483,63,141,7,2,11,252,420,369,117,219,84,255,387,447,375,111,468,81,354,393,108,17,399,309;485 1 sx 1 sy 1 v 1 ch 484 x 211 y 41 z 10;119 1 i CELL_RED_ACTIVE.png\\nW1\",\"tooltips\":[{\"485\":\"id: 2\\nlevel: 1\\nx: 2\\ny: 0\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "TRAIN 1 10 10; TRAIN 1 10 9\n",
+      "summary": "",
+      "view": " 4\n{\"entitymodule\":\"U43 0 f 2537957 Γ;38 1 T 'Gold: 22'\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (10, 10)\n",
+      "view": " 5\n{\"entitymodule\":\"CS;G\\nU486 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;487 1 sx 1 sy 1 v 1 ch 486 x 891 y 891 z 10;437 1 i CELL_BLUE_ACTIVE.png;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,132,60,315,222,243,207,20,216,144,6,240,12,264,357,258,276,360,471,201,51,273,438,285,23,18,105,162,423,312,348,402,450,25,87,123,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,483,63,141,7,2,11,252,420,369,117,219,84,255,387,447,375,111,468,81,354,393,108,17,399,309;38 1 T 'Gold: 12'\\nW1\",\"tooltips\":[{\"487\":\"id: 3\\nlevel: 1\\nx: 10\\ny: 10\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (10, 9)\n",
+      "view": " 6\n{\"entitymodule\":\"CS;G\\nU434 1 i CELL_BLUE_ACTIVE.png;489 1 sx 1 sy 1 v 1 ch 488 x 891 y 806 z 10;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,132,60,315,222,243,207,20,216,144,6,240,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,162,423,312,348,402,450,25,87,123,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,483,63,141,7,2,11,252,420,369,117,219,84,255,387,447,375,111,468,81,354,393,108,17,399,309;488 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;38 1 T 'Gold: 2'\\nW1\",\"tooltips\":[{\"489\":\"id: 4\\nlevel: 1\\nx: 10\\ny: 9\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2 2 1;MOVE 1 1 1;MSG T:1\n",
+      "stderr": "GLOBAL\n^8 1 0 0 2 10 2 5 4 6 7 1 9 11 9 10 11 \nINTERNAL\n^1\nTURN\n^ 2 1 2 2\n^OOO######..#\n^...####.....\n^...#........\n^##.........#\n^###......###\n^####....####\n^####....####\n^###......###\n^#.........##\n^........#.X.\n^.....####.XX\n^#..######..X\n^2\n^ 0 0 0 0\n^ 1 0 11 11\n^ 4\n^0 1 1 1 0\n^0 2 1 2 0\n^1 3 1 10 10\n^1 4 1 10 9\n",
+      "summary": "",
+      "view": " 7\n{\"entitymodule\":\"U43 0 f 16712453 Γ T 'Turn 2';31 1 T 'Gold: 2';33 1 T T:1\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 2 to (2, 1)\n",
+      "view": " 8\n{\"entitymodule\":\"U32 1 T 'Income: +2';122 1 i CELL_RED_ACTIVE.png;485 1 y 126\\nW1\",\"tooltips\":[{\"485\":\"id: 2\\nlevel: 1\\nx: 2\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 1 to (1, 1)\n",
+      "view": " 9\n{\"entitymodule\":\"U32 1 T 'Income: +3';86 1 i CELL_RED_ACTIVE.png;483 1 y 126\\nW1\",\"tooltips\":[{\"483\":\"id: 1\\nlevel: 1\\nx: 1\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 3 9 10; MOVE 4 9 9\n",
+      "summary": "",
+      "view": " 10\n{\"entitymodule\":\"U43 0 f 2537957 Γ;38 1 T 'Gold: 4'\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 3 to (9, 10)\n",
+      "view": " 11\n{\"entitymodule\":\"U401 1 i CELL_BLUE_ACTIVE.png;487 1 x 806;39 1 T 'Income: +3'\\nW1\",\"tooltips\":[{\"487\":\"id: 3\\nlevel: 1\\nx: 9\\ny: 10\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 4 to (9, 9)\n",
+      "view": " 12\n{\"entitymodule\":\"U489 1 x 806;398 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +4'\\nW1\",\"tooltips\":[{\"489\":\"id: 4\\nlevel: 1\\nx: 9\\ny: 9\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2 2 2;MOVE 1 1 2;MSG T:2\n",
+      "stderr": "GLOBAL\n^8 1 0 0 2 10 2 5 4 6 7 1 9 11 9 10 11 \nINTERNAL\n^2\nTURN\n^ 5 3 4 4\n^OOO######..#\n^.OO####.....\n^...#........\n^##.........#\n^###......###\n^####....####\n^####....####\n^###......###\n^#.........##\n^........#XX.\n^.....####XXX\n^#..######..X\n^2\n^ 0 0 0 0\n^ 1 0 11 11\n^ 4\n^0 1 1 1 1\n^0 2 1 2 1\n^1 3 1 9 10\n^1 4 1 9 9\n",
+      "summary": "",
+      "view": " 13\n{\"entitymodule\":\"U43 0 f 16712453 Γ T 'Turn 3';31 1 T 'Gold: 5';33 1 T T:2\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 2 to (2, 2)\n",
+      "view": " 14\n{\"entitymodule\":\"U125 1 i CELL_RED_ACTIVE.png;32 1 T 'Income: +4';485 1 y 211\\nW1\",\"tooltips\":[{\"485\":\"id: 2\\nlevel: 1\\nx: 2\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 1 to (1, 2)\n",
+      "view": " 15\n{\"entitymodule\":\"U32 1 T 'Income: +5';483 1 y 211;89 1 i CELL_RED_ACTIVE.png\\nW1\",\"tooltips\":[{\"483\":\"id: 1\\nlevel: 1\\nx: 1\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 3 9 11; MOVE 4 9 8\n",
+      "summary": "",
+      "view": " 16\n{\"entitymodule\":\"U43 0 f 2537957 Γ;38 1 T 'Gold: 8'\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 3 to (9, 11)\n",
+      "view": " 17\n{\"entitymodule\":\"U404 1 i CELL_BLUE_ACTIVE.png;487 1 y 976;39 1 T 'Income: +5'\\nW1\",\"tooltips\":[{\"487\":\"id: 3\\nlevel: 1\\nx: 9\\ny: 11\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 4 to (9, 8)\n",
+      "view": " 18\n{\"entitymodule\":\"U489 1 y 721;39 1 T 'Income: +6';395 1 i CELL_BLUE_ACTIVE.png\\nW1\",\"tooltips\":[{\"489\":\"id: 4\\nlevel: 1\\nx: 9\\ny: 8\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2 2 3;MOVE 1 0 2;MSG T:3\n",
+      "stderr": "GLOBAL\n^8 1 0 0 2 10 2 5 4 6 7 1 9 11 9 10 11 \nINTERNAL\n^3\nTURN\n^ 10 5 8 6\n^OOO######..#\n^.OO####.....\n^.OO#........\n^##.........#\n^###......###\n^####....####\n^####....####\n^###......###\n^#........X##\n^........#XX.\n^.....####XXX\n^#..######X.X\n^2\n^ 0 0 0 0\n^ 1 0 11 11\n^ 4\n^0 1 1 1 2\n^0 2 1 2 2\n^1 3 1 9 11\n^1 4 1 9 8\n",
+      "summary": "",
+      "view": " 19\n{\"entitymodule\":\"U43 0 f 16712453 Γ T 'Turn 4';31 1 T 'Gold: 10';33 1 T T:3\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 2 to (2, 3)\n",
+      "view": " 20\n{\"entitymodule\":\"U32 1 T 'Income: +6';128 1 i CELL_RED_ACTIVE.png;485 1 y 296\\nW1\",\"tooltips\":[{\"485\":\"id: 2\\nlevel: 1\\nx: 2\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 1 to (0, 2)\n",
+      "view": " 21\n{\"entitymodule\":\"U32 1 T 'Income: +7';483 1 x 41;53 1 i CELL_RED_ACTIVE.png\\nW1\",\"tooltips\":[{\"483\":\"id: 1\\nlevel: 1\\nx: 0\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 3 10 11; MOVE 4 8 8; TRAIN 1 8 7\n",
+      "summary": "",
+      "view": " 22\n{\"entitymodule\":\"U43 0 f 2537957 Γ;38 1 T 'Gold: 14'\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 3 to (10, 11)\n",
+      "view": " 23\n{\"entitymodule\":\"U487 1 x 891;440 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +7'\\nW1\",\"tooltips\":[{\"487\":\"id: 3\\nlevel: 1\\nx: 10\\ny: 11\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 4 to (8, 8)\n",
+      "view": " 24\n{\"entitymodule\":\"U489 1 x 721;359 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +8'\\nW1\",\"tooltips\":[{\"489\":\"id: 4\\nlevel: 1\\nx: 8\\ny: 8\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (8, 7)\n",
+      "view": " 25\n{\"entitymodule\":\"CS;G\\nU490 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;491 1 sx 1 sy 1 v 1 ch 490 x 721 y 636 z 10;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,132,60,315,222,243,207,20,216,144,6,240,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,162,423,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,483,63,141,7,2,11,252,420,369,117,219,84,255,387,447,375,111,468,81,354,393,108,17,399,309;38 1 T 'Gold: 4';356 1 i CELL_BLUE_ACTIVE.png\\nW1\",\"tooltips\":[{\"491\":\"id: 5\\nlevel: 1\\nx: 8\\ny: 7\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2 3 3;MOVE 1 0 1;TRAIN 1 4 3;MSG T:4\n",
+      "stderr": "GLOBAL\n^8 1 0 0 2 10 2 5 4 6 7 1 9 11 9 10 11 \nINTERNAL\n^4\nTURN\n^ 17 7 4 8\n^OOO######..#\n^.OO####.....\n^OOO#........\n^##O........#\n^###......###\n^####....####\n^####....####\n^###.....X###\n^#.......XX##\n^........#XX.\n^.....####XXX\n^#..######XXX\n^2\n^ 0 0 0 0\n^ 1 0 11 11\n^ 5\n^0 1 1 0 2\n^0 2 1 2 3\n^1 3 1 10 11\n^1 4 1 8 8\n^1 5 1 8 7\n",
+      "summary": "",
+      "view": " 26\n{\"entitymodule\":\"U43 0 f 16712453 Γ T 'Turn 5';31 1 T 'Gold: 17';33 1 T T:4\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 2 to (3, 3)\n",
+      "view": " 27\n{\"entitymodule\":\"U164 1 i CELL_RED_ACTIVE.png;32 1 T 'Income: +8';485 1 x 296\\nW1\",\"tooltips\":[{\"485\":\"id: 2\\nlevel: 1\\nx: 3\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 1 to (0, 1)\n",
+      "view": " 28\n{\"entitymodule\":\"U32 1 T 'Income: +9';483 1 y 126;50 1 i CELL_RED_ACTIVE.png\\nW1\",\"tooltips\":[{\"483\":\"id: 1\\nlevel: 1\\nx: 0\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 trained a unit in (4, 3)\n",
+      "view": " 29\n{\"entitymodule\":\"CS;G\\nU493 1 sx 1 sy 1 v 1 ch 492 x 381 y 296 z 10;200 1 i CELL_RED_ACTIVE.png;31 1 T 'Gold: 7';492 1 bw 85 i UNIT_1_RED.png v 1 x -42 y -42 bh 85;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,132,60,315,222,243,207,20,216,144,6,240,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,162,423,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,483,63,141,7,2,11,252,420,369,117,219,84,255,387,447,375,111,468,81,354,393,108,17,399,309\\nW1\",\"tooltips\":[{\"493\":\"id: 6\\nlevel: 1\\nx: 4\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 4 7 8; MOVE 5 7 7; MOVE 3 10 10; TRAIN 1 7 6\n",
+      "summary": "",
+      "view": " 30\n{\"entitymodule\":\"U43 0 f 2537957 Γ;38 1 T 'Gold: 12'\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 4 to (7, 8)\n",
+      "view": " 31\n{\"entitymodule\":\"U489 1 x 636;323 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +9'\\nW1\",\"tooltips\":[{\"489\":\"id: 4\\nlevel: 1\\nx: 7\\ny: 8\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 5 to (7, 7)\n",
+      "view": " 32\n{\"entitymodule\":\"U491 1 x 636;39 1 T 'Income: +10';320 1 i CELL_BLUE_ACTIVE.png\\nW1\",\"tooltips\":[{\"491\":\"id: 5\\nlevel: 1\\nx: 7\\ny: 7\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 3 to (10, 10)\n",
+      "view": " 33\n{\"entitymodule\":\"U487 1 y 891\\nW1\",\"tooltips\":[{\"487\":\"id: 3\\nlevel: 1\\nx: 10\\ny: 10\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (7, 6)\n",
+      "view": " 34\n{\"entitymodule\":\"CS;G\\nU495 1 sx 1 sy 1 v 1 ch 494 x 636 y 551 z 10;494 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,132,60,315,222,243,207,20,216,144,495,6,240,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,162,423,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,483,63,141,7,2,11,252,420,369,117,219,84,255,387,447,375,111,468,81,354,393,108,17,399,309;38 1 T 'Gold: 2';317 1 i CELL_BLUE_ACTIVE.png\\nW1\",\"tooltips\":[{\"495\":\"id: 7\\nlevel: 1\\nx: 7\\ny: 6\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 6 5 3;MOVE 2 3 4;MOVE 1 1 1;TRAIN 1 6 3;MSG T:5\n",
+      "stderr": "GLOBAL\n^8 1 0 0 2 10 2 5 4 6 7 1 9 11 9 10 11 \nINTERNAL\n^5\nTURN\n^ 16 9 2 10\n^OOO######..#\n^OOO####.....\n^OOO#........\n^##OOO......#\n^###......###\n^####....####\n^####...X####\n^###....XX###\n^#......XXX##\n^........#XX.\n^.....####XXX\n^#..######XXX\n^2\n^ 0 0 0 0\n^ 1 0 11 11\n^ 7\n^0 1 1 0 1\n^0 2 1 3 3\n^0 6 1 4 3\n^1 3 1 10 10\n^1 4 1 7 8\n^1 5 1 7 7\n^1 7 1 7 6\n",
+      "summary": "",
+      "view": " 35\n{\"entitymodule\":\"U43 0 f 16712453 Γ T 'Turn 6';31 1 T 'Gold: 16';33 1 T T:5\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 6 to (5, 3)\n",
+      "view": " 36\n{\"entitymodule\":\"U493 1 x 466;236 1 i CELL_RED_ACTIVE.png;32 1 T 'Income: +10'\\nW1\",\"tooltips\":[{\"493\":\"id: 6\\nlevel: 1\\nx: 5\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 2 to (3, 4)\n",
+      "view": " 37\n{\"entitymodule\":\"U32 1 T 'Income: +11';167 1 i CELL_RED_ACTIVE.png;485 1 y 381\\nW1\",\"tooltips\":[{\"485\":\"id: 2\\nlevel: 1\\nx: 3\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 1 to (1, 1)\n",
+      "view": " 38\n{\"entitymodule\":\"U483 1 x 126\\nW1\",\"tooltips\":[{\"483\":\"id: 1\\nlevel: 1\\nx: 1\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 trained a unit in (6, 3)\n",
+      "view": " 39\n{\"entitymodule\":\"CS;G\\nU31 1 T 'Gold: 6';496 1 bw 85 i UNIT_1_RED.png v 1 x -42 y -42 bh 85;497 1 sx 1 sy 1 v 1 ch 496 x 551 y 296 z 10;272 1 i CELL_RED_ACTIVE.png;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,132,60,315,222,243,207,20,216,144,495,6,240,497,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,162,423,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,483,63,141,7,2,11,252,420,369,117,219,84,255,387,447,375,111,468,81,354,393,108,17,399,309\\nW1\",\"tooltips\":[{\"497\":\"id: 8\\nlevel: 1\\nx: 6\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 5 6 7; MOVE 4 6 8; MOVE 7 6 6; MOVE 3 11 10; TRAIN 1 5 6\n",
+      "summary": "",
+      "view": " 40\n{\"entitymodule\":\"U43 0 f 2537957 Γ;38 1 T 'Gold: 12'\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 5 to (6, 7)\n",
+      "view": " 41\n{\"entitymodule\":\"U284 1 i CELL_BLUE_ACTIVE.png;491 1 x 551;39 1 T 'Income: +11'\\nW1\",\"tooltips\":[{\"491\":\"id: 5\\nlevel: 1\\nx: 6\\ny: 7\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 4 to (6, 8)\n",
+      "view": " 42\n{\"entitymodule\":\"U287 1 i CELL_BLUE_ACTIVE.png;489 1 x 551;39 1 T 'Income: +12'\\nW1\",\"tooltips\":[{\"489\":\"id: 4\\nlevel: 1\\nx: 6\\ny: 8\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 7 to (6, 6)\n",
+      "view": " 43\n{\"entitymodule\":\"U495 1 x 551;281 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +13'\\nW1\",\"tooltips\":[{\"495\":\"id: 7\\nlevel: 1\\nx: 6\\ny: 6\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 3 to (11, 10)\n",
+      "view": " 44\n{\"entitymodule\":\"U487 1 x 976\\nW1\",\"tooltips\":[{\"487\":\"id: 3\\nlevel: 1\\nx: 11\\ny: 10\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (5, 6)\n",
+      "view": " 45\n{\"entitymodule\":\"CS;G\\nU499 1 sx 1 sy 1 v 1 ch 498 x 466 y 551 z 10;245 1 i CELL_BLUE_ACTIVE.png;498 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,132,60,315,222,243,207,20,216,144,495,6,240,497,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,162,423,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,499,483,63,141,7,2,11,252,420,369,117,219,84,255,387,447,375,111,468,81,354,393,108,17,399,309;38 1 T 'Gold: 2'\\nW1\",\"tooltips\":[{\"499\":\"id: 9\\nlevel: 1\\nx: 5\\ny: 6\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 6 5 4;MOVE 8 6 4;MOVE 2 4 4;MOVE 1 2 1;TRAIN 1 4 5;MSG T:6\n",
+      "stderr": "GLOBAL\n^8 1 0 0 2 10 2 5 4 6 7 1 9 11 9 10 11 \nINTERNAL\n^6\nTURN\n^ 17 11 2 13\n^OOO######..#\n^OOO####.....\n^OOO#........\n^##OOOOO....#\n^###O.....###\n^####....####\n^####.XXX####\n^###...XXX###\n^#.....XXXX##\n^........#XX.\n^.....####XXX\n^#..######XXX\n^2\n^ 0 0 0 0\n^ 1 0 11 11\n^ 9\n^0 1 1 1 1\n^0 2 1 3 4\n^0 6 1 5 3\n^0 8 1 6 3\n^1 3 1 11 10\n^1 4 1 6 8\n^1 5 1 6 7\n^1 7 1 6 6\n^1 9 1 5 6\n",
+      "summary": "",
+      "view": " 46\n{\"entitymodule\":\"U43 0 f 16712453 Γ T 'Turn 7';31 1 T 'Gold: 17';33 1 T T:6\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 6 to (5, 4)\n",
+      "view": " 47\n{\"entitymodule\":\"U493 1 y 381;239 1 i CELL_RED_ACTIVE.png;32 1 T 'Income: +12'\\nW1\",\"tooltips\":[{\"493\":\"id: 6\\nlevel: 1\\nx: 5\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 8 to (6, 4)\n",
+      "view": " 48\n{\"entitymodule\":\"U32 1 T 'Income: +13';275 1 i CELL_RED_ACTIVE.png;497 1 y 381\\nW1\",\"tooltips\":[{\"497\":\"id: 8\\nlevel: 1\\nx: 6\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 2 to (4, 4)\n",
+      "view": " 49\n{\"entitymodule\":\"U203 1 i CELL_RED_ACTIVE.png;32 1 T 'Income: +14';485 1 x 381\\nW1\",\"tooltips\":[{\"485\":\"id: 2\\nlevel: 1\\nx: 4\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 1 to (2, 1)\n",
+      "view": " 50\n{\"entitymodule\":\"U483 1 x 211\\nW1\",\"tooltips\":[{\"483\":\"id: 1\\nlevel: 1\\nx: 2\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 trained a unit in (4, 5)\n",
+      "view": " 51\n{\"entitymodule\":\"CS;G\\nU31 1 T 'Gold: 7';500 1 bw 85 i UNIT_1_RED.png v 1 x -42 y -42 bh 85;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,132,60,315,222,243,207,20,216,144,495,6,240,497,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,501,162,423,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,499,483,63,141,7,2,11,252,420,369,117,219,84,255,387,447,375,111,468,81,354,393,108,17,399,309;501 1 sx 1 sy 1 v 1 ch 500 x 381 y 466 z 10;206 1 i CELL_RED_ACTIVE.png\\nW1\",\"tooltips\":[{\"501\":\"id: 10\\nlevel: 1\\nx: 4\\ny: 5\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 3 11 9; MOVE 5 5 7; MOVE 7 6 5; MOVE 4 5 8; MOVE 9 5 5; TRAIN 1 4 6\n",
+      "summary": "",
+      "view": " 52\n{\"entitymodule\":\"U43 0 f 2537957 Γ;38 1 T 'Gold: 15'\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 3 to (11, 9)\n",
+      "view": " 53\n{\"entitymodule\":\"U470 1 i CELL_BLUE_ACTIVE.png;487 1 y 806;39 1 T 'Income: +14'\\nW1\",\"tooltips\":[{\"487\":\"id: 3\\nlevel: 1\\nx: 11\\ny: 9\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 5 to (5, 7)\n",
+      "view": " 54\n{\"entitymodule\":\"U248 1 i CELL_BLUE_ACTIVE.png;491 1 x 466;39 1 T 'Income: +15'\\nW1\",\"tooltips\":[{\"491\":\"id: 5\\nlevel: 1\\nx: 5\\ny: 7\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 7 to (6, 5)\n",
+      "view": " 55\n{\"entitymodule\":\"U278 1 i CELL_BLUE_ACTIVE.png;495 1 y 466;39 1 T 'Income: +16'\\nW1\",\"tooltips\":[{\"495\":\"id: 7\\nlevel: 1\\nx: 6\\ny: 5\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 4 to (5, 8)\n",
+      "view": " 56\n{\"entitymodule\":\"U489 1 x 466;251 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +17'\\nW1\",\"tooltips\":[{\"489\":\"id: 4\\nlevel: 1\\nx: 5\\ny: 8\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 9 to (5, 5)\n",
+      "view": " 57\n{\"entitymodule\":\"U499 1 y 466;39 1 T 'Income: +18';242 1 i CELL_BLUE_ACTIVE.png\\nW1\",\"tooltips\":[{\"499\":\"id: 9\\nlevel: 1\\nx: 5\\ny: 5\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (4, 6)\n",
+      "view": " 58\n{\"entitymodule\":\"CS;G\\nU502 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;503 1 sx 1 sy 1 v 1 ch 502 x 381 y 551 z 10;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,132,60,315,503,222,243,207,20,216,144,495,6,240,497,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,501,162,423,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,499,483,63,141,7,2,11,252,420,369,117,219,84,255,387,447,375,111,468,81,354,393,108,17,399,309;38 1 T 'Gold: 5';209 1 i CELL_BLUE_ACTIVE.png\\nW1\",\"tooltips\":[{\"503\":\"id: 11\\nlevel: 1\\nx: 4\\ny: 6\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 6 5 3;MOVE 8 7 4;MOVE 2 5 4;MOVE 1 2 2;TRAIN 1 7 5;TRAIN 1 7 6;MSG T:7\n",
+      "stderr": "GLOBAL\n^8 1 0 0 2 10 2 5 4 6 7 1 9 11 9 10 11 \nINTERNAL\n^7\nTURN\n^ 21 14 5 18\n^OOO######..#\n^OOO####.....\n^OOO#........\n^##OOOOO....#\n^###OOOO..###\n^####OXX.####\n^####XXXX####\n^###..XXXX###\n^#....XXXXX##\n^........#XXX\n^.....####XXX\n^#..######XXX\n^2\n^ 0 0 0 0\n^ 1 0 11 11\n^ 11\n^0 1 1 2 1\n^0 2 1 4 4\n^0 6 1 5 4\n^0 8 1 6 4\n^0 10 1 4 5\n^1 3 1 11 9\n^1 4 1 5 8\n^1 5 1 5 7\n^1 7 1 6 5\n^1 9 1 5 5\n^1 11 1 4 6\n",
+      "summary": "",
+      "view": " 59\n{\"entitymodule\":\"U43 0 f 16712453 Γ T 'Turn 8';31 1 T 'Gold: 21';33 1 T T:7\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 6 to (5, 3)\n",
+      "view": " 60\n{\"entitymodule\":\"U493 1 y 296\\nW1\",\"tooltips\":[{\"493\":\"id: 6\\nlevel: 1\\nx: 5\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 8 to (7, 4)\n",
+      "view": " 61\n{\"entitymodule\":\"U311 1 i CELL_RED_ACTIVE.png;32 1 T 'Income: +15';497 1 x 636\\nW1\",\"tooltips\":[{\"497\":\"id: 8\\nlevel: 1\\nx: 7\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 2 to (5, 4)\n",
+      "view": " 62\n{\"entitymodule\":\"U485 1 x 466\\nW1\",\"tooltips\":[{\"485\":\"id: 2\\nlevel: 1\\nx: 5\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 1 to (2, 2)\n",
+      "view": " 63\n{\"entitymodule\":\"U483 1 y 211\\nW1\",\"tooltips\":[{\"483\":\"id: 1\\nlevel: 1\\nx: 2\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 trained a unit in (7, 5)\n",
+      "view": " 64\n{\"entitymodule\":\"CS;G\\nU31 1 T 'Gold: 11';314 1 i CELL_RED_ACTIVE.png;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,132,60,315,503,222,243,207,20,216,144,495,6,240,497,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,501,162,423,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,499,483,63,141,7,2,11,252,420,369,117,219,84,255,387,447,505,375,111,468,81,354,393,108,17,399,309;505 1 sx 1 sy 1 v 1 ch 504 x 636 y 466 z 10;504 1 bw 85 i UNIT_1_RED.png v 1 x -42 y -42 bh 85\\nW1\",\"tooltips\":[{\"505\":\"id: 12\\nlevel: 1\\nx: 7\\ny: 5\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 trained a unit in (7, 6)\n",
+      "view": " 65\n{\"entitymodule\":\"CS;G\\nU31 1 T 'Gold: 1';507 1 sx 1 sy 1 v 1 ch 506 x 636 y 551 z 10;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,507,132,60,315,503,222,243,207,20,216,144,495,6,240,497,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,501,162,423,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,499,483,63,141,7,2,11,252,420,369,117,219,84,255,387,447,505,375,111,468,81,354,393,108,17,399,309;506 1 bw 85 i UNIT_1_RED.png v 1 x -42 y -42 bh 85;39 1 T 'Income: +17';317 1 i CELL_RED_ACTIVE.png\\nW1\",\"tooltips\":[{\"507\":\"id: 13\\nlevel: 1\\nx: 7\\ny: 6\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 5 4 7; MOVE 7 6 4; MOVE 4 4 8; MOVE 3 10 9; TRAIN 1 6 3; TRAIN 1 6 2\n",
+      "summary": "",
+      "view": " 66\n{\"entitymodule\":\"U43 0 f 2537957 Γ;38 1 T 'Gold: 22'\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 5 to (4, 7)\n",
+      "view": " 67\n{\"entitymodule\":\"U212 1 i CELL_BLUE_ACTIVE.png;491 1 x 381;39 1 T 'Income: +18'\\nW1\",\"tooltips\":[{\"491\":\"id: 5\\nlevel: 1\\nx: 4\\ny: 7\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 7 to (6, 4)\n",
+      "view": " 68\n{\"entitymodule\":\"U311 1 i CELL_RED_INACTIVE.png;314 1 i CELL_RED_INACTIVE.png;32 1 T 'Income: +14';495 1 y 381;275 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +19';317 1 i CELL_RED_INACTIVE.png\\nW1\",\"tooltips\":[{\"495\":\"id: 7\\nlevel: 1\\nx: 6\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 4 to (4, 8)\n",
+      "view": " 69\n{\"entitymodule\":\"U215 1 i CELL_BLUE_ACTIVE.png;489 1 x 381;39 1 T 'Income: +20'\\nW1\",\"tooltips\":[{\"489\":\"id: 4\\nlevel: 1\\nx: 4\\ny: 8\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 3 to (10, 9)\n",
+      "view": " 70\n{\"entitymodule\":\"U487 1 x 891\\nW1\",\"tooltips\":[{\"487\":\"id: 3\\nlevel: 1\\nx: 10\\ny: 9\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (6, 3)\n",
+      "view": " 71\n{\"entitymodule\":\"CS;G\\nU508 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;32 1 T 'Income: +13';272 1 i CELL_BLUE_ACTIVE.png;1 1 ch 429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,507,132,60,315,503,222,243,207,20,216,144,495,6,240,497,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,501,162,423,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,499,483,63,141,7,2,11,252,420,369,117,219,84,255,387,509,447,505,375,111,468,81,354,393,108,17,399,309;509 1 sx 1 sy 1 v 1 ch 508 x 551 y 296 z 10;38 1 T 'Gold: 12'\\nW1\",\"tooltips\":[{\"509\":\"id: 14\\nlevel: 1\\nx: 6\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (6, 2)\n",
+      "view": " 72\n{\"entitymodule\":\"CS;G\\nU511 1 sx 1 sy 1 v 1 ch 510 x 551 y 211 z 10;510 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;1 1 ch 511,429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,507,132,60,315,503,222,243,207,20,216,144,495,6,240,497,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,501,162,423,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,499,483,63,141,7,2,11,252,420,369,117,219,84,255,387,509,447,505,375,111,468,81,354,393,108,17,399,309;38 1 T 'Gold: 2';269 1 i CELL_BLUE_ACTIVE.png\\nW1\",\"tooltips\":[{\"511\":\"id: 15\\nlevel: 1\\nx: 6\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 6 5 2;MOVE 2 5 3;MOVE 10 4 4;MOVE 1 2 3;TRAIN 1 6 5;MSG T:8\n",
+      "stderr": "GLOBAL\n^8 1 0 0 2 10 2 5 4 6 7 1 9 11 9 10 11 \nINTERNAL\n^8\nTURN\n^ 14 13 2 20\n^OOO######..#\n^OOO####.....\n^OOO#..X.....\n^##OOOOX....#\n^###OOOXo.###\n^####OXXo####\n^####XXXo####\n^###.XXXXX###\n^#...XXXXXX##\n^........#XXX\n^.....####XXX\n^#..######XXX\n^2\n^ 0 0 0 0\n^ 1 0 11 11\n^ 12\n^0 1 1 2 2\n^0 2 1 5 4\n^0 6 1 5 3\n^0 10 1 4 5\n^1 3 1 10 9\n^1 4 1 4 8\n^1 5 1 4 7\n^1 7 1 6 4\n^1 9 1 5 5\n^1 11 1 4 6\n^1 14 1 6 3\n^1 15 1 6 2\n",
+      "summary": "",
+      "view": " 73\n{\"entitymodule\":\"U43 0 f 16712453 Γ T 'Turn 9';31 1 T 'Gold: 14';507 1 v 0;33 1 T T:8;497 1 v 0;505 1 v 0\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 6 to (5, 2)\n",
+      "view": " 74\n{\"entitymodule\":\"U493 1 y 211;32 1 T 'Income: +14';233 1 i CELL_RED_ACTIVE.png\\nW1\",\"tooltips\":[{\"493\":\"id: 6\\nlevel: 1\\nx: 5\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 2 to (5, 3)\n",
+      "view": " 75\n{\"entitymodule\":\"U485 1 y 296\\nW1\",\"tooltips\":[{\"485\":\"id: 2\\nlevel: 1\\nx: 5\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 10 to (4, 4)\n",
+      "view": " 76\n{\"entitymodule\":\"U501 1 y 381\\nW1\",\"tooltips\":[{\"501\":\"id: 10\\nlevel: 1\\nx: 4\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 1 to (2, 3)\n",
+      "view": " 77\n{\"entitymodule\":\"U483 1 y 296\\nW1\",\"tooltips\":[{\"483\":\"id: 1\\nlevel: 1\\nx: 2\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0: Invalid action (cell not playable) TRAIN 1 6 5\n",
+      "view": " 78\n{\"entitymodule\":\"W1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 5 3 7; MOVE 11 4 5; MOVE 9 5 4; MOVE 7 7 4; MOVE 14 7 3; MOVE 15 7 2; MOVE 4 4 9; MOVE 3 9 9; BUILD TOWER 6 3\n",
+      "summary": "",
+      "view": " 79\n{\"entitymodule\":\"U43 0 f 2537957 Γ;38 1 T 'Gold: 22'\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 5 to (3, 7)\n",
+      "view": " 80\n{\"entitymodule\":\"U176 1 i CELL_BLUE_ACTIVE.png;491 1 x 296;39 1 T 'Income: +21'\\nW1\",\"tooltips\":[{\"491\":\"id: 5\\nlevel: 1\\nx: 3\\ny: 7\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 11 to (4, 5)\n",
+      "view": " 81\n{\"entitymodule\":\"U32 1 T 'Income: +13';503 1 y 466;39 1 T 'Income: +22';206 1 i CELL_BLUE_ACTIVE.png\\nW1\",\"tooltips\":[{\"503\":\"id: 11\\nlevel: 1\\nx: 4\\ny: 5\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 9 to (5, 4)\n",
+      "view": " 82\n{\"entitymodule\":\"U239 1 i CELL_BLUE_ACTIVE.png;32 1 T 'Income: +12';499 1 y 381;39 1 T 'Income: +23'\\nW1\",\"tooltips\":[{\"499\":\"id: 9\\nlevel: 1\\nx: 5\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 7 to (7, 4)\n",
+      "view": " 83\n{\"entitymodule\":\"U311 1 i CELL_BLUE_ACTIVE.png;495 1 x 636;39 1 T 'Income: +24'\\nW1\",\"tooltips\":[{\"495\":\"id: 7\\nlevel: 1\\nx: 7\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 14 to (7, 3)\n",
+      "view": " 84\n{\"entitymodule\":\"U308 1 i CELL_BLUE_ACTIVE.png;509 1 x 636;39 1 T 'Income: +25'\\nW1\",\"tooltips\":[{\"509\":\"id: 14\\nlevel: 1\\nx: 7\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 15 to (7, 2)\n",
+      "view": " 85\n{\"entitymodule\":\"U511 1 x 636;305 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +26'\\nW1\",\"tooltips\":[{\"511\":\"id: 15\\nlevel: 1\\nx: 7\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 4 to (4, 9)\n",
+      "view": " 86\n{\"entitymodule\":\"U218 1 i CELL_BLUE_ACTIVE.png;489 1 y 806;39 1 T 'Income: +27'\\nW1\",\"tooltips\":[{\"489\":\"id: 4\\nlevel: 1\\nx: 4\\ny: 9\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 3 to (9, 9)\n",
+      "view": " 87\n{\"entitymodule\":\"U487 1 x 806\\nW1\",\"tooltips\":[{\"487\":\"id: 3\\nlevel: 1\\nx: 9\\ny: 9\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 built a TOWER in (6, 3)\n",
+      "view": " 88\n{\"entitymodule\":\"CS;G\\nU273 1 z 3;275 1 i CELL_BLUE_PROTECTED.png;272 1 i CELL_BLUE_PROTECTED.png;308 1 i CELL_BLUE_PROTECTED.png;1 1 ch 511,429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,507,132,60,315,503,513,222,243,207,20,216,144,495,6,240,497,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,501,162,423,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,499,483,63,141,7,2,11,252,420,369,117,219,84,255,387,509,447,505,375,111,468,81,354,393,108,17,399,309;513 1 sx 1 sy 1 v 1 ch 512 x 551 y 296 z 10;38 1 T 'Gold: 7';270 1 z 3;276 1 z 3;309 1 z 3;269 1 i CELL_BLUE_PROTECTED.png;512 1 bw 85 i TOWER_BLUE.png v 1 x -42 y -42 bh 85\\nW1\",\"tooltips\":[{\"513\":\"TOWER\\nx: 6\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 6 4 2;MOVE 2 5 2;MOVE 10 4 3;MOVE 1 3 3;TRAIN 1 6 5;TRAIN 1 6 6;MSG T:9\n",
+      "stderr": "GLOBAL\n^8 1 0 0 2 10 2 5 4 6 7 1 9 11 9 10 11 \nINTERNAL\n^9\nTURN\n^ 26 12 7 27\n^OOO######..#\n^OOO####.....\n^OOO#.OXX....\n^##OOOOXX...#\n^###OOXXX.###\n^####XXXo####\n^####XXXo####\n^###XXXXXX###\n^#...XXXXXX##\n^....X...#XXX\n^.....####XXX\n^#..######XXX\n^3\n^ 0 0 0 0\n^ 1 0 11 11\n^ 1 2 6 3\n^ 12\n^0 1 1 2 3\n^0 2 1 5 3\n^0 6 1 5 2\n^0 10 1 4 4\n^1 3 1 9 9\n^1 4 1 4 9\n^1 5 1 3 7\n^1 7 1 7 4\n^1 9 1 5 4\n^1 11 1 4 5\n^1 14 1 7 3\n^1 15 1 7 2\n",
+      "summary": "",
+      "view": " 89\n{\"entitymodule\":\"U43 0 f 16712453 Γ T 'Turn 10';31 1 T 'Gold: 26';33 1 T T:9\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 6 to (4, 2)\n",
+      "view": " 90\n{\"entitymodule\":\"U197 1 i CELL_RED_ACTIVE.png;493 1 x 381;32 1 T 'Income: +13'\\nW1\",\"tooltips\":[{\"493\":\"id: 6\\nlevel: 1\\nx: 4\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 2 to (5, 2)\n",
+      "view": " 91\n{\"entitymodule\":\"U485 1 y 211\\nW1\",\"tooltips\":[{\"485\":\"id: 2\\nlevel: 1\\nx: 5\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 10 to (4, 3)\n",
+      "view": " 92\n{\"entitymodule\":\"U501 1 y 296\\nW1\",\"tooltips\":[{\"501\":\"id: 10\\nlevel: 1\\nx: 4\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 1 to (3, 3)\n",
+      "view": " 93\n{\"entitymodule\":\"U483 1 x 296\\nW1\",\"tooltips\":[{\"483\":\"id: 1\\nlevel: 1\\nx: 3\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0: Invalid action (cell not playable) TRAIN 1 6 5\n$0: Invalid action (cell not playable) TRAIN 1 6 6\n",
+      "view": " 94\n{\"entitymodule\":\"W1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 5 3 8; MOVE 11 4 4; MOVE 9 5 3; MOVE 14 8 3; MOVE 4 3 9; MOVE 7 7 5; MOVE 15 7 1; MOVE 3 9 8; TRAIN 1 3 4; TRAIN 2 3 3\n",
+      "summary": "",
+      "view": " 95\n{\"entitymodule\":\"U43 0 f 2537957 Γ;38 1 T 'Gold: 34'\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 5 to (3, 8)\n",
+      "view": " 96\n{\"entitymodule\":\"U491 1 y 721;179 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +28'\\nW1\",\"tooltips\":[{\"491\":\"id: 5\\nlevel: 1\\nx: 3\\ny: 8\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 11 to (4, 4)\n",
+      "view": " 97\n{\"entitymodule\":\"U203 1 i CELL_BLUE_ACTIVE.png;32 1 T 'Income: +12';503 1 y 381;39 1 T 'Income: +29'\\nW1\",\"tooltips\":[{\"503\":\"id: 11\\nlevel: 1\\nx: 4\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 9 to (5, 3)\n",
+      "view": " 98\n{\"entitymodule\":\"U236 1 i CELL_BLUE_PROTECTED.png;32 1 T 'Income: +11';499 1 y 296;39 1 T 'Income: +30';237 1 z 3\\nW1\",\"tooltips\":[{\"499\":\"id: 9\\nlevel: 1\\nx: 5\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 14 to (8, 3)\n",
+      "view": " 99\n{\"entitymodule\":\"U344 1 i CELL_BLUE_ACTIVE.png;509 1 x 721;39 1 T 'Income: +31'\\nW1\",\"tooltips\":[{\"509\":\"id: 14\\nlevel: 1\\nx: 8\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 4 to (3, 9)\n",
+      "view": " 100\n{\"entitymodule\":\"U182 1 i CELL_BLUE_ACTIVE.png;489 1 x 296;39 1 T 'Income: +32'\\nW1\",\"tooltips\":[{\"489\":\"id: 4\\nlevel: 1\\nx: 3\\ny: 9\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 7 to (7, 5)\n",
+      "view": " 101\n{\"entitymodule\":\"U314 1 i CELL_BLUE_ACTIVE.png;495 1 y 466;39 1 T 'Income: +33'\\nW1\",\"tooltips\":[{\"495\":\"id: 7\\nlevel: 1\\nx: 7\\ny: 5\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 15 to (7, 1)\n",
+      "view": " 102\n{\"entitymodule\":\"U511 1 y 126;302 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +34'\\nW1\",\"tooltips\":[{\"511\":\"id: 15\\nlevel: 1\\nx: 7\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 3 to (9, 8)\n",
+      "view": " 103\n{\"entitymodule\":\"U487 1 y 721\\nW1\",\"tooltips\":[{\"487\":\"id: 3\\nlevel: 1\\nx: 9\\ny: 8\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (3, 4)\n",
+      "view": " 104\n{\"entitymodule\":\"CS;G\\nU32 1 T 'Income: +10';514 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;515 1 sx 1 sy 1 v 1 ch 514 x 296 y 381 z 10;1 1 ch 511,429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,507,132,60,315,503,513,222,243,207,20,216,144,495,6,240,497,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,501,162,423,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,499,483,63,141,7,2,11,252,420,369,117,219,84,255,387,509,447,505,375,111,468,81,354,393,515,108,17,399,309;167 1 i CELL_BLUE_ACTIVE.png;38 1 T 'Gold: 24'\\nW1\",\"tooltips\":[{\"515\":\"id: 16\\nlevel: 1\\nx: 3\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (3, 3)\n",
+      "view": " 105\n{\"entitymodule\":\"CS;G\\nU197 1 i CELL_RED_INACTIVE.png;200 1 i CELL_RED_INACTIVE.png;164 1 i CELL_BLUE_ACTIVE.png;483 1 v 0;516 1 bw 85 i UNIT_2_BLUE.png v 1 x -42 y -42 bh 85;1 1 ch 511,429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,507,132,60,315,503,513,222,243,207,20,216,144,495,6,240,497,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,501,162,423,517,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,499,483,63,141,7,2,11,252,420,369,117,219,84,255,387,509,447,505,375,111,468,81,354,393,515,108,17,399,309;233 1 i CELL_RED_INACTIVE.png;38 1 T 'Gold: 4';39 1 T 'Income: +31';517 1 sx 1 sy 1 v 1 ch 516 x 296 y 296 z 10\\nW1\",\"tooltips\":[{\"517\":\"id: 17\\nlevel: 2\\nx: 3\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "TRAIN 1 7 7;TRAIN 1 6 6;TRAIN 1 6 5;MSG T:10\n",
+      "stderr": "GLOBAL\n^8 1 0 0 2 10 2 5 4 6 7 1 9 11 9 10 11 \nINTERNAL\n^10\nTURN\n^ 36 10 4 31\n^OOO######..#\n^OOO####X....\n^OOO#ooXX....\n^##OXoXXXX..#\n^###XXXXX.###\n^####XXXX####\n^####XXXo####\n^###XXXXXX###\n^#..XXXXXXX##\n^...XX...#XXX\n^.....####XXX\n^#..######XXX\n^3\n^ 0 0 0 0\n^ 1 0 11 11\n^ 1 2 6 3\n^ 10\n^1 3 1 9 8\n^1 4 1 3 9\n^1 5 1 3 8\n^1 7 1 7 5\n^1 9 1 5 3\n^1 11 1 4 4\n^1 14 1 8 3\n^1 15 1 7 1\n^1 16 1 3 4\n^1 17 2 3 3\n",
+      "summary": "",
+      "view": " 106\n{\"entitymodule\":\"U43 0 f 16712453 Γ T 'Turn 11';493 1 v 0;31 1 T 'Gold: 36';33 1 T T:10;501 1 v 0;485 1 v 0\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0: Invalid action (cell not playable) TRAIN 1 7 7\n$0: Invalid action (cell not playable) TRAIN 1 6 6\n$0: Invalid action (cell not playable) TRAIN 1 6 5\n",
+      "view": " 107\n{\"entitymodule\":\"W1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 5 2 8; MOVE 7 7 6; MOVE 11 4 3; MOVE 9 5 2; MOVE 15 8 1; MOVE 17 2 3; MOVE 4 2 9; MOVE 14 8 2; MOVE 3 8 8; MOVE 16 3 3; TRAIN 1 8 4; TRAIN 1 9 3; TRAIN 1 10 3\n",
+      "summary": "",
+      "view": " 108\n{\"entitymodule\":\"U43 0 f 2537957 Γ;38 1 T 'Gold: 35'\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 5 to (2, 8)\n",
+      "view": " 109\n{\"entitymodule\":\"U491 1 x 211;39 1 T 'Income: +32';143 1 i CELL_BLUE_ACTIVE.png\\nW1\",\"tooltips\":[{\"491\":\"id: 5\\nlevel: 1\\nx: 2\\ny: 8\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 7 to (7, 6)\n",
+      "view": " 110\n{\"entitymodule\":\"U495 1 y 551;39 1 T 'Income: +33';317 1 i CELL_BLUE_ACTIVE.png\\nW1\",\"tooltips\":[{\"495\":\"id: 7\\nlevel: 1\\nx: 7\\ny: 6\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 11 to (4, 3)\n",
+      "view": " 111\n{\"entitymodule\":\"U200 1 i CELL_BLUE_ACTIVE.png;503 1 y 296;39 1 T 'Income: +34'\\nW1\",\"tooltips\":[{\"503\":\"id: 11\\nlevel: 1\\nx: 4\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 9 to (5, 2)\n",
+      "view": " 112\n{\"entitymodule\":\"U499 1 y 211;233 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +35'\\nW1\",\"tooltips\":[{\"499\":\"id: 9\\nlevel: 1\\nx: 5\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 15 to (8, 1)\n",
+      "view": " 113\n{\"entitymodule\":\"U511 1 x 721;338 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +36'\\nW1\",\"tooltips\":[{\"511\":\"id: 15\\nlevel: 1\\nx: 8\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 17 to (2, 3)\n",
+      "view": " 114\n{\"entitymodule\":\"U32 1 T 'Income: +9';128 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +37';517 1 x 211\\nW1\",\"tooltips\":[{\"517\":\"id: 17\\nlevel: 2\\nx: 2\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 4 to (2, 9)\n",
+      "view": " 115\n{\"entitymodule\":\"U489 1 x 211;146 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +38'\\nW1\",\"tooltips\":[{\"489\":\"id: 4\\nlevel: 1\\nx: 2\\ny: 9\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 14 to (8, 2)\n",
+      "view": " 116\n{\"entitymodule\":\"U341 1 i CELL_BLUE_ACTIVE.png;509 1 y 211;39 1 T 'Income: +39'\\nW1\",\"tooltips\":[{\"509\":\"id: 14\\nlevel: 1\\nx: 8\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 3 to (8, 8)\n",
+      "view": " 117\n{\"entitymodule\":\"U487 1 x 721\\nW1\",\"tooltips\":[{\"487\":\"id: 3\\nlevel: 1\\nx: 8\\ny: 8\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 16 to (3, 3)\n",
+      "view": " 118\n{\"entitymodule\":\"U515 1 y 296\\nW1\",\"tooltips\":[{\"515\":\"id: 16\\nlevel: 1\\nx: 3\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (8, 4)\n",
+      "view": " 119\n{\"entitymodule\":\"CS;G\\nU518 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;347 1 i CELL_BLUE_ACTIVE.png;1 1 ch 511,429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,507,132,60,315,503,513,222,243,207,20,216,144,495,6,240,497,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,501,519,162,423,517,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,499,483,63,141,7,2,11,252,420,369,117,219,84,255,387,509,447,505,375,111,468,81,354,393,515,108,17,399,309;519 1 sx 1 sy 1 v 1 ch 518 x 721 y 381 z 10;38 1 T 'Gold: 25'\\nW1\",\"tooltips\":[{\"519\":\"id: 18\\nlevel: 1\\nx: 8\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (9, 3)\n",
+      "view": " 120\n{\"entitymodule\":\"CS;G\\nU520 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;380 1 i CELL_BLUE_ACTIVE.png;521 1 sx 1 sy 1 v 1 ch 520 x 806 y 296 z 10;1 1 ch 511,429,246,234,10,261,372,48,297,481,174,462,4,405,327,183,426,390,19,396,435,75,102,288,9,177,114,147,210,186,249,126,384,479,493,195,456,330,521,57,417,303,24,231,477,3,487,14,159,336,26,270,150,459,474,444,279,120,300,294,8,342,156,192,15,441,321,225,381,267,333,507,132,60,315,503,513,222,243,207,20,216,144,495,6,240,497,12,264,357,258,276,360,471,201,51,273,438,489,285,23,18,105,501,519,162,423,517,312,348,402,450,25,87,123,491,135,189,90,237,339,78,453,282,54,66,21,69,72,378,171,411,324,5,99,414,432,180,366,22,165,168,16,198,291,228,345,351,93,363,465,13,306,153,318,96,213,485,129,138,27,204,408,499,483,63,141,7,2,11,252,420,369,117,219,84,255,387,509,447,505,375,111,468,81,354,393,515,108,17,399,309;38 1 T 'Gold: 15'\\nW1\",\"tooltips\":[{\"521\":\"id: 19\\nlevel: 1\\nx: 9\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (10, 3)\n",
+      "view": " 121\n{\"entitymodule\":\"CS;G\\nU522 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;416 1 i CELL_BLUE_ACTIVE.png;523 1 sx 1 sy 1 v 1 ch 522 x 891 y 296 z 10;1 1 ch 429,372,297,174,462,327,183,396,435,9,126,384,195,456,57,303,231,477,3,336,26,270,150,459,279,300,523,15,321,225,333,507,132,315,513,243,495,6,240,497,357,360,201,489,285,105,519,162,312,348,402,450,189,90,339,453,54,69,72,411,324,432,366,165,168,228,345,351,465,306,153,318,485,129,204,483,63,11,84,387,509,468,354,393,17,399,511,246,234,10,261,48,481,4,405,426,390,19,75,102,288,177,114,147,210,186,249,479,493,330,521,417,24,487,14,159,474,444,120,294,8,342,156,192,441,381,267,60,503,222,207,20,216,144,12,264,258,276,471,51,273,438,23,18,501,423,517,25,87,123,491,135,237,78,282,66,21,378,171,5,99,414,180,22,16,198,291,93,363,13,96,213,138,27,408,499,141,7,2,252,420,369,117,219,255,447,505,375,111,81,515,108,309;38 1 T 'Gold: 5'\\nW1\",\"tooltips\":[{\"523\":\"id: 20\\nlevel: 1\\nx: 10\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "TRAIN 1 2 2;TRAIN 1 2 1;TRAIN 1 1 2;TRAIN 1 2 0;MSG T:11\n",
+      "stderr": "GLOBAL\n^8 1 0 0 2 10 2 5 4 6 7 1 9 11 9 10 11 \nINTERNAL\n^11\nTURN\n^ 45 9 5 39\n^OOO######..#\n^OOO####XX...\n^OOO#oXXXX...\n^##XXXXXXXXX#\n^###XXXXXX###\n^####XXXX####\n^####XXXX####\n^###XXXXXX###\n^#.XXXXXXXX##\n^..XXX...#XXX\n^.....####XXX\n^#..######XXX\n^3\n^ 0 0 0 0\n^ 1 0 11 11\n^ 1 2 6 3\n^ 13\n^1 3 1 8 8\n^1 4 1 2 9\n^1 5 1 2 8\n^1 7 1 7 6\n^1 9 1 5 2\n^1 11 1 4 3\n^1 14 1 8 2\n^1 15 1 8 1\n^1 16 1 3 3\n^1 17 2 2 3\n^1 18 1 8 4\n^1 19 1 9 3\n^1 20 1 10 3\n",
+      "summary": "",
+      "view": " 122\n{\"entitymodule\":\"U43 0 f 16712453 Γ T 'Turn 12';31 1 T 'Gold: 45';33 1 T T:11\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 trained a unit in (2, 2)\n",
+      "view": " 123\n{\"entitymodule\":\"U31 1 T 'Gold: 35';32 1 T 'Income: +8';497 1 v 1 x 211 y 211\\nW1\",\"tooltips\":[{\"497\":\"id: 21\\nlevel: 1\\nx: 2\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 trained a unit in (2, 1)\n",
+      "view": " 124\n{\"entitymodule\":\"U31 1 T 'Gold: 25';32 1 T 'Income: +7';505 1 v 1 x 211 y 126\\nW1\",\"tooltips\":[{\"505\":\"id: 22\\nlevel: 1\\nx: 2\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 trained a unit in (1, 2)\n",
+      "view": " 125\n{\"entitymodule\":\"U31 1 T 'Gold: 15';507 1 v 1 x 126 y 211;32 1 T 'Income: +6'\\nW1\",\"tooltips\":[{\"507\":\"id: 23\\nlevel: 1\\nx: 1\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 trained a unit in (2, 0)\n",
+      "view": " 126\n{\"entitymodule\":\"U31 1 T 'Gold: 5';32 1 T 'Income: +5';483 1 v 1 x 211 y 41\\nW1\",\"tooltips\":[{\"483\":\"id: 24\\nlevel: 1\\nx: 2\\ny: 0\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 5 1 8; MOVE 9 4 2; MOVE 14 9 2; MOVE 15 9 1; MOVE 17 2 2; MOVE 20 10 2; MOVE 4 2 10; MOVE 3 7 8; MOVE 7 6 6; MOVE 16 2 3; MOVE 18 7 4; MOVE 19 8 3; TRAIN 1 5 9; TRAIN 1 4 10; TRAIN 1 9 0; TRAIN 1 11 2\n",
+      "summary": "",
+      "view": " 127\n{\"entitymodule\":\"U43 0 f 2537957 Γ;38 1 T 'Gold: 44'\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 5 to (1, 8)\n",
+      "view": " 128\n{\"entitymodule\":\"U491 1 x 126;107 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +40'\\nW1\",\"tooltips\":[{\"491\":\"id: 5\\nlevel: 1\\nx: 1\\ny: 8\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 9 to (4, 2)\n",
+      "view": " 129\n{\"entitymodule\":\"U197 1 i CELL_BLUE_ACTIVE.png;499 1 x 381;39 1 T 'Income: +41'\\nW1\",\"tooltips\":[{\"499\":\"id: 9\\nlevel: 1\\nx: 4\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 14 to (9, 2)\n",
+      "view": " 130\n{\"entitymodule\":\"U509 1 x 806;377 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +42'\\nW1\",\"tooltips\":[{\"509\":\"id: 14\\nlevel: 1\\nx: 9\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 15 to (9, 1)\n",
+      "view": " 131\n{\"entitymodule\":\"U511 1 x 806;374 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +43'\\nW1\",\"tooltips\":[{\"511\":\"id: 15\\nlevel: 1\\nx: 9\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 17 to (2, 2)\n",
+      "view": " 132\n{\"entitymodule\":\"U125 1 i CELL_BLUE_ACTIVE.png;497 1 v 0;39 1 T 'Income: +44';517 1 y 211\\nW1\",\"tooltips\":[{\"517\":\"id: 17\\nlevel: 2\\nx: 2\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 20 to (10, 2)\n",
+      "view": " 133\n{\"entitymodule\":\"U413 1 i CELL_BLUE_ACTIVE.png;523 1 y 211;39 1 T 'Income: +45'\\nW1\",\"tooltips\":[{\"523\":\"id: 20\\nlevel: 1\\nx: 10\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 4 to (2, 10)\n",
+      "view": " 134\n{\"entitymodule\":\"U149 1 i CELL_BLUE_ACTIVE.png;489 1 y 891;39 1 T 'Income: +46'\\nW1\",\"tooltips\":[{\"489\":\"id: 4\\nlevel: 1\\nx: 2\\ny: 10\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 3 to (7, 8)\n",
+      "view": " 135\n{\"entitymodule\":\"U487 1 x 636\\nW1\",\"tooltips\":[{\"487\":\"id: 3\\nlevel: 1\\nx: 7\\ny: 8\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 7 to (6, 6)\n",
+      "view": " 136\n{\"entitymodule\":\"U495 1 x 551\\nW1\",\"tooltips\":[{\"495\":\"id: 7\\nlevel: 1\\nx: 6\\ny: 6\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 16 to (2, 3)\n",
+      "view": " 137\n{\"entitymodule\":\"U515 1 x 211\\nW1\",\"tooltips\":[{\"515\":\"id: 16\\nlevel: 1\\nx: 2\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 18 to (7, 4)\n",
+      "view": " 138\n{\"entitymodule\":\"U519 1 x 636\\nW1\",\"tooltips\":[{\"519\":\"id: 18\\nlevel: 1\\nx: 7\\ny: 4\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 19 to (8, 3)\n",
+      "view": " 139\n{\"entitymodule\":\"U521 1 x 721\\nW1\",\"tooltips\":[{\"521\":\"id: 19\\nlevel: 1\\nx: 8\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (5, 9)\n",
+      "view": " 140\n{\"entitymodule\":\"CS;G\\nU254 1 i CELL_BLUE_ACTIVE.png;1 1 ch 429,372,297,174,462,327,183,396,435,9,126,384,195,456,525,57,303,231,477,3,336,26,270,150,459,279,300,523,15,321,225,333,507,132,315,513,243,495,6,240,497,357,360,201,489,285,105,519,162,312,348,402,450,189,90,339,453,54,69,72,411,324,432,366,165,168,228,345,351,465,306,153,318,485,129,204,483,63,11,84,387,509,468,354,393,17,399,511,246,234,10,261,48,481,4,405,426,390,19,75,102,288,177,114,147,210,186,249,479,493,330,521,417,24,487,14,159,474,444,120,294,8,342,156,192,441,381,267,60,503,222,207,20,216,144,12,264,258,276,471,51,273,438,23,18,501,423,517,25,87,123,491,135,237,78,282,66,21,378,171,5,99,414,180,22,16,198,291,93,363,13,96,213,138,27,408,499,141,7,2,252,420,369,117,219,255,447,505,375,111,81,515,108,309;525 1 sx 1 sy 1 v 1 ch 524 x 466 y 806 z 10;524 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;38 1 T 'Gold: 34'\\nW1\",\"tooltips\":[{\"525\":\"id: 25\\nlevel: 1\\nx: 5\\ny: 9\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (4, 10)\n",
+      "view": " 141\n{\"entitymodule\":\"CS;G\\nU221 1 i CELL_BLUE_ACTIVE.png;526 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;1 1 ch 429,372,527,297,174,462,327,183,396,435,9,126,384,195,456,525,57,303,231,477,3,336,26,270,150,459,279,300,523,15,321,225,333,507,132,315,513,243,495,6,240,497,357,360,201,489,285,105,519,162,312,348,402,450,189,90,339,453,54,69,72,411,324,432,366,165,168,228,345,351,465,306,153,318,485,129,204,483,63,11,84,387,509,468,354,393,17,399,511,246,234,10,261,48,481,4,405,426,390,19,75,102,288,177,114,147,210,186,249,479,493,330,521,417,24,487,14,159,474,444,120,294,8,342,156,192,441,381,267,60,503,222,207,20,216,144,12,264,258,276,471,51,273,438,23,18,501,423,517,25,87,123,491,135,237,78,282,66,21,378,171,5,99,414,180,22,16,198,291,93,363,13,96,213,138,27,408,499,141,7,2,252,420,369,117,219,255,447,505,375,111,81,515,108,309;38 1 T 'Gold: 24';527 1 sx 1 sy 1 v 1 ch 526 x 381 y 891 z 10\\nW1\",\"tooltips\":[{\"527\":\"id: 26\\nlevel: 1\\nx: 4\\ny: 10\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (9, 0)\n",
+      "view": " 142\n{\"entitymodule\":\"CS;G\\nU528 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;529 1 sx 1 sy 1 v 1 ch 528 x 806 y 41 z 10;371 1 i CELL_BLUE_ACTIVE.png;1 1 ch 429,372,527,297,174,462,327,183,396,435,9,126,384,195,456,525,57,303,231,477,3,336,26,270,150,459,529,279,300,523,15,321,225,333,507,132,315,513,243,495,6,240,497,357,360,201,489,285,105,519,162,312,348,402,450,189,90,339,453,54,69,72,411,324,432,366,165,168,228,345,351,465,306,153,318,485,129,204,483,63,11,84,387,509,468,354,393,17,399,511,246,234,10,261,48,481,4,405,426,390,19,75,102,288,177,114,147,210,186,249,479,493,330,521,417,24,487,14,159,474,444,120,294,8,342,156,192,441,381,267,60,503,222,207,20,216,144,12,264,258,276,471,51,273,438,23,18,501,423,517,25,87,123,491,135,237,78,282,66,21,378,171,5,99,414,180,22,16,198,291,93,363,13,96,213,138,27,408,499,141,7,2,252,420,369,117,219,255,447,505,375,111,81,515,108,309;38 1 T 'Gold: 14'\\nW1\",\"tooltips\":[{\"529\":\"id: 27\\nlevel: 1\\nx: 9\\ny: 0\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (11, 2)\n",
+      "view": " 143\n{\"entitymodule\":\"CS;G\\nU449 1 i CELL_BLUE_ACTIVE.png;530 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;531 1 sx 1 sy 1 v 1 ch 530 x 976 y 211 z 10;1 1 ch 429,372,527,297,174,462,327,183,396,435,9,126,384,195,456,525,57,303,231,477,3,336,26,270,150,459,529,279,300,523,15,321,225,333,507,132,315,513,243,495,6,240,497,357,360,201,489,285,105,519,162,312,348,402,450,189,90,339,453,54,69,72,411,324,432,366,165,168,228,345,351,465,306,153,318,485,129,204,483,63,11,84,387,509,468,354,393,17,399,511,246,234,10,261,48,481,4,405,426,390,19,75,102,531,288,177,114,147,210,186,249,479,493,330,521,417,24,487,14,159,474,444,120,294,8,342,156,192,441,381,267,60,503,222,207,20,216,144,12,264,258,276,471,51,273,438,23,18,501,423,517,25,87,123,491,135,237,78,282,66,21,378,171,5,99,414,180,22,16,198,291,93,363,13,96,213,138,27,408,499,141,7,2,252,420,369,117,219,255,447,505,375,111,81,515,108,309;38 1 T 'Gold: 4'\\nW1\",\"tooltips\":[{\"531\":\"id: 28\\nlevel: 1\\nx: 11\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 22 1 1;MOVE 23 0 2;MOVE 24 2 1;MSG T:12\n",
+      "stderr": "GLOBAL\n^8 1 0 0 2 10 2 5 4 6 7 1 9 11 9 10 11 \nINTERNAL\n^12\nTURN\n^ 10 5 4 46\n^OOO######X.#\n^OOO####XXX..\n^OOX#XXXXXXXX\n^##XXXXXXXXX#\n^###XXXXXX###\n^####XXXX####\n^####XXXX####\n^###XXXXXX###\n^#XXXXXXXXX##\n^..XXXX..#XXX\n^..X.X####XXX\n^#..######XXX\n^3\n^ 0 0 0 0\n^ 1 0 11 11\n^ 1 2 6 3\n^ 20\n^0 22 1 2 1\n^0 23 1 1 2\n^0 24 1 2 0\n^1 3 1 7 8\n^1 4 1 2 10\n^1 5 1 1 8\n^1 7 1 6 6\n^1 9 1 4 2\n^1 11 1 4 3\n^1 14 1 9 2\n^1 15 1 9 1\n^1 16 1 2 3\n^1 17 2 2 2\n^1 18 1 7 4\n^1 19 1 8 3\n^1 20 1 10 2\n^1 25 1 5 9\n^1 26 1 4 10\n^1 27 1 9 0\n^1 28 1 11 2\n",
+      "summary": "",
+      "view": " 144\n{\"entitymodule\":\"U43 0 f 16712453 Γ T 'Turn 13';31 1 T 'Gold: 10';33 1 T T:12\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 22 to (1, 1)\n",
+      "view": " 145\n{\"entitymodule\":\"U505 1 x 126\\nW1\",\"tooltips\":[{\"505\":\"id: 22\\nlevel: 1\\nx: 1\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 23 to (0, 2)\n",
+      "view": " 146\n{\"entitymodule\":\"U507 1 x 41\\nW1\",\"tooltips\":[{\"507\":\"id: 23\\nlevel: 1\\nx: 0\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$0 moved 24 to (2, 1)\n",
+      "view": " 147\n{\"entitymodule\":\"U483 1 y 126\\nW1\",\"tooltips\":[{\"483\":\"id: 24\\nlevel: 1\\nx: 2\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 3 7 9; MOVE 5 1 9; MOVE 15 10 1; MOVE 25 6 9; MOVE 26 3 10; MOVE 27 10 0; MOVE 28 11 1; MOVE 4 1 10; MOVE 17 2 1; MOVE 16 2 2; MOVE 7 6 5; MOVE 11 3 3; MOVE 14 8 2; MOVE 20 9 2; TRAIN 1 2 0; TRAIN 1 1 0; TRAIN 1 0 0; TRAIN 1 2 11; TRAIN 1 0 10\n",
+      "summary": "",
+      "view": " 148\n{\"entitymodule\":\"U43 0 f 2537957 Γ;38 1 T 'Gold: 50'\\nW1\",\"tooltips\":[{}]}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 3 to (7, 9)\n",
+      "view": " 149\n{\"entitymodule\":\"U487 1 y 806;326 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +47'\\nW1\",\"tooltips\":[{\"487\":\"id: 3\\nlevel: 1\\nx: 7\\ny: 9\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 5 to (1, 9)\n",
+      "view": " 150\n{\"entitymodule\":\"U110 1 i CELL_BLUE_ACTIVE.png;491 1 y 806;39 1 T 'Income: +48'\\nW1\",\"tooltips\":[{\"491\":\"id: 5\\nlevel: 1\\nx: 1\\ny: 9\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 15 to (10, 1)\n",
+      "view": " 151\n{\"entitymodule\":\"U511 1 x 891;410 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +49'\\nW1\",\"tooltips\":[{\"511\":\"id: 15\\nlevel: 1\\nx: 10\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 25 to (6, 9)\n",
+      "view": " 152\n{\"entitymodule\":\"U290 1 i CELL_BLUE_ACTIVE.png;525 1 x 551;39 1 T 'Income: +50'\\nW1\",\"tooltips\":[{\"525\":\"id: 25\\nlevel: 1\\nx: 6\\ny: 9\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 26 to (3, 10)\n",
+      "view": " 153\n{\"entitymodule\":\"U185 1 i CELL_BLUE_ACTIVE.png;527 1 x 296;39 1 T 'Income: +51'\\nW1\",\"tooltips\":[{\"527\":\"id: 26\\nlevel: 1\\nx: 3\\ny: 10\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 27 to (10, 0)\n",
+      "view": " 154\n{\"entitymodule\":\"U529 1 x 891;407 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +52'\\nW1\",\"tooltips\":[{\"529\":\"id: 27\\nlevel: 1\\nx: 10\\ny: 0\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 28 to (11, 1)\n",
+      "view": " 155\n{\"entitymodule\":\"U446 1 i CELL_BLUE_ACTIVE.png;531 1 y 126;39 1 T 'Income: +53'\\nW1\",\"tooltips\":[{\"531\":\"id: 28\\nlevel: 1\\nx: 11\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 4 to (1, 10)\n",
+      "view": " 156\n{\"entitymodule\":\"U489 1 x 126;113 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +54'\\nW1\",\"tooltips\":[{\"489\":\"id: 4\\nlevel: 1\\nx: 1\\ny: 10\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 17 to (2, 1)\n",
+      "view": " 157\n{\"entitymodule\":\"U483 1 v 0;122 1 i CELL_BLUE_ACTIVE.png;39 1 T 'Income: +55';517 1 y 126\\nW1\",\"tooltips\":[{\"517\":\"id: 17\\nlevel: 2\\nx: 2\\ny: 1\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 16 to (2, 2)\n",
+      "view": " 158\n{\"entitymodule\":\"U515 1 y 211\\nW1\",\"tooltips\":[{\"515\":\"id: 16\\nlevel: 1\\nx: 2\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 7 to (6, 5)\n",
+      "view": " 159\n{\"entitymodule\":\"U495 1 y 466\\nW1\",\"tooltips\":[{\"495\":\"id: 7\\nlevel: 1\\nx: 6\\ny: 5\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 11 to (3, 3)\n",
+      "view": " 160\n{\"entitymodule\":\"U503 1 x 296\\nW1\",\"tooltips\":[{\"503\":\"id: 11\\nlevel: 1\\nx: 3\\ny: 3\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 14 to (8, 2)\n",
+      "view": " 161\n{\"entitymodule\":\"U509 1 x 721\\nW1\",\"tooltips\":[{\"509\":\"id: 14\\nlevel: 1\\nx: 8\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 moved 20 to (9, 2)\n",
+      "view": " 162\n{\"entitymodule\":\"U523 1 x 806\\nW1\",\"tooltips\":[{\"523\":\"id: 20\\nlevel: 1\\nx: 9\\ny: 2\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (2, 0)\n",
+      "view": " 163\n{\"entitymodule\":\"CS;G\\nU532 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;533 1 sx 1 sy 1 v 1 ch 532 x 211 y 41 z 10;32 1 T 'Income: +4';1 1 ch 429,372,527,297,174,462,327,183,396,435,9,126,384,195,456,525,57,303,231,477,3,336,26,270,150,459,529,279,300,523,15,321,225,333,507,533,132,315,513,243,495,6,240,497,357,360,201,489,285,105,519,162,312,348,402,450,189,90,339,453,54,69,72,411,324,432,366,165,168,228,345,351,465,306,153,318,485,129,204,483,63,11,84,387,509,468,354,393,17,399,511,246,234,10,261,48,481,4,405,426,390,19,75,102,531,288,177,114,147,210,186,249,479,493,330,521,417,24,487,14,159,474,444,120,294,8,342,156,192,441,381,267,60,503,222,207,20,216,144,12,264,258,276,471,51,273,438,23,18,501,423,517,25,87,123,491,135,237,78,282,66,21,378,171,5,99,414,180,22,16,198,291,93,363,13,96,213,138,27,408,499,141,7,2,252,420,369,117,219,255,447,505,375,111,81,515,108,309;38 1 T 'Gold: 40';119 1 i CELL_BLUE_ACTIVE.png\\nW1\",\"tooltips\":[{\"533\":\"id: 29\\nlevel: 1\\nx: 2\\ny: 0\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (1, 0)\n",
+      "view": " 164\n{\"entitymodule\":\"CS;G\\nU83 1 i CELL_BLUE_ACTIVE.png;535 1 sx 1 sy 1 v 1 ch 534 x 126 y 41 z 10;32 1 T 'Income: +3';534 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;1 1 ch 429,372,527,297,174,462,327,183,396,435,9,126,384,195,456,525,57,303,231,477,3,336,26,270,150,459,529,279,300,523,15,321,225,333,507,533,132,315,513,243,495,6,240,497,357,360,201,489,285,105,519,162,312,348,402,450,189,90,339,453,54,69,72,411,324,432,366,165,168,228,345,351,465,306,153,318,485,129,204,483,63,11,84,387,509,468,354,393,17,399,511,246,234,10,261,48,481,4,405,426,390,19,75,102,531,288,177,114,147,210,186,249,479,493,535,330,521,417,24,487,14,159,474,444,120,294,8,342,156,192,441,381,267,60,503,222,207,20,216,144,12,264,258,276,471,51,273,438,23,18,501,423,517,25,87,123,491,135,237,78,282,66,21,378,171,5,99,414,180,22,16,198,291,93,363,13,96,213,138,27,408,499,141,7,2,252,420,369,117,219,255,447,505,375,111,81,515,108,309;38 1 T 'Gold: 30'\\nW1\",\"tooltips\":[{\"535\":\"id: 30\\nlevel: 1\\nx: 1\\ny: 0\"}]}\n",
+      "keyframe": true,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "",
+      "summary": "$1 trained a unit in (0, 0)\n",
+      "view": " 165\n{\"entitymodule\":\"CS;G\\nU536 1 bw 85 i UNIT_1_BLUE.png v 1 x -42 y -42 bh 85;32 1 T 'Income: +2';537 1 sx 1 sy 1 v 1 ch 536 x 41 y 41 z 10;47 1 i CELL_BLUE_ACTIVE.png;1 1 ch 429,372,527,297,174,462,327,183,396,435,9,126,384,195,456,525,57,303,231,477,3,336,26,270,150,459,529,279,300,523,15,321,225,333,507,533,132,315,513,243,495,6,240,497,357,360,201,489,285,105,519,162,312,348,402,450,189,90,339,453,54,69,72,411,324,432,366,165,168,228,345,351,465,306,153,318,485,129,204,483,63,11,84,387,509,468,354,393,17,399,511,246,234,537,10,261,48,481,4,405,426,390,19,75,102,531,288,177,114,147,210,186,249,479,493,535,330,521,417,24,487,14,159,474,444,120,294,8,342,156,192,441,381,267,60,503,222,207,20,216,144,12,264,258,276,471,51,273,438,23,18,501,423,517,25,87,123,491,135,237,78,282,66,21,378,171,5,99,414,180,22,16,198,291,93,363,13,96,213,138,27,408,499,141,7,2,252,420,369,117,219,255,447,505,375,111,81,515,108,309;38 1 T 'Gold: 20'\\nW1\",\"tooltips\":[{\"537\":\"id: 31\\nlevel: 1\\nx: 0\\ny: 0\"}],\"endScreen\":[[-1,230],\"logo.png\",[]]}\n",
+      "keyframe": true,
+      "agentId": 0
+    }
+  ],
+  "gameId": 710108420,
+  "refereeInput": "seed=5497182219063154000\n",
+  "scores": [
+    -1,
+    230
+  ],
+  "ranks": [
+    1,
+    0
+  ],
+  "metadata": {}
+}

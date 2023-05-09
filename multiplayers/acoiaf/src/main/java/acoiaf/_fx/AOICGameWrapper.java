@@ -2,13 +2,17 @@ package acoiaf._fx;
 
 import java.util.List;
 
+import acoiaf.Action;
+import acoiaf.Player;
 import acoiaf.State;
+import cgfx.frames.Frame;
 import cgfx.wrappers.GameWrapper;
 import fast.read.FastReader;
 
 public class AOICGameWrapper extends GameWrapper {
 
 	State state = new State();
+  List<Action> actions;
 	
 	@Override
 	protected void _copyFrom(GameWrapper gameWrapper) {
@@ -35,8 +39,12 @@ public class AOICGameWrapper extends GameWrapper {
 
 	@Override
 	protected void _think() {
-		// TODO Auto-generated method stub
-		
+    long start = System.currentTimeMillis();
+    actions = Player.ai.think(this.state);
+    long end = System.currentTimeMillis();
+    System.err.println("Think in "+(end-start)+"ms");
+    System.err.println("New Actions ");
+    actions.forEach(Action::debug);
 	}
 
 	@Override
@@ -58,5 +66,9 @@ public class AOICGameWrapper extends GameWrapper {
 		state.read(in);
 		
 	}
+
+  public void readFromFrame(Frame f) {
+    readFromInput(f.cleanStderr());
+  }
 
 }
