@@ -72,17 +72,20 @@ public class Depth1AI {
 
   private double eval(State state, Pos pos, int swapped, int id) {
     double score = 0.0;
-    if (Player.turn > 30) {
+    
+    if (state.scores[1-id] == 0) return Double.POSITIVE_INFINITY;
+    
+    if (state.phase() == Phase.ENDGAME) {
       score += state.scores[id];
       score -= state.scores[1-id];
+    } else if (state.phase() == Phase.MIDDLE) {
+      score -= 0.1 * state.piecesCount(id);
+    } else if (state.phase() == Phase.OPENING) {
+      score -= state.piecesCount(id);
     }
-
-    
-    
-    
     
     double positionalAdvantage = OthelloEval.positionalAdvantage(pos);
-    score += positionalAdvantage * 0.5;
+    score += positionalAdvantage * 1.0;
     
     
     int myNeighbors = work.countNeighbors(pos, id);

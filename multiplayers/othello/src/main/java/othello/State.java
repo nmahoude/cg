@@ -178,4 +178,8 @@ public class State {
   public Phase phase() {
     return Player.turn <= 20 ? Phase.OPENING : Player.turn <= 40  ? Phase.MIDDLE : Phase.ENDGAME;
   }
+
+  public double piecesCount(int id) {
+    return Long.bitCount(grids[id]);
+  }
 }
