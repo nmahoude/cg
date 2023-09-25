@@ -4,7 +4,10 @@ import java.util.List;
 
 public class Simulation {
 
-  private static final int MAX_SIMULATION_STEP = 10;
+  public static final int ASH_MOVE = 1000;
+  public static final int ZOMBIE_MOVE = 400;
+  
+  private static final int MAX_SIMULATION_STEP = 200;
 
   private static final int ZOMBIE_MOVE_RADIUS = 400;
 
@@ -12,43 +15,76 @@ public class Simulation {
 
   private static final int SQUARE_ZOMBIE_KILL_HUMAN = 400 * 400;
 
-  private static int fibonaci[] = { 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765 };
-
-  GameState state;
+  static double depth[] = new double[MAX_SIMULATION_STEP];
+  static {
+    depth[0] = 1.0;
+    for (int i=1;i<MAX_SIMULATION_STEP;i++) {
+      depth[i] = 0.99 * depth[i-1];
+    }
+  }
+  
+  State state;
 
   int turn = 0;
 
-  private int deadZombies[];
+  int steps;
+  public int score;
+  public int scores[]= new int[MAX_SIMULATION_STEP];
+  public Point nextPos = new Point(0, 0);
 
-  private int deadHumans[];
+  private boolean debug;
 
-  private int score[];
+  
+  private Point finalAction = new Point(0,0);
 
-  public void simulate(GameState state, AGSolution scorer, List<Action> actions) {
+  public void simulate(State state, AGSolution scorer, List<Point> actions) {
     this.state = state;
+    this.steps = actions.size();
     init();
-    for (Action action : actions) {
+    for (Point action : actions) {
       simulateOneTurn(action);
+      if (action == actions.get(0)) {
+        nextPos.x = state.ash.p.x; 
+        nextPos.y = state.ash.p.y; 
+      }
     }
+    // go to closer human
+    Human human = scorer.closerHuman(state);
+    Human ash = state.ash;
+
+    if (human != null) {
+      while (human.p.squareDistance(ash.p) > SQUARE_DIST_ASH_TO_KILL_ZOMBIE) {
+        if (human.dead) break;
+        
+        double dist = human.p.distTo(ash.p);
+        finalAction.x = ash.p.x + ASH_MOVE * (human.p.x - ash.p.x) / dist;
+        finalAction.y = ash.p.y + ASH_MOVE * (human.p.y - ash.p.y) / dist;
+        
+        simulateOneTurn(finalAction);
+      }
+    } else {
+    }
+    
     scorer.calculateEnergy(this);
-    this.state.restore();
+    
   }
 
   private void init() {
     turn = 0;
-    deadZombies = new int[MAX_SIMULATION_STEP];
-    deadHumans = new int[MAX_SIMULATION_STEP];
-    score = new int[MAX_SIMULATION_STEP];
+    score = 0;
+    
+    for (int i=0;i<MAX_SIMULATION_STEP;i++) {
+      scores[i] = 0;
+    }
+    
   }
 
-  public void simulateOneTurn(Action action) {
+  public void simulateOneTurn(Point action) {
     ZombiesMove();
     AshMove(action);
     ZombiesKill();
     HumansKill();
-  }
-
-  private void score() {
+    turn++;
   }
 
   private void ZombiesMove() {
@@ -66,24 +102,30 @@ public class Simulation {
     }
   }
 
-  private void AshMove(Action action) {
-    state.ash.move(action.p);
+  private void AshMove(Point action) {
+    state.ash.move(action);
   }
 
   private void ZombiesKill() {
+    int scoreThisTurn = 0;
+
+    int deadZombieThisTurn = 0;
     for (Zombie z : state.zombies) {
       if (z.dead)
         continue;
       if (state.ash.p.squareDistance(z.p) <= SQUARE_DIST_ASH_TO_KILL_ZOMBIE) {
+        if (debug) {
+          System.err.println("Ash @"+state.ash.p+" kill "+z.id+" @"+z.p);
+        }
+        deadZombieThisTurn++;
+        state.aliveZombies--;
         z.dead = true;
         z.deadThisTurn = true;
-        addDeadZombie();
+        scoreThisTurn += state.aliveHumans * state.aliveHumans * 10 * AGSolution.fibValues[deadZombieThisTurn];
       }
     }
-  }
-
-  private void addDeadZombie() {
-    deadZombies[turn]++;
+    scores[turn] = scoreThisTurn;
+    score += scoreThisTurn;
   }
 
   private void HumansKill() {
@@ -95,13 +137,23 @@ public class Simulation {
           continue;
         if (z.p.squareDistance(h.p) < SQUARE_ZOMBIE_KILL_HUMAN) {
           h.dead = true;
-          addDeadHuman();
+          if (debug) {
+            System.err.println("Zombie "+z.id+" @"+z.p+" kill H "+h.id+" @"+h.p);
+          }
+
+          state.aliveHumans--;
         }
       }
     }
+    if (state.aliveHumans == 0) {
+      scores[turn] = -100_000;
+    }
   }
 
-  private void addDeadHuman() {
-    deadHumans[turn]++;
+  public void enableDebug() {
+    debug = true;
+  }
+  public void resetDebug() {
+    debug = false;
   }
 }

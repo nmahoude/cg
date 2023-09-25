@@ -2,69 +2,86 @@ package oldcvz;
 
 public class AGSolution {
 
-  private GameState state;
+  private State state;
 
   public double energy;
-
-  public int aliveHumans;
-
-  private Human bestHuman;
 
   public void reset() {
   }
 
-  public void setup(GameState state) {
+  public void setup(State state) {
     this.state = state;
-    bestHuman = closerHuman();
   }
 
   public void calculateEnergy(Simulation simulation) {
     state = simulation.state;
     energy = 0;
-    updateAliveHumans();
-    if (aliveHumans == 0) {
+    
+    Human bestHuman = closerHuman(state);
+    if (bestHuman == null || state.aliveHumans == 0) {
       energy = -1_000_000;
       return;
     }
-    energy = 0.0 - state.ash.p.distTo(bestHuman.p) + 1.0 * aliveHumans * aliveHumans * 10 * fib(deadZombiesThisTurn()) + minDistToZombies() + 0.0;
+    
+    
+    double ashToBest = simulation.nextPos.distTo(bestHuman.p);
+    energy = 0.0 
+        - ashToBest 
+        + 10_000 * state.aliveHumans
+        + 0.0;
+
+    for (int i=0;i<simulation.steps;i++) {
+      energy += 1000 * simulation.scores[i] * Simulation.depth[i];
+    }
+    
+    
+    if (state.aliveZombies == 0) {
+      energy += 1_000_000; // game end
+    }
   }
 
   static int fibValues[];
 
   static {
-    fibValues = new int[] { 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 };
+    fibValues = new int[] { 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 };
   }
 
   int fib(int n) {
-    return fibValues[n + 1];
+    return fibValues[n];
   }
 
-  private Human closerHuman() {
+  public Human closerHuman(State state) {
     Human bestHuman = null;
-    double bestScore = 0;
+    double bestScore = Double.NEGATIVE_INFINITY;
     for (Human h : state.humans) {
-      if (h.dead)
-        continue;
+      if (h.dead) continue;
+      
       Zombie z = h.getCloserZombie(state.zombies);
-      double score = 1.0 * z.p.distTo(h.p) / 400 - 1.0 * state.ash.p.distTo(h.p) / 1000;
-      if (bestHuman == null || score > bestScore) {
+      int aStepsToH = (int)(1.0 * (state.ash.p.distTo(h.p)) / Simulation.ASH_MOVE);
+      int zStepsToH;
+      if (z != null) {
+        zStepsToH = (int)(z.p.distTo(h.p) / Simulation.ZOMBIE_MOVE);
+      } else {
+        zStepsToH = 1_000_000;
+      }
+      
+      double score = zStepsToH - aStepsToH;
+      if (score > bestScore) {
         bestScore = score;
         bestHuman = h;
       }
     }
-    System.err.println("Best human is " + bestHuman.id + " at " + bestHuman.p);
+/*
+ *     if (bestHuman != null) {
+ 
+      System.err.println("Best human is " + bestHuman.id + " at " + bestHuman.p);
+    }
+*/
+    
     return bestHuman;
   }
 
-  private void updateAliveHumans() {
-    aliveHumans = state.humans.length;
-    for (Human h : state.humans) {
-      if (h.dead)
-        aliveHumans--;
-    }
-  }
-
-  private int deadZombiesThisTurn() {
+  int deadZombiesThisTurn() {
     int deadZombies = 0;
     for (Zombie z : state.zombies) {
       if (z.deadThisTurn)

@@ -2,7 +2,8 @@ package oldcvz;
 
 public class Point {
 
-  public final double x, y;
+  public double x;
+  public double y;
 
   public Point(double x, double y) {
     super();

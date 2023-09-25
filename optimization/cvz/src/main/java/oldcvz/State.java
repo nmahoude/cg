@@ -2,7 +2,7 @@ package oldcvz;
 
 import java.util.Scanner;
 
-public class GameState {
+public class State {
 
   public Ash ash = new Ash();
 
@@ -10,6 +10,9 @@ public class GameState {
 
   public Zombie[] zombies = null;
 
+  public int aliveHumans = 0;
+  public int aliveZombies= 0;
+  
   /** Backups */
   /** Backups */
   Ash b_ash = new Ash();
@@ -18,9 +21,12 @@ public class GameState {
 
   Zombie[] b_zombies = null;
 
+  private int b_aliveHumans;
+  int b_aliveZombies;
+
   /***/
   /***/
-  GameState() {
+  State() {
   }
 
   public void readSetup() {
@@ -29,27 +35,39 @@ public class GameState {
   public void read(Scanner in) {
     init();
     ash.p = new Point(in.nextInt(), in.nextInt());
+    System.err.println(""+(int)ash.p.x+" "+(int)ash.p.y);
+    
     int humanCount = in.nextInt();
+    System.err.println(""+humanCount);
     if (humans == null) {
       initHumans(humanCount);
     }
+    
+    aliveHumans = 0;
     for (int i = 0; i < humanCount; i++) {
       int humanId = in.nextInt();
       int humanX = in.nextInt();
       int humanY = in.nextInt();
-      humans[humanId].update(humanX, humanY);
+      System.err.println(""+humanId+" "+humanX+" "+humanY);
+      humans[i].update(humanX, humanY);
+      aliveHumans++;
     }
     int zombieCount = in.nextInt();
+    System.err.println(""+zombieCount);
     if (zombies == null) {
       initZombies(zombieCount);
     }
+    aliveZombies = 0;
     for (int i = 0; i < zombieCount; i++) {
       int zombieId = in.nextInt();
       int zombieX = in.nextInt();
       int zombieY = in.nextInt();
       int zombieXNext = in.nextInt();
       int zombieYNext = in.nextInt();
-      zombies[zombieId].update(zombieX, zombieY, zombieXNext, zombieYNext);
+      System.err.println(""+zombieId+" "+zombieX+" "+zombieY+" "+zombieXNext+" "+zombieYNext);
+
+      zombies[i].update(zombieX, zombieY, zombieXNext, zombieYNext);
+      aliveZombies++;
     }
     backup();
   }
@@ -62,6 +80,8 @@ public class GameState {
     for (int i = 0; i < zombies.length; i++) {
       b_zombies[i].copy(zombies[i]);
     }
+    b_aliveHumans = aliveHumans;
+    b_aliveZombies = aliveZombies;
   }
 
   public void restore() {
@@ -72,6 +92,8 @@ public class GameState {
     for (int i = 0; i < zombies.length; i++) {
       zombies[i].copy(b_zombies[i]);
     }
+    aliveHumans = b_aliveHumans;
+    aliveZombies = b_aliveZombies;
   }
 
   private void init() {
@@ -101,6 +123,23 @@ public class GameState {
     for (int i = 0; i < humanCount; i++) {
       humans[i] = new Human(i);
       b_humans[i] = new Human(i);
+    }
+  }
+
+  public void debugDistances() {
+    for (Human h : humans) {
+      if (h.dead) continue;
+      
+      Zombie z = h.getCloserZombie(zombies);
+      int aStepsToH = (int)(1.0 * (ash.p.distTo(h.p)-2000) / 1000);
+      int zStepsToH;
+      if (z != null) {
+        zStepsToH = (int)(z.p.distTo(h.p) / 400);
+      } else {
+        zStepsToH = 1_000_000;
+      }
+      double score = zStepsToH - aStepsToH;
+      System.err.println("H "+h.id+" closeZ:"+z.id+" steps Ash : "+aStepsToH+" zSteps: "+zStepsToH);
     }
   }
 }
