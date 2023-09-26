@@ -8,7 +8,7 @@ public class Human {
 
   public final int id;
 
-  public Point p;
+  public final Point p = new Point(0,0);
 
   public boolean dead;
 
@@ -17,21 +17,21 @@ public class Human {
   }
 
   public void update(int humanX, int humanY) {
-    p = new Point(humanX, humanY);
+    p.copyFrom(humanX, humanY);
     dead = false;
   }
 
-  public void copy(Human human) {
-    p = human.p;
-    dead = human.dead;
+  public void copy(Human model) {
+    p.copyFrom(model.p);
+    dead = model.dead;
   }
 
   public Zombie getCloserZombie(Zombie[] zombies) {
     Zombie bestZ = null;
-    double bestDist = 16000 * 16000 + 9000 * 9000 + 1;
+    double bestDist = Double.MAX_VALUE;
     for (Zombie z : zombies) {
-      if (z.dead)
-        continue;
+      if (z.dead) continue;
+      
       double dist = z.p.squareDistance(p);
       if (dist < bestDist) {
         bestDist = dist;

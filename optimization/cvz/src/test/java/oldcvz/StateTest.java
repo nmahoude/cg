@@ -1,7 +1,6 @@
 package oldcvz;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.Test;
@@ -12,19 +11,28 @@ public class StateTest {
   @Test
   void loadState() throws Exception {
     String input = """
-9321 3245
+6362 3917
 2
-0 3647 384
-2 2391 1601
-8
-0 3685 385 3647 384
-1 5022 404 4622 398
-5 11578 1742 11245 1963
-16 60 3262 385 3029
-17 2363 3422 2369 3022
-23 52 3998 331 3711
-24 2275 3918 2295 3518
-25 3279 5241 3184 4852
+0 0 4500
+1 15999 4500
+17
+0 340 3936 133 4278
+1 620 3940 323 4208
+2 1163 3887 809 4073
+5 7939 7603 7781 7235
+6 7956 7582 7796 7215
+7 8351 7397 8152 7049
+8 9075 7386 8828 7070
+9 15152 5431 15421 5135
+10 15457 5552 15640 5196
+11 15456 3440 15638 3796
+12 15152 3568 15421 3864
+17 7667 7215 7519 6843
+18 7327 7148 7212 6764
+19 6715 7130 6671 6732
+20 616 5056 319 4787
+21 336 5056 129 4713
+22 203 5296 104 4908
         """;
     
     State state = new State();
@@ -34,29 +42,20 @@ public class StateTest {
     Simulation sim = new Simulation();
     AGSolution solution = new AGSolution();
     
-    Point action = new Point(0,0);
-    List<Point> actions = Arrays.asList(action);
-
-    double dist = state.humans[0].p.distTo(state.ash.p);
-    System.err.println("Current dist : "+dist);
     
-    //action.p.x = state.ash.p.x + ASH_MOVE * (state.humans[0].p.x - state.ash.p.x) / dist; //state.ash.p.x;
-    //action.p.y= state.ash.p.y + ASH_MOVE * (state.humans[0].p.y - state.ash.p.y) / dist; //state.ash.p.x;
-
-    action = new Point(7788.0,2423.0);
-    
-    
-    double dist2 = state.humans[0].p.distTo(action);
-    System.err.println("New dist : "+dist2);
-
-    sim.simulate(state, solution, Arrays.asList(P(8427,2793)));
+    sim.simulate(state, solution, Arrays.asList(   ));
+    //sim.simulate(state, solution, Arrays.asList(P(5366.17248723263,4008.2554919747527)   ));
     //sim.simulate(state, solution, Arrays.asList(P(7788.0,2423.0), P(7339.0,3201.0), P(6383.0,3493.0)));
     
+    System.err.println("Next pos : "+sim.nextPos);
+    System.err.println("Final pos of ash : "+state.ash.p);
+    state.debugDistances();
     System.err.println("Human alive = "+state.aliveHumans);
     System.err.println("Zombie alive = "+state.aliveZombies);
     
   }
 
+  @SuppressWarnings("unused")
   private Point P(double x, double y) {
     return new Point(x, y);
   }

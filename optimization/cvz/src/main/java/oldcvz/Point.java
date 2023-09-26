@@ -82,4 +82,19 @@ public class Point {
     Vector result = n.sub(v.dot(v.dot(n)));
     return result.vy > 0;
   }
+
+  public void copyFrom(Point p) {
+    this.x = p.x;
+    this.y = p.y;
+  }
+
+  public void copyFrom(int x, int y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  public void copyFrom(double x, double y) {
+    this.x = x;
+    this.y = y;
+  }
 }

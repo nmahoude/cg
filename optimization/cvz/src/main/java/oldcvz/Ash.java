@@ -7,6 +7,6 @@ public class Ash extends Human {
   }
 
   public void move(Point p) {
-    this.p = p;
+    this.p.copyFrom(p);
   }
 }

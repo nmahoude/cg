@@ -30,7 +30,7 @@ public class Simulation {
   int steps;
   public int score;
   public int scores[]= new int[MAX_SIMULATION_STEP];
-  public Point nextPos = new Point(0, 0);
+  public final Point nextPos = new Point(0, 0);
 
   private boolean debug;
 
@@ -41,11 +41,13 @@ public class Simulation {
     this.state = state;
     this.steps = actions.size();
     init();
+    
+    boolean nextIsCalculated = false;
     for (Point action : actions) {
       simulateOneTurn(action);
-      if (action == actions.get(0)) {
-        nextPos.x = state.ash.p.x; 
-        nextPos.y = state.ash.p.y; 
+      if (!nextIsCalculated) {
+        nextPos.copyFrom(state.ash.p);
+        nextIsCalculated = true;
       }
     }
     // go to closer human
@@ -59,8 +61,14 @@ public class Simulation {
         double dist = human.p.distTo(ash.p);
         finalAction.x = ash.p.x + ASH_MOVE * (human.p.x - ash.p.x) / dist;
         finalAction.y = ash.p.y + ASH_MOVE * (human.p.y - ash.p.y) / dist;
-        
+
         simulateOneTurn(finalAction);
+        
+        if (!nextIsCalculated) {
+          nextPos.copyFrom(state.ash.p);
+          nextIsCalculated = true;
+        }
+
       }
     } else {
     }
@@ -89,9 +97,8 @@ public class Simulation {
 
   private void ZombiesMove() {
     for (Zombie z : state.zombies) {
-      Point old = z.p;
-      if (z.dead)
-        continue;
+      if (z.dead) continue;
+      
       Human target = z.findTarget(state.ash, state.humans);
       int dist = (int) target.p.squareDistance(z.p);
       if (dist < ZOMBIE_MOVE_RADIUS * ZOMBIE_MOVE_RADIUS) {

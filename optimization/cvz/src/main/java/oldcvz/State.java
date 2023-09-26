@@ -34,7 +34,7 @@ public class State {
 
   public void read(Scanner in) {
     init();
-    ash.p = new Point(in.nextInt(), in.nextInt());
+    ash.p.copyFrom(in.nextInt(), in.nextInt());
     System.err.println(""+(int)ash.p.x+" "+(int)ash.p.y);
     
     int humanCount = in.nextInt();
@@ -131,7 +131,7 @@ public class State {
       if (h.dead) continue;
       
       Zombie z = h.getCloserZombie(zombies);
-      int aStepsToH = (int)(1.0 * (ash.p.distTo(h.p)-2000) / 1000);
+      int aStepsToH = (int)(1.0 * (ash.p.distTo(h.p)) / 1000);
       int zStepsToH;
       if (z != null) {
         zStepsToH = (int)(z.p.distTo(h.p) / 400);
@@ -139,7 +139,7 @@ public class State {
         zStepsToH = 1_000_000;
       }
       double score = zStepsToH - aStepsToH;
-      System.err.println("H "+h.id+" closeZ:"+z.id+" steps Ash : "+aStepsToH+" zSteps: "+zStepsToH);
+      System.err.println("H "+h.id+" @"+h.p+" closeZ:"+z.id+" steps Ash : "+aStepsToH+" zSteps: "+zStepsToH);
     }
   }
 }

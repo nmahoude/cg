@@ -25,8 +25,10 @@ public class AGSolution {
     
     
     double ashToBest = simulation.nextPos.distTo(bestHuman.p);
+    Zombie closerZombie = state.ash.getCloserZombie(state.zombies);
     energy = 0.0 
-        - ashToBest 
+        - 0.01 * ashToBest
+        - 1.0 * (closerZombie == null ? 0 : closerZombie.p.distTo(simulation.nextPos))
         + 10_000 * state.aliveHumans
         + 0.0;
 
@@ -66,7 +68,7 @@ public class AGSolution {
       }
       
       double score = zStepsToH - aStepsToH;
-      if (score > bestScore) {
+      if (score >=0 && score > bestScore) {
         bestScore = score;
         bestHuman = h;
       }

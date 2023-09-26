@@ -36,9 +36,11 @@ public class Zombie {
 
   public Human findTarget(Ash ash, Human[] humans) {
     Human nearest = ash;
-    double minDist = ash.p.squareDistance(p);
+    double minDist = ash.p.squareDistance(this.p);
     for (Human h : humans) {
-      double dist = h.p.squareDistance(p);
+      if (h.dead) continue;
+      
+      double dist = h.p.squareDistance(this.p);
       if (dist < minDist) {
         minDist = dist;
         nearest = h;

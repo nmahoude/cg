@@ -31,13 +31,13 @@ public class Player {
       
       start = System.currentTimeMillis();
       solution.setup(state);
-      Point bestAction = new Point(0,0);
+      final Point bestAction = new Point(0,0);
       double bestScore = -1_000_000_000.0;
-      Point tmp = new Point(0,0);
+      final Point tmp = new Point(0,0);
       
       
       // for each human, test straight line
-      Point directAction = actions.get(0);
+      final Point directAction = actions.get(0);
       List<Point> directActions = Arrays.asList(directAction);
       for (Human h : state.humans) {
         if (h.dead) continue;
@@ -45,15 +45,13 @@ public class Player {
         state.restore();
         double dist = state.humans[0].p.distTo(state.ash.p);
         directAction.x = state.ash.p.x + Simulation.ASH_MOVE * (state.humans[0].p.x - state.ash.p.x) / dist; //state.ash.p.x;
-        directAction.y= state.ash.p.y + Simulation.ASH_MOVE * (state.humans[0].p.y - state.ash.p.y) / dist; //state.ash.p.x;
+        directAction.y = state.ash.p.y + Simulation.ASH_MOVE * (state.humans[0].p.y - state.ash.p.y) / dist; //state.ash.p.x;
         
         solution.reset();
         simulation.simulate(state, solution, directActions);
         if (solution.energy > bestScore) {
           bestScore = solution.energy;
-          bestAction.x = directAction.x;
-          bestAction.y = directAction.y;
-          
+          bestAction.copyFrom(directAction);
           
           System.err.println("New best (direct human), Ash @"+bestAction + " dist = "+state.b_ash.p.distTo(bestAction));
           System.err.println("Actions : "+directActions);
@@ -84,15 +82,12 @@ public class Player {
           double x = current.x + (int) (range * Math.cos(i * 2 * Math.PI / slice));
           double y = current.y + (int) (range * Math.sin(i * 2 * Math.PI / slice));
 
-          tmp.x = x;
-          tmp.y = y;
+          tmp.copyFrom(x,y);
           if (r > 3 || !isInLimit(tmp)) {
-            tmp.x = current.x;
-            tmp.y = current.y;
+            tmp.copyFrom(current);
           }
           current = actions.get(r);
-          current.x = tmp.x;
-          current.y = tmp.y;
+          current.copyFrom(tmp);
         }
       
         
@@ -100,8 +95,7 @@ public class Player {
         simulation.simulate(state, solution, actions);
         if (solution.energy > bestScore) {
           bestScore = solution.energy;
-          bestAction.x = actions.get(0).x;
-          bestAction.y = actions.get(0).y;
+          bestAction.copyFrom(actions.get(0));
           
           
           System.err.println("New best, Ash @"+bestAction +" dist = "+state.b_ash.p.distTo(bestAction));
@@ -113,9 +107,10 @@ public class Player {
         }
       }
       
+      System.err.println("Sims : "+sim);
+
       // replay best action
-      if (true) {
-        System.err.println("Sims : "+sim);
+      if (false) {
         state.restore();
         solution.reset();
         simulation.enableDebug();
