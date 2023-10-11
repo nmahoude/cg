@@ -1,0 +1,139 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.nmx.codingame</groupId>
+		<artifactId>optimization</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>codeOfTheRings</artifactId>
+
+
+	<properties>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>2.0.7</version>
+		</dependency>
+
+
+		<!-- personal cg stuff -->
+		<dependency>
+			<groupId>org.nmx.codingame</groupId>
+			<artifactId>cgfx</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.nmx.codingame</groupId>
+			<artifactId>trigonometry</artifactId>
+			<version>${cglibs.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.nmx.codingame</groupId>
+			<artifactId>cgcollections</artifactId>
+			<version>${cglibs.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.nmx.codingame</groupId>
+			<artifactId>cgcollections</artifactId>
+			<classifier>sources</classifier>
+			<version>${cglibs.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.nmx.codingame</groupId>
+			<artifactId>trigonometry</artifactId>
+			<version>${cglibs.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.nmx.codingame</groupId>
+			<artifactId>trigonometry</artifactId>
+			<version>${cglibs.version}</version>
+			<classifier>sources</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.nmx.codingame</groupId>
+			<artifactId>cgfx</artifactId>
+			<version>${cglibs.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.nmx.codingame</groupId>
+			<artifactId>fast</artifactId>
+			<version>${cglibs.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.nmx.codingame</groupId>
+			<artifactId>fast</artifactId>
+			<version>${cglibs.version}</version>
+			<classifier>sources</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.nmx.codingame</groupId>
+			<artifactId>cgutils</artifactId>
+			<version>${cglibs.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.nmx.codingame</groupId>
+			<artifactId>cgutils</artifactId>
+			<version>${cglibs.version}</version>
+			<classifier>sources</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>11.0.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
+			<version>5.10.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
+			<version>5.10.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<scope>test</scope>
+			<version>3.24.2</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.ndx.codingame</groupId>
+				<artifactId>codingame-simpleclass-maven-plugin</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>assemble</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<removeComments>true</removeComments>
+					<replaceSpaces>true</replaceSpaces>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.fizzed</groupId>
+				<artifactId>fizzed-watcher-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>
