@@ -180,7 +180,8 @@ public class State {
 
 	public boolean isTrainable(Pos p) {
 	  if (unitId[p.offset] >= 0) return false;
-	  
+    if (owner[p.offset] == O.OPP) return false;
+
 	  for (Pos n : p.neighbors4dirs) {
 	    if (owner[n.offset] == O.ME && active[n.offset]) return true;
 	  }

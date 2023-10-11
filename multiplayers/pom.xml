@@ -7,6 +7,9 @@
   </parent>
   <artifactId>multiplayers</artifactId>
   <packaging>pom</packaging>
+  
+  
+  
   <modules>
     <module>hypersonic</module>
     <module>theAccountant</module>
@@ -39,5 +42,63 @@
   	<module>codersStikeBackReboot3</module>
   	<module>oware</module>
   	<module>spaceShooter</module>
+  	<module>clashofbots</module>
   </modules>
+  
+  <dependencies>
+	  <dependency>
+				<groupId>org.nmx.codingame</groupId>
+				<artifactId>trigonometry</artifactId>
+				<version>${cglibs.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.nmx.codingame</groupId>
+				<artifactId>cgcollections</artifactId>
+				<version>${cglibs.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.nmx.codingame</groupId>
+				<artifactId>cgcollections</artifactId>
+				<classifier>sources</classifier>
+				<version>${cglibs.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.nmx.codingame</groupId>
+				<artifactId>trigonometry</artifactId>
+				<version>${cglibs.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.nmx.codingame</groupId>
+				<artifactId>trigonometry</artifactId>
+				<version>${cglibs.version}</version>
+				<classifier>sources</classifier>
+			</dependency>
+			<dependency>
+				<groupId>org.nmx.codingame</groupId>
+				<artifactId>cgfx</artifactId>
+				<version>${cglibs.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.nmx.codingame</groupId>
+				<artifactId>fast</artifactId>
+				<version>${cglibs.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.nmx.codingame</groupId>
+				<artifactId>fast</artifactId>
+				<version>${cglibs.version}</version>
+				<classifier>sources</classifier>
+			</dependency>
+			<dependency>
+				<groupId>org.nmx.codingame</groupId>
+				<artifactId>cgutils</artifactId>
+				<version>${cglibs.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.nmx.codingame</groupId>
+				<artifactId>cgutils</artifactId>
+				<version>${cglibs.version}</version>
+				<classifier>sources</classifier>
+			</dependency>
+	  </dependencies>
 </project>

@@ -65,8 +65,7 @@ public class AI {
 	        if (p == Pos.VOID) break;
 	        if (work.gold[0] < O.COST) break;
 	        if (!work.isWalkable(p)) break;
-	        if (work.owner[p.offset] != O.OPP) break;
-	        if (work.unitId[p.offset] >= 0) break;
+	        if (!work.isTrainable(p)) continue;
 	        
 	        work.owner[p.offset] = O.ME;
 	        work.gold[0] -= O.COST;
@@ -85,6 +84,7 @@ public class AI {
 	  }
 	  
 	  if (bestScore > 0) {
+	    System.err.println("Doing a cut ! ");
 	    work.copyFrom(this.work);
 	    
 	    Pos p = bestPos;
@@ -167,11 +167,18 @@ public class AI {
 			Pos bestMove = null;
 			double bestScore = Double.NEGATIVE_INFINITY;
 			
+			
+			
 			for (Pos n : unit.neighbors4dirs) {
-				if (work.unitId[n.offset] > 0 && work.owner[n.offset] == O.ME) continue; // mine
+			  if (work.owner[n.offset] == O.OPP) {
+			    bestMove = null;
+			    break;
+			  }
+
+			  if (work.unitId[n.offset] > 0 && work.owner[n.offset] == O.ME) continue; // mine
 				if (work.unitId[n.offset] > 0 && work.owner[n.offset] == O.OPP && work.level[n.offset]>= work.level[unit.offset]) continue; // can't attack 
 				if (work.oppProtected[n.offset] && level < 3) continue;
-
+				
 				// if we are on the frontier, don't fall back in our territory
         if (frontier.frontier.contains(unit) 
             && !frontier.frontier.contains(n) 
@@ -183,6 +190,15 @@ public class AI {
 				double score = work.owner[n.offset] == O.ME ? 0.0 : 1000.0;
 				
 				score -= 10 * frontierMap.grid[n.offset]; // distance to frontier
+				
+				// prefer lot of 'empty spaces'
+				double newPosScore = 0.0;
+        for (Pos nn : n.neighbors4dirs) {
+          if (work.isWalkable(nn) && work.owner[nn.offset] != O.ME) {
+            newPosScore +=1.0;
+          }
+        }
+        score += 1.0 * newPosScore;
 				
 				
 				
@@ -224,6 +240,7 @@ public class AI {
 				for (Pos n : pos.neighbors4dirs) {
         	if (work.unitId[n.offset] >= 0) continue; // something here
         	if (work.oppProtected[n.offset]) continue; // protected
+        	if (!work.isTrainable(n)) continue;
         	
         	double score = 0.0;
         	
