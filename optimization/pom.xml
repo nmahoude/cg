@@ -21,5 +21,6 @@
     <module>bender_ep4</module>
     <module>cvz</module>
     <module>codeOfTheRings</module>
+    <module>wordle</module>
   </modules>
 </project>
