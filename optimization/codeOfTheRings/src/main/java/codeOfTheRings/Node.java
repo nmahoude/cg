@@ -10,7 +10,8 @@ public class Node {
   public Node parent;
   
   public int actionTargetChar;
-  
+
+  int score = 0;
   
   @Override
   public String toString() {
@@ -23,7 +24,8 @@ public class Node {
     this.position = model.position;
     this.lengthFrom = model.lengthFrom;
     this.parent = model;
-    index++;
+    this.index = model.index+1;
+    this.score = 0;
   }
 
   public void doCharAt(int targetChar, int newPosition) {
@@ -45,9 +47,24 @@ public class Node {
      this.actionTargetChar = targetChar;
      this.state[position] = targetChar;
      this.lengthFrom += depCost + depChange + 1;
+     
+     
+     calculateScore();
   }
   
   
+  private void calculateScore() {
+    score = 0;
+    
+    score += -1 * 10 * lengthFrom;
+    
+    for (int i=index;i<goal.length;i++) {
+      score += Player.remainingLetters[Player.letterIndex(Node.goal[i])];
+    }
+    
+  }
+
+
   public static String outputFromTo(Node from, Node to) {
     String output ="";
     // first moves
@@ -86,7 +103,7 @@ public class Node {
   }
 
   public int totalEstimatedCost() {
-    return lengthFrom + (goal.length - index);
+    return lengthFrom + 4 * (goal.length - index);
   }
   
   
@@ -98,6 +115,7 @@ public class Node {
       output+=action;
     }
     return output;
-  }    
+  }
+
 
 }
