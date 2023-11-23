@@ -65,8 +65,10 @@ public class Player {
           
           String word;
           if (turn == 0) {
-            word = "AEIOUN";
+            word = "RAOIES";
           } else if (turn == 1) {
+            word = "CUNMLD";
+          } else if (turn <= 1) {
 //            int index = 6;
 //            int iter=0;
 //            word ="";
