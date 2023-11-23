@@ -26,11 +26,13 @@ public class Player {
 	}
 	
 	static List<Proposition> allProposition = new ArrayList<>();
+	static Solver solver = new Solver();
 	
 	public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
     numberLength = in.nextInt();
-
+    solver.init(numberLength);
+    
     positionsPerDigits[0][0] = NOTUSED; // 0 cannot be used on position 0
     
     // game loop
@@ -46,7 +48,7 @@ public class Player {
         }
         
         debugPositionPerDigits();
-        
+        solver.solve(positionsPerDigits);
         
         random(proposition, bulls);
         //uct(proposition);
