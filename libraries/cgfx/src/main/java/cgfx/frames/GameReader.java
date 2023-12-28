@@ -72,9 +72,8 @@ public class GameReader {
 						frame.stderr = complete;
 					}
 					
-					if (this.frames.size() > 1 
-					    && !this.frames.get(this.frames.size()-1).view.contains("graphics")) {
-					  this.frames.get(this.frames.size()-1).view = frame.view;
+					if (!frame.view.contains("graphics")) {
+					  frame.view = this.frames.get(this.frames.size()-1).view;
 					}
           this.frames.add(frame);
           if (!frame.stderr.isEmpty()) {
