@@ -1,7 +1,10 @@
 package cgfx;
 
+import java.util.List;
+
 import cgfx.components.CGFactory;
 import cgfx.components.EvalChart;
+import cgfx.components.EvalNode;
 import cgfx.components.GameViewer;
 import cgfx.frames.GameReader;
 import cgfx.wrappers.EvaluationWrapper;
@@ -42,18 +45,30 @@ public class FXEvaluation extends Application {
 		setupScene(primaryStage);
 	}
 
+	static class FXEvalNode implements EvalNode {
+
+    public static List<String> names() {
+      return List.of("global");
+    }
+
+    @Override
+    public double value(int index) {
+      return 5;
+    }
+	  
+	}
 
 	@SuppressWarnings("restriction")
 	private void setupScene(Stage primaryStage) {
 		primaryStage.setTitle("CG - Evaluation ");
 		
-		EvalChart chart = new EvalChart(eWrapper);
+		EvalChart chart = new EvalChart(FXEvalNode.names());
 		
-		int index = 0;
-		while (index < gameReader.getMaxTurn()) {
-			chart.update(index, wrapper);
-			index++;
+		wrapper.readGlobal(gameReader.getCleanInput(0));
+		for (int index=0;index<gameReader.getMaxTurn();index++) {
+		chart.addNode(new FXEvalNode());
 			wrapper.readTurn(gameReader.getInput(index));
+			index++;
 		}		
 
 		Scene scene = new Scene(chart);

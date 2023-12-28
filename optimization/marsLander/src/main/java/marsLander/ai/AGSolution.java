@@ -17,6 +17,7 @@ public class AGSolution {
     }
   }
 
+
   private void randomAtDepth(int d) {
     double rand = Player.rand.nextDouble();
     if (rand < 0.2) {

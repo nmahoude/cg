@@ -3,6 +3,10 @@ package cgfx.wrappers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import cgfx.frames.Frame;
 
 public abstract class GameWrapper extends Observable {
 
@@ -46,14 +50,14 @@ public abstract class GameWrapper extends Observable {
 
 	
 	public void readGlobal(String input) {
-		readGlobalInput(input);
+		readGlobalInput(cleanInput(input));
 		
 		setChanged();
 		notifyObservers();
 	}
 
 	public void readTurn(String input) {
-		readTurnInput(input);
+		readTurnInput(cleanInput(input));
 		setChanged();
 		notifyObservers();
 	}
@@ -69,4 +73,18 @@ public abstract class GameWrapper extends Observable {
 		return actions;
 	}
 
+	
+	protected String cleanInput(String input) {
+  	String cleanInput = Stream.of(input.split("\n"))
+      .map(String::trim)
+      .filter(s -> s.length() != 0 && s.charAt(0) == '^')
+      .map(s -> s.replace("^", " ").concat("\n")) // remove ^
+      .collect(Collectors.joining());
+  	
+  	return cleanInput;
+	}
+
+  public void readFrame(Frame myFrame) {
+    readTurn(myFrame.stderr());
+  }
 }

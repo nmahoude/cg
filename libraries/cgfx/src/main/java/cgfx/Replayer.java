@@ -65,7 +65,7 @@ public class Replayer extends VBox {
     this.getChildren().add(buttons);
 
     setTurn(0);
-    setMaxturn(gameReader.getMaxTurn());
+    setMaxturn(gameReader.getMaxTurn()-1);
   }
 
   public int getCurrentTurn() {
@@ -83,8 +83,12 @@ public class Replayer extends VBox {
   public void setTurn(int turn) {
     this.turn = turn;
     turnLabel.setText(""+turn);
-    wrapper.readTurn(gameReader.getInput(turn));
-    updateView();
+    try {
+      wrapper.readFrame(gameReader.getMyFrame(turn));
+      updateView();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
     first.setDisable(turn == 1);
     prev.setDisable(turn == 1);

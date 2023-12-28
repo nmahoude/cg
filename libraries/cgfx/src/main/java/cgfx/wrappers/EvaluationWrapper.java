@@ -8,8 +8,4 @@ public interface EvaluationWrapper {
 
 	List<String> names();
 
-	double value(int index);
-
-	void update(GameWrapper gameWrapper);
-
 }

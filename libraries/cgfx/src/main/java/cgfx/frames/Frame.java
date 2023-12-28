@@ -14,7 +14,7 @@ public class Frame {
   int agentId = -1;
   String stderr = "";
   String stdout = "";
-  
+  String view = "";
   
   public String cleanStderr() {
     return Stream.of(stderr.split("\n"))
@@ -36,6 +36,9 @@ public class Frame {
     return stdout;
   }
   
+  public String view() {
+    return view;
+  }
   
   public static Frame fromInput(String input) {
     Frame f = new Frame();

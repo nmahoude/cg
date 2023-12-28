@@ -91,13 +91,14 @@ public class FxComparator extends Application implements Observer {
 	}
 
 	private void updateBarCharts() {
-		eWrapperLeft.update(wrapperLeft);
-		eWrapperRight.update(wrapperRight);
-		
-		for (int i=0;i<eWrapperLeft.names().size();i++) {
-		  seriesRight.getData().get(i).setYValue(eWrapperRight.value(i));
-		  seriesLeft.getData().get(i).setYValue(eWrapperLeft.value(i));
-		}
+	  // TODO Need something more ?
+//		eWrapperLeft.update(wrapperLeft);
+//		eWrapperRight.update(wrapperRight);
+//		
+//		for (int i=0;i<eWrapperLeft.names().size();i++) {
+//		  seriesRight.getData().get(i).setYValue(eWrapperRight.value(i));
+//		  seriesLeft.getData().get(i).setYValue(eWrapperLeft.value(i));
+//		}
 	}
 	
 	@SuppressWarnings("restriction")

@@ -39,6 +39,9 @@ public class Pos {
 	public Pos add(int dx, int dy) {
 		return from(x+dx, y+dy);
 	}
-  
+
+  public int dist(Pos o) {
+    return (int)Math.sqrt((o.x-x)*(o.x-x) + (o.y-y)*(o.y-y));
+  }
   
 }

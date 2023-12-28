@@ -22,6 +22,7 @@ import com.google.gson.stream.JsonReader;
  */
 public class GameReader {
 	public List<Frame> frames = new ArrayList<>();
+	public List<Frame> myFrames = new ArrayList<>();
 	
 	
 	public void readReplayFromString(String replay) {
@@ -60,13 +61,25 @@ public class GameReader {
             frame.stdout = stdoutElement.getAsString().trim();
           }
 				  
-					JsonElement stdErrElement = content.get("stderr");
+          JsonElement viewElement = content.get("view");
+          if (viewElement != null) {
+            frame.view = viewElement.getAsString().trim();
+          }
+
+          JsonElement stdErrElement = content.get("stderr");
 					if (stdErrElement != null) {
 						String complete = stdErrElement.getAsString();
 						frame.stderr = complete;
 					}
 					
+					if (this.frames.size() > 1 
+					    && !this.frames.get(this.frames.size()-1).view.contains("graphics")) {
+					  this.frames.get(this.frames.size()-1).view = frame.view;
+					}
           this.frames.add(frame);
+          if (!frame.stderr.isEmpty()) {
+            this.myFrames.add(frame);
+          }
 				}
 		);
 	}
@@ -78,17 +91,27 @@ public class GameReader {
 	 * @return
 	 */
 	public String getInput(int turn) {
-	  return frames.get(turn).cleanStderr();
+	  return myFrames.get(turn).stderr();
 	}
 	
-	public String getStderr(int turn) {
-    return frames.get(turn).stderr;
-	}
-
-
-  public int getMaxTurn() {
-    return frames.size()-1;
+  public String getCleanInput(int turn) {
+    return myFrames.get(turn).cleanStderr();
   }
 
+  public String getStderr(int turn) {
+    return myFrames.get(turn).stderr;
+	}
+
+  public int getMaxTurn() {
+    return myFrames.size();
+  }
+
+  public Frame getFrame(int index) {
+    return frames.get(index);
+  }
+
+  public Frame getMyFrame(int index) {
+    return myFrames.get(index);
+  }
 
 }
