@@ -2,8 +2,10 @@ package cgfx;
 
 
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
@@ -18,18 +20,24 @@ public class Board implements BoardDrawer {
 	Canvas canvas;
 	GraphicsContext gc;
 
+	final Group parent;
+	private final VBox vbox = new VBox();
+	
 	public Board(Group parent, int width, int height) {
 		this(parent, width+5, height+5, 1.0);
 	}
 
 	public Board(Group parent, int width, int height, double scale) {
+		this.parent = parent;
+
 		this.width = width;
 		this.height = height;
 		this.scale = scale;
 		this.canvas = new Canvas(width * scale, height * scale);
 		this.gc = canvas.getGraphicsContext2D();
 
-		parent.getChildren().add(canvas);
+		vbox.getChildren().add(canvas);
+		parent.getChildren().add(vbox);
 	}
 	
 	public Canvas getCanvas() {
@@ -144,6 +152,10 @@ public class Board implements BoardDrawer {
 		gc.lineTo((centerX) * scale, (centerY-radius) * scale);
 		gc.stroke();
 		
+	}
+
+	public void attach(Node node) {
+		this.vbox.getChildren().add(node);
 	}
 
 

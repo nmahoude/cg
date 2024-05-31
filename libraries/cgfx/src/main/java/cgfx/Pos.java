@@ -44,4 +44,8 @@ public class Pos {
     return (int)Math.sqrt((o.x-x)*(o.x-x) + (o.y-y)*(o.y-y));
   }
   
+  @Override
+  public String toString() {
+    return ""+x+","+y;
+  }
 }

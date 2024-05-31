@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
@@ -47,7 +48,10 @@ public class GameReader {
 
 	private void read(JsonObject fromJson) {
 		
-		JsonElement frames = fromJson.get("frames");
+		JsonArray frames = (JsonArray)fromJson.get("frames");
+		
+		boolean isPlayer2 = frames.get(1).getAsJsonObject().get("stderr") != null;
+		
 		frames.getAsJsonArray().forEach(
 				el -> {
 				  
