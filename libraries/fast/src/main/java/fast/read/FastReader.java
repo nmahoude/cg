@@ -120,8 +120,13 @@ public class FastReader {
   }
 
   private byte read()  {
-    if (bufferPointer == bytesRead)
-      fillBuffer();
+    if (bufferPointer == bytesRead) {
+      try {
+        fillBuffer();
+      } catch(Exception e) {
+        return -1;
+      }
+    }
     return buffer[bufferPointer++];
   }
 
