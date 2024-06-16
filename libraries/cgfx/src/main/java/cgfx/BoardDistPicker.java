@@ -62,7 +62,7 @@ public class BoardDistPicker {
   }
 	
   private void drawDist() {
-    int crossSize = (int)(8 * supportBoard.scale);
+    int crossSize = (int)(8 / supportBoard.scale);
     
     if (initialPos.x != -1) {
     	supportBoard.drawLine(Color.BLACK, initialPos.add(-crossSize, 0), initialPos.add(crossSize,  0));

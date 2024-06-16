@@ -23,11 +23,15 @@ public class FastReader {
 
   public FastReader(byte inputs[]) {
     buffer = new byte[inputs.length];
+    copyFromString(inputs);
+  }
+
+  public void copyFromString(byte[] inputs) {
     System.arraycopy(inputs, 0, buffer, 0, inputs.length);
     bufferPointer = 0;
     bytesRead = inputs.length;
   }
-
+  
   public static FastReader fromString(String input) {
     return new FastReader(input.getBytes());
   }
