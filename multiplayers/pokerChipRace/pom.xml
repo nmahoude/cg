@@ -48,11 +48,6 @@
       <version>0.0.1-SNAPSHOT</version>
       <classifier>sources</classifier>
     </dependency>
-        <dependency>
-    <groupId>org.openjfx</groupId>
-    <artifactId>javafx-controls</artifactId>
-    <version>17</version>
-  </dependency>
   </dependencies>
 
   <build>

@@ -16,7 +16,6 @@
 
 
 	<modules>
-		<module>libraries</module>
 		<module>easy</module>
 		<module>weekly</module>
 		<module>medium</module>
