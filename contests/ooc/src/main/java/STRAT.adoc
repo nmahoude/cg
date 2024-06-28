@@ -1,0 +1,62 @@
+= STRATEGY
+
+== PLAN
+------
+- rester cacher le plus longtemps possible (position de départ, pas de torpilles, ...)
+- cibler où il peut etre en restant caché (sonar, mine si possibilité de le toucher assez forte)
+- si il m'a reperé, fuire avec un silence (surface|silence ?) pour réaugmenter mes possibilités
+- une fois que je l'ai repéré, allez vers lui (si il ne m'a pas reperé)
+- se coller sous lui pour eviter le dégat à -2 (il sera +/- obligé de ne pas se tirer dessus)
+------
+
+
+=== MOVE
+* (+) me rapprocher de lui
+* (+) remplir les jauges
+* (+) poser des mines éparpillées
+* (-) impact sur les déplacements possibles
+* (-) baisse legerement ma furtivité
+
+Pourquoi ne pas bouger :
+* ne pas faire de surface (à cause du trail) => mais il faut faire autre chose
+
+
+=== MINE
+* (+) la pose de mine est à priori sans impact sur la furtivité
+* (+) permet de trigger par la suite
+* (-) cout
+
+=== TRIGGER
+* (+) trigger : faire baisser le vie de l'adversaire
+* (+) baisser sa furtivité (9cells)
+* (-) le trigger de mine impact la furtivité (rollback sur les mines possibles)
+* (+) ? contrer la baisse de ma furtivité (en l'explosant sur moi pour lui faire croire que sa torpille à toucher) 
+
+=== SURFACE
+* (+) reinit des visited cells
+* (+) interessant avant un silence pour se déplacer vite dans une direction, mais baisse de furtivité
+* (+) on peut éviter un surface si on a une autre action, mais alors, pas de charge de jauge
+* (-) baisse ma furtivité
+* (+) Parfois un surface peut être "gratuit" (sauf le point de vie perdu) : si il m'a ciblé sur un secteur
+* (+) si plus d'autre action possible, c'est le dernier recours
+
+
+=== SILENCE
+* (+) Défense : fuite
+* (+) Défense : augmenter ma furtivité 
+* (+) Attaque: me rapprocher de lui très vite (pour lui balancer une deadly torpedo ?)
+* (-) impact sur les déplacements possibles
+* (-) cout
+
+=== TORPEDO
+* (+) faire baisser le vie de l'adversaire 
+* (+) baisser sa furtivité (9cells)
+* (-) baisse ma furtivité dans la plupart des cas
+* (+) ? contrer la baisse de ma furtivité (en l'explosant sur moi pour lui faire croire que sa torpille à toucher) 
+* (-) cout
+
+=== SONAR
+* (+) baisser sa furtivité
+* (+) à priori pas d'impact sur ma furtivité
+* (-) cout
+

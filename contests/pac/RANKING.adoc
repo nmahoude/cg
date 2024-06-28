@@ -1,0 +1,94 @@
+
+DATE  *__* __.__ : explication modifications
+
+== Valeur de ranking important
+May 18, 2020 1:01:20 AM *__* : eviter les timeouts .... ?
+May 18, 2020 12:18:46 AM *70* : fin legende
+
+
+ 
+May 17, 2020 11:08:24 AM *64* : decrement slowly invisible pellets value
+May 17, 2020 1:47:42 AM *64* :
+May 17, 2020 12:48:57 AM *59* : score = 0.9^depth
+May 17, 2020 12:28:08 AM *__* : 10h43 + d^²
+
+------------
+
+May 16, 2020 10:43:13 PM *60* : code passage legend
+*__* : ca craint tout le long, en gros dernier de legend avec tous les codes intermediaires
+May 16, 2020 3:16:16 PM *__* : 1/d² pour le score
+May 16, 2020 2:30:27 PM *57* : ?
+May 16, 2020 2:07:40 PM *52* : legend depuis hier soir
+
+
+
+May 15, 2020 2:43:07 AM *45* : correction d'un bug minimax ?
+May 15, 2020 2:14:17 AM *200* : suppression decrmeent pellet & valeur fixe au début pour invisble
+May 15, 2020 2:04:28 AM *___* : correction d'un bug dans minimax ! tjs decreent pellet
+May 15, 2020 1:55:34 AM *xxx* : sans limite sur les speed
+May 15, 2020 1:53:31 AM *xxx* : constant decrement of pellet's value+ speed que quand corner
+May 15, 2020 1:36:58 AM *200* : pellets à 1.0+ speed que quand corner
+May 15, 2020 1:12:01 AM *123* : pellets à 0.5
+May 15, 2020 12:47:14 AM *99* 20.71 : AG ! pellet dans les coins moins cher
+May 15, 2020 12:01:44 AM *__* : refacto DFSO
+May 14, 2020 11:40:27 PM *197* : ?
+May 14, 2020 11:16:57 PM *189* :  retest apres dichotomie modif (valeur pellet)
+May 14, 2020 10:53:19 PM *148* 19.34 : code de 9h03
+May 14, 2020 10:30:54 PM *243* : desactivation cul de sac
+May 14, 2020 10:13:14 PM *233* : fix minimax, and co
+May 14, 2020 9:03:16 AM *128*: fix minimax (copy pos from parent) -> mais doit avoir un effet de bord sur SimpleAI2
+May 14, 2020 8:57:45 AM *__* : le 11h44 qui avait fait 36
+May 14, 2020 8:41:55 AM *120* : idem
+May 14, 2020 8:23:00 AM *180!* : à peu pret comme *36*
+May 14, 2020 7:45:42 AM *130* : repasser à 50
+May 14, 2020 7:37:24 AM *xx* : pas de path qui se croisent au meme moment => trop de timeout parce qu'on en trouve pas de chemin !!
+May 14, 2020 7:19:01 AM *112* : plus de path/iter ++ pas de path qui se croisent au meme moment 
+May 14, 2020 12:35:00 AM *70* : baisse de la valeur de pellets ++ plus de path/iter
+May 14, 2020 12:19:10 AM *70* : baisse de la valeur de pellets ++ plus de path/iter ++ pas de path qui se croisent au meme moment 
+May 13, 2020 11:44:35 PM *36* 21.67 : augmentation du nombre d'itérations DFSO (1000)
+May 13, 2020 11:19:56 PM *137* 17.79 : ajout des switch, speed & wait dans l'ia
+May 13, 2020 10:23:26 PM *190* : meme ligne qu'un dessous
+May 13, 2020 10:23:26 PM *GOLD* : version simpleAI2
+
+
+
+
+
+May 13, 2020 9:01:43 AM *220* : superPellet back to 100
+May 13, 2020 2:02:10 AM *317* : simpleAI avec minimax normal (superPellet = 10 )
+May 13, 2020 1:59:35 AM *xx* : algo DFS PathResolver => je prends cher
+May 13, 2020 12:29:28 AM *291* : pessimstic + hidden pellet value = 0.5 (std)
+May 13, 2020 12:10:27 AM *350* : pessimstic + hidden pellet value = 1.0
+May 12, 2020 10:22:05 PM *330* : optimistic pacman
+May 12, 2020 9:46:54 PM *250* : minimax depth 4
+May 12, 2020 9:28:04 PM *233* : wip sur le farm, mais pas activé
+May 12, 2020 2:13:02 AM *147* 25.02 : fix bug avecpacman currentpos INVALID
+May 12, 2020 2:04:31 AM *xx* : fix simpleAI
+May 12, 2020 1:47:39 AM *200* : correction nb nodes minimax & passage en depth 2 pour eviter timeout
+May 12, 2020 1:42:14 AM *xx* : ajout du minimax pour la resolution des combats + refacto AI + refacto oracle
+May 11, 2020 6:36:34 PM *150* : correction suite passage silver
+May 11, 2020 1:01:43 AM *113* : code de 3:30:04 PM
+May 11, 2020 12:16:50 AM *95* : code de May 10, 2020 11:46:43 AM
+May 10, 2020 11:57:42 PM *197!* : code de 3:30:04 PM (16)
+May 10, 2020 11:38:01 PM *200+!!* : rafinement de l'oracle sur les CD/speed et sur l'évitement des cases dangereuses
+May 10, 2020 3:30:04 PM  *16* 40.27: nouveau code de frighten + pas mal de refactoring :/  (56 / 38.48)
+May 10, 2020 11:46:44 AM *51* 38.62 : 0.5  (puis 26 / 39.41 ! à 15h11 ) 
+May 10, 2020 11:17:18 AM *101* : @0.5
+May 10, 2020 10:56:21 AM *59* : @ 0.75
+May 10, 2020 10:46:25 AM *140* : all pellets @ 0.25
+May 10, 2020 10:07:35 AM *125* : all pellets @ 1.0 (meme les non vues)
+May 10, 2020 9:45:50 AM *63* 37.91 : remise du 'decay' à 0.5 fixe pour les pellets non vues
+May 10, 2020 1:51:11 AM *83* 37.30 : limiter le decay à 0.3
+May 10, 2020 1:16:09 AM *~100* : decay pellets en fonction de ses points
+May 9, 2020 11:46:42 PM *48* 37.89 : again sans debug
+May 9, 2020 11:24:00 PM *88* : remise du code de calcul du score de simpleAI avec le code courant
+May 9, 2020 11:09:12 PM *35* : code de May 9, 2020 3:04:22 PM
+May 9, 2020 10:40:16 PM *107* 36.03 : changement de coeff & correction d'un bug 
+May 9, 2020 6:51:01 PM  *40* 37.69 : ?
+May 9, 2020 3:04:22 PM  *29* 38.15 : transformation array en map de pellets (aucune altération business) 43 / 37.59
+May 8, 2020 11:30:43 PM *13* 39.12 : idem -> bcp de chance du coup! 28/38.28 à 15h04
+May 8, 2020 11:10:37 PM *54* 35.48 : ajout forbiden en cas de collision 
+May 8, 2020 10:27:12 PM *48* 36.58 : remise à 1 des P1 non vus
+May 8, 2020 10:03:49 PM *66* __.__ : baisse pellete non visible, mais bonus 100 pour P10
+May 8, 2020 9:46:07 PM  *51* 35.28 : baisse du poids des pellets non vues + baisse bonus de P10
+May 8, 2020 6:09:52 PM  *26* 37.34 :  

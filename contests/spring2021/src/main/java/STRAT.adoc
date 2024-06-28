@@ -1,0 +1,9 @@
+= STRATEGY
+
+
+== SEEDS
+seed=8636408762963986400 => bcp de cases grises prets de mes arbres
+
+Axes :
+
+== PLAN

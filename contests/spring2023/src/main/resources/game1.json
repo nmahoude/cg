@@ -1,0 +1,329 @@
+{
+  "frames": [
+    {
+      "gameInformation": "",
+      "summary": "",
+      "view": " 0\n{\"global\":{\"graphics\":\"37;0 0 0 2 0 0 -1;1 -1 0 2 0 0 -1;-1 1 0 2 0 0 -1;0 -1 0 2 0 0 -1;0 1 0 2 0 0 -1;2 0 0 2 0 0 -1;-2 0 0 2 0 0 -1;2 -1 44 2 0 0 -1;-2 1 44 2 0 0 -1;1 -2 18 2 0 0 -1;-1 2 18 2 0 0 -1;0 -2 56 2 0 0 -1;0 2 56 2 0 0 -1;-1 -1 0 2 0 0 -1;1 1 0 2 0 0 -1;3 0 0 2 0 0 -1;-3 0 0 2 0 0 -1;3 -2 9 2 0 0 -1;-3 2 9 2 0 0 -1;-1 -2 0 2 0 0 -1;1 2 0 2 0 0 -1;-2 -1 0 2 0 0 -1;2 1 0 2 0 0 -1;4 0 0 2 0 0 -1;-4 0 0 2 0 0 -1;4 -1 0 2 0 10 1;-4 1 0 2 10 0 0;-3 -1 0 2 0 0 -1;3 1 0 2 0 0 -1;5 -1 0 2 0 0 -1;-5 1 0 2 0 0 -1;5 -2 14 1 0 0 -1;-5 2 14 1 0 0 -1;-3 -2 26 1 0 0 -1;3 2 26 1 0 0 -1;-4 -1 0 2 0 0 -1;4 1 0 2 0 0 -1\"},\"frame\":{\"duration\":500,\"graphics\":\"0;0;;;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;0\"}}\n",
+      "keyframe": true,
+      "agentId": -1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 24 2;BEACON 26 2;BEACON 27 2;BEACON 32 2;BEACON 33 2;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^1 126\n*** TURN\n^ 0 0 \n^ 0 0 0 0 0 0 0 44 44 18 18 56 56 0 0 0 0 9 9 0 \n^ 0 0 0 0 0 10000 1000000 0 0 0 0 14 14 26 26 0 0 \n*** END\nEnd of ai with 0 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[24=2];[26=2];[27=2];[32=2];[33=2];\nAfter Optimization\n[24=2];[26=2];[27=2];[32=2];[33=2];\nThinking in 22 ms\n",
+      "view": " 1\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested 2 egg from cell 32, spawning that many ants on cell 26.\n",
+      "view": " 2\n{\"duration\":1300,\"graphics\":\"0;0;;;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 2 2 0 0 0 0 2 2 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;3;1;0;500;0;2;26;32;;1;0;500;0;6;26;24;;0;800;1300;0;2;;;32 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 24 2;BEACON 26 3;BEACON 27 2;BEACON 32 3;BEACON 33 2;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^2 126\n*** TURN\n^ 0 0 \n^ 0 0 0 0 0 0 0 44 44 18 18 56 56 0 0 0 0 9 9 0 \n^ 0 0 0 0 600000 10000 400000 0 0 0 0 14 200012 26 26 0 0 \n*** END\nEnd of ai with 0 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[24=2];[26=3];[27=2];[32=3];[33=2];\nAfter Optimization\n[24=2];[26=3];[27=2];[32=3];[33=2];\nThinking in 5 ms\n",
+      "view": " 3\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested 3 egg from cell 32, spawning that many ants on cell 26.\n",
+      "view": " 4\n{\"graphics\":\"0;0;;;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 3 2 0 0 0 0 3 2 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;3;1;0;500;0;4;24;27;;1;0;500;0;1;26;32;;0;800;1300;0;3;;;32 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 24 3;BEACON 26 3;BEACON 27 3;BEACON 32 3;BEACON 33 3;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^3 126\n*** TURN\n^ 0 0 \n^ 0 0 0 0 0 0 0 44 44 18 18 56 56 0 0 0 0 9 9 0 \n^ 0 0 0 0 200000 10000 600000 400000 0 0 0 14 300009 26 26 0 0 \n*** END\nEnd of ai with 0 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[24=3];[26=3];[27=3];[32=3];[33=3];\nAfter Optimization\n[24=3];[26=3];[27=3];[32=3];[33=3];\nThinking in 10 ms\n",
+      "view": " 5\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested:\n- 3 egg from cell 32\n- 1 egg from cell 33\nSpawning a total of 4 ants on cell 26.\n",
+      "view": " 6\n{\"graphics\":\"0;0;;;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 3 3 0 0 0 0 3 3 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;4;1;0;500;0;1;27;33;;1;0;500;0;3;26;24;;0;800;1300;0;1;;;33 27 24 26;0;800;1300;0;3;;;32 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 24 4;BEACON 26 4;BEACON 27 4;BEACON 32 3;BEACON 33 4;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^4 126\n*** TURN\n^ 0 0 \n^ 0 0 0 0 0 0 0 44 44 18 18 56 56 0 0 0 0 9 9 0 \n^ 0 0 0 0 500000 10000 700000 300000 0 0 0 14 300006 100025 26 0 0 \n*** END\nEnd of ai with 0 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[24=4];[26=4];[27=4];[32=3];[33=4];\nAfter Optimization\n[24=4];[26=4];[27=4];[32=3];[33=4];\nThinking in 4 ms\n",
+      "view": " 7\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested:\n- 3 egg from cell 32\n- 1 egg from cell 33\nSpawning a total of 4 ants on cell 26.\n",
+      "view": " 8\n{\"graphics\":\"0;0;;;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 4 4 0 0 0 0 3 4 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;4;1;0;500;0;1;24;27;;1;0;500;0;3;26;24;;0;800;1300;0;1;;;33 27 24 26;0;800;1300;0;3;;;32 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 24 5;BEACON 26 6;BEACON 27 4;BEACON 32 2;BEACON 33 6;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^5 126\n*** TURN\n^ 0 0 \n^ 0 0 0 0 0 0 0 44 44 18 18 56 56 0 0 0 0 9 9 0 \n^ 0 0 0 0 700000 10000 800000 400000 0 0 0 14 300003 100024 26 0 0 \n*** END\nNo reachable cells , ants left ! 1\nEnd of ai with 1 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[24=5];[26=6];[27=5];[32=2];[33=5];\nAfter Optimization\n[24=5];[26=6];[27=4];[32=2];[33=6];\nThinking in 3 ms\n",
+      "view": " 9\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested:\n- 2 egg from cell 32\n- 1 egg from cell 33\nSpawning a total of 3 ants on cell 26.\n",
+      "view": " 10\n{\"graphics\":\"0;0;;;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 6 4 0 0 0 0 2 6 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;5;1;0;500;0;2;24;27;;1;0;500;0;1;32;26;;1;0;500;0;2;26;24;;0;800;1300;0;1;;;33 27 24 26;0;800;1300;0;2;;;32 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 24 6;BEACON 26 7;BEACON 27 5;BEACON 32 1;BEACON 33 7;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^6 126\n*** TURN\n^ 0 0 \n^ 0 0 0 0 0 0 0 44 44 18 18 56 56 0 0 0 0 9 9 0 \n^ 0 0 0 0 700000 10000 1000000 600000 0 0 0 14 200001 100023 26 0 0 \n*** END\nNo reachable cells , ants left ! 1\nEnd of ai with 1 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nLimiting number of ants of [32] to 1 instead of 1\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[24=6];[26=7];[27=6];[32=1];[33=6];\nAfter Optimization\n[24=6];[26=7];[27=5];[32=1];[33=7];\nThinking in 6 ms\n",
+      "view": " 11\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested:\n- 1 egg from cell 32\n- 2 egg from cell 33\nSpawning a total of 3 ants on cell 26.\n",
+      "view": " 12\n{\"graphics\":\"0;0;;;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6 0 7 5 0 0 0 0 1 7 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;6;1;0;500;0;1;24;27;;1;0;500;0;1;27;33;;1;0;500;0;1;32;26;;1;0;500;0;3;26;24;;0;800;1300;0;2;;;33 27 24 26;0;800;1300;0;1;;;32 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 6 1;BEACON 8 1;BEACON 16 1;BEACON 18 1;BEACON 24 6;BEACON 26 7;BEACON 27 5;BEACON 33 7;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^7 126\n*** TURN\n^ 0 0 \n^ 0 0 0 0 0 0 0 44 44 18 18 56 56 0 0 0 0 9 9 0 \n^ 0 0 0 0 900000 10000 1100000 600000 0 0 0 14 100000 200021 26 0 0 \n*** END\nNo reachable cells , ants left ! 1\nEnd of ai with 1 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[6=1];[8=1];[16=1];[18=1];[24=6];[26=7];[27=6];[33=6];\nAfter Optimization\n[6=1];[8=1];[16=1];[18=1];[24=6];[26=7];[27=5];[33=7];\nThinking in 3 ms\n",
+      "view": " 13\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested 3 egg from cell 33, spawning that many ants on cell 26.\n",
+      "view": " 14\n{\"graphics\":\"0;0;;;0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 6 0 7 5 0 0 0 0 0 7 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;7;1;0;500;0;1;24;27;;1;0;500;0;1;26;16;;1;0;500;0;1;27;33;;1;0;500;0;2;24;16;;1;0;500;0;1;32;26;;1;0;500;0;3;26;24;;0;800;1300;0;3;;;33 27 24 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 6 1;BEACON 8 1;BEACON 9 1;BEACON 11 1;BEACON 13 1;BEACON 16 1;BEACON 18 1;BEACON 24 6;BEACON 26 7;BEACON 27 3;BEACON 33 9;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^8 126\n*** TURN\n^ 0 0 \n^ 0 0 0 0 0 0 0 44 44 18 18 56 56 0 0 0 300000 9 9 0 \n^ 0 0 0 0 900000 10000 1100000 600000 0 0 0 14 0 300018 26 0 0 \n*** END\nNo reachable cells , ants left ! 1\nEnd of ai with 1 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[6=1];[8=1];[9=1];[11=1];[13=1];[16=1];[18=1];[24=6];[26=7];[27=6];[33=6];\nAfter Optimization\n[6=1];[8=1];[9=1];[11=1];[13=1];[16=1];[18=1];[24=6];[26=7];[27=3];[33=9];\nThinking in 3 ms\n",
+      "view": " 15\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested 6 egg from cell 33, spawning that many ants on cell 26.\n",
+      "view": " 16\n{\"graphics\":\"0;0;;;0 0 0 0 0 0 1 0 1 1 0 1 0 1 0 0 1 0 1 0 0 0 0 0 6 0 7 3 0 0 0 0 0 9 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;5;1;0;500;0;3;24;27;;1;0;500;0;4;26;16;;1;0;500;0;3;27;33;;1;0;500;0;2;16;6;;0;800;1300;0;6;;;33 27 24 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 2 2;BEACON 8 4;BEACON 9 1;BEACON 10 2;BEACON 11 1;BEACON 13 2;BEACON 16 2;BEACON 18 1;BEACON 24 6;BEACON 26 6;BEACON 27 6;BEACON 33 6;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^9 126\n*** TURN\n^ 0 0 \n^ 0 0 0 0 0 0 200000 44 44 18 18 56 56 0 0 0 500000 9 9 0 \n^ 0 0 0 0 600000 10000 1300000 600000 0 0 0 14 0 600012 26 0 0 \n*** END\nEnd of ai with 0 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[2=2];[6=2];[8=2];[9=1];[10=2];[11=1];[13=1];[16=2];[18=1];[24=6];[26=6];[27=6];[33=6];\nAfter Optimization\n[2=2];[8=4];[9=1];[10=2];[11=1];[13=2];[16=2];[18=1];[24=6];[26=6];[27=6];[33=6];\nThinking in 11 ms\n",
+      "view": " 17\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested 5 egg from cell 33, spawning that many ants on cell 26.\n\n$0 has harvested 2 crystal from cell 8, scoring that many points.\n",
+      "view": " 18\n{\"duration\":1800,\"graphics\":\"2;0;;;0 0 2 0 0 0 0 0 4 1 2 1 0 2 0 0 2 0 1 0 0 0 0 0 6 0 6 6 0 0 0 0 0 6 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;8;1;0;500;0;2;6;8;;1;0;500;0;5;26;16;;1;0;500;0;4;16;6;;1;0;500;0;1;24;16;;1;0;500;0;1;27;21;;1;0;500;0;2;26;24;;0;800;1300;0;5;;;33 27 24 26;2;1300;1800;0;2;;;8 6 16 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 2 3;BEACON 6 1;BEACON 8 6;BEACON 9 3;BEACON 10 3;BEACON 11 3;BEACON 12 1;BEACON 13 4;BEACON 16 4;BEACON 18 3;BEACON 26 4;BEACON 27 4;BEACON 33 4;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^10 126\n*** TURN\n^ 2 0 \n^ 0 0 0 0 0 0 400000 44 200042 18 18 56 56 0 0 0 700000 9 9 0 \n^ 0 100000 0 0 700000 10000 1100000 500000 0 0 0 14 0 600007 26 0 0 \n*** END\nEnd of ai with 0 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[2=3];[6=4];[8=4];[9=3];[10=3];[11=3];[12=1];[13=3];[16=4];[18=3];[26=4];[27=4];[33=4];\nAfter Optimization\n[2=3];[6=1];[8=6];[9=3];[10=3];[11=3];[12=1];[13=4];[16=4];[18=3];[26=4];[27=4];[33=4];\nThinking in 5 ms\n",
+      "view": " 19\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested 4 egg from cell 33, spawning that many ants on cell 26.\n\n$0 has harvested 4 crystal from cell 8, scoring that many points.\n",
+      "view": " 20\n{\"graphics\":\"6;0;;;0 0 3 0 0 0 1 0 6 3 3 3 1 4 0 0 4 0 3 0 0 0 0 0 0 0 4 4 0 0 0 0 0 4 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;9;1;0;500;0;3;6;8;;1;0;500;0;7;26;16;;1;0;500;0;3;16;6;;1;0;500;0;7;24;16;;1;0;500;0;1;21;13;;1;0;500;0;2;33;27;;1;0;500;0;1;27;21;;0;800;1300;0;4;;;33 27 16 26;2;1300;1800;0;4;;;8 6 16 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 1 1;BEACON 2 4;BEACON 6 2;BEACON 7 1;BEACON 8 4;BEACON 9 4;BEACON 10 4;BEACON 11 4;BEACON 12 1;BEACON 13 6;BEACON 16 4;BEACON 18 4;BEACON 26 4;BEACON 27 2;BEACON 33 2;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^11 126\n*** TURN\n^ 6 0 \n^ 0 0 0 0 0 0 400000 44 500038 18 18 56 56 100000 0 0 1800000 9 9 0 \n^ 0 100000 0 0 0 10000 800000 600000 0 0 0 14 0 400003 26 0 0 \n*** END\nEnd of ai with 0 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[1=1];[2=4];[6=4];[7=1];[8=4];[9=4];[10=4];[11=4];[12=1];[13=4];[16=4];[18=4];[26=4];[27=2];[33=2];\nAfter Optimization\n[1=1];[2=4];[6=2];[7=1];[8=4];[9=4];[10=4];[11=4];[12=1];[13=6];[16=4];[18=4];[26=4];[27=2];[33=2];\nThinking in 5 ms\n",
+      "view": " 21\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested 2 egg from cell 33, spawning that many ants on cell 26.\n\n$0 has harvested 4 crystal from cell 8, scoring that many points.\n",
+      "view": " 22\n{\"graphics\":\"10;0;;;0 1 4 0 0 0 2 1 4 4 4 4 1 6 0 0 4 0 4 0 0 0 0 0 0 0 4 2 0 0 0 0 0 2 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;9;1;0;500;0;4;26;16;;1;0;500;0;14;16;6;;1;0;500;0;2;6;13;;1;0;500;0;1;21;13;;1;0;500;0;2;33;27;;1;0;500;0;4;27;21;;1;0;500;0;1;8;2;;0;800;1300;0;2;;;33 27 16 26;2;1300;1800;0;4;;;8 6 16 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 1 1;BEACON 2 7;BEACON 6 4;BEACON 7 1;BEACON 9 4;BEACON 10 4;BEACON 11 8;BEACON 12 4;BEACON 16 4;BEACON 17 1;BEACON 18 8;BEACON 26 4;BEACON 27 1;BEACON 33 1;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^12 126\n*** TURN\n^ 10 0 \n^ 0 0 100000 0 0 0 1600000 44 400034 18 18 56 56 400000 0 0 800000 9 9 0 \n^ 0 400000 0 0 0 10000 600000 400000 0 0 0 14 0 200001 26 0 0 \n*** END\nEnd of ai with 0 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nLimiting number of ants of [33] to 1 instead of 1\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[1=1];[2=4];[6=4];[7=1];[8=4];[9=4];[10=4];[11=4];[12=4];[13=4];[16=4];[17=1];[18=4];[26=4];[27=1];[33=1];\nAfter Optimization\n[1=1];[2=7];[6=4];[7=1];[9=4];[10=4];[11=8];[12=4];[16=4];[17=1];[18=8];[26=4];[27=1];[33=1];\nThinking in 22 ms\n",
+      "view": " 23\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested 1 egg from cell 33, spawning that many ants on cell 26.\n\n$0 has harvested:\n- 5 crystal from cell 8\n- 4 crystal from cell 11\nScoring a total of 9 points.\n",
+      "view": " 24\n{\"graphics\":\"19;0;;;0 1 7 0 0 0 4 1 0 4 4 8 4 0 0 0 4 1 8 0 0 0 0 0 0 0 4 1 0 0 0 0 0 1 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;14;1;0;500;0;1;21;6;;1;0;500;0;8;6;8;;1;0;500;0;1;27;16;;1;0;500;0;2;26;16;;1;0;500;0;5;16;6;;1;0;500;0;5;6;13;;1;0;500;0;3;21;13;;1;0;500;0;1;33;27;;1;0;500;0;2;27;21;;1;0;500;0;4;8;2;;1;0;500;0;4;13;11;;0;800;1300;0;1;;;33 27 16 26;2;1300;1800;0;4;;;11 13 6 16 26;2;1300;1800;0;5;;;8 6 16 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 2 5;BEACON 6 5;BEACON 8 4;BEACON 9 8;BEACON 10 5;BEACON 12 4;BEACON 13 4;BEACON 16 5;BEACON 18 5;BEACON 26 5;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^13 126\n*** TURN\n^ 19 0 \n^ 0 0 500000 0 0 0 900000 44 800029 18 18 400052 56 800000 0 0 600000 9 9 0 \n^ 0 200000 0 0 0 10000 500000 200000 0 0 0 14 0 100000 26 0 0 \n*** END\nEnd of ai with 0 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[2=5];[6=5];[8=5];[9=4];[10=5];[11=4];[12=4];[13=4];[16=5];[18=4];[26=5];\nAfter Optimization\n[2=5];[6=5];[8=4];[9=8];[10=5];[12=4];[13=4];[16=5];[18=5];[26=5];\nThinking in 13 ms\n",
+      "view": " 25\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested:\n- 5 crystal from cell 8\n- 4 crystal from cell 9\n- 4 crystal from cell 11\n- 4 crystal from cell 18\nScoring a total of 17 points.\n",
+      "view": " 26\n{\"duration\":1000,\"graphics\":\"36;0;;;0 0 5 0 0 0 5 0 4 8 5 0 4 4 0 0 5 0 5 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;12;1;0;500;0;2;21;6;;1;0;500;0;4;6;8;;1;0;500;0;2;27;16;;1;0;500;0;1;16;6;;1;0;500;0;1;33;27;;1;0;500;0;4;8;18;;1;0;500;0;4;13;11;;1;0;500;0;4;11;9;;2;500;1000;0;4;;;11 13 6 16 26;2;500;1000;0;5;;;8 6 16 26;2;500;1000;0;4;;;9 11 13 6 16 26;2;500;1000;0;4;;;18 8 6 16 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 1 2;BEACON 2 1;BEACON 6 4;BEACON 7 2;BEACON 8 4;BEACON 9 4;BEACON 10 7;BEACON 11 4;BEACON 12 4;BEACON 13 4;BEACON 16 4;BEACON 17 2;BEACON 18 4;BEACON 26 4;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^14 126\n*** TURN\n^ 36 0 \n^ 0 0 500000 0 0 0 800000 44 800024 400014 18 400048 56 400000 0 0 700000 9 400005 0 \n^ 0 0 0 0 0 10000 500000 100000 0 0 0 14 0 0 26 0 0 \n*** END\nEnd of ai with 0 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[1=2];[2=4];[6=4];[7=2];[8=4];[9=4];[10=4];[11=4];[12=4];[13=4];[16=4];[17=2];[18=4];[26=4];\nAfter Optimization\n[1=2];[2=1];[6=4];[7=2];[8=4];[9=4];[10=7];[11=4];[12=4];[13=4];[16=4];[17=2];[18=4];[26=4];\nThinking in 11 ms\n",
+      "view": " 27\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested:\n- 4 crystal from cell 8\n- 4 crystal from cell 9\n- 4 crystal from cell 10\n- 4 crystal from cell 11\n- 4 crystal from cell 18\nScoring a total of 20 points.\n",
+      "view": " 28\n{\"graphics\":\"56;0;;;0 2 1 0 0 0 4 2 4 4 7 4 4 4 0 0 4 2 4 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;11;1;0;500;0;1;26;16;;1;0;500;0;3;16;6;;1;0;500;0;4;6;13;;1;0;500;0;4;2;10;;1;0;500;0;1;27;21;;1;0;500;0;4;8;2;;2;500;1000;0;4;;;10 2 8 6 16 26;2;500;1000;0;4;;;11 13 6 16 26;2;500;1000;0;4;;;8 6 16 26;2;500;1000;0;4;;;9 11 13 6 16 26;2;500;1000;0;4;;;18 8 6 16 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 1 2;BEACON 2 4;BEACON 6 5;BEACON 7 2;BEACON 8 5;BEACON 9 4;BEACON 10 4;BEACON 11 4;BEACON 12 4;BEACON 13 4;BEACON 16 4;BEACON 17 1;BEACON 18 1;BEACON 26 6;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^15 126\n*** TURN\n^ 56 0 \n^ 0 0 500000 0 0 0 700000 44 400020 400010 400014 400044 56 800000 0 0 500000 9 400001 0 \n^ 0 100000 0 0 0 10000 400000 0 0 0 0 14 0 0 26 0 0 \n*** END\nEnd of ai with 0 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nLimiting number of ants of [18] to 1 instead of 1\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[1=2];[2=4];[6=5];[7=2];[8=5];[9=4];[10=4];[11=4];[12=4];[13=4];[16=5];[17=1];[18=1];[26=5];\nAfter Optimization\n[1=2];[2=4];[6=5];[7=2];[8=5];[9=4];[10=4];[11=4];[12=4];[13=4];[16=4];[17=1];[18=1];[26=6];\nThinking in 11 ms\n",
+      "view": " 29\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested:\n- 5 crystal from cell 8\n- 4 crystal from cell 9\n- 4 crystal from cell 10\n- 4 crystal from cell 11\n- 1 crystal from cell 18\nScoring a total of 18 points.\n",
+      "view": " 30\n{\"graphics\":\"74;0;;;0 2 4 0 0 0 5 2 5 4 4 4 4 4 0 0 4 1 1 0 0 0 0 0 0 0 6 0 0 0 0 0 0 0 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;12;1;0;500;0;1;6;8;;1;0;500;0;3;18;8;;1;0;500;0;4;13;3;;1;0;500;0;1;2;8;;1;0;500;0;1;21;13;;1;0;500;0;1;6;16;;1;0;500;0;1;16;26;;2;500;1000;0;4;;;10 2 8 6 16 26;2;500;1000;0;4;;;11 13 6 16 26;2;500;1000;0;5;;;8 6 16 26;2;500;1000;0;4;;;9 11 13 6 16 26;2;500;1000;0;1;;;18 8 6 16 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 1 4;BEACON 2 4;BEACON 3 2;BEACON 6 4;BEACON 7 3;BEACON 8 4;BEACON 9 3;BEACON 10 4;BEACON 11 4;BEACON 12 4;BEACON 13 4;BEACON 16 4;BEACON 17 2;BEACON 26 4;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^16 126\n*** TURN\n^ 74 0 \n^ 0 0 400000 400000 0 0 500000 44 900015 400006 400010 400040 56 500000 0 0 500000 9 100000 0 \n^ 0 0 0 0 0 10000 500000 0 0 0 0 14 0 0 26 0 0 \n*** END\nEnd of ai with 0 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[1=3];[2=4];[3=3];[6=4];[7=3];[8=4];[9=3];[10=4];[11=4];[12=4];[13=4];[16=4];[17=2];[26=4];\nAfter Optimization\n[1=4];[2=4];[3=2];[6=4];[7=3];[8=4];[9=3];[10=4];[11=4];[12=4];[13=4];[16=4];[17=2];[26=4];\nThinking in 13 ms\n",
+      "view": " 31\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested:\n- 4 crystal from cell 8\n- 3 crystal from cell 9\n- 4 crystal from cell 10\n- 4 crystal from cell 11\nScoring a total of 15 points.\n",
+      "view": " 32\n{\"graphics\":\"89;0;;;0 4 4 2 0 0 4 3 4 3 4 4 4 4 0 0 4 2 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;12;1;0;500;0;1;26;16;;1;0;500;0;1;18;8;;1;0;500;0;1;16;6;;1;0;500;0;1;13;3;;1;0;500;0;1;6;13;;1;0;500;0;1;9;1;;1;0;500;0;5;8;2;;1;0;500;0;2;3;1;;2;500;1000;0;4;;;10 2 8 6 16 26;2;500;1000;0;4;;;11 13 6 16 26;2;500;1000;0;4;;;8 6 16 26;2;500;1000;0;3;;;9 11 13 6 16 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 1 2;BEACON 2 4;BEACON 3 3;BEACON 6 4;BEACON 7 4;BEACON 8 4;BEACON 9 2;BEACON 11 4;BEACON 12 8;BEACON 13 4;BEACON 16 4;BEACON 17 3;BEACON 26 4;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^17 126\n*** TURN\n^ 89 0 \n^ 0 300000 900000 300000 0 0 500000 44 500011 300003 400006 400036 56 500000 0 0 500000 9 0 0 \n^ 0 0 0 0 0 10000 400000 0 0 0 0 14 0 0 26 0 0 \n*** END\nEnd of ai with 0 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[1=3];[2=4];[3=3];[6=4];[7=3];[8=4];[9=2];[10=4];[11=4];[12=4];[13=4];[16=4];[17=3];[26=4];\nAfter Optimization\n[1=2];[2=4];[3=3];[6=4];[7=4];[8=4];[9=2];[11=4];[12=8];[13=4];[16=4];[17=3];[26=4];\nThinking in 2 ms\n",
+      "view": " 33\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested:\n- 1 crystal from cell 7\n- 4 crystal from cell 8\n- 2 crystal from cell 9\n- 4 crystal from cell 10\n- 4 crystal from cell 11\n- 4 crystal from cell 12\nScoring a total of 19 points.\n",
+      "view": " 34\n{\"graphics\":\"108;0;;;0 2 4 3 0 0 4 4 4 2 0 4 8 4 0 0 4 3 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;15;1;0;500;0;4;10;12;;1;0;500;0;1;16;6;;1;0;500;0;1;13;3;;1;0;500;0;1;1;7;;1;0;500;0;1;6;13;;1;0;500;0;1;9;1;;1;0;500;0;4;2;10;;1;0;500;0;1;8;2;;1;0;500;0;1;2;0;;2;500;1000;0;1;;;7 1 3 13 6 16 26;2;500;1000;0;4;;;10 2 8 6 16 26;2;500;1000;0;4;;;11 13 6 16 26;2;500;1000;0;4;;;12 10 2 8 6 16 26;2;500;1000;0;4;;;8 6 16 26;2;500;1000;0;2;;;9 11 13 6 16 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 1 1;BEACON 2 4;BEACON 3 3;BEACON 6 4;BEACON 7 5;BEACON 8 4;BEACON 9 1;BEACON 10 4;BEACON 11 4;BEACON 12 4;BEACON 13 4;BEACON 16 3;BEACON 17 3;BEACON 26 6;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^18 126\n*** TURN\n^ 108 0 \n^ 100000 300000 500000 400000 0 0 500000 100043 400007 200001 400002 400032 400052 500000 0 0 400000 9 0 0 \n^ 0 0 0 0 0 10000 400000 0 0 0 0 14 0 0 26 0 0 \n*** END\nNo reachable cells , ants left ! 1\nEnd of ai with 1 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[1=3];[2=4];[3=3];[6=4];[7=3];[8=4];[9=1];[10=4];[11=4];[12=4];[13=4];[16=4];[17=3];[26=5];\nAfter Optimization\n[1=1];[2=4];[3=3];[6=4];[7=5];[8=4];[9=1];[10=4];[11=4];[12=4];[13=4];[16=3];[17=3];[26=6];\nThinking in 2 ms\n",
+      "view": " 35\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested:\n- 3 crystal from cell 7\n- 4 crystal from cell 8\n- 1 crystal from cell 9\n- 2 crystal from cell 10\n- 4 crystal from cell 11\n- 4 crystal from cell 12\nScoring a total of 18 points.\n",
+      "view": " 36\n{\"graphics\":\"126;0;;;0 1 4 3 0 0 4 5 4 1 4 4 4 4 0 0 3 3 0 0 0 0 0 0 0 0 6 0 0 0 0 0 0 0 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;14;1;0;500;0;1;0;1;;1;0;500;0;1;13;3;;1;0;500;0;2;1;7;;1;0;500;0;1;9;1;;1;0;500;0;1;6;16;;1;0;500;0;1;16;26;;1;0;500;0;1;2;0;;1;0;500;0;1;3;1;;2;500;1000;0;3;;;7 1 3 13 6 16 26;2;500;1000;0;2;;;10 2 8 6 16 26;2;500;1000;0;4;;;11 13 6 16 26;2;500;1000;0;4;;;12 10 2 8 6 16 26;2;500;1000;0;4;;;8 6 16 26;2;500;1000;0;1;;;9 11 13 6 16 26\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "BEACON 1 3;BEACON 2 4;BEACON 3 3;BEACON 6 4;BEACON 7 2;BEACON 8 4;BEACON 10 4;BEACON 11 4;BEACON 12 4;BEACON 13 4;BEACON 16 5;BEACON 17 4;BEACON 26 5;\n",
+      "stderr": "*** INIT ***\n^37\n^ 0 0 -1 1 3 -1 2 4 \n^ 0 0 7 -1 9 3 0 -1 0 0 4 0 -1 8 -1 10 0 0 1 9 11 13 -1 0 0 0 14 -1 0 2 10 12 0 0 15 -1 7 -1 14 22 0 0 -1 13 21 16 -1 8 2 0 -1 17 -1 1 -1 5 2 0 2 -1 6 -1 18 -1 2 0 -1 -1 -1 11 3 1 2 0 12 4 2 -1 -1 -1 \n^ 2 0 9 -1 -1 19 13 3 2 0 20 14 4 10 -1 -1 0 0 3 11 19 21 6 -1 0 0 22 5 -1 4 12 20 0 0 23 25 -1 5 22 28 0 0 6 21 27 24 26 -1 2 0 -1 -1 -1 -1 7 -1 2 0 -1 8 -1 -1 -1 -1 0 0 11 -1 -1 -1 21 13 0 0 -1 22 14 12 -1 -1 \n^ 0 0 13 19 -1 27 16 6 0 0 28 15 5 14 20 -1 0 0 -1 29 25 15 28 36 0 0 16 27 35 -1 30 26 0 0 29 31 -1 -1 15 23 0 0 -1 16 24 30 32 -1 0 0 21 -1 33 35 24 16 0 0 36 23 15 22 -1 34 0 0 -1 -1 31 25 23 -1 0 0 26 24 -1 -1 -1 32 \n^ 1 0 -1 -1 -1 -1 25 29 1 0 -1 26 30 -1 -1 -1 1 0 -1 -1 -1 -1 35 27 1 0 -1 36 28 -1 -1 -1 0 0 27 33 -1 -1 -1 24 0 0 -1 -1 23 28 34 -1 \n^1\n^ 26 25 \n*** OPTIONAL ***\n^19 126\n*** TURN\n^ 126 0 \n^ 100000 400000 400000 400000 0 0 400000 300040 400003 100000 400000 400028 400048 400000 0 0 400000 9 0 0 \n^ 0 0 0 0 0 10000 500000 0 0 0 0 14 0 0 26 0 0 \n*** END\nNo reachable cells , ants left ! 2\nEnd of ai with 2 left to distribute\nReworking beacons to match ants count ! \nEnd of reworking beacons\nLimiting ants size on resources leafs\nBeacons optimizer !\nStart of optimization\nBefore Optimization\n[1=3];[2=4];[3=3];[6=4];[7=3];[8=4];[10=4];[11=4];[12=4];[13=4];[16=5];[17=3];[26=5];\nAfter Optimization\n[1=3];[2=4];[3=3];[6=4];[7=2];[8=4];[10=4];[11=4];[12=4];[13=4];[16=5];[17=4];[26=5];\nThinking in 2 ms\n",
+      "view": " 37\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "WAIT\n",
+      "summary": "$0 has harvested:\n- 3 crystal from cell 7\n- 3 crystal from cell 8\n- 4 crystal from cell 11\n- 4 crystal from cell 12\n- 1 crystal from cell 17\nScoring a total of 15 points.\n\n$0 has harvested at least half the crystals. Game over!\n",
+      "view": " 38\n{\"graphics\":\"141;0;;;0 3 4 3 0 0 4 2 4 0 4 4 4 4 0 0 5 4 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;10;1;0;500;0;1;0;1;;1;0;500;0;1;1;7;;1;0;500;0;1;9;1;;1;0;500;0;1;3;13;;1;0;500;0;1;7;17;;2;500;1000;0;3;;;7 1 3 13 6 16 26;2;500;1000;0;1;;;17 7 1 3 13 6 16 26;2;500;1000;0;4;;;11 13 6 16 26;2;500;1000;0;4;;;12 10 2 8 6 16 26;2;500;1000;0;3;;;8 6 16 26\",\"endScreen\":[[141,0],\"logo.png\",null]}\n",
+      "keyframe": true,
+      "agentId": 1
+    }
+  ],
+  "gameId": 747302572,
+  "refereeInput": "seed=-6349234906927860000\n",
+  "scores": [
+    141,
+    0
+  ],
+  "ranks": [
+    0,
+    1
+  ],
+  "metadata": {},
+  "outputTooSoon": {
+    "1": 1
+  }
+}

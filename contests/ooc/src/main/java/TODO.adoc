@@ -1,0 +1,64 @@
+= TODO
+
+* Dans le trailmapper, on peut partir du principe qu'il ne se shoot pas dessus 
+     ie : il ne lance pas une torpedo sur sa propre position
+
+* encore des exception à 5000 NodeTrail dans le trailMapper :/
+
+== TECH
+* Reset '2' si trop de réalités : garder les réalités sans trop de path
+
+== PERF
+
+== METIER 
+* Simuler ma furtivité pour chaque move envisagé.
+* Simuler à plusieurs tours pour prévoir les silences et me laisser le plus de choix possibles
+* HEATMAP / pour chaque case, on prend les cases alentours pour consolider sa position
+* Prévoir son prochain déplacement en fonction de son trail
+* Utiliser le charge detector pour savoir si il peut me tirer dessus ou autre ...
+* Ajouter un % de confiance sur les réalités : il peut arriver que des move le mette dans une situation débile (enfermer), ou les silences, plutot 0 ou full, mais peu 1...
+  A partir de ce %, on peut modifier la heatmap de ces positions !
+
+=== DONE  
+* DONE - TrailMapper : passer sur 2 arrays 'c-like' au lieu de l'arrayList
+* DONE - Cache de TrailNode (plutot que des new)
+* DONE - Copie de TrailMapper (pour simuler mes moves) ...
+* DONE - ChargeDetector / essayer 
+* DONE - Prendre en compte toutes sources de dégats possibles sur un tour
+----
+si (l'autre joueur a tiré au dernier tour et ne t'a pas touché) then (se tirer dessus) so that (il va croire que c'est lui qui t'a touché) alors que non ;)
+et baam il va se retrouver avec une liste de positions vides rapidement
+----
+
+== STRATS
+=== Autres ? 
+* A réfléchir : si je le touche avec une torpille en diagonale max, il ne peut pas me toucher avant
+    => reflechir à notre position pour "gagner" un tour
+    
+=== Tour 0
+* Choisir une zone d'eau la plus étendue possible
+* choisir le point et le trajet qui me permettent d'etre caché le plus longtemps !
+
+=== Déplacements
+* -- ne pas revenir sur ses pas
+* -- ne pas s'enfermer si autre possibilité
+* voir plus loin que le prochain tour 
+* se déplacer vers l'ennemi si on sait ~ où il est
+* surface + silence 
+
+=== Mines
+* -- remplir la jauge de mines
+* poser des mines
+* ne pas poser des mines trop pret les une des autres
+* poser des mines de maniere strategique (center is better ?)
+* trigger les mines pour réduire les réalités ou diminuer sa vie
+
+=== ChargeAI:
+* -- AttackAI : tout pour l'attaque
+* Creer d'autre type d'AI & changer selon la situation (early game, defense, ...)
+
+=== PotentialPositions:
+* -- Faire un arbre des réalités possibles suite à un silence
+  Les déplacements impossible dans certaines réalités suppriment les branches
+  pour avoir les positions potentielles, on recombine les réalités en début de tour
+

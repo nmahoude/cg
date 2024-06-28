@@ -1,0 +1,3599 @@
+// built on 2023-01-03T22:12:32.025+01:00[Europe/Paris]
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.function.Predicate;
+import java.util.Arrays;
+import java.util.Collection;
+
+class Pos {
+
+	public static int WIDTH = 24;
+
+	public static int HEIGHT = 12;
+
+	public static final int MAX_OFFSET = WIDTH * HEIGHT;
+
+	private static Pos[] positions = new Pos[MAX_OFFSET];
+
+	public static Pos VOID = new Pos(-1, -1);
+
+	public static List<Pos> allMapPositions = new ArrayList<>();
+
+	public List<Pos> neighbors4dirs = new ArrayList<>();
+
+	public List<Pos> meAndNeighbors4dirs = new ArrayList<>();
+
+	static void init(int W, int H) {
+		WIDTH = W;
+		HEIGHT = H;
+		allMapPositions.clear();
+		for (int y = 0; y < HEIGHT; y++) {
+			for (int x = 0; x < WIDTH; x++) {
+				Pos pos = new Pos(x, y);
+				positions[x + WIDTH * y] = pos;
+				allMapPositions.add(pos);
+			}
+		}
+		initCardinalNeighbors();
+	}
+
+	public final int x;
+
+	public final int y;
+
+	public final int o;
+
+	private Pos(int x, int y) {
+		this.x = x;
+		this.y = y;
+		this.o = x + WIDTH * y;
+	}
+
+	private static void initCardinalNeighbors() {
+		for (int y = 0; y < HEIGHT; y++) {
+			for (int x = 0; x < WIDTH; x++) {
+				Pos p = positions[x + WIDTH * y];
+				p.neighbors4dirs.clear();
+				p.meAndNeighbors4dirs.clear();
+				if (x > 0)
+					p.neighbors4dirs.add(Pos.from(x - 1, y));
+				if (y > 0)
+					p.neighbors4dirs.add(Pos.from(x, y - 1));
+				if (x < WIDTH - 1)
+					p.neighbors4dirs.add(Pos.from(x + 1, y));
+				if (y < HEIGHT - 1)
+					p.neighbors4dirs.add(Pos.from(x, y + 1));
+				p.meAndNeighbors4dirs.add(p);
+				for (Pos pos : p.neighbors4dirs) {
+					p.meAndNeighbors4dirs.add(pos);
+				}
+			}
+		}
+	}
+
+	public static Pos secureFrom(int x, int y) {
+		if (x < 0 || x >= WIDTH)
+			return VOID;
+		if (y < 0 || y >= HEIGHT)
+			return VOID;
+		return from(x, y);
+	}
+
+	public static Pos from(int x, int y) {
+		return positions[x + WIDTH * y];
+	}
+
+	public static Pos from(int offset) {
+		return positions[offset];
+	}
+
+	@Override
+	public String toString() {
+		return String.format("(%d, %d)", x, y);
+	}
+
+	public int manhattan(Pos current) {
+		return Math.abs(current.x - x) + Math.abs(current.y - y);
+	}
+
+	public boolean isBorder() {
+		return x == 0 || y == 0 || x == Pos.WIDTH - 1 || y == Pos.HEIGHT - 1;
+	}
+}
+
+class Action {
+
+	private static Action[] cache = new Action[1000];
+
+	static {
+		for (int i = 0; i < cache.length; i++) {
+			cache[i] = new Action();
+		}
+	}
+
+	private static int cacheFE = 0;
+
+	public static final int WAIT = 0;
+
+	public static final int MOVE = 1;
+
+	public static final int BUILD = 2;
+
+	public static final int SPAWN = 3;
+
+	int type;
+
+	int amount;
+
+	Pos from;
+
+	Pos to;
+
+	public Pos realTarget;
+
+	private String origin;
+
+	static void resetCache() {
+		cacheFE = 0;
+	}
+
+	@Override
+	public String toString() {
+		switch(type) {
+			case MOVE:
+				return "MOVE " + amount + " " + from.x + " " + from.y + " " + to.x + " " + to.y + ";";
+			case WAIT:
+				return "WAIT;";
+			case BUILD:
+				return "BUILD " + to.x + " " + to.y + ";";
+			case SPAWN:
+				return "SPAWN " + amount + " " + to.x + " " + to.y + ";";
+			default:
+				return "Unknown type " + type;
+		}
+	}
+
+	public void debug() {
+		System.out.println(debugString());
+	}
+
+	public String debugString() {
+		if (type == MOVE || type == SPAWN)
+			return toString() + " (real=" + realTarget + ") [" + origin + "]";
+		else
+			return toString() + "[" + origin + "]";
+	}
+
+	public static Action move(int amount, Pos from, Pos to, String origin) {
+		return move(amount, from, to, to, origin);
+	}
+
+	public static Action move(int amount, Pos from, Pos to, Pos realTarget, String origin) {
+		Action a = cache[cacheFE++];
+		a.type = MOVE;
+		a.amount = amount;
+		a.from = from;
+		a.to = to;
+		a.realTarget = realTarget;
+		a.origin = origin;
+		return a;
+	}
+
+	public static Action spawn(int amount, Pos pos, Pos target, String origin) {
+		Action a = cache[cacheFE++];
+		a.type = SPAWN;
+		a.amount = amount;
+		a.from = pos;
+		a.to = pos;
+		a.origin = origin;
+		a.realTarget = target;
+		return a;
+	}
+
+	public static Action spawn(int amount, Pos pos, String origin) {
+		return spawn(amount, pos, pos, origin);
+	}
+
+	public static Action build(Pos pos, String origin) {
+		Action a = cache[cacheFE++];
+		a.amount = 1;
+		a.type = BUILD;
+		a.to = pos;
+		a.origin = origin;
+		return a;
+	}
+
+	public Pos to() {
+		return to;
+	}
+
+	public Pos from() {
+		return from;
+	}
+
+	public static Action copyOf(Action action) {
+		Action a = new Action();
+		a.type = action.type;
+		a.amount = action.amount;
+		a.from = action.from;
+		a.to = action.to;
+		a.realTarget = action.realTarget;
+		a.origin = action.origin;
+		return a;
+	}
+
+	public int type() {
+		return type;
+	}
+
+	public int amount() {
+		return amount;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(amount, from, realTarget, to, type);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return this.toString().equals(obj.toString());
+	}
+}
+
+class Logger {
+
+	public static boolean hasWarning;
+
+	public static boolean hasError;
+
+	public static void reset() {
+		hasWarning = false;
+		hasError = false;
+	}
+
+	public static void info(Object str) {
+		info(true, str);
+	}
+
+	public static void warning(Object str) {
+		warning(true, str);
+	}
+
+	public static void error(Object str) {
+		error(true, str);
+	}
+
+	public static void info(boolean enabled, Object str) {
+		if (!enabled)
+			return;
+		System.err.println(str);
+	}
+
+	public static void warning(boolean enabled, Object str) {
+		if (!enabled)
+			return;
+		System.err.println(str);
+		hasWarning = true;
+	}
+
+	public static void error(boolean enabled, Object str) {
+		if (!enabled)
+			return;
+		System.err.println(str);
+		hasError = true;
+	}
+}
+
+class O {
+
+	public static final int UNIT_COST = 10;
+
+	public static final int ME = 1;
+
+	public static final int OPP = 0;
+
+	public static final int NEUTRAL = -1;
+}
+
+class Sim {
+
+	public static void oneTurn(State state) {
+		int[] minedByMe = new int[Pos.MAX_OFFSET];
+		int[] minedByOpp = new int[Pos.MAX_OFFSET];
+		for (Pos current : Pos.allMapPositions) {
+			if (state.recycler[current.o] == 0)
+				continue;
+			if (state.owner[current.o] == O.ME) {
+				for (Pos n : current.meAndNeighbors4dirs) {
+					minedByMe[n.o]++;
+				}
+			} else {
+				for (Pos n : current.meAndNeighbors4dirs) {
+					minedByOpp[n.o]++;
+				}
+			}
+		}
+		for (Pos current : Pos.allMapPositions) {
+			if (state.scraps[current.o] > 0) {
+				if (minedByMe[current.o] > 0)
+					state.myMatter++;
+				if (minedByOpp[current.o] > 0)
+					state.oppMatter++;
+				if (minedByMe[current.o] > 0 || minedByOpp[current.o] > 0)
+					state.scraps[current.o]--;
+			}
+			if (state.scraps[current.o] == 0) {
+				state.recycler[current.o] = 0;
+				state.units[current.o] = 0;
+				state.movableUnits[current.o] = 0;
+			}
+		}
+		state.myMatter += 10;
+		state.oppMatter += 10;
+	}
+
+	public static void tenTurn(State state) {
+		for (int i = 0; i < 10; i++) {
+			oneTurn(state);
+		}
+	}
+}
+
+class FastReader {
+
+	private static final int BUFFER_SIZE = 1 << 16;
+
+	private DataInputStream din;
+
+	private byte[] buffer;
+
+	private int bufferPointer, bytesRead;
+
+	public FastReader() {
+		this(System.in);
+	}
+
+	public FastReader(InputStream in) {
+		din = new DataInputStream(System.in);
+		buffer = new byte[BUFFER_SIZE];
+		bufferPointer = bytesRead = 0;
+	}
+
+	public FastReader(byte inputs[]) {
+		buffer = new byte[inputs.length];
+		System.arraycopy(inputs, 0, buffer, 0, inputs.length);
+		bufferPointer = 0;
+		bytesRead = inputs.length;
+	}
+
+	public static FastReader fromString(String input) {
+		return new FastReader(input.getBytes());
+	}
+
+	public static FastReader fromFile(String filename) throws IOException {
+		FastReader reader = new FastReader();
+		reader.din = new DataInputStream(new FileInputStream(filename));
+		reader.buffer = new byte[BUFFER_SIZE];
+		reader.bufferPointer = reader.bytesRead = 0;
+		return reader;
+	}
+
+	public String readLine() {
+		byte[] buf = new byte[64];
+		int cnt = 0, c;
+		while ((c = read()) != -1) {
+			if (c == '\n')
+				break;
+			buf[cnt++] = (byte) c;
+		}
+		return new String(buf, 0, cnt);
+	}
+
+	public int nextInt() {
+		int ret = 0;
+		byte c = read();
+		while (c <= ' ') c = read();
+		boolean neg = (c == '-');
+		if (neg)
+			c = read();
+		do {
+			ret = ret * 10 + c - '0';
+		} while ((c = read()) >= '0' && c <= '9');
+		if (neg)
+			return -ret;
+		return ret;
+	}
+
+	public long nextLong() {
+		long ret = 0;
+		byte c = read();
+		while (c <= ' ') c = read();
+		boolean neg = (c == '-');
+		if (neg)
+			c = read();
+		do {
+			ret = ret * 10 + c - '0';
+		} while ((c = read()) >= '0' && c <= '9');
+		if (neg)
+			return -ret;
+		return ret;
+	}
+
+	public double nextDouble() {
+		double ret = 0, div = 1;
+		byte c = read();
+		while (c <= ' ') c = read();
+		boolean neg = (c == '-');
+		if (neg)
+			c = read();
+		do {
+			ret = ret * 10 + c - '0';
+		} while ((c = read()) >= '0' && c <= '9');
+		if (c == '.') {
+			while ((c = read()) >= '0' && c <= '9') {
+				ret += (c - '0') / (div *= 10);
+			}
+		}
+		if (neg)
+			return -ret;
+		return ret;
+	}
+
+	private void fillBuffer() {
+		try {
+			bytesRead = din.read(buffer, bufferPointer = 0, BUFFER_SIZE);
+			if (bytesRead == -1)
+				buffer[0] = -1;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private byte read() {
+		if (bufferPointer == bytesRead)
+			fillBuffer();
+		return buffer[bufferPointer++];
+	}
+
+	public void close() {
+		if (din == null)
+			return;
+		try {
+			din.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public String nextString() {
+		return next();
+	}
+
+	public String next() {
+		byte c;
+		StringBuilder sBuf = new StringBuilder(64);
+		do {
+			c = read();
+		} while (c <= ' ');
+		do {
+			if (c == '\n' || c == ' ')
+				break;
+			sBuf.append((char) c);
+		} while ((c = read()) != -1);
+		return sBuf.toString();
+	}
+
+	public String nextLine() {
+		byte c;
+		StringBuilder sBuf = new StringBuilder(64);
+		do {
+			c = read();
+		} while (c <= ' ');
+		do {
+			if (c == '\n')
+				break;
+			sBuf.append((char) c);
+		} while ((c = read()) != -1);
+		return sBuf.toString();
+	}
+
+	public void nextLinePass() {
+		byte c;
+		do {
+			c = read();
+		} while (c <= ' ');
+		do {
+			if (c == '\n')
+				break;
+		} while ((c = read()) != -1);
+	}
+
+	public byte nextByte() {
+		return nextBytes()[0];
+	}
+
+	public byte[] nextBytes() {
+		byte[] buf = new byte[64];
+		int cnt = 0, c;
+		while ((c = read()) != -1) {
+			if (c == '\n' || c == ' ')
+				break;
+			buf[cnt++] = (byte) c;
+		}
+		return buf;
+	}
+
+	public char[] nextChars() {
+		char[] buf = new char[64];
+		int cnt = 0, c;
+		while ((c = read()) != -1) {
+			if (c == '\n' || c == ' ') {
+				buf[cnt++] = '\n';
+				break;
+			} else {
+				buf[cnt++] = (char) c;
+			}
+		}
+		buf[cnt++] = '\n';
+		return buf;
+	}
+}
+
+class State {
+
+	public static int turn = -1;
+
+	public static int WIDTH;
+
+	public static int HEIGHT;
+
+	public static Pos center;
+
+	private static int STALL;
+
+	public static int hasChangedSinceLast[] = new int[Pos.MAX_OFFSET];
+
+	public static int totalCellCount = 0;
+
+	public int myUnitCount = 0;
+
+	public int oppUnitCount = 0;
+
+	public int myRecyclerCount = 0;
+
+	public int myCellCount = 0;
+
+	public int oppCellCount = 0;
+
+	public int myMatter;
+
+	public int oppMatter;
+
+	public int[] scraps = new int[Pos.MAX_OFFSET];
+
+	public int[] owner = new int[Pos.MAX_OFFSET];
+
+	public int[] units = new int[Pos.MAX_OFFSET];
+
+	public int[] movableUnits = new int[Pos.MAX_OFFSET];
+
+	public int[] recycler = new int[Pos.MAX_OFFSET];
+
+	public int[] lockedMap = new int[Pos.MAX_OFFSET];
+
+	public int[] originalUnits = new int[Pos.MAX_OFFSET];
+
+	public int[] originalOwner = new int[Pos.MAX_OFFSET];
+
+	public int[] attack = new int[Pos.MAX_OFFSET];
+
+	public State() {
+	}
+
+	public int units(Pos p) {
+		return units[p.o];
+	}
+
+	public int movableUnits(Pos p) {
+		return movableUnits[p.o];
+	}
+
+	public int owner(Pos p) {
+		return owner[p.o];
+	}
+
+	public void copyFrom(State model) {
+		this.myUnitCount = model.myUnitCount;
+		this.oppUnitCount = model.oppUnitCount;
+		this.myMatter = model.myMatter;
+		this.oppMatter = model.oppMatter;
+		this.myRecyclerCount = model.myRecyclerCount;
+		this.myCellCount = model.myCellCount;
+		this.oppCellCount = model.oppCellCount;
+		System.arraycopy(model.scraps, 0, this.scraps, 0, Pos.MAX_OFFSET);
+		System.arraycopy(model.owner, 0, this.owner, 0, Pos.MAX_OFFSET);
+		System.arraycopy(model.units, 0, this.units, 0, Pos.MAX_OFFSET);
+		System.arraycopy(model.movableUnits, 0, this.movableUnits, 0, Pos.MAX_OFFSET);
+		System.arraycopy(model.originalUnits, 0, this.originalUnits, 0, Pos.MAX_OFFSET);
+		System.arraycopy(model.recycler, 0, this.recycler, 0, Pos.MAX_OFFSET);
+		System.arraycopy(model.lockedMap, 0, this.lockedMap, 0, Pos.MAX_OFFSET);
+		System.arraycopy(model.originalOwner, 0, this.originalOwner, 0, Pos.MAX_OFFSET);
+		System.arraycopy(model.attack, 0, this.attack, 0, Pos.MAX_OFFSET);
+	}
+
+	public void readGlobal(FastReader in) {
+		WIDTH = in.nextInt();
+		HEIGHT = in.nextInt();
+		Pos.init(WIDTH, HEIGHT);
+		center = Pos.from(WIDTH / 2, HEIGHT / 2);
+	}
+
+	public void readOptionalState(FastReader in) {
+		String line = in.nextLine();
+		String[] inputs = line.split(" ");
+		State.turn = Integer.parseInt(inputs[0]) - 1;
+		if (inputs.length > 1) {
+			State.STALL = Integer.parseInt(inputs[1]);
+		}
+	}
+
+	public void saveOptionalState() {
+		Logger.info(Player.DEBUG_OUPUT, "Optional State : ");
+		Logger.info(Player.DEBUG_OUPUT, String.format("^ %d %d", State.turn, State.STALL));
+	}
+
+	public void read(FastReader in) {
+		Action.resetCache();
+		State.turn++;
+		myRecyclerCount = 0;
+		myUnitCount = 0;
+		oppUnitCount = 0;
+		myCellCount = 0;
+		oppCellCount = 0;
+		myMatter = in.nextInt();
+		oppMatter = in.nextInt();
+		Player.start = System.currentTimeMillis();
+		saveGlobalState();
+		boolean thisturnSTALL = true;
+		for (Pos p : Pos.allMapPositions) {
+			hasChangedSinceLast[p.o] = 0;
+		}
+		for (int y = 0; y < HEIGHT; y++) {
+			if (Player.DEBUG_OUPUT)
+				System.err.print("^");
+			for (int x = 0; x < WIDTH; x++) {
+				Pos p = Pos.from(x, y);
+				attack[p.o] = 0;
+				int scrapAmount = in.nextInt();
+				int owner = in.nextInt();
+				int units = in.nextInt();
+				int recycler = in.nextInt();
+				if (scraps[p.o] != scrapAmount) {
+					for (Pos n : p.meAndNeighbors4dirs) {
+						State.hasChangedSinceLast[n.o] = 1;
+					}
+				}
+				if (Player.predictedNextState.owner[p.o] != owner || Player.predictedNextState.recycler[p.o] != recycler) {
+					if (isStall()) {
+						System.err.println("UNSTALLING because of " + p);
+					}
+					thisturnSTALL = false;
+				}
+				this.scraps[p.o] = scrapAmount;
+				this.units[p.o] = units;
+				this.movableUnits[p.o] = units;
+				this.originalUnits[p.o] = units;
+				this.lockedMap[p.o] = 0;
+				this.owner[p.o] = owner;
+				this.originalOwner[p.o] = owner;
+				this.recycler[p.o] = recycler;
+				if (recycler != 0 && owner == O.ME)
+					myRecyclerCount++;
+				if (turn == 0 && scrapAmount > 0)
+					totalCellCount++;
+				switch(owner) {
+					case 1:
+						myUnitCount += units;
+						if (recycler == 0)
+							myCellCount++;
+						break;
+					case 0:
+						oppUnitCount += units;
+						if (recycler == 0)
+							oppCellCount++;
+						break;
+				}
+				int canBuild = in.nextInt();
+				int canSpawn = in.nextInt();
+				int inRangeOfRecycler = in.nextInt();
+				if (Player.DEBUG_OUPUT) {
+					int pack = 0;
+					pack <<= 5;
+					pack += scrapAmount;
+					pack <<= 2;
+					pack += (owner + 1);
+					pack <<= 5;
+					pack += (units);
+					pack <<= 1;
+					pack += (recycler != 0 ? 1 : 0);
+					pack <<= 1;
+					pack += (canBuild != 0 ? 1 : 0);
+					pack <<= 1;
+					pack += (canSpawn != 0 ? 1 : 0);
+					pack <<= 1;
+					pack += (inRangeOfRecycler != 0 ? 1 : 0);
+					System.err.print(String.format("%5.5s ", pack));
+				}
+			}
+			if (Player.DEBUG_OUPUT)
+				System.err.println();
+		}
+		if (!thisturnSTALL)
+			STALL = 0;
+		else
+			STALL++;
+		calculateLockedMap();
+	}
+
+	private void saveGlobalState() {
+		if (Player.DEBUG_OUPUT) {
+			Logger.info("Global ");
+			Logger.info("^" + WIDTH + " " + HEIGHT);
+			saveOptionalState();
+			Logger.info(String.format("^%d %d", myMatter, oppMatter));
+		}
+	}
+
+	public void debugPackedState() {
+		saveGlobalState();
+		System.err.println();
+		for (int y = 0; y < Pos.HEIGHT; y++) {
+			System.err.print("^");
+			for (int x = 0; x < Pos.WIDTH; x++) {
+				Pos p = Pos.from(x, y);
+				int pack = 0;
+				pack <<= 5;
+				pack += scraps[p.o];
+				pack <<= 2;
+				pack += (owner[p.o] + 1);
+				pack <<= 5;
+				pack += (units[p.o]);
+				pack <<= 1;
+				pack += (recycler[p.o] != 0 ? 1 : 0);
+				pack <<= 1;
+				pack += 0;
+				pack <<= 1;
+				pack += 0;
+				pack <<= 1;
+				pack += 0;
+				System.err.print(String.format("%5.5s ", pack));
+			}
+			System.err.println();
+		}
+	}
+
+	private void debugRecyclersInformations() {
+		if (State.turn < 20) {
+			Logger.info("************************************");
+			Logger.info("*	 Recycler debugger			*");
+			Logger.info("Total cells : " + totalCellCount);
+			State temp = new State();
+			temp.copyFrom(this);
+			Sim.oneTurn(temp);
+			Logger.info("this turn gain : : " + (temp.myMatter - this.myMatter - 10 * 1) + " , opp: " + (temp.oppMatter - this.oppMatter - 10 * 1));
+			temp.copyFrom(this);
+			Sim.tenTurn(temp);
+			Logger.info("10 turns gain : : " + (temp.myMatter - this.myMatter - 10 * 10) + " , opp: " + (temp.oppMatter - this.oppMatter - 10 * 10));
+			for (Pos p : Pos.allMapPositions) {
+				if (isMine(p) && recycler[p.o] == 1) {
+					meWillDisapear.add(p);
+					for (Pos n : p.neighbors4dirs) {
+						if (scraps[n.o] <= scraps[p.o])
+							meWillDisapear.add(n);
+					}
+				}
+				if (isOpp(p) && recycler[p.o] == 1) {
+					oppWillDisapear.add(p);
+					for (Pos n : p.neighbors4dirs) {
+						if (scraps[n.o] <= scraps[p.o])
+							oppWillDisapear.add(n);
+					}
+				}
+			}
+			Logger.info("Me Will disappear : " + meWillDisapear.size());
+			Logger.info("Opp Will disappear : " + oppWillDisapear.size());
+			Logger.info("************************************");
+		}
+	}
+
+	static Set<Pos> oppWillDisapear = new HashSet<>();
+
+	static Set<Pos> meWillDisapear = new HashSet<>();
+
+	private void calculateLockedMap() {
+		for (Pos pos : Pos.allMapPositions) {
+			lockedMap[pos.o] = 0;
+			if (owner[pos.o] == O.NEUTRAL)
+				continue;
+			if (!canMove(pos))
+				continue;
+			int oppositeOwner = owner[pos.o] == O.ME ? O.OPP : O.ME;
+			int cell = 0;
+			for (Pos n : pos.neighbors4dirs) {
+				if (owner[n.o] == oppositeOwner && movableUnits[n.o] > 0) {
+					cell++;
+					lockedMap[pos.o] += movableUnits[n.o];
+				}
+			}
+			if (cell > 1) {
+				lockedMap[pos.o] = Math.min(lockedMap[pos.o], units[pos.o]);
+			} else {
+				lockedMap[pos.o] = 0;
+			}
+		}
+	}
+
+	public static String unpack(int packed) {
+		int inRangeOfRecycler = packed & 0b1;
+		packed >>= 1;
+		int canSpawn = packed & 0b1;
+		packed >>= 1;
+		int canBuild = packed & 0b1;
+		packed >>= 1;
+		int recycler = packed & 0b1;
+		packed >>= 1;
+		int units = packed & 0b11111;
+		packed >>= 5;
+		int owner = (packed & 0b11) - 1;
+		packed >>= 2;
+		int scrapAmount = packed & 0b11111;
+		packed >>= 5;
+		return String.format("%s %s %s %s %s %s %s", scrapAmount, owner, units, recycler, canBuild, canSpawn, inRangeOfRecycler);
+	}
+
+	public static String unpackInversed(int packed) {
+		int inRangeOfRecycler = packed & 0b1;
+		packed >>= 1;
+		int canSpawn = packed & 0b1;
+		packed >>= 1;
+		int canBuild = packed & 0b1;
+		packed >>= 1;
+		int recycler = packed & 0b1;
+		packed >>= 1;
+		int units = packed & 0b11111;
+		packed >>= 5;
+		int owner = (packed & 0b11) - 1;
+		packed >>= 2;
+		int scrapAmount = packed & 0b11111;
+		packed >>= 5;
+		if (owner == O.ME)
+			owner = O.OPP;
+		else if (owner == O.OPP)
+			owner = O.ME;
+		return String.format("%s %s %s %s %s %s %s", scrapAmount, owner, units, recycler, canBuild, canSpawn, inRangeOfRecycler);
+	}
+
+	public boolean canBuild(Pos d) {
+		return originalOwner[d.o] == O.ME && recycler[d.o] == 0 && units[d.o] == 0 && originalUnits[d.o] == 0 && scraps[d.o] > 0;
+	}
+
+	public boolean canSpawn(Pos d) {
+		return originalOwner[d.o] == O.ME && recycler[d.o] == 0 && scraps[d.o] > 0;
+	}
+
+	public boolean canMove(Pos d) {
+		return recycler[d.o] == 0 && scraps[d.o] > 0;
+	}
+
+	public void readPacked(FastReader in) {
+		int myMatter = in.nextInt();
+		int oppMatter = in.nextInt();
+		String unpacked = "" + myMatter + " " + oppMatter + " ";
+		for (int y = 0; y < State.HEIGHT; y++) {
+			for (int x = 0; x < State.WIDTH; x++) {
+				int packed = in.nextInt();
+				String unpack = unpack(packed);
+				unpacked += unpack + " ";
+			}
+		}
+		read(FastReader.fromString(unpacked));
+	}
+
+	public void readPackedInversed(FastReader in) {
+		System.out.println("***** Read inverse ! *****");
+		int oppMatter = in.nextInt();
+		int myMatter = in.nextInt();
+		String unpacked = "" + myMatter + " " + oppMatter + " ";
+		for (int y = 0; y < State.HEIGHT; y++) {
+			for (int x = 0; x < State.WIDTH; x++) {
+				int packed = in.nextInt();
+				String unpack = unpackInversed(packed);
+				unpacked += unpack + " ";
+			}
+		}
+		read(FastReader.fromString(unpacked));
+	}
+
+	public double recyclerFullValue(Pos p) {
+		int value = scraps[p.o];
+		for (Pos n : p.neighbors4dirs) {
+			value += scraps[n.o];
+		}
+		return value;
+	}
+
+	public void apply(Action action) {
+		if (action.type == Action.WAIT) {
+		} else if (action.type == Action.BUILD) {
+			myMatter -= 1 * O.UNIT_COST;
+			recycler[action.to().o] = 1;
+		} else if (action.type == Action.SPAWN) {
+			myMatter -= action.amount * O.UNIT_COST;
+			units[action.to().o] += action.amount;
+		} else if (action.type == Action.MOVE) {
+			units[action.from().o] -= action.amount;
+			movableUnits[action.from().o] -= action.amount;
+			if (owner[action.from().o] == owner[action.to().o]) {
+				units[action.to().o] += action.amount;
+			} else if (owner[action.to().o] == O.NEUTRAL) {
+				if (countRedAround(action.to()) == 0) {
+					units[action.to().o] += action.amount;
+					owner[action.to().o] = O.ME;
+				}
+			}
+		} else {
+			throw new RuntimeException("Unknown action:" + action);
+		}
+	}
+
+	public int countRedAround(Pos unit) {
+		int count = 0;
+		for (Pos n : unit.neighbors4dirs) {
+			if (this.owner[n.o] == O.OPP)
+				count += this.units[n.o];
+		}
+		return count;
+	}
+
+	public int redAttackCount(Pos unit) {
+		int count = 0;
+		for (Pos n : unit.neighbors4dirs) {
+			if (this.owner[n.o] == O.OPP && this.units[n.o] > 0)
+				count++;
+		}
+		return count;
+	}
+
+	public int countBlueAround(Pos unit) {
+		int count = 0;
+		for (Pos n : unit.neighbors4dirs) {
+			if (this.owner[n.o] == O.ME)
+				count += this.units[n.o];
+		}
+		return count;
+	}
+
+	public boolean isMine(Pos p) {
+		return owner[p.o] == O.ME;
+	}
+
+	public boolean isNeutral(Pos p) {
+		return owner[p.o] == O.NEUTRAL;
+	}
+
+	public boolean isOpp(Pos p) {
+		return owner[p.o] == O.OPP;
+	}
+
+	public boolean hasUnits(Pos p) {
+		return units[p.o] > 0;
+	}
+
+	public static boolean isStall() {
+		return STALL > 6;
+	}
+
+	public static void resetStall() {
+		STALL = 0;
+	}
+}
+
+interface AI {
+
+	List<Action> think(State originalStateReadOnly);
+}
+
+abstract class DiffusionMap {
+
+	public double grid[] = new double[Pos.MAX_OFFSET];
+
+	State state;
+
+	int targetOwner;
+
+	public DiffusionMap(int targetOwner) {
+		this.targetOwner = targetOwner;
+	}
+
+	public void calculate(State state) {
+		calculate(state, Collections.emptyList());
+	}
+
+	public void calculate(State state, List<Pos> forbidenCells) {
+		this.state = state;
+		List<Pos> toVisit = new ArrayList<>();
+		for (Pos p : Pos.allMapPositions) {
+			grid[p.o] = initValue(p);
+			if (isHearth(state, p)) {
+				toVisit.add(p);
+			}
+		}
+		List<Pos> newToVisit = new ArrayList<>();
+		while (!toVisit.isEmpty()) {
+			newToVisit.clear();
+			for (Pos p : toVisit) {
+				if (forbidenCells.contains(p))
+					continue;
+				for (Pos n : p.neighbors4dirs) {
+					if (!state.canMove(n))
+						continue;
+					double value = diffuse(grid[p.o]);
+					if (needToDiffuse(state, p, n, grid[n.o], value)) {
+						grid[n.o] = value;
+						newToVisit.add(n);
+					}
+				}
+			}
+			List<Pos> swap = toVisit;
+			toVisit = newToVisit;
+			newToVisit = swap;
+		}
+	}
+
+	abstract boolean isHearth(State state, Pos p);
+
+	abstract double initValue(Pos p);
+
+	abstract double diffuse(double d);
+
+	abstract boolean needToDiffuse(State state, Pos from, Pos to, double oldValue, double newValue);
+
+	public void debug() {
+		System.err.println("DiffusionMap Grid");
+		for (int y = 0; y < State.HEIGHT; y++) {
+			for (int x = 0; x < State.WIDTH; x++) {
+				Pos p = Pos.from(x, y);
+				if (grid[p.o] == Integer.MAX_VALUE) {
+					System.err.print("XXXXXXX ");
+				} else {
+					System.err.print(String.format("%5.2f ", grid[p.o]));
+				}
+			}
+			System.err.println();
+		}
+	}
+}
+
+class TTSlice {
+
+	public State state = new State();
+
+	public void copyFrom(State original) {
+		this.state.copyFrom(original);
+	}
+
+	public void copyFrom(TTSlice model) {
+		this.state.copyFrom(model.state);
+	}
+}
+
+/**
+ * 
+ * @author nmahoude
+ *
+ */
+/**
+ * 
+ * @author nmahoude
+ *
+ */
+class TimeTraveler {
+
+	public static final int MAX_DEPTH = 11;
+
+	private TTSlice slices[] = new TTSlice[MAX_DEPTH];
+
+	public Map<Integer, List<Pos>> positions = new HashMap<>();
+
+	private State original;
+
+	public int myMatterBonus[] = new int[MAX_DEPTH];
+
+	public int myTotalMatterBonus = 0;
+
+	public int oppMatterBonus[] = new int[MAX_DEPTH];
+
+	public int oppTotalMatterBonus = 0;
+
+	public TimeTraveler() {
+		for (int i = 0; i < MAX_DEPTH; i++) {
+			slices[i] = new TTSlice();
+			positions.put(i, new ArrayList<>());
+		}
+	}
+
+	public void init(State original) {
+		this.original = original;
+		slices[0].copyFrom(original);
+		myTotalMatterBonus = 0;
+		oppTotalMatterBonus = 0;
+		myMatterBonus[0] = 0;
+		oppMatterBonus[0] = 0;
+		for (int i = 1; i < MAX_DEPTH; i++) {
+			slices[i].copyFrom(slices[i - 1]);
+			Sim.oneTurn(slices[i].state);
+			int delta;
+			delta = slices[i].state.myMatter - slices[i - 1].state.myMatter;
+			myMatterBonus[i] = delta;
+			myTotalMatterBonus += delta;
+			delta = slices[i].state.oppMatter - slices[i - 1].state.oppMatter;
+			oppMatterBonus[i] = delta;
+			oppTotalMatterBonus += delta;
+		}
+	}
+
+	private static int[] matrix = new int[Pos.MAX_OFFSET * MAX_DEPTH];
+
+	private static int MATRIX_INDEX;
+
+	public void bfsInTime(Pos arriveAtT0) {
+		MATRIX_INDEX++;
+		for (int i = 0; i < MAX_DEPTH; i++) {
+			positions.get(i).clear();
+		}
+		positions.get(0).add(arriveAtT0);
+		for (int time = 1; time < MAX_DEPTH; time++) {
+			List<Pos> nextPositionsAtSlice = positions.get(time);
+			for (Pos p : positions.get(time - 1)) {
+				if (!slices[time].state.canMove(p))
+					continue;
+				for (Pos n : p.neighbors4dirs) {
+					if (matrix[n.o + Pos.MAX_OFFSET * time] == MATRIX_INDEX + 1)
+						continue;
+					matrix[n.o + Pos.MAX_OFFSET * time] = MATRIX_INDEX + 1;
+					nextPositionsAtSlice.add(n);
+				}
+			}
+			positions.get(time).addAll(nextPositionsAtSlice);
+		}
+	}
+
+	public Set<Pos> forbidenCells() {
+		Set<Pos> forbidenCells = new HashSet<>();
+		Set<Pos> toCheck = new HashSet<>();
+		for (Pos current : Pos.allMapPositions) {
+			if (original.recycler[current.o] == 0)
+				continue;
+			for (Pos n : current.neighbors4dirs) {
+				if (original.canMove(n)) {
+					toCheck.add(n);
+				}
+			}
+		}
+		for (Pos current : toCheck) {
+			if (!original.canMove(current))
+				continue;
+			this.bfsInTime(current);
+			if (this.positions.get(TimeTraveler.MAX_DEPTH - 1).isEmpty()) {
+				if (Player.DEBUG_TIMETRAVEL)
+					System.err.println(current + " => dead cell");
+				forbidenCells.add(current);
+			}
+		}
+		return forbidenCells;
+	}
+
+	public TTSlice sliceAt(int time) {
+		if (time >= MAX_DEPTH)
+			return slices[MAX_DEPTH - 1];
+		return slices[time];
+	}
+}
+
+class DistanceMap extends DiffusionMap {
+
+	public DistanceMap(int targetOwner) {
+		super(targetOwner);
+	}
+
+	boolean isHearth(State state, Pos p) {
+		return state.owner[p.o] == targetOwner;
+	}
+
+	double initValue(Pos p) {
+		if (state.owner[p.o] == targetOwner) {
+			if (state.units[p.o] > 0) {
+				return 0;
+			} else {
+				return 1;
+			}
+		} else {
+			return Integer.MAX_VALUE;
+		}
+	}
+
+	double diffuse(double d) {
+		return d + 1;
+	}
+
+	boolean needToDiffuse(State state, Pos from, Pos to, double oldValue, double newValue) {
+		return newValue < oldValue;
+	}
+
+	public Pos reconstructPath2(State state, TimeTraveler tt, Pos from, Pos to, List<Pos> frontier) {
+		return reconstructPath2(state, tt, from, to, new ArrayList<>(), frontier);
+	}
+
+	public Pos reconstructPath2(State state, TimeTraveler tt, Pos from, Pos to, List<Pos> visitedCell, List<Pos> frontier) {
+		List<Pos> init = new ArrayList<>();
+		init.add(from);
+		int distance = (int) grid[to.o];
+		if (distance == Integer.MAX_VALUE) {
+			Logger.error("No path from " + from + " " + to);
+			return null;
+		}
+		bestPos = null;
+		bestScore = Double.NEGATIVE_INFINITY;
+		reconstructFrom(state, to, from, distance - 1, 0, visitedCell, frontier);
+		return bestPos;
+	}
+
+	Pos bestPos;
+
+	double bestScore;
+
+	private void reconstructFrom(State state, Pos current, Pos target, int distToFind, double score, List<Pos> visitedCells, List<Pos> frontier) {
+		for (Pos n : current.neighbors4dirs) {
+			if ((int) grid[n.o] != distToFind)
+				continue;
+			if (n == target) {
+				if (score > bestScore) {
+					bestScore = score;
+					bestPos = current;
+				}
+				return;
+			}
+			double localScore = 0.0;
+			localScore -= visitedCells.contains(n) ? 2 : 0;
+			localScore += state.owner[n.o] == O.NEUTRAL ? 1 : 0;
+			localScore += (frontier.contains(n) && state.units[n.o] == 0) ? 0.1 : 0;
+			reconstructFrom(state, n, target, distToFind - 1, score + localScore, visitedCells, frontier);
+		}
+	}
+}
+
+class Ilot {
+
+	public static final int DISPUTED = 4;
+
+	public Pos pos[] = new Pos[Pos.MAX_OFFSET];
+
+	public int posFE;
+
+	public int ruler = O.NEUTRAL;
+
+	public int myTroupsCount;
+
+	public int oppTroupsCount;
+
+	public int nbRecyclers;
+
+	public boolean isFullCoverByMe;
+
+	public Ilot() {
+		isFullCoverByMe = true;
+	}
+
+	void build(State state, Pos start, int[] visited, int currentIndex) {
+		pos[posFE++] = start;
+		visited[start.o] = currentIndex;
+		if (state.owner[start.o] != O.ME) {
+			isFullCoverByMe = false;
+		}
+		if (ruler == O.NEUTRAL) {
+			ruler = state.owner[start.o];
+		} else if (ruler == O.ME) {
+		} else if (ruler == O.OPP) {
+		}
+		if (state.owner[start.o] == O.ME) {
+			myTroupsCount += state.originalUnits[start.o];
+		} else {
+			oppTroupsCount += state.originalUnits[start.o];
+		}
+		if (state.owner[start.o] != O.NEUTRAL && state.owner[start.o] != ruler) {
+			ruler = DISPUTED;
+		}
+		for (Pos n : start.neighbors4dirs) {
+			if (visited[n.o] != currentIndex) {
+				if (state.recycler[n.o] > 0) {
+					pos[posFE++] = n;
+					visited[n.o] = currentIndex;
+					nbRecyclers++;
+				} else if (state.canMove(n)) {
+					build(state, n, visited, currentIndex);
+				}
+			}
+		}
+	}
+
+	public void debug() {
+		for (int i = 0; i < posFE; i++) {
+			System.err.print(pos[i] + " ");
+		}
+		System.err.println();
+		System.err.println("	=> ruler index " + ruler);
+	}
+
+	public static List<Ilot> build(State state, List<Pos> input) {
+		int startIndex = 1;
+		int[] visited = new int[Pos.MAX_OFFSET];
+		List<Ilot> ilots = new ArrayList<>();
+		for (Pos p : input) {
+			if (visited[p.o] >= startIndex)
+				continue;
+			if (!state.canMove(p))
+				continue;
+			Ilot ilot = new Ilot();
+			ilot.build(state, p, visited, startIndex);
+			ilots.add(ilot);
+		}
+		Collections.sort(ilots, ( i1,	i2) -> Double.compare(i2.urgence(), i1.urgence()));
+		return ilots;
+	}
+
+	private double urgence() {
+		double score = 0;
+		if (isDisputed()) {
+			score = 100_000;
+		}
+		score += posFE;
+		return score;
+	}
+
+	public static List<Ilot> build(State state) {
+		return build(state, Pos.allMapPositions);
+	}
+
+	@Override
+	public String toString() {
+		String output = "Ruler:" + ruler + ", cells=" + posFE + "(real : " + (posFE - nbRecyclers) + ") => ";
+		for (int i = 0; i < posFE; i++) {
+			output += pos[i] + ",";
+		}
+		return output;
+	}
+
+	public boolean isFullCoverByMe() {
+		return isFullCoverByMe;
+	}
+
+	public boolean isDisputed() {
+		return ruler == DISPUTED;
+	}
+
+	public Set<Pos> oppReachablePositions(State state) {
+		Set<Pos> allOppReachablePositions = new HashSet<>();
+		Deque<Pos> current = new ArrayDeque<>();
+		for (int i = 0; i < this.posFE; i++) {
+			Pos opp = this.pos[i];
+			if (state.owner[opp.o] != O.OPP)
+				continue;
+			if (!state.canMove(opp))
+				continue;
+			allOppReachablePositions.add(opp);
+			current.add(opp);
+		}
+		while (!current.isEmpty()) {
+			Pos p = current.poll();
+			for (Pos n : p.neighbors4dirs) {
+				if (state.owner[n.o] == O.ME || !state.canMove(n))
+					continue;
+				if (allOppReachablePositions.contains(n))
+					continue;
+				allOppReachablePositions.add(n);
+				current.offer(n);
+			}
+		}
+		return allOppReachablePositions;
+	}
+
+	public int size() {
+		return posFE;
+	}
+
+	public static int mySureCells(List<Ilot> originalIlots) {
+		int count = 0;
+		for (Ilot ilot : originalIlots) {
+			if (ilot.ruler == O.ME)
+				count += ilot.size();
+		}
+		return count;
+	}
+
+	public static int myPotentialCells(List<Ilot> originalIlots) {
+		int count = 0;
+		for (Ilot ilot : originalIlots) {
+			if (ilot.ruler == O.ME)
+				count += ilot.size();
+			if (ilot.isDisputed())
+				count += ilot.size();
+		}
+		return count;
+	}
+
+	public static int oppPotentialCells(List<Ilot> originalIlots) {
+		int count = 0;
+		for (Ilot ilot : originalIlots) {
+			if (ilot.ruler == O.OPP)
+				count += ilot.size();
+			if (ilot.isDisputed())
+				count += ilot.size();
+		}
+		return count;
+	}
+}
+
+class SpawnMap extends DistanceMap {
+
+	public SpawnMap(int targetOwner) {
+		super(targetOwner);
+	}
+
+	boolean isHearth(State state, Pos p) {
+		return state.owner[p.o] == targetOwner;
+	}
+
+	double initValue(Pos p) {
+		if (state.owner[p.o] == targetOwner) {
+			return 1;
+		} else {
+			return Integer.MAX_VALUE;
+		}
+	}
+
+	double diffuse(double d) {
+		return d + 1;
+	}
+
+	boolean needToDiffuse(State state, Pos from, Pos to, double oldValue, double newValue) {
+		return newValue < oldValue;
+	}
+}
+
+interface DoubleFromPos {
+
+	public double eval(Pos n);
+}
+
+class BFS {
+
+	public int distances[] = new int[Pos.MAX_OFFSET];
+
+	public List<Pos> allMyUnits = new ArrayList<>();
+
+	public void calculate(State state) {
+		List<Pos> init = new ArrayList<>();
+		for (int y = 0; y < State.HEIGHT; y++) {
+			for (int x = 0; x < State.WIDTH; x++) {
+				Pos p = Pos.from(x, y);
+				if (state.owner[p.o] == O.ME && state.units[p.o] > 0) {
+					init.add(Pos.from(x, y));
+				}
+			}
+		}
+		calculate(state, init, null);
+	}
+
+	public Pos reconstructPath2(State state, TimeTraveler tt, Pos from, Pos to, DoubleFromPos eval) {
+		List<Pos> init = new ArrayList<>();
+		init.add(from);
+		calculate(state, init, tt);
+		int distance = distances[to.o];
+		if (distance == Integer.MAX_VALUE) {
+			Logger.error("No path from " + from + " " + to);
+			return null;
+		}
+		bestPos = null;
+		bestScore = Double.NEGATIVE_INFINITY;
+		reconstructFrom(state, to, from, distance - 1, 0, eval);
+		return bestPos;
+	}
+
+	Pos bestPos;
+
+	double bestScore;
+
+	private void reconstructFrom(State state, Pos current, Pos target, int distToFind, double score, DoubleFromPos eval) {
+		for (Pos n : current.neighbors4dirs) {
+			if (distances[n.o] != distToFind)
+				continue;
+			if (n == target) {
+				if (score > bestScore) {
+					bestScore = score;
+					bestPos = current;
+				}
+				return;
+			}
+			double localScore = eval.eval(n);
+			reconstructFrom(state, n, target, distToFind - 1, score + localScore, eval);
+		}
+	}
+
+	public void calculate(State state, Pos from, TimeTraveler tt) {
+		calculate(state, from, tt, Collections.emptyList());
+	}
+
+	public void calculate(State state, Pos from, TimeTraveler tt, List<Pos> forbidenCells) {
+		List<Pos> init = new ArrayList<>();
+		init.add(from);
+		calculate(state, init, Collections.emptyList(), tt, forbidenCells);
+	}
+
+	public void calculate(State state, List<Pos> init, TimeTraveler tt) {
+		calculate(state, init, Collections.emptyList(), tt, Collections.emptyList());
+	}
+
+	public void calculate(State state, List<Pos> init, List<Pos> delayed, TimeTraveler tt) {
+		calculate(state, init, delayed, tt, Collections.emptyList());
+	}
+
+	private static int gridIndex[] = new int[Pos.MAX_OFFSET];
+
+	private static int INDEX = 1;
+
+	public static List<Pos> quickReachableCells(State state, List<Pos> init) {
+		INDEX++;
+		List<Pos> visited = new ArrayList<>();
+		List<Pos> next = new ArrayList<>();
+		List<Pos> toVisit = new ArrayList<>();
+		for (Pos i : init) {
+			if (state.canMove(i)) {
+				toVisit.add(i);
+			}
+		}
+		while (!toVisit.isEmpty()) {
+			next.clear();
+			for (Pos p : toVisit) {
+				if (gridIndex[p.o] == INDEX)
+					continue;
+				gridIndex[p.o] = INDEX;
+				visited.add(p);
+				for (Pos n : p.neighbors4dirs) {
+					if (state.canMove(n) && gridIndex[n.o] != INDEX) {
+						next.add(n);
+					}
+				}
+			}
+			toVisit.clear();
+			toVisit.addAll(next);
+		}
+		return visited;
+	}
+
+	public void calculate(State state, List<Pos> init, List<Pos> delayed, TimeTraveler tt, List<Pos> forbiddenCells) {
+		allMyUnits.clear();
+		resetDistances();
+		allMyUnits.addAll(init);
+		for (Pos pos : init) {
+			distances[pos.o] = 0;
+		}
+		for (Pos pos : delayed) {
+			distances[pos.o] = 1;
+		}
+		List<Pos> current = new ArrayList<>();
+		current.addAll(init);
+		current.addAll(delayed);
+		List<Pos> next = new ArrayList<>();
+		while (!current.isEmpty()) {
+			next.clear();
+			for (Pos p : current) {
+				if (forbiddenCells.contains(p))
+					continue;
+				int currentDist = distances[p.o];
+				for (Pos n : p.neighbors4dirs) {
+					if (tt != null) {
+						if (tt.sliceAt(currentDist + 1).state.canMove(n) && distances[n.o] > currentDist + 1) {
+							distances[n.o] = currentDist + 1;
+							next.add(n);
+						}
+					} else {
+						if (state.canMove(n) && distances[n.o] > currentDist + 1) {
+							distances[n.o] = currentDist + 1;
+							next.add(n);
+						}
+					}
+				}
+			}
+			List<Pos> swp = current;
+			current = next;
+			next = swp;
+		}
+	}
+
+	private void resetDistances() {
+		for (int y = 0; y < State.HEIGHT; y++) {
+			for (int x = 0; x < State.WIDTH; x++) {
+				Pos p = Pos.from(x, y);
+				distances[p.o] = Integer.MAX_VALUE;
+			}
+		}
+	}
+
+	public Pos findClosest(Predicate<Pos> filter) {
+		int minDist = Integer.MAX_VALUE;
+		Pos best = null;
+		for (Pos p : Pos.allMapPositions) {
+			if (!filter.test(p))
+				continue;
+			if (distances[p.o] < minDist) {
+				minDist = distances[p.o];
+				best = p;
+			}
+		}
+		return best;
+	}
+}
+
+class Territory {
+
+	public static int mySecureTerritory;
+
+	public static int myTerritory;
+
+	public static int oppSecureTerritory;
+
+	public static int oppTerritory;
+
+	public static int disputedTerritory;
+
+	int blueDistances[] = new int[Pos.MAX_OFFSET];
+
+	int redDistances[] = new int[Pos.MAX_OFFSET];
+
+	public List<Pos> blueRobots = new ArrayList<>();
+
+	public List<Pos> redRobots = new ArrayList<>();
+
+	List<Pos> bluePos = new ArrayList<>();
+
+	List<Pos> redPos = new ArrayList<>();
+
+	public List<Pos> disputed = new ArrayList<>();
+
+	public List<Pos> blueTerritory = new ArrayList<>();
+
+	public List<Pos> redTerritory = new ArrayList<>();
+
+	public double[] blueDangers = new double[Pos.MAX_OFFSET];
+
+	public List<Pos> frontier = new ArrayList<>();
+
+	public static void debugTerritories(State state) {
+		State work = new State();
+		work.copyFrom(state);
+		Sim.tenTurn(work);
+		TimeTraveler tt = new TimeTraveler();
+		tt.init(work);
+		List<Ilot> ilots = Ilot.build(tt.sliceAt(10).state);
+		mySecureTerritory = 0;
+		oppSecureTerritory = 0;
+		disputedTerritory = 0;
+		myTerritory = 0;
+		oppTerritory = 0;
+		for (Ilot ilot : ilots) {
+			if (ilot.ruler == O.ME) {
+				mySecureTerritory += ilot.size();
+				myTerritory += ilot.size();
+			} else if (ilot.ruler == O.OPP) {
+				oppSecureTerritory += ilot.size();
+				oppTerritory += ilot.size();
+			} else {
+				Territory territory = new Territory();
+				territory.calculateTerritories(ilot, tt);
+				myTerritory += territory.blueTerritory.size();
+				oppTerritory += territory.redTerritory.size();
+				disputedTerritory += territory.disputed.size();
+			}
+		}
+		Player.message = "" + myTerritory + "(" + mySecureTerritory + ") / " + oppTerritory + "(" + oppSecureTerritory + ")/" + disputedTerritory;
+		Logger.info(Player.message);
+	}
+
+	public void calculateTerritories(Ilot ilot, TimeTraveler tt) {
+		calculateTerritoriesA(ilot.pos, ilot.posFE, tt);
+		calculateDangerNew(ilot, tt);
+		calculateTerritoriesA(ilot.pos, ilot.posFE, tt);
+	}
+
+	public void calculateTerritoriesA(Pos[] positions, int posFE, TimeTraveler tt) {
+		State init = tt.sliceAt(0).state;
+		init(positions, posFE, init);
+		BFS bfs = new BFS();
+		bfs.calculate(null, blueRobots, bluePos, tt);
+		System.arraycopy(bfs.distances, 0, blueDistances, 0, Pos.MAX_OFFSET);
+		bfs.calculate(null, redRobots, redPos, tt);
+		System.arraycopy(bfs.distances, 0, redDistances, 0, Pos.MAX_OFFSET);
+		disputed.clear();
+		blueTerritory.clear();
+		redTerritory.clear();
+		for (int i = 0; i < posFE; i++) {
+			Pos pos = positions[i];
+			if (!init.canMove(pos))
+				continue;
+			if (blueDistances[pos.o] == Integer.MAX_VALUE && redDistances[pos.o] == Integer.MAX_VALUE) {
+			} else if (blueDistances[pos.o] < redDistances[pos.o]) {
+				if (!blueTerritory.contains(pos))
+					blueTerritory.add(pos);
+			} else if (blueDistances[pos.o] > redDistances[pos.o]) {
+				if (!redTerritory.contains(pos))
+					redTerritory.add(pos);
+			} else {
+				if (!disputed.contains(pos))
+					disputed.add(pos);
+			}
+		}
+		frontier.clear();
+		for (Pos p : disputed) {
+			boolean blue = init.owner[p.o] == O.ME;
+			boolean red = init.owner[p.o] == O.OPP;
+			for (Pos n : p.neighbors4dirs) {
+				if (redTerritory.contains(n))
+					red = true;
+				if (blueTerritory.contains(n))
+					blue = true;
+			}
+			if ((red && blue) || (red && !blue)) {
+				if (!frontier.contains(p))
+					frontier.add(p);
+			}
+		}
+		for (Pos p : blueTerritory) {
+			for (Pos n : p.neighbors4dirs) {
+				if (redTerritory.contains(n)) {
+					if (!frontier.contains(p))
+						frontier.add(p);
+				}
+			}
+		}
+	}
+
+	private void calculateDangerNew(Ilot ilot, TimeTraveler tt) {
+				State state = tt.sliceAt(0).state;
+		for (Pos p : Pos.allMapPositions) {
+			blueDangers[p.o] = 0.0;
+		}
+		for (Pos current : Pos.allMapPositions) {
+			double blueDanger = 0;
+			int blueUnitsAround = 0;
+			int redUnitsAround = 0;
+			if (state.owner[current.o] == O.NEUTRAL)
+				blueDanger += 100;
+			for (Pos n : current.neighbors4dirs) {
+				if (!state.canMove(n))
+					continue;
+				if (state.owner[n.o] == O.ME)
+					blueUnitsAround += state.units[n.o];
+				if (state.owner[n.o] == O.OPP)
+					redUnitsAround += state.units[n.o];
+				if (blueTerritory.contains(n) || disputed.contains(n)) {
+					blueDanger += 1.0;
+					if (state.isNeutral(n))
+						blueDanger += 15.0;
+					else if (state.owner[n.o] == O.ME && state.units[n.o] == 0)
+						blueDanger += 5.0;
+				}
+			}
+			double bonus = state.owner[current.o] == O.NEUTRAL ? 1.0 : 0.0;
+			if (state.owner[current.o] == O.OPP) {
+				redUnitsAround = 0;
+				blueDanger = 1;
+			}
+			this.blueDangers[current.o] = bonus + blueDanger + 100 * (redUnitsAround > 0 ? 1 : 0);
+		}
+	}
+
+	private void init(Pos[] positions, int posFE, State init) {
+		bluePos.clear();
+		redPos.clear();
+		blueRobots.clear();
+		redRobots.clear();
+		for (int i = 0; i < posFE; i++) {
+			Pos pos = positions[i];
+			blueDistances[pos.o] = Integer.MAX_VALUE;
+			redDistances[pos.o] = Integer.MAX_VALUE;
+			if (!init.canMove(pos))
+				continue;
+			int unitsCount = init.units[pos.o];
+			if (init.owner[pos.o] == O.ME) {
+				if (unitsCount > 0) {
+					if (!blueRobots.contains(pos))
+						blueRobots.add(pos);
+				} else {
+					if (!bluePos.contains(pos))
+						bluePos.add(pos);
+				}
+			}
+			if (init.owner[pos.o] == O.OPP) {
+				if (unitsCount > 0) {
+					if (!redRobots.contains(pos))
+						redRobots.add(pos);
+				} else {
+					if (!redPos.contains(pos))
+						redPos.add(pos);
+				}
+			}
+		}
+	}
+
+	public static List<Pos> getFullFrontier(TimeTraveler tt, List<Ilot> ilots) {
+		List<Pos> frontier = new ArrayList<>();
+		for (Ilot ilot : ilots) {
+			if (ilot.ruler == Ilot.DISPUTED) {
+				Territory t = new Territory();
+				t.calculateTerritories(ilot, tt);
+				frontier.addAll(t.frontier);
+			}
+		}
+		return frontier;
+	}
+}
+
+class WinGameHeuristic {
+
+	/**
+	 * Find if there is conditions when we win the game !
+	 * 
+	 * 1. poser un recycler qui bloque tout et qui me laisse plus de cellule potentielle que lui
+	 * @param territory 
+	 * @param tt 
+	 * 
+	 * @return
+	 */
+	/**
+	 * Find if there is conditions when we win the game !
+	 * 
+	 * 1. poser un recycler qui bloque tout et qui me laisse plus de cellule potentielle que lui
+	 * @param territory 
+	 * @param tt 
+	 * 
+	 * @return
+	 */
+	public List<Action> think(State work, List<Ilot> ilots, TimeTraveler tt) {
+		List<Action> actions = new ArrayList<>();
+		List<Action> moreIlotsThanHim = moreIlotsThanHim(work, ilots);
+		actions.addAll(moreIlotsThanHim);
+		List<Action> frontierOfRecyclers = frontierOfRecyclers(work, ilots, tt);
+		actions.addAll(frontierOfRecyclers);
+		for (Ilot ilot : ilots) {
+			if (ilot.ruler == O.ME && ilot.isFullCoverByMe()) {
+			}
+			if (ilot.ruler == O.OPP || ilot.ruler == O.NEUTRAL) {
+			} else {
+				Territory territory = new Territory();
+				territory.calculateTerritories(ilot, tt);
+				List<Action> winByRecyclers = winByRecyclers(work, territory, ilots, tt);
+				if (!winByRecyclers.isEmpty()) {
+					actions.addAll(winByRecyclers);
+				}
+			}
+		}
+		for (Action a : actions) {
+			work.apply(a);
+		}
+		return actions;
+	}
+
+	private List<Action> frontierOfRecyclers(State work, List<Ilot> ilots, TimeTraveler tt) {
+		boolean canFrontierize = true;
+		Set<Pos> toBuild = new HashSet<>();
+		for (Ilot ilot : ilots) {
+			if (!ilot.isDisputed())
+				continue;
+			Territory t = new Territory();
+			t.calculateTerritories(ilot, tt);
+			int count = 0;
+			for (Pos f : t.frontier) {
+				if (work.canBuild(f)) {
+					toBuild.add(f);
+					count++;
+				}
+			}
+			if (count != t.frontier.size()) {
+				canFrontierize = false;
+			}
+		}
+		if (canFrontierize && toBuild.size() * O.UNIT_COST <= work.myMatter) {
+			State temp = new State();
+			temp.copyFrom(work);
+			for (Pos b : toBuild) {
+				temp.recycler[b.o] = 1;
+			}
+			Sim.tenTurn(temp);
+			List<Ilot> newIlots = Ilot.build(temp);
+			if (Ilot.mySureCells(newIlots) > Ilot.oppPotentialCells(newIlots)) {
+				Logger.info(Player.DEBUG_LOGIC, "I can close the frontier with " + toBuild);
+				List<Action> actions = new ArrayList<>();
+				for (Pos b : toBuild) {
+					Action build = Action.build(b, this.getClass().getSimpleName());
+					work.apply(build);
+					actions.add(build);
+				}
+				return actions;
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * Force Spawn an unit
+	 *	
+	 * @param work
+	 * @param ilots
+	 * @return
+	 */
+	/**
+	 * Force Spawn an unit
+	 *	
+	 * @param work
+	 * @param ilots
+	 * @return
+	 */
+	private List<Action> moreIlotsThanHim(State work, List<Ilot> ilots) {
+		if (work.myMatter < O.UNIT_COST)
+			return Collections.emptyList();
+		int mySureCells = 0;
+		int oppPotentialCells = 0;
+		for (Ilot ilot : ilots) {
+			if (ilot.ruler == O.ME)
+				mySureCells += ilot.size();
+			if (ilot.ruler == O.OPP || ilot.ruler == Ilot.DISPUTED)
+				oppPotentialCells += (ilot.size() - ilot.nbRecyclers);
+		}
+		Logger.info(Player.DEBUG_LOGIC, "Cells : " + mySureCells + " vs " + oppPotentialCells);
+		if (mySureCells > oppPotentialCells) {
+			for (Ilot ilot : ilots) {
+				if (ilot.ruler == O.ME && ilot.myTroupsCount == 0 && !ilot.isFullCoverByMe) {
+					Logger.info(Player.DEBUG_LOGIC, "Checking ilot : " + ilot);
+					for (int i = 0; i < ilot.posFE; i++) {
+						Pos p = ilot.pos[i];
+						if (work.canSpawn(p)) {
+							Logger.info(Player.DEBUG_LOGIC, "Can spawn on " + p);
+							Action spawn = Action.spawn(1, p, "enough Cells when building @" + p + " => " + mySureCells + " vs " + oppPotentialCells);
+							work.apply(spawn);
+							return Arrays.asList(spawn);
+						}
+					}
+				}
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	Pos[] positions = new Pos[Pos.MAX_OFFSET];
+
+	int posFE = 0;
+
+	private List<Action> winByRecyclers(State original, Territory territoryO, List<Ilot> originalIlots, TimeTraveler tt) {
+		List<Action> actions = new ArrayList<>();
+		if (original.myMatter < 10)
+			return Collections.emptyList();
+		posFE = 0;
+		for (Pos p : Pos.allMapPositions) {
+			positions[posFE++] = p;
+		}
+		Set<Pos> visited = new HashSet<>();
+		for (Pos f : territoryO.frontier) {
+			for (Pos p : f.meAndNeighbors4dirs) {
+				if (visited.contains(p))
+					continue;
+				visited.add(p);
+				if (!original.canBuild(p))
+					continue;
+				State state = new State();
+				state.copyFrom(original);
+				Action build = Action.build(p, this.getClass().getSimpleName());
+				state.apply(build);
+				Sim.oneTurn(state);
+				List<Ilot> ilots = Ilot.build(state);
+				if (ilots.size() == originalIlots.size())
+					continue;
+				Set<Pos> deadPositions = getDeadCellsInTimeFrom(state);
+				int mines = 0;
+				int opps = 0;
+				for (Ilot ilot : ilots) {
+					if (ilot.ruler == O.ME)
+						mines += countAliveCells(ilot, deadPositions);
+					if (ilot.ruler == O.OPP || ilot.isDisputed())
+						opps += countAliveCells(ilot, deadPositions);
+				}
+				int deletedCells = 0;
+				for (Pos n : p.neighbors4dirs) {
+					if (original.owner[n.o] == O.ME && original.scraps[n.o] <= original.scraps[p.o])
+						deletedCells++;
+				}
+				if (mines - deletedCells > opps) {
+					System.err.println("Winning !");
+					actions.add(build);
+					return actions;
+				}
+			}
+		}
+		return actions;
+	}
+
+	private int countAliveCells(Ilot ilot, Set<Pos> deadPositions) {
+		int count = 0;
+		for (int i = 0; i < ilot.posFE; i++) {
+			if (deadPositions.contains(ilot.pos[i]))
+				continue;
+			count++;
+		}
+		return count;
+	}
+
+	private Set<Pos> getDeadCellsInTimeFrom(State state) {
+		Set<Pos> deadCells = new HashSet<>();
+		for (Pos pos : Pos.allMapPositions) {
+			if (state.recycler[pos.o] != 0) {
+				deadCells.add(pos);
+				for (Pos n : pos.neighbors4dirs) {
+					if (state.scraps[n.o] <= 0)
+						continue;
+					if (state.scraps[n.o] <= state.scraps[pos.o]) {
+						deadCells.add(n);
+					}
+				}
+			}
+		}
+		return deadCells;
+	}
+}
+
+class Attack {
+
+	Territory territory = new Territory();
+
+	Set<Pos> forbidenCells;
+
+	public Collection<? extends Action> think(State work, TimeTraveler tt, Ilot ilot, DiffusionMap myUnitsMap, DiffusionMap oppUnitsMap, boolean lastFrontier) {
+		territory.calculateTerritories(ilot, tt);
+		forbidenCells = tt.forbidenCells();
+		List<Action> actions = new ArrayList<>();
+		actions.addAll(winningAttack(work, tt, ilot, territory));
+		actions.addAll(aggressiveAttack(work, tt, ilot));
+		if (lastFrontier) {
+			actions.addAll(lastFrontier(work, tt, ilot));
+		}
+		if (actions.isEmpty()) {
+			actions.addAll(spawnAttack(work, tt, ilot));
+		}
+		return actions;
+	}
+
+	private Collection<? extends Action> lastFrontier(State work, TimeTraveler tt, Ilot ilot) {
+		List<Action> actions = new ArrayList<>();
+		if (territory.frontier.size() == 1) {
+			Pos frontier = territory.frontier.get(0);
+			if (!tt.sliceAt(1).state.canMove(frontier))
+				return Collections.emptyList();
+			Pos target = null;
+			if (work.originalOwner[frontier.o] == O.ME) {
+				target = frontier;
+			} else {
+				for (Pos p : frontier.neighbors4dirs) {
+					if (forbidenCells.contains(p))
+						continue;
+					if (!work.canMove(p))
+						continue;
+					target = p;
+					break;
+				}
+			}
+			if (target != null) {
+				int amount = work.myMatter / O.UNIT_COST;
+				if (amount > 0) {
+					Action spawn = Action.spawn(amount, target, "Spawn all on last frontier");
+					actions.add(spawn);
+					work.apply(spawn);
+				}
+			}
+		}
+		return actions;
+	}
+
+	private Collection<? extends Action> aggressiveAttack(State originalState, TimeTraveler tt, Ilot ilot) {
+		List<Action> actions = new ArrayList<>();
+		State work = new State();
+		work.copyFrom(originalState);
+		for (Pos frontier : territory.frontier) {
+			if (!work.isMine(frontier))
+				continue;
+			if (work.movableUnits(frontier) == 0)
+				continue;
+			int numberOfRedSources = originalState.redAttackCount(frontier);
+			int delta = work.units(frontier) - originalState.countRedAround(frontier);
+			if (delta < 0)
+				continue;
+			int maximalSpawnCount = work.myMatter / O.UNIT_COST;
+			double bestScore = Double.NEGATIVE_INFINITY;
+			Pos bestTarget = null;
+			for (Pos n : frontier.neighbors4dirs) {
+				if (work.isMine(n))
+					continue;
+				if (!work.canMove(n))
+					continue;
+				if (forbidenCells.contains(n))
+					continue;
+				double score = 0.0;
+				score += 100 * work.attack[n.o];
+				score -= 1.0 * work.units(n);
+				if (score > bestScore) {
+					bestScore = score;
+					bestTarget = n;
+				}
+			}
+			if (bestTarget != null) {
+				int moveAmount = Math.min(work.movableUnits(frontier), delta + maximalSpawnCount);
+				int needToSpawn = Math.max(0, originalState.countRedAround(frontier) - (work.units(frontier) - moveAmount));
+				if (moveAmount > 0) {
+					work.attack[bestTarget.o] += moveAmount;
+					Action move = Action.move(moveAmount, frontier, bestTarget, bestTarget, "Aggro - attack");
+					work.apply(move);
+					actions.add(move);
+					work.units[bestTarget.o] -= moveAmount;
+					if (needToSpawn > 0) {
+						Action spawn = Action.spawn(needToSpawn, frontier, "Aggro - spawn to replace");
+						actions.add(spawn);
+						work.apply(spawn);
+					}
+				}
+			}
+		}
+		for (Action a : actions) {
+			originalState.apply(a);
+		}
+		return actions;
+	}
+
+	private Collection<? extends Action> spawnAttack(State work, TimeTraveler tt, Ilot ilot) {
+		int myPotentialSpawn = work.myMatter / O.UNIT_COST;
+		if (myPotentialSpawn < 2)
+			return Collections.emptyList();
+		List<Action> actions = new ArrayList<>();
+		for (Pos frontier : territory.frontier) {
+			if (!work.isMine(frontier))
+				continue;
+			if (!work.canMove(frontier))
+				continue;
+			for (Pos n : frontier.neighbors4dirs) {
+				if (!work.isOpp(n))
+					continue;
+				int maxOppUnitsNextTurn = work.units(n) + tt.sliceAt(1).state.oppMatter / O.UNIT_COST;
+				if (maxOppUnitsNextTurn + 1 < work.units(frontier) + myPotentialSpawn) {
+					int spawns = Math.max(0, maxOppUnitsNextTurn - work.units(frontier) + 1);
+					if (spawns != 0) {
+						Action spawn = Action.spawn(spawns, frontier, "Prepare attack by spawning");
+						actions.add(spawn);
+						work.apply(spawn);
+						myPotentialSpawn -= spawns;
+						break;
+					}
+				}
+			}
+		}
+		return actions;
+	}
+
+	private List<Action> winningAttack(State work, TimeTraveler tt, Ilot ilot, Territory territory) {
+		List<Action> actions = new ArrayList<>();
+		List<Pos> redToCheck = new ArrayList<>();
+		for (int i = 0; i < ilot.posFE; i++) {
+			Pos p = ilot.pos[i];
+			if (work.isOpp(p) && work.canMove(p)) {
+				redToCheck.add(p);
+			}
+		}
+		for (Pos red : redToCheck) {
+			int blue = work.countBlueAround(red);
+			if (blue == 0)
+				continue;
+			int redReinforcement = work.units(red) + work.countRedAround(red) + work.oppMatter / O.UNIT_COST;
+			int blueAttack = 0, maxBlueAttack = 0;
+			for (Pos n : red.neighbors4dirs) {
+				if (!work.isMine(n))
+					continue;
+				int redCount = work.countRedAround(n);
+				int spared;
+				if (forbidenCells.contains(n)) {
+					spared = work.movableUnits(n);
+				} else {
+					spared = Math.max(0, work.movableUnits(n) - Math.max(0, (redCount - (work.units(n) - work.movableUnits(n)))));
+				}
+				maxBlueAttack += work.movableUnits(n);
+				blueAttack += spared;
+			}
+			if (blueAttack > redReinforcement) {
+				int needed = redReinforcement + 1;
+				Logger.info(Player.DEBUG_LOGIC, "Doit attaquer ! " + red + " avec " + needed + " units");
+				for (Pos n : red.neighbors4dirs) {
+					if (!work.isMine(n))
+						continue;
+					int redCount = work.countRedAround(n);
+					int spared;
+					if (forbidenCells.contains(n)) {
+						spared = work.movableUnits(n);
+					} else {
+						spared = Math.max(0, work.movableUnits(n) - Math.max(0, (redCount - (work.units(n) - work.movableUnits(n)))));
+					}
+					int amount = Math.min(needed, spared);
+					if (amount > 0) {
+						Action move = Action.move(amount, n, red, "ATTACK!");
+						actions.add(move);
+						work.apply(move);
+						needed -= amount;
+					}
+				}
+			} else if (maxBlueAttack > redReinforcement) {
+				int spawnNeeded = Math.max(0, 1 + redReinforcement - blueAttack);
+				if (spawnNeeded <= work.myMatter / O.UNIT_COST) {
+					int needed = redReinforcement + 1;
+					attackWithSpawn(work, actions, forbidenCells, red, needed);
+				}
+			} else if (work.units(red) == 0 && maxBlueAttack >= 1) {
+				if (work.myMatter >= O.UNIT_COST) {
+					attackWithSpawn(work, actions, forbidenCells, red, 1);
+				}
+			}
+		}
+		return actions;
+	}
+
+	private void attackWithSpawn(State work, List<Action> actions, Set<Pos> forbidenCells, Pos red, int needed) {
+		for (Pos n : red.neighbors4dirs) {
+			if (!work.isMine(n))
+				continue;
+			int redCount = work.countRedAround(n);
+			int spared;
+			if (forbidenCells.contains(n)) {
+				spared = work.movableUnits(n);
+			} else {
+				spared = Math.max(0, work.movableUnits(n) - Math.max(0, (redCount - (work.units(n) - work.movableUnits(n)))));
+			}
+			int amount = Math.min(needed, work.movableUnits(n));
+			int spawns = Math.max(0, amount - spared);
+			if (amount > 0) {
+				Action move = Action.move(amount, n, red, "ATTACK!");
+				actions.add(move);
+				work.apply(move);
+				if (spawns > 0) {
+					Action spawn = Action.spawn(spawns, n, "ATTACK!");
+					actions.add(spawn);
+					work.apply(spawn);
+				}
+				needed -= amount;
+			}
+		}
+	}
+}
+
+class Search {
+
+	private final int SPAWN_COST = 2;
+
+	private int RECYCLER_COST = 5;
+
+	private final int MOVE_COST = 1;
+
+	public int goalNeeded[] = new int[Pos.MAX_OFFSET];
+
+	int spawnOrRecyclerNeeded[] = new int[Pos.MAX_OFFSET];
+
+	int moveFrom[] = new int[Pos.MAX_OFFSET * Pos.MAX_OFFSET];
+
+	private double bestScore = Double.NEGATIVE_INFINITY;
+
+	int bestSpawnOrRecyclerNeeded[] = new int[Pos.MAX_OFFSET];
+
+	int bestMoveFrom[] = new int[Pos.MAX_OFFSET * Pos.MAX_OFFSET];
+
+	public List<Action> actions = new ArrayList<>();
+
+	public int FOUND;
+
+	private double[] danger;
+
+	private List<Pos> frontier;
+
+	boolean canRecycler = true;
+
+	public void search(State stateReadOnly, TimeTraveler tt, List<Ilot> ilots, List<Pos> frontier, double[] danger) {
+		this.frontier = frontier;
+		boolean allZero = true;
+		for (Pos f : frontier) {
+			if (goalNeeded[f.o] != 0) {
+				allZero = false;
+				break;
+			}
+		}
+		if (allZero) {
+			System.err.println("No search");
+			return;
+		}
+		this.danger = danger;
+		State work = new State();
+		work.copyFrom(stateReadOnly);
+		long start = System.currentTimeMillis();
+		canRecycler = AI2.fullFrontier.size() != 1;
+		if (Territory.myTerritory < Territory.oppTerritory) {
+			RECYCLER_COST = 10;
+		} else if (Defense.unitsNeededInTime(work, ilots) <= 0) {
+			RECYCLER_COST = 4;
+		} else {
+			RECYCLER_COST = 2;
+		}
+		FOUND = 0;
+		bestScore = Double.NEGATIVE_INFINITY;
+		debugGoal();
+		search(work, 0, 0, 0);
+		System.err.println("Search time : " + (System.currentTimeMillis() - start) + " ms for " + FOUND + " found");
+		if (bestScore != Double.NEGATIVE_INFINITY) {
+			System.err.println("Found a solution in " + bestScore);
+			reconstructActions(frontier);
+		}
+	}
+
+	private void debugGoal() {
+		System.err.println("Goals :");
+		for (Pos p : frontier) {
+			if (goalNeeded[p.o] > 0) {
+				System.err.println("" + p + " = " + goalNeeded[p.o]);
+			}
+		}
+	}
+
+	private void reconstructActions(List<Pos> frontier) {
+		actions.clear();
+		for (Pos p : frontier) {
+			if (bestSpawnOrRecyclerNeeded[p.o] == -1) {
+				actions.add(Action.build(p, this.getClass().getSimpleName()));
+			} else if (bestSpawnOrRecyclerNeeded[p.o] > 0) {
+				actions.add(Action.spawn(bestSpawnOrRecyclerNeeded[p.o], p, this.getClass().getSimpleName()));
+			}
+			for (Pos n : p.neighbors4dirs) {
+				if (bestMoveFrom[n.o + Pos.MAX_OFFSET * p.o] > 0) {
+					actions.add(Action.move(bestMoveFrom[n.o + Pos.MAX_OFFSET * p.o], n, p, this.getClass().getSimpleName()));
+				}
+			}
+		}
+	}
+
+	private void debugActions(int[] spawnNeeded, int[] recyclers, int[] moveFrom) {
+		for (Pos p : frontier) {
+			if (recyclers[p.o] == 1) {
+				System.err.println("Build @ " + p);
+			}
+			if (spawnNeeded[p.o] > 0) {
+				System.err.println("Spawn @ " + p);
+			}
+			for (Pos n : p.neighbors4dirs) {
+				if (moveFrom[n.o + Pos.MAX_OFFSET * p.o] > 0) {
+					System.err.println("Move " + moveFrom[n.o + Pos.MAX_OFFSET * p.o] + " from " + n + " to " + p);
+				}
+			}
+		}
+	}
+
+	private double eval(State work, int totalCost) {
+		double score = 0.0;
+		score -= 0.01 * totalCost;
+		for (Pos p : frontier) {
+			if (goalNeeded[p.o] == 0)
+				continue;
+			if (work.recycler[p.o] == 0 && work.units[p.o] < goalNeeded[p.o]) {
+				if (work.isMine(p)) {
+					score -= 500;
+					score -= 0.001 * danger[p.o];
+				}
+				if (work.isOpp(p)) {
+					score -= 0.001 * danger[p.o];
+				} else {
+					score -= danger[p.o];
+				}
+			} else {
+				score += 1;
+				score += 0.001 * danger[p.o];
+			}
+		}
+		return score;
+	}
+
+	private void search(State work, int currentIndex, int neighborIndex, int totalCost) {
+		if (currentIndex == frontier.size()) {
+			FOUND++;
+			double score = eval(work, totalCost);
+			if (score > bestScore) {
+				bestScore = score;
+				System.arraycopy(spawnOrRecyclerNeeded, 0, bestSpawnOrRecyclerNeeded, 0, Pos.MAX_OFFSET);
+				System.arraycopy(moveFrom, 0, bestMoveFrom, 0, Pos.MAX_OFFSET * Pos.MAX_OFFSET);
+			}
+			return;
+		}
+		Pos current = frontier.get(currentIndex);
+		if (goalNeeded[current.o] == 0) {
+			search(work, currentIndex + 1, 0, totalCost);
+			return;
+		}
+		if (neighborIndex == current.neighbors4dirs.size()) {
+			if (canRecycler && work.myMatter >= O.UNIT_COST && work.canBuild(current)) {
+				work.recycler[current.o] = 1;
+				spawnOrRecyclerNeeded[current.o] = -1;
+				work.myMatter -= O.UNIT_COST;
+				search(work, currentIndex + 1, 0, totalCost + RECYCLER_COST);
+				work.recycler[current.o] = 0;
+				spawnOrRecyclerNeeded[current.o] = 0;
+				work.myMatter += O.UNIT_COST;
+			}
+			int s = Math.min(work.myMatter / O.UNIT_COST, Math.max(0, goalNeeded[current.o] - work.units[current.o]));
+			if (work.canSpawn(current) && s > 0) {
+				work.units[current.o] += s;
+				work.myMatter -= s * O.UNIT_COST;
+				spawnOrRecyclerNeeded[current.o] = s;
+				search(work, currentIndex + 1, 0, totalCost + s * SPAWN_COST);
+				work.units[current.o] -= s;
+				work.myMatter += s * O.UNIT_COST;
+				spawnOrRecyclerNeeded[current.o] = 0;
+			}
+			search(work, currentIndex + 1, 0, totalCost);
+			return;
+		}
+		Pos n = current.neighbors4dirs.get(neighborIndex);
+		search(work, currentIndex, neighborIndex + 1, totalCost);
+		if (work.scraps[n.o] > 0 && work.movableUnits(n) > 0) {
+			if (work.owner[n.o] == O.ME) {
+				if (moveFrom[current.o + Pos.MAX_OFFSET * n.o] != 0) {
+				} else {
+					for (int i = 1; i <= work.movableUnits(n); i++) {
+						work.movableUnits[n.o] -= i;
+						work.units[n.o] -= i;
+						work.units[current.o] += i;
+						moveFrom[n.o + Pos.MAX_OFFSET * current.o] += i;
+						search(work, currentIndex, neighborIndex + 1, totalCost + i * MOVE_COST);
+						work.movableUnits[n.o] += i;
+						work.units[n.o] += i;
+						work.units[current.o] -= i;
+						moveFrom[n.o + Pos.MAX_OFFSET * current.o] -= i;
+					}
+				}
+			}
+		}
+	}
+}
+
+class Defense {
+
+	private TimeTraveler tt;
+
+	private static int calculateDeficitInUnit(List<Ilot> ilots) {
+		int deficit = 0;
+		for (Ilot ilot : ilots) {
+			if (ilot.isDisputed()) {
+				deficit += Math.max(0, ilot.oppTroupsCount - ilot.myTroupsCount);
+			}
+		}
+		return deficit;
+	}
+
+	public static int unitsNeededInTime(State work, List<Ilot> ilots) {
+		int deficitInUnit = calculateDeficitInUnit(ilots);
+		Logger.info(Player.NEXTGEN_RECYCLERS, "Deficit in units is " + deficitInUnit + " need to check");
+		int deficitInUnitMatter = deficitInUnitInTime(work);
+		int deficitInTime = deficitInUnit - deficitInUnitMatter;
+		return deficitInTime;
+	}
+
+	public static int deficitInUnitInTime(State work) {
+		State lastOriginal = new State();
+		lastOriginal.copyFrom(work);
+		Sim.tenTurn(lastOriginal);
+		int deficitInUnitMatter = lastOriginal.myMatter / O.UNIT_COST - lastOriginal.oppMatter / O.UNIT_COST;
+		return deficitInUnitMatter;
+	}
+
+	public List<Action> think(State work, TimeTraveler tt, List<Ilot> ilots, Ilot ilot, DiffusionMap myMap, DiffusionMap oppMap) {
+		this.tt = tt;
+		Territory territory = new Territory();
+		territory.calculateTerritories(ilot, tt);
+		List<Action> actions = new ArrayList<>();
+		Search search = new Search();
+		setGoalsNeeded(work, tt, territory, search);
+		search.search(work, tt, ilots, territory.frontier, territory.blueDangers);
+		if (search.FOUND > 0) {
+			Player.frontierIsProtected++;
+			actions.addAll(search.actions);
+			for (Action a : actions) {
+				work.apply(a);
+			}
+			return actions;
+		} else {
+			Player.frontierIsProtected = 0;
+		}
+		Logger.error("Found not defense and I don't know what to do ...");
+		return Collections.emptyList();
+	}
+
+	public static void setGoalsNeeded(State work, TimeTraveler tt, Territory territory, Search search) {
+		for (Pos cell : territory.frontier) {
+			search.goalNeeded[cell.o] = 0;
+			if (!tt.sliceAt(1).state.canMove(cell))
+				continue;
+			if (work.isOpp(cell)) {
+				if (work.units(cell) == 0) {
+					search.goalNeeded[cell.o] = 0;
+				}
+			} else {
+				boolean hasBlueAround = false;
+				for (Pos n : cell.neighbors4dirs) {
+					if (work.isMine(n)) {
+						hasBlueAround = true;
+						break;
+					}
+				}
+				int maxOppUnits = neededToDefend(work, cell);
+				search.goalNeeded[cell.o] = maxOppUnits;
+				if (maxOppUnits == 0 && work.isNeutral(cell) && hasBlueAround) {
+					search.goalNeeded[cell.o] = 1;
+				}
+			}
+		}
+	}
+
+	public static int neededToDefend(State state, Pos cell) {
+		int maxOppUnits = 0;
+		for (Pos n : cell.neighbors4dirs) {
+			if (!state.isOpp(n))
+				continue;
+			int locked = 0;
+			for (Pos nn : n.neighbors4dirs) {
+				if (nn == cell)
+					continue;
+				if (state.owner[nn.o] == O.ME && state.originalUnits[nn.o] > 0) {
+					locked += Math.max(0, (state.originalUnits[nn.o] - state.lockedMap[nn.o]));
+				}
+			}
+			maxOppUnits += Math.max(0, state.units[n.offset] - locked);
+		}
+		return maxOppUnits;
+	}
+}
+
+class Navigator {
+
+	BFS bfs = new BFS();
+
+	public Pos navigate(State work, Pos from, Pos to, TimeTraveler tt, List<Pos> frontier) {
+		return navigate(work, from, to, tt, Collections.emptyList(), frontier, Collections.emptyList());
+	}
+
+	public Pos navigate(State work, Pos from, Pos to, TimeTraveler tt, List<Pos> visitedCells, List<Pos> frontier, List<Pos> forbidenCells) {
+		if (from == to)
+			return from;
+		bfs.calculate(work, from, tt, forbidenCells);
+		return bfs.reconstructPath2(work, tt, from, to,	n -> {
+			double localScore = 0.0;
+			localScore -= visitedCells.contains(n) ? 2 : 0;
+			localScore += work.owner[n.o] == O.NEUTRAL ? 1 : 0;
+			localScore += (frontier.contains(n) && work.units[n.o] == 0) ? 0.1 : 0;
+			return localScore;
+		});
+	}
+
+	public Pos navigate(State work, Pos from, Pos to, TimeTraveler tt, List<Pos> forbidenCells, DoubleFromPos eval) {
+		if (from == to)
+			return from;
+		bfs.calculate(work, from, tt, forbidenCells);
+		return bfs.reconstructPath2(work, tt, from, to, eval);
+	}
+}
+
+class LowRecyclers {
+
+	public static double ratio[] = new double[Pos.MAX_OFFSET];
+
+	public static int diffInPotentialCells[] = new int[Pos.MAX_OFFSET];
+
+	public static int diffInMatter[] = new int[Pos.MAX_OFFSET];
+
+	public static int diffInRobots[] = new int[Pos.MAX_OFFSET];
+
+	public static int diffInCells[] = new int[Pos.MAX_OFFSET];
+
+	public static void prepareRatio(State work) {
+		List<Pos> myPos = new ArrayList<>();
+		List<Pos> posToCheck = new ArrayList<>();
+		for (Pos p : Pos.allMapPositions) {
+			if (work.owner[p.o] == O.ME) {
+				if (work.canMove(p)) {
+					myPos.add(p);
+				}
+				if (work.canBuild(p)) {
+					posToCheck.add(p);
+				}
+			}
+		}
+		State originalInTen = new State();
+		originalInTen.copyFrom(work);
+		Sim.tenTurn(originalInTen);
+		List<Pos> quickReachableCells = BFS.quickReachableCells(originalInTen, myPos);
+		int myOriginalPotentialCells = quickReachableCells.size();
+		for (Pos c : posToCheck) {
+			ratio[c.o] = 0;
+			diffInPotentialCells[c.o] = 0;
+			diffInMatter[c.o] = 0;
+			diffInRobots[c.o] = 0;
+			diffInCells[c.o] = 0;
+			if (work.scraps[c.o] == 0 || work.recycler[c.o] != 0)
+				continue;
+			State temp = new State();
+			temp.copyFrom(work);
+			temp.recycler[c.o] = 1;
+			temp.owner[c.o] = O.ME;
+			temp.myMatter -= O.UNIT_COST;
+			Sim.tenTurn(temp);
+			int myPotentialCells = BFS.quickReachableCells(temp, myPos).size();
+			int diffInRobots = temp.myMatter / O.UNIT_COST - originalInTen.myMatter / O.UNIT_COST;
+			int diffInCells = 0;
+			for (Pos n : c.meAndNeighbors4dirs) {
+				if (originalInTen.scraps[n.o] != 0 && temp.scraps[n.o] == 0)
+					diffInCells++;
+			}
+			double ratio;
+			if (diffInCells == 0) {
+				if (diffInRobots <= 0) {
+					ratio = 0.0;
+				} else {
+					ratio = diffInRobots;
+				}
+			} else {
+				ratio = 1.0 * diffInRobots / diffInCells;
+			}
+			LowRecyclers.diffInRobots[c.o] = diffInRobots;
+			LowRecyclers.diffInCells[c.o] = diffInCells;
+			LowRecyclers.diffInMatter[c.o] = temp.myMatter - originalInTen.myMatter;
+			LowRecyclers.diffInPotentialCells[c.o] = (myPotentialCells + diffInCells) - myOriginalPotentialCells;
+			LowRecyclers.ratio[c.o] = ratio;
+		}
+	}
+
+	public List<Action> think(State work) {
+		List<Action> actions = new ArrayList<>();
+		if (work.myMatter < O.UNIT_COST)
+			return Collections.emptyList();
+		boolean hasBuild = true;
+		while (hasBuild) {
+			if (work.myMatter < O.UNIT_COST)
+				break;
+			hasBuild = false;
+			double bestRatio = Double.NEGATIVE_INFINITY;
+			Pos bestPos = null;
+			for (Pos c : Pos.allMapPositions) {
+				if (!work.canBuild(c))
+					continue;
+				if (diffInPotentialCells[c.o] < 0)
+					continue;
+				if (ratio[c.o] > bestRatio) {
+					bestRatio = ratio[c.o];
+					bestPos = c;
+				}
+			}
+			if (bestRatio >= 1.0) {
+				System.err.println("Found a recycler with ratio :" + bestRatio);
+				Action build = Action.build(bestPos, "LowRecycler - high ratio : " + bestRatio);
+				actions.add(build);
+				work.apply(build);
+				hasBuild = true;
+			} else {
+				System.err.println("Did'nt found any recycler, bestRatio was " + bestRatio);
+			}
+		}
+		return actions;
+	}
+}
+
+class SpreaderResult {
+
+	public Pos pos;
+
+	public double dist;
+
+	public SpreaderResult() {
+		pos = null;
+		dist = Double.POSITIVE_INFINITY;
+	}
+}
+
+class Spreader {
+
+	static Navigator navigator = new Navigator();
+
+	public static DistanceMap myDistances = new DistanceMap(O.ME);
+
+	public static SpawnMap mySpawnDistances = new SpawnMap(O.ME);
+
+	public static DistanceMap oppDistances = new DistanceMap(O.OPP);
+
+	public static SpawnMap oppSpawnDistances = new SpawnMap(O.OPP);
+
+	public List<Action> think(State originalWork, List<Action> alreadyDoneActions, Ilot ilot, TimeTraveler aiTT) {
+		List<Action> actions = new ArrayList<>();
+		State work = new State();
+		work.copyFrom(originalWork);
+		for (Action a : alreadyDoneActions) {
+			if (a.type() == Action.MOVE && work.originalOwner[a.to().o] != O.ME) {
+				work.units[a.to().o] = 0;
+				work.units[a.from().o] = a.amount();
+			}
+		}
+		TimeTraveler tt = new TimeTraveler();
+		tt.init(work);
+		Territory territory = new Territory();
+		territory.calculateTerritories(ilot, tt);
+		List<Pos> disputedFrontier = calculateForbiddenCells(work, ilot, tt, territory);
+		myDistances.calculate(work, disputedFrontier);
+		mySpawnDistances.calculate(work, disputedFrontier);
+		oppDistances.calculate(work, disputedFrontier);
+		oppSpawnDistances.calculate(work, disputedFrontier);
+		actions.addAll(moves(work, alreadyDoneActions, ilot, tt, territory));
+		for (Action a : actions) {
+			originalWork.apply(a);
+		}
+		return actions;
+	}
+
+	public static List<Pos> calculateForbiddenCells(State work, Ilot ilot, TimeTraveler tt, Territory territory) {
+		List<Pos> disputedFrontier = new ArrayList<>();
+		for (int i = 0; i < ilot.posFE; i++) {
+			Pos p = ilot.pos[i];
+			if (work.recycler[p.o] != 0)
+				continue;
+			if (!tt.sliceAt(1).state.canMove(p))
+				continue;
+			if (work.owner[p.o] == O.OPP)
+				disputedFrontier.add(p);
+			if (territory.disputed.contains(p))
+				disputedFrontier.add(p);
+		}
+		return disputedFrontier;
+	}
+
+	static BFS bfses[] = new BFS[Pos.MAX_OFFSET];
+
+	static {
+		for (int i = 0; i < bfses.length; i++) {
+			bfses[i] = new BFS();
+		}
+	}
+
+	public List<Action> moves(State work, List<Action> alreadyDoneActions, Ilot ilot, TimeTraveler tt, Territory territory) {
+		List<Action> actions = new ArrayList<>();
+		List<Pos> frontier = new ArrayList<>();
+		for (Pos p : territory.frontier) {
+			if (work.recycler[p.o] != 0)
+				continue;
+			if (!tt.sliceAt(1).state.canMove(p))
+				continue;
+			frontier.add(p);
+			bfses[p.o].calculate(work, p, tt);
+		}
+		if (frontier.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<Pos> myCells = new ArrayList<>();
+		List<Pos> myUnits = new ArrayList<>();
+		for (int i = 0; i < ilot.posFE; i++) {
+			Pos unit = ilot.pos[i];
+			if (work.originalOwner[unit.o] != O.ME)
+				continue;
+			myCells.add(unit);
+			if (work.movableUnits(unit) > 0)
+				myUnits.add(unit);
+		}
+		List<Pos> visitedCells = new ArrayList<>();
+		int servedFrontier[] = new int[Pos.MAX_OFFSET];
+		for (Pos f : frontier) {
+			if (work.units[f.o] > 0) {
+				servedFrontier[f.o] = 1;
+				if (work.owner(f) == O.ME && work.movableUnits(f) > 0) {
+					work.movableUnits[f.o] = Math.min(work.movableUnits(f), work.units(f) - Defense.neededToDefend(work, f));
+					if (work.movableUnits(f) == work.units(f)) {
+						work.movableUnits[f.o]--;
+					}
+				}
+			}
+		}
+		for (Action a : alreadyDoneActions) {
+			if (frontier.contains(a.to()) && work.countRedAround(a.to()) == 0) {
+				servedFrontier[a.to().o] = 1;
+			}
+		}
+		boolean hasMove = true;
+		while (hasMove) {
+			hasMove = false;
+			Collections.sort(frontier, ( f1,	f2) -> Double.compare(cellOfFrontierEval(work, myCells, myUnits, servedFrontier, f1, territory.blueDangers), cellOfFrontierEval(work, myCells, myUnits, servedFrontier, f2, territory.blueDangers)));
+			if (Player.DEBUG_SPREADER) {
+				System.err.println("Debug frontier scoring");
+				for (Pos f : frontier) {
+					System.err.println("Score of " + f);
+					System.err.println("		 is " + cellOfFrontierEval(work, myCells, myUnits, servedFrontier, f, territory.blueDangers) + " dist is " + distanceToUnitsOrSpawn(work, f, myUnits, myCells, work.myMatter >= O.UNIT_COST));
+				}
+			}
+			if (frontier.isEmpty())
+				break;
+			Pos f = frontier.get(0);
+			servedFrontier[f.o]++;
+			Pos closestPos = chooseClosestPos(work, f, myUnits, myCells);
+			if (closestPos == null) {
+				frontier.remove(f);
+				hasMove = true;
+				continue;
+			}
+			if (work.movableUnits(closestPos) > 0) {
+				Pos nextPos = navigator.navigate(work, closestPos, f, tt, visitedCells,	n -> {
+					double localScore = 0.0;
+					localScore -= visitedCells.contains(n) ? 2 : 0;
+					localScore += work.owner[n.o] == O.NEUTRAL ? 1 : 0;
+					localScore += (frontier.contains(n) && work.units[n.o] == 0) ? 0.1 : 0;
+					localScore += 0.001 * LowRecyclers.ratio[n.o];
+					return localScore;
+				});
+				if (Player.DEBUG_SPREADER) {
+					System.err.println("	 choosing " + closestPos + " to go to " + f + " via " + nextPos);
+				}
+				if (nextPos != null) {
+					visitedCells.add(nextPos);
+					if (closestPos == nextPos) {
+						work.movableUnits[closestPos.o]--;
+						hasMove = true;
+					} else {
+						Action move = Action.move(1, closestPos, nextPos, f, Spreader.class.getSimpleName());
+						actions.add(move);
+						work.apply(move);
+						hasMove = true;
+					}
+				}
+			} else if (servedFrontier[f.offset] <= 1 && work.myMatter >= O.UNIT_COST) {
+				Action spawn = Action.spawn(1, closestPos, f, Spreader.class.getSimpleName());
+				actions.add(spawn);
+				work.apply(spawn);
+				hasMove = true;
+			}
+		}
+		return actions;
+	}
+
+	private double cellOfFrontierEval(State work, List<Pos> myCells, List<Pos> myUnits, int[] servedFrontier, Pos f1, double[] danger) {
+		return 0.0 + (servedFrontier[f1.offset] * 100_000) + (work.units[f1.offset] * 10_000) + distanceToUnitsOrSpawn(work, f1, myUnits, myCells, work.myMatter >= O.UNIT_COST) + (work.owner[f1.offset] == O.OPP ? 1 : 0) + (f1.isBorder() ? -2 : 0) + (work.myMatter >= O.UNIT_COST && work.owner[f1.offset] != O.OPP && mySpawnDistances.grid[f1.offset] > oppDistances.grid[f1.offset] ? -500 : 0) - 0.01 * danger[f1.offset];
+	}
+
+	private void bestCellToSpawn(SpreaderResult result, State work, Pos cell, List<Pos> myUnits, List<Pos> myCells) {
+		BFS bfs = bfses[cell.o];
+		double best = Double.POSITIVE_INFINITY;
+		Pos bestPos = null;
+		for (Pos p : myCells) {
+			double dist = bfs.distances[p.o];
+			dist += 1.1;
+			dist += 0.001 * Math.abs(p.y - cell.y);
+			if (dist < best) {
+				best = dist;
+				bestPos = p;
+			}
+		}
+		result.pos = bestPos;
+		result.dist = best;
+	}
+
+	private void bestCellToMoveFrom(SpreaderResult result, State work, Pos cell, List<Pos> myUnits, List<Pos> myCells) {
+		BFS bfs = bfses[cell.o];
+		double bestScore = Double.NEGATIVE_INFINITY;
+		Pos bestPos = null;
+		int bestDist = Integer.MAX_VALUE;
+		for (Pos p : myUnits) {
+			if (work.movableUnits(p) == 0)
+				continue;
+			if (work.units(p) <= work.countRedAround(p))
+				continue;
+			double score = 0.0;
+			score -= 1000 * bfs.distances[p.o];
+			score += 0.01 * work.movableUnits(p);
+			if (score > bestScore) {
+				bestDist = bfs.distances[p.o];
+				bestScore = score;
+				bestPos = p;
+			}
+		}
+		result.pos = bestPos;
+		result.dist = bestDist;
+	}
+
+	private Pos chooseClosestPos(State work, Pos cell, List<Pos> myUnits, List<Pos> myCells) {
+		SpreaderResult resultMove = new SpreaderResult();
+		SpreaderResult resultSpawn = new SpreaderResult();
+		bestCellToMoveFrom(resultMove, work, cell, myUnits, myCells);
+		bestCellToSpawn(resultSpawn, work, cell, myUnits, myCells);
+		if (work.myMatter < O.UNIT_COST) {
+			if (resultSpawn.dist + 1 < resultMove.dist) {
+				return null;
+			} else {
+				return resultMove.pos;
+			}
+		} else {
+			if (resultMove.dist < resultSpawn.dist) {
+				return resultMove.pos;
+			} else {
+				return resultSpawn.pos;
+			}
+		}
+	}
+
+	private double distanceToUnitsOrSpawn(State work, Pos cell, List<Pos> myUnits, List<Pos> myCells, boolean canSpawn) {
+		BFS bfs = bfses[cell.o];
+		if (mySpawnDistances.grid[cell.o] > oppDistances.grid[cell.o]) {
+			canSpawn = false;
+		}
+		double best = Double.POSITIVE_INFINITY;
+		Pos bestPos = null;
+		for (Pos p : myUnits) {
+			if (work.movableUnits(p) == 0)
+				continue;
+			double dist = bfs.distances[p.o];
+			if (dist < best) {
+				best = dist;
+				bestPos = p;
+			}
+		}
+		if (canSpawn) {
+			for (Pos p : myCells) {
+				double dist = bfs.distances[p.o];
+				if (dist == 0) {
+					dist += 1.1;
+				} else {
+					dist += 1.1;
+				}
+				if (dist < best) {
+					best = dist;
+					bestPos = p;
+				}
+			}
+		}
+		return best;
+	}
+
+	private int distanceToFrontier(Pos u1, List<Pos> frontier) {
+		BFS bfs = bfses[u1.o];
+		int min = Integer.MAX_VALUE;
+		for (Pos f : frontier) {
+			min = Math.min(min, bfs.distances[f.o]);
+		}
+		return min;
+	}
+
+	public static List<Action> spreadQuickly(State work, Ilot ilot, TimeTraveler tt) {
+		List<Action> actions = new ArrayList<>();
+		Territory t = new Territory();
+		t.calculateTerritories(ilot, tt);
+		List<Pos> chosen = new ArrayList<>();
+		for (int i = 0; i < ilot.posFE; i++) {
+			Pos unit = ilot.pos[i];
+			if (work.owner(unit) != O.ME || work.movableUnits(unit) == 0)
+				continue;
+			if (ilot.ruler != O.ME && t.frontier.contains(unit))
+				continue;
+			actions.addAll(spreadQuickly(work, ilot, tt, unit, true));
+		}
+		return actions;
+	}
+
+	private static BFS innerBfs = new BFS();
+
+	public static List<Action> spreadQuickly(State work, Ilot ilot, TimeTraveler tt, Pos unit, boolean targetReds) {
+		List<Action> actions = new ArrayList<>();
+		innerBfs.calculate(work, unit, tt);
+		Territory territory = new Territory();
+		territory.calculateTerritories(ilot, tt);
+		int closestDist = Integer.MAX_VALUE;
+		Pos closestCell = null;
+		for (int j = 0; j < ilot.posFE; j++) {
+			Pos target = ilot.pos[j];
+			if (!work.canMove(target))
+				continue;
+			int dist;
+			if (territory.redTerritory.contains(target) && targetReds) {
+				dist = innerBfs.distances[target.o] - 1000;
+			} else if (work.owner[target.o] == O.NEUTRAL) {
+				dist = innerBfs.distances[target.o];
+			} else {
+				dist = Integer.MAX_VALUE;
+			}
+			if (dist < closestDist) {
+				closestDist = dist;
+				closestCell = target;
+			}
+		}
+		if (closestCell != null) {
+			Pos target = navigator.navigate(work, unit, closestCell, tt, Collections.emptyList());
+			if (target != null) {
+				Action move = Action.move(work.movableUnits(unit), unit, target, closestCell, "Mover - spreadQuickly");
+				actions.add(move);
+				work.apply(move);
+			}
+		}
+		return actions;
+	}
+
+	public static Collection<? extends Action> spreadQuicklyWithSpawn(State state, Ilot ilot, TimeTraveler tt) {
+		if (ilot.isFullCoverByMe())
+			return Collections.emptyList();
+		List<Action> actions = new ArrayList<>();
+		for (int i = 0; i < ilot.posFE; i++) {
+			if (state.myMatter < O.UNIT_COST)
+				break;
+			Pos c = ilot.pos[i];
+			if (state.isNeutral(c) && state.countBlueAround(c) == 0) {
+				Pos spawnOn = null;
+				for (Pos n : c.neighbors4dirs) {
+					if (state.originalOwner[n.o] == O.ME)
+						spawnOn = n;
+				}
+				if (spawnOn != null) {
+					Action spawn = Action.spawn(1, spawnOn, "spawn to spread quickly");
+					actions.add(spawn);
+					state.apply(spawn);
+				}
+			}
+		}
+		actions.addAll(spreadQuickly(state, ilot, tt));
+		return actions;
+	}
+}
+
+class Finisher {
+
+	public static Pos getCoveringUnit(State state, Ilot ilot, Territory territory) {
+		Set<Pos> augmentedFrontier = new HashSet<>();
+		for (Pos f : territory.frontier) {
+			for (Pos n : f.meAndNeighbors4dirs) {
+				augmentedFrontier.add(n);
+			}
+		}
+		for (int i = 0; i < ilot.posFE; i++) {
+			Pos current = ilot.pos[i];
+			if (augmentedFrontier.contains(current))
+				continue;
+			if (state.isMine(current) && state.units[current.o] > 0) {
+				return current;
+			}
+		}
+		return null;
+	}
+
+	public static Collection<? extends Action> cover(State state, List<Ilot> ilots, TimeTraveler tt) {
+		List<Action> actions = new ArrayList<>();
+		if (State.isStall()) {
+			System.err.println("Moving to cover .... ");
+			for (Ilot ilot : ilots) {
+				if (ilot.ruler != Ilot.DISPUTED)
+					continue;
+				Territory t = new Territory();
+				t.calculateTerritories(ilot, tt);
+				Pos coverRobot = getCoveringUnit(state, ilot, t);
+				if (coverRobot != null) {
+					System.err.println("Cover robot is " + coverRobot);
+					return Spreader.spreadQuickly(state, ilot, tt, coverRobot, false);
+				} else {
+					System.err.println("Can't find spare robot, spawning one");
+				}
+				boolean hasNeutral = false;
+				Pos bestForNeutral = null;
+				for (Pos p : t.blueTerritory) {
+					if (state.isNeutral(p)) {
+						hasNeutral = true;
+						for (Pos n : p.neighbors4dirs) {
+							if (state.isMine(n) && state.canMove(n)) {
+								bestForNeutral = n;
+								break;
+							}
+						}
+						if (bestForNeutral != null) {
+							break;
+						}
+					}
+				}
+				if (bestForNeutral != null) {
+					Action spawn = Action.spawn(1, bestForNeutral, "Finisher - spawn to cover");
+					state.apply(spawn);
+					actions.add(spawn);
+					return actions;
+				}
+			}
+		}
+		return actions;
+	}
+
+	public static Collection<? extends Action> think(State state, List<Ilot> ilots, TimeTraveler tt) {
+		List<Action> actions = new ArrayList<>();
+		boolean allIlotsDecided = true;
+		for (Ilot ilot : ilots) {
+			if (ilot.isDisputed())
+				allIlotsDecided = false;
+		}
+		boolean filledIn = State.isStall() || allIlotsDecided;
+		for (Ilot ilot : ilots) {
+			if (ilot.ruler == O.ME) {
+				if (ilot.isFullCoverByMe()) {
+				} else {
+					Territory t = new Territory();
+					t.calculateTerritories(ilot, tt);
+					if (t.blueRobots.isEmpty()) {
+						if (state.myMatter >= O.UNIT_COST && filledIn) {
+							for (Pos p : t.blueTerritory) {
+								if (state.canSpawn(p)) {
+									Action spawn = Action.spawn(1, p, "SPAWN TO SPREAD");
+									state.apply(spawn);
+									actions.add(spawn);
+									break;
+								}
+							}
+						}
+					}
+				}
+			} else if (ilot.ruler == O.OPP || ilot.ruler == O.NEUTRAL) {
+			} else {
+				actions.addAll(Spreader.spreadQuickly(state, ilot, tt));
+			}
+		}
+		return actions;
+	}
+}
+
+class Neutralizer {
+
+	public Collection<? extends Action> think(State work, TimeTraveler tt, List<Action> doneActions) {
+		List<Action> actions = new ArrayList<>();
+		Set<Pos> neutralized = new HashSet<>();
+		for (Action a : doneActions) {
+			if (work.myMatter < O.UNIT_COST)
+				break;
+			Pos target = a.to();
+			if (neutralized.contains(target))
+				continue;
+			if (work.isMine(target))
+				continue;
+			int redAround = work.countRedAround(target);
+			if (redAround == 0)
+				continue;
+			neutralized.add(target);
+			Action spawn = Action.spawn(1, a.from(), "Neutralizer - prepare");
+			actions.add(spawn);
+			work.apply(spawn);
+		}
+		return actions;
+	}
+}
+
+class RecyclerMatterUpgrader {
+
+	public List<Action> think(State work, List<Ilot> originalIlots, TimeTraveler tt, List<Action> alreadyDoneActions) {
+		List<Action> toBuild = new ArrayList<>();
+		int myUnitCount = 0;
+		int oppUnitCount = 0;
+		boolean hasDisputed = false;
+		for (Ilot ilot : originalIlots) {
+			if (ilot.isDisputed()) {
+				hasDisputed = true;
+				myUnitCount += ilot.myTroupsCount;
+				oppUnitCount += ilot.oppTroupsCount;
+			}
+		}
+		int myTotalUnitInTime = myUnitCount + (work.myMatter + tt.myTotalMatterBonus) / O.UNIT_COST;
+		int oppTotalUnitInTime = oppUnitCount + (work.oppMatter + tt.oppTotalMatterBonus) / O.UNIT_COST;
+		if (oppTotalUnitInTime == 0)
+			return Collections.emptyList();
+		if ((hasDisputed && (myTotalUnitInTime < oppTotalUnitInTime))) {
+			Logger.warning(Player.DEBUG_LOGIC, "I << on units in time or start of game : " + myTotalUnitInTime + " vs " + oppTotalUnitInTime);
+			toBuild.addAll(buildSomeMatter(work, tt, alreadyDoneActions));
+			return toBuild;
+		}
+		return Collections.emptyList();
+	}
+
+	public double scores[] = new double[Pos.MAX_OFFSET];
+
+	public List<Action> buildSomeMatter(State work, TimeTraveler tt, List<Action> alreadyDoneActions) {
+		List<Action> toBuild = new ArrayList<>();
+		double bestScore = Double.NEGATIVE_INFINITY;
+		Pos bestPos = null;
+		double bestScoreCanBuild = Double.NEGATIVE_INFINITY;
+		Pos bestPosCanBuild = null;
+		for (Pos c : Pos.allMapPositions) {
+			scores[c.o] = 0;
+			if (work.originalUnits[c.o] != 0 || work.originalOwner[c.o] != O.ME)
+				continue;
+			if (work.recycler[c.o] != 0)
+				continue;
+			boolean shortenCircuitToFrontier = false;
+			for (Pos n : c.neighbors4dirs) {
+				if (AI2.fullFrontier.contains(n) && work.canMove(n) && !work.isMine(n)) {
+					boolean canStillAcessAsQuickly = false;
+					for (Pos nn : n.neighbors4dirs) {
+						if (nn == c)
+							continue;
+						if (!work.canMove(nn))
+							continue;
+						if (AI2.myDistances.grid[nn.o] <= 1) {
+							canStillAcessAsQuickly = true;
+							break;
+						}
+					}
+					if (!canStillAcessAsQuickly) {
+						shortenCircuitToFrontier = true;
+						break;
+					}
+				}
+			}
+			if (shortenCircuitToFrontier) {
+				continue;
+			}
+			double score = 0.0;
+			if (LowRecyclers.diffInPotentialCells[c.o] < 0) {
+				score = Double.NEGATIVE_INFINITY;
+			}
+			int notBlueCells = 0;
+			for (Pos n : c.neighbors4dirs) {
+				if (!work.isMine(n))
+					notBlueCells++;
+			}
+			double ratio = 1.0 * LowRecyclers.diffInRobots[c.offset] / (Math.max(0, LowRecyclers.diffInCells[c.offset]));
+			if (ratio < 0) {
+				score = Double.NEGATIVE_INFINITY;
+			}
+			score += 10.0 * ratio;
+			score += 0.4 * notBlueCells;
+			int killReds = 0;
+			int killBlues = 0;
+			for (Pos n : c.neighbors4dirs) {
+				if (work.scraps[n.o] == 1) {
+					if (work.owner[n.o] == O.OPP)
+						killReds += work.units[n.o];
+					if (work.owner[n.o] == O.ME)
+						killBlues += work.units[n.o];
+				}
+			}
+			score += 1.0 * LowRecyclers.diffInRobots[c.o];
+			score += 0.1 * killReds;
+			score -= 0.1 * killBlues;
+			scores[c.o] = score;
+			if (Player.DEBUG_RECYCLERS)
+				System.err.println("Recycler " + c + " score = " + score);
+			if (work.canBuild(c)) {
+				if (score > bestScoreCanBuild) {
+					bestScoreCanBuild = score;
+					bestPosCanBuild = c;
+				}
+			}
+			if (score > bestScore) {
+				bestScore = score;
+				bestPos = c;
+			}
+		}
+		if (bestPos != null) {
+			if (work.units[bestPos.o] != 0 && work.originalUnits[bestPos.o] == 0) {
+				List<Action> toRemove = new ArrayList<>();
+				for (Action a : alreadyDoneActions) {
+					if (a.to() == bestPos)
+						toRemove.add(a);
+				}
+				for (Action a : toRemove) {
+					if (a.type() == Action.SPAWN)
+						work.myMatter += a.amount() * O.UNIT_COST;
+					System.err.println("Removing " + a + " to put a recycler !");
+					alreadyDoneActions.remove(a);
+				}
+				work.units[bestPos.o] = 0;
+				work.movableUnits[bestPos.o] = 0;
+			} else {
+				bestPos = bestPosCanBuild;
+			}
+			if (work.myMatter >= O.UNIT_COST) {
+				Action action = Action.build(bestPos, this.getClass().getSimpleName());
+				toBuild.add(action);
+				work.apply(action);
+			}
+		}
+		return toBuild;
+	}
+}
+
+class UnitSaver {
+
+	public List<Action> think(State work, Ilot ilot, TimeTraveler tt) {
+		List<Action> actions = new ArrayList<>();
+		Set<Pos> forbidenCells = tt.forbidenCells();
+		for (int i = 0; i < ilot.posFE; i++) {
+			Pos current = ilot.pos[i];
+			if (work.movableUnits(current) <= 0 || !work.isMine(current))
+				continue;
+			if (!forbidenCells.contains(current))
+				continue;
+			double bestScore = Double.NEGATIVE_INFINITY;
+			Pos bestPos = null;
+			for (Pos n : current.neighbors4dirs) {
+				if (forbidenCells.contains(n))
+					continue;
+				if (!work.canMove(n))
+					continue;
+				double score;
+				if (work.isMine(n)) {
+					score = 0.0;
+				} else if (work.isNeutral(n)) {
+					score = 100.0;
+				} else {
+					score = 100 - work.units[n.o];
+				}
+				if (score > bestScore) {
+					bestScore = score;
+					bestPos = n;
+				}
+			}
+			if (bestPos != null) {
+				Logger.warning("La logique pour sauver les unités est un peu basique ... mais on sauve " + current);
+				Action move = Action.move(work.movableUnits(current), current, bestPos, "Save units from death");
+				actions.add(move);
+				work.apply(move);
+			}
+		}
+		return actions;
+	}
+}
+
+class AI2 implements AI {
+
+	private State state = new State();
+
+	public static DistanceMap myDistances = new DistanceMap(O.ME);
+
+	public static SpawnMap mySpawnDistances = new SpawnMap(O.ME);
+
+	public static DistanceMap oppDistances = new DistanceMap(O.OPP);
+
+	public static SpawnMap oppSpawnDistances = new SpawnMap(O.OPP);
+
+	public static List<Pos> fullFrontier;
+
+	private final TimeTraveler tt = new TimeTraveler();
+
+	private final List<Ilot> ilots = new ArrayList<>();
+
+	@Override
+	public List<Action> think(State originalStateReadOnly) {
+		Territory.debugTerritories(originalStateReadOnly);
+		List<Action> actions = new ArrayList<>();
+		updateInformations(originalStateReadOnly, actions, true);
+		List<Action> winningConditionsActions = new WinGameHeuristic().think(state, ilots, tt);
+		actions.addAll(winningConditionsActions);
+		if (!winningConditionsActions.isEmpty()) {
+			updateInformations(originalStateReadOnly, actions, false);
+		}
+		double canBuildRecyclerScore = checkCostOfRecyclers(state, ilots);
+		fullFrontier = Territory.getFullFrontier(tt, ilots);
+		int frontierSize = fullFrontier.size();
+		boolean allIlotsDecided = true;
+		for (Ilot ilot : ilots) {
+			if (ilot.isDisputed()) {
+				allIlotsDecided = false;
+				actions.addAll(new Defense().think(state, tt, ilots, ilot, myDistances, oppDistances));
+			}
+		}
+		updateInformations(originalStateReadOnly, actions, false);
+		actions.addAll(Finisher.cover(state, ilots, tt));
+		LowRecyclers.prepareRatio(originalStateReadOnly);
+		boolean earlyGame = fullFrontier.size() > 0;
+		for (Pos f : fullFrontier) {
+			if (myDistances.grid[f.o] < 2 || mySpawnDistances.grid[f.o] < 2) {
+				earlyGame = false;
+				break;
+			}
+		}
+		if (!earlyGame) {
+			System.err.println("NOT Early game");
+			List<Action> recyclers = new RecyclerMatterUpgrader().think(state, ilots, tt, actions);
+			actions.addAll(recyclers);
+			if (hasBuild(recyclers)) {
+				updateInformations(originalStateReadOnly, actions, false);
+			}
+		} else {
+			System.err.println("Early game");
+			actions.addAll(new LowRecyclers().think(state));
+			actions.addAll(new RecyclerMatterUpgrader().think(state, ilots, tt, actions));
+			updateInformations(originalStateReadOnly, actions, false);
+		}
+		for (Ilot ilot : ilots) {
+			if (ilot.ruler == O.ME) {
+				if (ilot.isFullCoverByMe()) {
+				} else {
+					if (allIlotsDecided) {
+						actions.addAll(Spreader.spreadQuicklyWithSpawn(state, ilot, tt));
+					} else {
+						actions.addAll(Spreader.spreadQuickly(state, ilot, tt));
+					}
+				}
+			} else if (ilot.ruler == O.OPP || ilot.ruler == O.NEUTRAL) {
+			} else {
+				actions.addAll(new Spreader().think(state, actions, ilot, tt));
+				actions.addAll(new Attack().think(state, tt, ilot, myDistances, oppDistances, frontierSize == 1));
+				if (!State.isStall()) {
+					actions.addAll(Spreader.spreadQuickly(state, ilot, tt));
+				}
+				actions.addAll(new UnitSaver().think(state, ilot, tt));
+			}
+		}
+		actions.addAll(new Neutralizer().think(state, tt, actions));
+		actions.addAll(Finisher.think(state, ilots, tt));
+		return actions;
+	}
+
+	private void updateInformations(State originalStateReadOnly, List<Action> actions, boolean first) {
+		if (hasBuild(actions) || first) {
+			state.copyFrom(originalStateReadOnly);
+			for (Action a : actions) {
+				if (a.type() == Action.BUILD) {
+					state.apply(a);
+				}
+			}
+			myDistances.calculate(state);
+			mySpawnDistances.calculate(state);
+			oppDistances.calculate(state);
+			oppSpawnDistances.calculate(state);
+		}
+		state.copyFrom(originalStateReadOnly);
+		for (Action a : actions) {
+			state.apply(a);
+		}
+		ilots.clear();
+		ilots.addAll(Ilot.build(state));
+		tt.init(state);
+	}
+
+	private boolean hasBuild(List<Action> actions) {
+		for (Action a : actions) {
+			if (a.type() == Action.BUILD)
+				return true;
+		}
+		return false;
+	}
+
+	private double checkCostOfRecyclers(State work, List<Ilot> ilots) {
+		return 0.5;
+	}
+}
+
+class Player {
+
+	public static final boolean NEXTGEN_RECYCLERS = false;
+
+	public static final boolean DEBUG_SPREADER = false;
+
+	public static final boolean DEBUG_RECYCLERS = false;
+
+	public static boolean DEBUG_OUPUT = true;
+
+	public static boolean DEBUG_INIT_ILOTS = false;
+
+	public static boolean DEBUG_AFTER_RECYCLER_ILOTS = false;
+
+	public static boolean DEBUG_PATH = false;
+
+	public static boolean DEBUG_MOVING = false;
+
+	public static boolean DEBUG_TIMETRAVEL = false;
+
+	public static boolean DEBUG_DANGER = false;
+
+	public static boolean DEBUG_MINIMAX = false;
+
+	public static boolean DEBUG_LOGIC = false;
+
+	public static boolean DEBUG_PERF = false;
+
+	public static State predictedNextState = new State();
+
+	public State state = new State();
+
+	public static long start;
+
+	public static String message;
+
+	public static int frontierIsProtected = 0;
+
+	public static AI ai = new AI2();
+
+	public static void main(String[] args) {
+		FastReader in = new FastReader(System.in);
+		new Player().play(in);
+	}
+
+	private void play(FastReader in) {
+		state.readGlobal(in);
+		while (true) {
+			message = "";
+			state.read(in);
+			updatePredictions();
+			think();
+			long end = System.currentTimeMillis();
+			System.err.println("Time : " + (end - start));
+		}
+	}
+
+	private void think() {
+		if (State.turn == 0) {
+			for (int i = 0; i < 5; i++) {
+				ai.think(state);
+			}
+		}
+		List<Action> actions = ai.think(state);
+		String command = "";
+		predictedNextState.copyFrom(state);
+		for (Action action : actions) {
+			command += action;
+			predictedNextState.apply(action);
+		}
+		Sim.oneTurn(predictedNextState);
+		command += "MESSAGE ";
+		if (Logger.hasError)
+			command += "?? ";
+		if (Logger.hasWarning)
+			command += "? ";
+		command += (state.turn + 1) + "|" + (System.currentTimeMillis() - start) + "ms;";
+		if ("".equals(command)) {
+			System.out.println("WAIT");
+		} else {
+			System.out.println(command);
+		}
+		Logger.reset();
+	}
+
+	public static int noAggressionMap[] = new int[Pos.MAX_OFFSET];
+
+	private void updatePredictions() {
+		for (Pos p : Pos.allMapPositions) {
+			int o = p.o;
+			if (state.owner[o] == predictedNextState.owner[o] && state.units[o] == predictedNextState.units[o] && state.units[o] > 0) {
+				noAggressionMap[o]++;
+			} else {
+				noAggressionMap[o] = 0;
+			}
+		}
+	}
+}

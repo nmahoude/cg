@@ -1,0 +1,88 @@
+= TODO
+
+[DONE] * cache des cells
+[DONE] * Cache des ombres en fonction du soleil
+[DONE] * Cache de seeds
+[DONE] * Cache des distances
+[DONE] * Cache des actions
+[DONE] * Simulateur : shadows
+[DONE] * Generateur d'actions possibles
+[DONE] * Remplacer dormant par un bitmask
+[DONE] * SunMap (ensoeillement virtuel des cases)
+[DONE] * Tir de perf (+ visualvm)
+
+* remplacer grow_until_day par une partie de l'eval
+	=> est-ce que je peux couper en gardant un stream de sun points suffisant ?
+	=> est-ce qu'il a bcp de t3 et va bouffer les nutrients avant moi (mes t3 valent moins)
+	=> ...
+* ne plus lancer autant de seed !
+	=> regarder le ratio des meilleurs ?
+	=> nombre de seeds max (+t1, t2 ?)
+	
+* utiliser sunMap (+ revoir les coeff ?)
+* Choisir un algo
+* **evel** prevoir les ombres sur plusieurs tours ?
+* y'a quand meme cette histoire d'utiliser tous les sunpoints sur un day ...
+* avant de faire pousser un 1->2, il faut pousser les 2->3 et avant les 2->3, il faut faire les CUT (tjs 4)
+	=> y'a un truc là, l'ordre des actions peut être optimiser pour utiliser moins de suns
+	=> pour 1 day : les cut, puis les 2->3, puis les 1->2, puis les 0->1 semble plus optimisé étant donné qu'il n'y a pas de blocage possible 
+		
+
+== Si j'ai le temps parce que je pense que ca marchera pas
+* Minimax pour la fin (si plus de seed)
+* prendre en compte quand l'autre est waiting & quand il peut jouer
+
+
+== PERF a calculer
+
+=== Pertes de temps
+[DONE] non * copie des states
+[DONE] * calculer des possibleMoves
+[DONE] non * Simulation turn
+[DONE] non * Simulation end day
+[DONE] non * eval (pas encore?)
+[DONE] non * precalculer les sunDir & sunInvDir en fonction du day => eviter le modulo
+
+=== TODO perf possibles
+* Calculer plus vite les actions possibles
+* remplacer mine par un bitmask (1 bit) 
+* remplace size par un bitmask (2 bits : 0, 1,2,3  00 01 10 11)
+* plutot que treeCount -> liste des trees par size & treeFE
+* Calculer plus vite les shadows
+* décaler la seed à 1 et ... T3 à 4 pour conserver le 0
+* virer le 'mine'
+* remplacer les shadows par des bitmask ? 3 bits pour la taille
+
+== SEARCH ?
+[DONE] * MC
+* ABC = +/- BAC excepté les couts :/ => hash à prévoir ?
+* DUCT
+* MCTS
+* BeamSearch (again ?) par DAY ?
+* MINIMAX ?
+
+== SEEDS
+[DONE] * Sur la fin, plus de seed (day 19 pour les dernieres) 
+* seed apres day 19 pour lui faire de l'ombre non prévue
+
+* trop de seeds -> branching factor enorme... Comment limiter les seeds ? 
+	heuristic pour les meilleurs et limiter à 2 ou 3
+	seulement au tour 1 ?
+	seulement un arbre ? (bizarre)
+	ne pas representé couple arbre+seed mais seulement seed sur case (puis choisir l'arbre) => mais quid des dormants ?
+
+== Possible moves => optimize
+[DONE] * Quand un arbre agit (grow), il n'a plus de move, mais les autres peuvent faire leur move (sauf sun)
+.....
+
+== EVAL
+* Ajouter la richesse du sol dans l'eval
+* predire les points des arbres en fonction de curent nutrients (par exemple 3 T3 ca donne pas 60 mais 58)
+[DONE] * Prendre en compte le nombre de day restants pour garder les arbres (approximation)
+
+== shadows
+**PERF** remplacer par 2x6 longs comme une shadow map avec 2 long pour la pos des arbres & leur taille, et un Long.bitCount peut nous permettre de vite calculer les points de sun ??
+
+
+
+[KO] il faut copier ! * Remplacer dormant par le tour jouer (pas le day)

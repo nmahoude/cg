@@ -1,0 +1,15 @@
+= Spring 2022
+
+https://github.com/nmahoude/private/issues
+
+== Strategie
+
+Attack : 
+	trouver un équilibre : 
+		envoyer des mobs pour occuper les défenseurs dans leur base (pas de wildmana)
+		ne pas trop leur envoyer de mana gratuite
+		tenter de marquer des points 
+	
+
+
+== Tactique

@@ -1,0 +1,87 @@
+= TODOs
+
+[DONE] init du projet
+
+[DONE] clone game referee : https://github.com/CodinGame
+
+[DONE] read inputs (global then turn)
+
+* perf fastDist
+* use fastDist
+
+* Check ControlOracle et son utilisation dans le LightState
+* Implementer une strat de patrouille (utilisable meme pour la def)
+* retirer le max de new & le arraysort pour eviter les timeouts ...
+
+== PARAMETERS 
+à checker vers la fin du concours)
+* AG : DEPTH
+* AG : survivor & population
+* AG : mutation chance
+* AG : Eval...
+
+* MobInterceptor : les STEP, etc
+
+* ATTACKER (simpleAI) : hysteresis de mana
+
+
+
+== Cluster
+* comment evaluer cluster ..
+	
+	si 2 mobs sont l'un sur l'autre, il ne represente pas plus de danger que un seul avec le max(health)
+	du coup mettre les mobs les un sur les autres (approximativement) doit être bon 
+	
+	mais comment évaluer qu'ils sont l'un sur l'autre ? => AG fait tout seul
+
+== WILD MANA
+* comment maximiser la wild mana
+	
+	il faut sortir de la base dés qu'on peut, quite à utiliser de la mana (mana << kill hors base)
+	il faut que Attacker aide (au moins au début) en tappant des mobs
+
+
+== HEURISTIC
+* attacker ...
+	
+< 100
+
+	* control _quelques_ mobs chiants pour le mettre en défense (utiliser les quadrants ?)
+		s'arranger pour qu'il y ait un flot continu de mob qui arrive dans sa zone, bien espacés
+	* patrouiller/quadriller quand on n'a pas de cible 
+	
+	
+>> 100
+
+	* 'control' les mobs pas forcement vers le centre de sa base
+	* aider si notre base attaquée trop fortement ?	(harass)
+	* limiter le nombre de mobs dans la base adverse, mais les disperser -> oqp les defenseurs, mais pas leur envoyer trop de mana	
+		
+== MobInterceptor
+
+* Quand plusieurs steps, regarder si on peut hit un autre mob au 1er step sans perdre dans le nombre de steps
+
+== EVAL
+[DONE] depthFactor
+[DONE] state of game
+
+
+== AG
+	utiliser moins de mana (kill des mobs meme si on perd un peu de wildmana, plutot que les repousser)
+	apprendre le control (sur opp puis sur units)
+	apprendre le shield (sur hero ou sur unit => mais pour ça il faut simuler l'adversaire ?)
+	apprendre un push qui n'est pas tjs dans la meme direction (mais guidé)
+	guider l'AG ou le forcer pour les cas spécifiques (exemple Shield sur mob qui sont juste juste)
+	
+	init : faire quelques populations spécifiues 
+			* tout droit dans toutes les directions (spped 1/2 , sppeed 1)
+			* vers le mob le plus proche, shield, wind ...
+
+== OPTIMIZATION / PERF
+* code optim
+* precalculate
+* approximate
+
+=> mobInterceptor.bestPosFor : precalculer les position possibles plutot que de faire un dist & un test
+
+

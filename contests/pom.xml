@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nmx.codingame</groupId>
@@ -11,5 +13,23 @@
     <module>hypersonic_c</module>
     <module>c4l</module>
     <module>ww2</module>
+    <module>calm</module>
+    <module>coif</module>
+    <module>coif_v1</module>
+    <module>fall2020</module>
+    <module>ooc</module>
+    <module>pac</module>
+    <module>spring2021</module>
+    <module>utg2019</module>
+
+    <module>spring2022</module>
+    <module>SG22</module>
+    <module>cultistwars</module>
+    <module>fall2022</module>
+    <module>spring2023</module>
+    <module>summer2023</module>
+    <module>org.nmx.fall2023</module>
+    <module>fall2023</module>
+    <module>exolegend</module>
   </modules>
 </project>

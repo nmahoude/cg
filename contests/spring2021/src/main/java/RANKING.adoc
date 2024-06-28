@@ -1,0 +1,89 @@
+
+DATE  *__* __.__ : explication modifications
+
+== Valeur de ranking important
+Legend
+May 16, 2021 11:44:59 PM : 6 / 32.93 : !!!!!!!!!!!!!!!!!!!!!!!!!
+ : depth 10 & qq changements :/
+May 16, 2021 10:04:28 AM : 18/ 28.10 : repassage à DEPTH 6
+May 16, 2021 9:30:43 AM : 21 / 27.48 : pas mal de petits changements
+May 16, 2021 12:47:03 AM : 14 / 29.43 : 
+
+May 16, 2021 12:10:50 AM : mal à monté !!! je perds contre des 100+
+May 15, 2021 10:47:27 PM : 17 / 28.05 (pas fini car bug dans generateur de moves): ajouter les T0 dans le calcul des suns, forbiden cells strong
+May 15, 2021 7:52:06 PM : 17 / 28.51 : DEPTH 6, repasser K à 1000, ordonner les actions (empecher les grow dans le mauvais ordre)
+May 15, 2021 6:36:31 PM : timeouts :/ 
+May 15, 2021 7:16:18 AM : 27.56 :  K = 2000, point*2.5
+May 14, 2021 11:17:14 PM : 17 / 26.99  : ne seeder que si ccost == 0 + un peu de perf & un changement normalement sans conséquence des coefs de propation du score des BSNode
+May 14, 2021 2:11:22 PM : 14 / 28.21 : courant (iso 1h52)+ relaxing forbidencells
+
+------------ Historique -----------------------------
+
+Gold
+May 14, 2021 2:11:22 PM : ?? (passage légende): courant (iso 1h52)+ relaxing forbidencells
+May 14, 2021 12:09:43 PM : 21 / 54.72 : (sans source) : bloquer les forbiden plus fort en debut de partie
+May 14, 2021 10:17:22 AM : 29 / 53.90  : 1h52
+May 14, 2021 9:37:37 AM : 51 : baisser le K
+May 14, 2021 9:31:34 AM : : version courante => encore des timeouts
+May 14, 2021 8:58:45 AM : 42 / 53.06 : le 1h10
+May 14, 2021 3:33:44 AM : x : remplacer sunPoints par potentielScore & potentialSunPoints
+May 14, 2021 1:52:09 AM : 22 / 55.23 : baisser K pour les timeout
+May 14, 2021 1:10:31 AM : 22 / 55.43 : baisser le timeout, still D4
+May 14, 2021 1:07:06 AM : timeouts : BS depth 4
+May 14, 2021 12:37:25 AM : 35 / 54.02 : beam search
+May 13, 2021 11:36:12 PM : : augmenter le coeff T3 en early
+May 13, 2021 11:21:50 PM : nope : diminuer un peu le poids des T2 dans le early
+May 13, 2021 10:13:46 PM : 23 / 55.30 : 5h09
+May 13, 2021 5:09:27 PM : 15 / 56.69 : MC standard
+May 13, 2021 2:51:44 PM : 21 / 56.06 : BeamSearch is back
+May 13, 2021 2:15:12 PM : 18 / 56.74 : 90ms
+May 13, 2021 11:05:33 AM : 20/56.77 : pleins de changements (coef eval, assouplissement tour 11)
+May 13, 2021 9:58:03 AM : 54 : 0.7 + richness
+May 13, 2021 9:31:52 AM : 42 : coef back to 1
+May 13, 2021 8:44:39 AM : 36 / 56.00: seulement la cell 0 pour les foriden (et pas de reverse cast)
+May 13, 2021 8:20:08 AM : 66 : + liberer ls cells du milieu (<= 6)
+May 13, 2021 7:52:15 AM : 41 : 12h47 back to test 
+May 13, 2021 2:25:20 AM : 52 : MC avec coeff 0.9
+May 13, 2021 2:09:45 AM :~60 pas fini: le beam search !!!
+May 13, 2021 1:39:29 AM: 33 : 0.66
+May 13, 2021 1:25:49 AM : NOGO : apport de sun à 0.5
+May 13, 2021 12:47:39 AM : 21 / 57.61 : diminuer l'apport de sun des arbres (0.7)
+May 12, 2021 10:27:44 PM : 29 : 1.2 * score + eval
+May 12, 2021 4:10:06 PM : 28 : Ref
+
+Silver
+May 12, 2021 3:10:54 PM : 24 : 1.0*score+eval
+May 12, 2021 2:44:09 PM : 21 / 56.54 : ombre à 3
+May 12, 2021 2:21:13 PM : 24 / 56.18 : his ombre à 5 (tjs 46ms)
+May 12, 2021 1:46:48 PM : 51 : truc fou, on essaye de considerer que les arbres ennemis sont plus grand de 1 pour calculer les ombres (worst case)
+May 12, 2021 1:26:16 PM : 27 : Eval : 1.0 * ses sun points (au lieu de 3)
+May 12, 2021 11:22:11 AM : 18 / 57.31 : repassage à 3 days
+May 12, 2021 9:34:31 AM : 21 : depth 4 days
+May 12, 2021 9:06:48 AM : 14 / 57.75 : 12 
+May 12, 2021 8:02:55 AM : 24 : grow until 13 au lieu de 11 (tjs 46ms)
+May 12, 2021 2:04:16 AM : 20 : suppression de la richness des cells & abaisser le score / points
+May 12, 2021 1:42:06 AM : 42 : Refacto shadows & ajout richness de la cell pour planter (tjs en 46ms)
+May 12, 2021 12:16:57 AM : 22 : forbiden à distance 1 et % de seeder à 5% au lieu de 80
+May 11, 2021 11:20:54 PM : *44* / 55.35: 46ms !! && plus aggressif sur ses sunpoints, plus aggressif sur les simu sans seeds, nouveau random
+May 11, 2021 10:26:57 PM : 83 : perf : remplacer [][] par [] et 2.0 par 2.5 dans l'eval
+May 11, 2021 9:20:45 PM : 132 : reduire possibilite de seed aux days 0 & 1
+May 11, 2021 8:10:08 PM : 82 : std 
+May 11, 2021 7:21:03 PM : 120 : reduire la possibilité de seed au day 0
+May 11, 2021 3:38:24 PM : 96 : VNext avec depth D3
+May 11, 2021 2:39:46 PM : 108 : VNext
+May 11, 2021 2:00:13 PM : 102 : V1 avec quelques modifs mineures
+May 11, 2021 12:03:46 PM : : optim sur le calculateMoves
+May 11, 2021 9:06:47 AM : 40-70 : ne pas limiter les seeds à la 3eme action
+May 11, 2021 7:23:17 AM : 74 : ajouter les forbiden cells (pour ne pas seed dans l'ombre théorique de mes arbres)
+May 11, 2021 12:46:59 AM : 303 : ?
+
+Bronze
+May 10, 2021 12:51:10 PM : 245 : passage  à 90ms => preuve qu'il faut des perfs
+May 10, 2021 12:08:09 AM : : ajout de la richness dans l'eval 
+May 10, 2021 11:09:09 AM : 300 : points valent 2 au lieu de 3
+May 10, 2021 9:34:00 AM : 300 : remise ne place du WAIT dans la liste de chaques possibleActions
+May 10, 2021 9:12:58 AM : 434 : suppression de la derniere eval (en double), tuning des random d'actions
+May 9, 2021 4:24:26 PM : 200 : ?
+May 8, 2021 10:58:51 PM : 334 : revue eval (je crois^^)
+May 8, 2021 10:26:46 PM : 332 : encore refacto
+May 8, 2021 10:08:36 PM : 689 : refacto de l'eval

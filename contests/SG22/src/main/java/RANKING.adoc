@@ -1,0 +1,9 @@
+
+DATE  *__* __.__ : explication modifications
+
+== Valeur de ranking important
+
+Jun 24, 2022 12:31 *14* 29.21 : archi study en play card quand score == 4 (plutot que CI)
+
+
+

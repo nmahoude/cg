@@ -1,0 +1,43 @@
+
+
+== TO TRY
+
+== Valeur de ranking important
+Apr 14, 2020 3:15:33 PM - plus de trails
+Apr 14, 2020 3:05:46 PM - test trigger ou torpedo *bof*
+Apr 14, 2020 2:36:08 PM - *2* ( trigger selon le nombre de mines que j'ai)
+Apr 13, 2020 3:49:04 PM *3* 28.25
+Apr 12, 2020 8:55:40 PM *6* 28.40
+Apr 12, 2020 6:36:52 PM *5* 26.65
+Apr 12, 2020 11:52:46 AM code rk3 + malus surface *?*             
+Apr 12, 2020 11:38:20 AM *8*
+Apr 12, 2020 1:11:30 AM *3* 29.49
+Apr 11, 2020 11:57:42 PM
+Apr 11, 2020 11:36:47 PM  5 28.34
+Apr 11, 2020 10:42:09 PM idem RK5 *6* 28.16
+Apr 11, 2020 10:12:02 PM 14
+Apr 11, 2020 4:54:32 PM *5* 28.50
+Apr 11, 2020 3:34:45 AM suppresion mineheat 32
+Apr 11, 2020 3:29:15 AM ajout un sonar       -> semble contreproductif
+Apr 11, 2020 2:54:29 AM *13* 25.60
+Apr 11, 2020 2:42:12 AM sans le +4 sur silence *22*
+Apr 11, 2020 2:35:07 AM   fd * 1.0 + le 4 sur silence   => des defaites contre pas mal de mal classés :(           
+Apr 11, 2020 2:31:28 AM fd * 1000 -> pas bon             
+Apr 11, 2020 2:10:47 AM suppression maluys move *15*
+Apr 11, 2020 1:57:38 AM plus de fast detector *23*
+Apr 11, 2020 1:49:52 AM idem
+Apr 11, 2020 1:47:34 AM malus si pas move             
+Apr 11, 2020 1:32:51 AM idem *22*
+Apr 11, 2020 1:17:26 AM changeLife - (5) *34*
+Apr 11, 2020 12:51:27 AM change score *63*
+Apr 11, 2020 12:30:28 AM  *25*
+Apr 11, 2020 12:16:01 AM *26*
+Apr 11, 2020 12:00:34 AM : *21*
+Apr 10, 2020 12:24:20 AM : 50 / 23.68
+Apr 7, 2020 1:27:31 AM : 60 // + silence avant mines
+Apr 7, 2020 12:29:28 AM : 66 // + ne pas se faire remarquer par nos triggers
+Apr 6, 2020 12:47:07 AM : 78 // + ne pas se faire remarquer par une torpille pourrie (Premier essai)
+
+Apr 6, 2020 12:12:55 AM : 96 // avec le nouveau code & quelques corrections
+Apr 5, 2020 2:47:03 PM : 96 // avec le nouveau code & remix du vieux!
+Apr 5, 2020 2:22:49 PM : 85 // avec un vieux code du 03/04 :/, mais une searchAI 

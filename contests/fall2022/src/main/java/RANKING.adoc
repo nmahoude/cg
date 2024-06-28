@@ -1,0 +1,60 @@
+
+<DATE>  *__* __.__ : "explication modifications"
+
+== Valeur de ranking important
+
+=== LEGEND
+Jan 03, 2023 10:12 *18* 21.56
+
+Jan 02, 2023 09:01 *14* 21.77  
+
+== GOLD
+Jan 02, 2023 02:08 *__* 
+Jan 02, 2023  13:35 *15* : optimize LowRecyclers ratio calculator (ne prendre que les cells qui ont changé)
+
+_Jan 02, 2023 12:14_ *9*  32.81 : redo the recyclers (LowRecyclers & MRU)
+
+Jan 01, 2023 08:31 *13* 31.90 : mettre bien les move déjà fait pour le spreader
+ 
+Jan 01, 2023 07:34 *15* 31.52 : faire le tour pour pas passer par la frontiere ! (ca marche bien)
+
+Jan 01, 2023 05:02 *21* 29.67 :
+
+Jan 01, 2023 04:35 *__* : remise en place du spawn (comment un crein quand turn < 6 :) )
+
+Jan 01, 2023 03:44 *35*
+
+Jan 01, 2023 02:43 *30*
+
+Jan 01, 2023 02:18 *24* 28.59 : encore plein de modif non maitrisée :/
+
+Jan 01, 2023 13:50  *??* __.__ : derniere version sans le bug des distances :/
+Jan 01, 2023 13:30  *22* __.__ : derniere version sans le bug des distances :/
+Jan 01, 2023 11:19 *21* __.__ : change le calcul du danger
+Jan 01, 2023 10:42 *36* __.__ : code à jour , danger modifié & state.apply marche pour les neutres
+
+Jan 01, 2023 10:21 *24* 28.90 : re le 16 pas aggro
+Jan 01, 2023 05:01 *34* 27.43 : plein de trucs :/
+Jan 01, 2023 01:43 *31* : nouveau code, same result
+Jan 01, 2023 01:11 *31!* : re 16 pas aggro de 8:02
+Jan 01, 2023 12:50 *??*   : gros changement sur le spreader
+Jan 01, 2023 12:22 *24* 28.90 : plein de petites modifs
+Dec 31, 2022 11:15 *??* : re le 16 avec la défense complète
+Dec 31, 2022 10:56 *22* : re le 16 defense aggro pour vérifier
+Dec 31, 2022 10:30 *29* : ?? normalement pas de modification particuliere à part la suppression de la prediction des move OPP :/
+Dec 31, 2022 10:19 *XX* : try to predict OPP units move (when easy)
+
+Dec 31, 2022 09:47 *16* 29.66 : (def aggro) ne défendre que contre le max des unités autour (au lieu de la somme)
+Dec 31, 2022 08:02 *16* 29.62 : ne pas construire un recycler suite à Search (si c'est bon, winningHeuristic le fera)
+
+Dec 31, 2022 07:29 *17* 29.65 : Best (defense complete)
+Dec 31, 2022 06:01 *23* 28.53 : re le best (20 de Dec 31, 2022 03:23)
+Dec 31, 2022 05:37 *24* 28.08 : stall , aggro, mais rollback du search
+Dec 31, 2022 05:00 *31* 27.60 : calcul reelement le stall (mais ne revient pas à unstall) + toujours aggro
+Dec 31, 2022 04:20 *25* 27.89 : inversion de l'AgressionDetector dans son utilisation ....
+Dec 31, 2022 03:49 *24* : Aggression detector & son utilisation
+Dec 31, 2022 03:23 *20* 29.09 : add neutralizer
+Dec 31, 2022 02:52 *22* : attack aggro all the time
+Dec 31, 2022 01:58 *28* : limit search, build near units (-freeRecyclers)
+Dec 31, 2022 01:27 *31* : limit search, freeRecycler first, build near units 
+Dec 31, 2022 10:27 *28* : xxxxla ref

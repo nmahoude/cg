@@ -1,0 +1,18 @@
+
+
+= A la recherche des regressions (de classement)
+
+* [ ] DiffusionMAp : Ne plus *units dans la valeur initiale
+ 
+* [ ] Danger : ajouter un bonus si la case est neutre
+
+* [ ] defensedanger : les cases neutres demandes du reinforcement
+
+* [ ] spreadQuickly ne tourne plus en boucle
+
+* [ ] Recycler1stturn : ne pas créer au tour 1 si ca créé une ile (dans tous les cas)
+
+* [ ] unitSpawner : prendre en compte les 2 diffuseMap pour savoir où spawner
+
+* [ ] 
+

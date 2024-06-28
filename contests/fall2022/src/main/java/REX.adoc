@@ -1,0 +1,27 @@
+= FALL Challenge 2022 - REX
+
+== Ce qui n'a pas marché
+* ne pas conserver mes tests junit OK (ou les disabled si doute)
+* code trop compliqué/long => ne pas hésitez à refactorer
+* faire un trello
+* oppComparator => pas assez exploité ? ou manque des infos ?
+
+== Ce qui a marché  
+* *le viewer* : il faut investir dessus!
+* les junit qui se basent sur l'état du jeu
+* le fait de packed l'état
+* le "optional state" dans la sortie et le fait de pouvoir l'augmenter sans tout casser
+* reuse de la Pos qui m'a fait gagner du temps
+* 
+
+== Ce qui m'a manqué
+* analyser mes partie dans les last battles 
+    nombre de timeout
+    erreur "nmahoude tried:" 
+    autres indicateurs
+    analyse stratégique (je perds parce que trop de terrain boufé ?) 
+
+== TODO
+* DiffuseMap => à généraliser (/lib)
+* BFS réutilisable aussi ?
+

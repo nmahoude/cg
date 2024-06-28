@@ -1,0 +1,73 @@
+= TODOs
+  small lot of void : -259628381865358340
+  perfect medium square : 4914570700000552000
+  almost perfect & big  :-5438616320477138000
+  delicate start        : -73966787122734510
+  one path              : -956393217403955200
+  un trou entre nous    : seed=4983529952426293000
+  
+  l'un pret de l'autre : 85149885017302480
+  
+  frontier = 1 seul point ! : seed=-6881008730099181000
+  
+  
+  moyen gruyere               : -4266810113468226600
+  gros gruyere               : -1318651839714702300
+  
+  seed=-4749118126982619000
+
+
+== Strategie
+
+* [ ] comment exploiter les hyper aggressifs
+* [ ] comment etre aggressif contre les prudents ?
+      Piste : si ils ont des unités derriere, attaquer
+
+* [ ] ne pas stocker de matter ! l'utiliser pour etre aggro (ou en prévision d'etre aggro)      
+* [ ] comment exploiter les 2 contre 1
+      en attaque, je crois que je ne vérifie pas si je peux attaquer à plusieurs cellules
+
+* [ ] 
+  seed=-2074756270300732200 vs  yrhiba (en blue)
+  
+  Je peux l'écraser ou envoyer un robot parcourir mon terrain, mais je fais rien que défendre :/
+  
+Global 
+^12 6
+Optional State : 
+^ 27
+^38 16
+^    0  2560     0     0     0 17458  5126     0     0     0  3078     0 
+^16896 16896 12800     0     0     0  5126     0  9222     0  5127  5129 
+^12288 20992 16896 20992     0     0     0  9222  5126     0  5126     0 
+^12288 18944 18944  8704 16896  4640  9234 17414  9222  2048 18432 12288 
+^ 8192 16896  8704 18944 20992 16912 17426 20480 18432  8192 16384  8192 
+^20480     0     0 16384 16384     0     0 16384 16384     0     0 20480 
+
+
+* [ ] build en 13,7 protege une grosse partie de mon territoire
+Global 
+^23 11
+Optional State : 
+^ 26
+^17 27
+^18944     0 18432     0 16896     0     0 16896     0     0 20480 16384 18432 20480 12288     0 12288     0 20480 18432     0 18432 16384 
+^16912 16896 16896 16896 12800 16896 20992 12800     0 16384 17414 21008 18944     0     0     0 18432 12288     0 18432     0 16384 20480 
+^    0 12800 12800     0     0     0     0 16896     0     0 12800  2561 16896     0 16384 12288     0 12288 12288 16384 16384 12288 20480 
+^    0     0     0 18960     0 12800 12800  4608     0  4608     0  4617  2561     0  5126     0     0 17414     0     0     0     0     0 
+^    0 16896 16896 16896     0     0 16896 16896     0 20992 16896  2561 16896     0 18960     0 17414  3078  3078     0 18432 12288 16384 
+^16896 16896 16896     0     0     0 16896     0     0     0  4608 16896 21008 13318  5126     0     0     0  3078 16384 16384 16384 16384 
+^16896 12800 18944     0     0 20992 16896     0     0     0     0  3078 17414 21510     0     0 17414     0 16384 16384 16384 16384     0 
+^    0     0     0     0     0 16896     0     0  8705 16896  2560 20992 16912 17414 13318 17414 13318 12288     0 18432     0     0     0 
+^20992 12800 16896 16896 12816 12800     0     0  4617     0 16896 19474 12288     0 12288 16384     0     0     0     0 12288 12288     0 
+^20992 16896     0 18944     0 12800 18944     0     0     0 18432 20480 16384 16384     0 12288 20480 16384 12288 16384 16384 16384 16384 
+^16896 18944     0 18944 20992     0 12800     0 12288 20480 18432 16384 20480     0     0 16384     0     0 16384     0 18432     0 18432 
+
+
+
+* [ ] ne pas spawn n'importe où, il faut regarder où sont les forces
+
+* [ ] poser un recycler à coté des siens pour bouffer ses scraps aussi !
+      surtout si il en a poser 2 (ou 3,4?) en croix
+      
+* [ ] recycler ou spawn pour défendre ? (search)

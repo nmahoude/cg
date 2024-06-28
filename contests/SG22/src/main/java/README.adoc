@@ -1,0 +1,44 @@
+= SG 2022
+
+== RULES 
+TRAINING (0). 
+	
+	The team draws 2 cards and can play 1 more card from their hand.
+
+CODING (1). 
+
+	The team draws 1 card and can play 2 more cards from their hand.
+
+DAILY_ROUTINE (2). 
+
+	This is a permanent skill: once played, it stays active until the team has released one application.
+	After moving, the team can get their new skill card from a desk one step away. If you play many cards, their effects will add up.
+
+TASK_PRIORITIZATION (3). 
+
+	The team will remove one skill card from their hand and put it back on the board.
+	They will then take another available skill card from the board.
+
+ARCHITECTURE_STUDY (4). 
+
+	This is a permanent skill: once played, it stays active until the team has released one application.
+	The team will draw one more card at the beginning of their turn. If you play many cards, their effects will add up.
+
+CONTINUOUS_INTEGRATION (5). 
+
+	The team automate one of their skills from their hand.
+	This card will never be discarded and will always be available, but only to release applications.
+
+CODE_REVIEW (6). 
+
+	The team gets 2 BONUS skill cards from the board and puts them in their discard pile.
+
+REFACTORING (7). 
+
+	The team can remove a Technical Debt card from their hand and put it back on the board.
+
+== Strategie
+
+
+
+== Tactique

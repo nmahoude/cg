@@ -1,0 +1,12 @@
+= TODOs
+
+[DONE] init project
+
+== RULES
+
+daily_routine add up => ça veut dire qu'on peut aller chercher plus loin ?
+ 
+
+=== PERFORMANCE
+
+Precalculer hand+automated (min) -> application + debt 

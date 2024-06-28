@@ -1,0 +1,17 @@
+= STRATEGY
+
+Axes :
+* Les achats
+  Quand acheter, Quoi acheter, Strategy pour obtenir les t0 si besoin
+
+* Quelle commande fabriquer ?
+* Comment passer de notre état à la commande à partir des spells ? => A* ?
+
+* Attention distance !
+
+* Fin de match ( quand 6 potions ont été brew ou 100)
+  . si on ne peut plus faire de potion : maximiser les tier1+ dans l'inventaire !
+
+    
+    
+== PLAN

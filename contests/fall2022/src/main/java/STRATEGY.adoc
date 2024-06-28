@@ -1,0 +1,31 @@
+= STRATEGY
+
+il faut avoir 1 case de plus que l'adversaire à la fin !
+1 seul case suffit pour gagner ...
+
+
+Le recycler bouffe N case mais rapporte de quoi construire les spawn (et les recyclers) => equilibre à trouver
+attaquer les enemis somme nulle
+le recycler bloque les chemins de tout le monde
+
+utiliser le recycler pour empecher un envahissement
+
+* [ ] utiliser un/+ recyclers pour fermer une zone où il a plein d'unités et moi peu
+      
+    je perds cette partie du territoire + quelques cases, 
+    mais il perd bcp d'unités (bloquées)!
+  
+* [ ] si il atteint des cases neutres dans "mon" camp, je suis mal car je ne peux pas le bloquer !
+
+* Changement de owner : 
+la case reste bleue (SURE) si unité dans la case >= à la somme des unites autour
+
+
+si j'ai plus de case que lui, je peux grignoter mes cases pour avoir un avantage en unités !
+
+si j'ai moins d'unité sur une zone disputée, il faut que je grignote autre part pour revenir à mini égalité & esperer la gagner
+
+si mes secured cells sont > ses théoriques, j'ai gagné (et vis versa)
+
+
+

@@ -1,0 +1,29 @@
+= TODO
+
+== Minimax
+* Si on est pas bien (cooldown > N & il peut nous manger) alors 
+    à moins de vouloir le sacrifier contre des pellets (fin de partie, plus bcp de pellets)
+    ne pas aller dans les culs de sac (mini bfs sur 5 tours pour detecter les cdsac?)!
+
+* Si on ne voit plus le pacman dont on a peur, décider qu'il est le plus proche de nous 
+
+== Valeur pellets
+* valeur des pelets restants :
+  decrement si il en prend !
+  Si son score fait +2 en un tour, tous les pelets perdent un peu de valeur
+  Si je vois un pellet, il repasse à valeur 1
+  => v0.1 faite
+  => V1.0 : un truc du genre 
+                  deltaScore * (sum(mangeage) - mangeageCettePellet / (sum(mangeage) * (nbPellets -1))
+
+
+== Oracle:
+* si il ne peut etre qu'en une seule position, meme si on ne le voit plus, il faut faire comme si on le voyait encore !
+
+* Elaguer sur le score ??
+  si il marque un point, il peut pas etre sur une case vide
+  => compliqué parce que tous les pac peuvent marquer ou pas
+
+* Quand un ennemi pop, on peut trouver d'où il vient
+  et décider (sauf si il a fait demi tour?) qu'il a manger toutes les pellets sur le route unique
+  

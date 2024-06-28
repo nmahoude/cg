@@ -1,0 +1,32 @@
+= TODO
+
+. calcul des distances OptiGraph : ajouter les REST obligatoires pour avoir une évaluation encore plus pertinente de la distance.
+
+
+=== TOME
+. quel spell acheter au début ? stat sur les meilleurs spells ???
+    A* permet de récupérer des spells au fil de l'eau
+
+=== RECETTES
+. quelle recette faire ? 
+. Quelle recette en priorité ?
+. prendre en compte le score de l'opp pour choisir les recettes (si on est en avance faire les recettes plus rapide)
+.  si opp fait la recette , ca doit diminuer le ROI de la recette
+. DENY - si opp fait une recette mais qu'on peut la finir avant, on lui coupe l'herbe sous le pied
+
+=== ASTAR
+. la distance (A*) doit prendre en compte le nombre d'ingrédient qu'il me reste (avec un poids sur les tier ?)
+
+
+=== ENDGAME
+. si je peux faire la 6eme recette avant lui
+     si je suis en retard 
+        je dois faire le max de point (recette + tier1+ restant) tout en finissant avant lui
+     sinon faire la plus chere qui finie avant lui en gardant le max de tier1+
+     sinon si je suis en avance faire la plus chere
+   
+. sinon (il fait la 6eme avant moi)
+    il faut maximiser les tier1+ (MC, BFS, BS ?)
+   
+
+=== SPEC Temp

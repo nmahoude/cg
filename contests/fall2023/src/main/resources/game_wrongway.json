@@ -1,0 +1,547 @@
+{
+  "frames": [
+    {
+      "gameInformation": "",
+      "summary": "",
+      "view": " 0\n{\"global\":{\"graphics\":\"1;10000;10000;2;12;4 0 0;5 1 0;6 0 1;7 1 1;8 0 2;9 1 2;10 2 0;11 3 0;12 2 1;13 3 1;14 2 2;15 3 2;2;16;17;0\"},\"frame\":{\"duration\":500,\"graphics\":\"12;4 6647 3672 141 141 0;5 3352 3672 -141 141 0;6 8160 6305 141 141 0;7 1839 6305 -141 141 0;8 7736 8834 141 -141 0;9 2263 8834 -141 -141 0;10 7878 3744 0 200 0;11 2121 3744 0 200 0;12 2943 6061 -200 0 0;13 7056 6061 200 0 0;14 1085 8661 141 -141 0;15 8914 8661 -141 -141 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2000 500 x x 30 0 0 0 0 ;0;0;2 6000 500 x x 30 0 0 0 0 ;0;0;0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _;0;1 7999 500 x x 30 0 0 0 0 ;0;0;3 3999 500 x x 30 0 0 0 0 ;0;0;0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _\"}}\n",
+      "keyframe": true,
+      "agentId": -1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 4999 3750 0 Daneel04999.5\nMOVE 4999 3750 0 Giskard04999.5\n",
+      "view": " 1\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 8082 1094 0\nMOVE 4144 1082 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 0\n^ 0 0 0 0 0 \n^ 0 0 0 0 0 \n^ 0 0 0 0 0 \n^ 0 0 0 0 0 \n\n^ 703730391613440000 703730391613440000 703730391777280000 703730391777280000 703730391941120000 703730391941120000 703730391613440000 703730391613440000 703730391777280000 703730391777280000 703730391941120000 703730391941120000 1407417833553920000 1407417833553920000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 7999 500 0 30\n^ 3 3999 500 0 30\n^ 2\n^ 0 2000 500 0 30\n^ 2 6000 500 0 30\n--- Current Scans ---\n^ 0 \n--- Fishes --- \n^ 0\n--- Blips --- \n^ 28\n^ 1204 1205 1106 1207 1208 1209 1210 1211 1212 1213 1214 1115 1216 1217 3104 3205 3106 3207 3108 3209 3110 3211 3212 3113 3214 3115 3116 3117 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 0 / 0\nExpected for 10 : 0 / 0\nExpected for 11 : 0 / 0\nExpected for 100 : 0 / 0\nExpected for 101 : 0 / 0\nExpected for 110 : 0 / 0\nExpected for 111 : 0 / 0\nExpected for 1000 : 0 / 0\nExpected for 1001 : 0 / 0\nExpected for 1010 : 0 / 0\nExpected for 1011 : 0 / 0\nExpected for 1100 : 0 / 0\nExpected for 1101 : 0 / 0\nExpected for 1110 : 0 / 0\nExpected si il ramene tout maintenant et moi tout apres 96 / 0\n ------------ thinking for Drone: 1 (7999,500)\nLooking for fish 15 with radar : (7999,7500)|2001,2500|\nBest speed= [83,594]\nShould light ? for drone 1\nRatio with fish 4 => 0.0\nRatio with fish 10 => 0.0\nA : DELTA MOVE : dx=83 dy=594 lamp = false\n----------------\n ------------ thinking for Drone: 3 (3999,500)\nLooking for fish 8 with radar : (3999,7500)|4000,2500|\nBest speed= [145,582]\nShould light ? for drone 3\nRatio with fish 4 => 0.0\nRatio with fish 5 => 0.0\nRatio with fish 10 => 0.0\nRatio with fish 11 => 0.0\nA : DELTA MOVE : dx=145 dy=582 lamp = false\n----------------\n",
+      "summary": "",
+      "view": " 2\n{\"duration\":1000,\"graphics\":\"12;4 6788 3813 141 141 0;5 3211 3813 -141 141 0;6 8301 6446 141 141 0;7 1698 6446 -141 141 0;8 7877 8693 141 -141 0;9 2122 8693 -141 -141 0;10 7878 3944 0 200 0;11 2121 3944 0 200 0;12 2743 6061 -200 0 0;13 7256 6061 200 0 0;14 1226 8520 141 -141 0;15 8773 8520 -141 -141 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2407 941 4999 3750 30 0 0 0 0 Daneel04999.5;0;0;2 5823 1073 4999 3750 30 0 0 0 0 Giskard04999.5;0;0;0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _;0;1 8082 1094 8082 1094 30 0 0 0 0 ;0;0;3 4144 1082 4144 1082 30 0 0 0 0 ;0;0;0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 4000 3950 0 Daneel04000.0\nMOVE 7899 3950 0 Giskard07899.5\n",
+      "view": " 3\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 8165 1688 0\nMOVE 4289 1664 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 1\n^ 2000 500 0 30 0 \n^ 7999 500 0 30 0 \n^ 6000 500 0 30 0 \n^ 3999 500 0 30 0 \n\n^ 703704621809667999 703704617514696704 703696036333887295 703704617678536704 703704622137347999 703704617842376704 703704621809667999 703704617514696704 703704617678536704 703704621973507999 703704617842376704 703696036497727295 1559414320942284800 1559414320942284800 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 8082 1094 0 30\n^ 3 4144 1082 0 30\n^ 2\n^ 0 2407 941 0 30\n^ 2 5823 1073 0 30\n--- Current Scans ---\n^ 0 \n--- Fishes --- \n^ 0\n--- Blips --- \n^ 28\n^ 1204 1205 1106 1207 1208 1209 1210 1211 1212 1213 1214 1115 1216 1217 3104 3205 3106 3207 3108 3209 3110 3211 3212 3113 3214 3115 3116 3117 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 0 / 0\nExpected for 10 : 0 / 0\nExpected for 11 : 0 / 0\nExpected for 100 : 0 / 0\nExpected for 101 : 0 / 0\nExpected for 110 : 0 / 0\nExpected for 111 : 0 / 0\nExpected for 1000 : 0 / 0\nExpected for 1001 : 0 / 0\nExpected for 1010 : 0 / 0\nExpected for 1011 : 0 / 0\nExpected for 1100 : 0 / 0\nExpected for 1101 : 0 / 0\nExpected for 1110 : 0 / 0\nExpected si il ramene tout maintenant et moi tout apres 96 / 0\n ------------ thinking for Drone: 1 (8082,1094)\nLooking for fish 15 with radar : (8082,7500)|1918,2500|\nBest speed= [83,594]\nShould light ? for drone 1\nRatio with fish 4 => 0.12067039106145251\nRatio with fish 10 => 0.12067039106145251\nA : DELTA MOVE : dx=83 dy=594 lamp = false\n----------------\n ------------ thinking for Drone: 3 (4144,1082)\nLooking for fish 8 with radar : (4144,7500)|3938,2500|\nBest speed= [145,582]\nShould light ? for drone 3\nRatio with fish 4 => 0.11823260538344338\nRatio with fish 5 => 0.11235521235521236\nRatio with fish 10 => 0.11823260538344338\nRatio with fish 11 => 0.11235521235521236\nA : DELTA MOVE : dx=145 dy=582 lamp = false\n----------------\n",
+      "summary": "",
+      "view": " 4\n{\"graphics\":\"12;4 6929 3954 141 141 0;5 3070 3954 -141 141 0;6 8442 6587 141 141 0;7 1557 6587 -141 141 0;8 8018 8552 141 -141 0;9 1981 8552 -141 -141 0;10 7878 4144 0 200 0;11 2121 4144 0 200 0;12 2543 6061 -200 0 0;13 7456 6061 200 0 0;14 1367 8379 141 -141 0;15 8632 8379 -141 -141 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2688 1471 4000 3950 30 0 0 0 0 Daneel04000.0;0;0;2 6174 1560 7899 3950 30 0 0 0 0 Giskard07899.5;0;0;0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _;0;1 8165 1688 8165 1688 30 0 0 0 0 ;0;0;3 4289 1664 4289 1664 30 0 0 0 0 ;0;0;0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2103 4050 0 Daneel02103.5\nMOVE 7811 4050 0 Giskard07811.0\n",
+      "view": " 5\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 8248 2282 0\nMOVE 4434 2246 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 2\n^ 2407 941 0 30 0 \n^ 8082 1094 0 30 0 \n^ 5823 1073 0 30 0 \n^ 4144 1082 0 30 0 \n\n^ 703704355521695792 703705240284954624 703695679851601810 703705240448794624 703704355849375792 703705240612634624 703704355521695792 703705240284954624 703705240448794624 703704355685535792 703705240612634624 703695680015441810 1711410808330649600 1711410808330649600 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 8165 1688 0 30\n^ 3 4289 1664 0 30\n^ 2\n^ 0 2688 1471 0 30\n^ 2 6174 1560 0 30\n--- Current Scans ---\n^ 0 \nFor drone 1, No scan of fish 4 at pos (8082,1094) light? false ... cropping in\nFor drone 1, No scan of fish 10 at pos (8082,1094) light? false ... cropping in\nFor drone 3, No scan of fish 5 at pos (4144,1082) light? false ... cropping in\nFor drone 3, No scan of fish 11 at pos (4144,1082) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 28\n^ 1204 1205 1106 1207 1208 1209 1210 1211 1212 1213 1214 1115 1216 1217 3104 3205 3106 3207 3108 3209 3110 3211 3212 3113 3214 3115 3116 3117 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 0 / 0\nExpected for 10 : 0 / 0\nExpected for 11 : 0 / 0\nExpected for 100 : 0 / 0\nExpected for 101 : 0 / 0\nExpected for 110 : 0 / 0\nExpected for 111 : 0 / 0\nExpected for 1000 : 0 / 0\nExpected for 1001 : 0 / 0\nExpected for 1010 : 0 / 0\nExpected for 1011 : 0 / 0\nExpected for 1100 : 0 / 0\nExpected for 1101 : 0 / 0\nExpected for 1110 : 0 / 0\nExpected si il ramene tout maintenant et moi tout apres 96 / 0\n ------------ thinking for Drone: 1 (8165,1688)\nLooking for fish 15 with radar : (8165,7500)|1835,2500|\nBest speed= [83,594]\nShould light ? for drone 1\nRatio with fish 4 => 0.2452012383900929\nRatio with fish 10 => 0.2452012383900929\nA : DELTA MOVE : dx=83 dy=594 lamp = false\n----------------\n ------------ thinking for Drone: 3 (4289,1664)\nLooking for fish 8 with radar : (4289,7500)|3876,2500|\nBest speed= [145,582]\nShould light ? for drone 3\nRatio with fish 4 => 0.24024767801857586\nRatio with fish 5 => 0.21711354628118443\nRatio with fish 10 => 0.24024767801857586\nRatio with fish 11 => 0.21711354628118443\nA : DELTA MOVE : dx=145 dy=582 lamp = false\n----------------\n",
+      "summary": "",
+      "view": " 6\n{\"graphics\":\"12;4 7070 4095 141 141 0;5 2929 4095 -141 141 0;6 8583 6728 141 141 0;7 1416 6728 -141 141 0;8 8159 8411 -177 92 0;9 1840 8411 177 92 0;10 7878 4344 0 200 0;11 2121 4344 0 200 0;12 2343 6061 -200 0 0;13 7656 6061 200 0 0;14 1508 8238 -177 -92 0;15 8491 8238 177 -92 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2555 2056 2103 4050 30 0 0 0 0 Daneel02103.5;0;0;2 6504 2061 7811 4050 30 0 0 0 0 Giskard07811.0;0;0;0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _;0;1 8248 2282 8248 2282 30 0 0 0 0 ;0;0;3 4434 2246 4434 2246 30 0 0 0 0 ;0;0;0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2103 4150 0 Daneel02103.5\nMOVE 7986 4150 0 Giskard07986.5\n",
+      "view": " 7\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 8331 2876 0\nMOVE 4579 2828 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 3\n^ 2688 1471 0 30 0 \n^ 8165 1688 0 30 0 \n^ 6174 1560 0 30 0 \n^ 4289 1664 0 30 0 \n\n^ 703704089233723585 703705863055212544 703695323369316325 703705863219052544 703704089561403585 703705863382892544 703704089233723585 703705863055212544 703705863219052544 703704089397563585 703705863382892544 703695323533156325 1863407295719014400 1863407295719014400 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 8248 2282 0 30\n^ 3 4434 2246 0 30\n^ 2\n^ 0 2555 2056 0 30\n^ 2 6504 2061 0 30\n--- Current Scans ---\n^ 0 \nFor drone 0, No scan of fish 5 at pos (2688,1471) light? false ... cropping in\nFor drone 0, No scan of fish 11 at pos (2688,1471) light? false ... cropping in\nFor drone 1, No scan of fish 4 at pos (8165,1688) light? false ... cropping in\nFor drone 1, No scan of fish 10 at pos (8165,1688) light? false ... cropping in\nFor drone 3, No scan of fish 5 at pos (4289,1664) light? false ... cropping in\nFor drone 3, No scan of fish 11 at pos (4289,1664) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 28\n^ 1204 1205 1106 1207 1208 1209 1210 1211 1212 1213 1214 1115 1216 1217 3104 3205 3106 3207 3108 3209 3110 3211 3212 3113 3214 3115 3116 3117 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 0 / 0\nExpected for 10 : 0 / 0\nExpected for 11 : 0 / 0\nExpected for 100 : 0 / 0\nExpected for 101 : 0 / 0\nExpected for 110 : 0 / 0\nExpected for 111 : 0 / 0\nExpected for 1000 : 0 / 0\nExpected for 1001 : 0 / 0\nExpected for 1010 : 0 / 0\nExpected for 1011 : 0 / 0\nExpected for 1100 : 0 / 0\nExpected for 1101 : 0 / 0\nExpected for 1110 : 0 / 0\nExpected si il ramene tout maintenant et moi tout apres 96 / 0\n ------------ thinking for Drone: 1 (8248,2282)\nLooking for fish 15 with radar : (8248,7500)|1752,2500|\nBest speed= [83,594]\nShould light ? for drone 1\nRatio with fish 4 => 0.3280816573373002\nRatio with fish 10 => 0.3280816573373002\nA : DELTA MOVE : dx=83 dy=594 lamp = false\n----------------\n ------------ thinking for Drone: 3 (4434,2246)\nLooking for fish 8 with radar : (4434,7500)|3814,2500|\nBest speed= [145,582]\nShould light ? for drone 3\nRatio with fish 4 => 0.3182392076171812\nRatio with fish 5 => 0.27700715925003083\nRatio with fish 10 => 0.3182392076171812\nRatio with fish 11 => 0.27700715925003083\nA : DELTA MOVE : dx=145 dy=582 lamp = false\n----------------\n",
+      "summary": "",
+      "view": " 8\n{\"graphics\":\"12;4 7211 4236 141 141 0;5 2788 4236 -141 141 0;6 8724 6869 141 141 0;7 1275 6869 -141 141 0;8 7982 8503 -177 92 0;9 2017 8503 177 92 0;10 7878 4544 0 200 0;11 2121 4544 0 200 0;12 2143 6061 -200 0 0;13 7856 6061 200 0 0;14 1331 8146 -177 -92 0;15 8668 8146 177 -92 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2428 2642 2103 4150 30 0 0 0 0 Daneel02103.5;0;0;2 6851 2550 7986 4150 30 0 0 0 0 Giskard07986.5;0;0;0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _;0;1 8331 2876 8331 2876 30 0 0 0 0 ;0;0;3 4579 2828 4579 2828 30 0 0 0 0 ;0;0;0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 1977 4250 1 Daneel01977.5\nMOVE 8151 4250 0 Giskard08151.5\n",
+      "view": " 9\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 8414 3470 0\nMOVE 4774 3395 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 4\n^ 2555 2056 0 30 0 \n^ 8248 2282 0 30 0 \n^ 6504 2061 0 30 0 \n^ 4434 2246 0 30 0 \n\n^ 539885386538291538 550021148577234944 703694966887030840 703706485989310464 703703823273431378 703706486153150464 539885386538291538 550021148577234944 703706485989310464 703703823109591378 703706486153150464 703694967050870840 2015403783107379200 2015403783107379200 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 8331 2876 0 30\n^ 3 4579 2828 0 30\n^ 2\n^ 0 2428 2642 0 30\n^ 2 6851 2550 0 30\n--- Current Scans ---\n^ 0 \nFor drone 0, No scan of fish 5 at pos (2555,2056) light? false ... cropping in\nFor drone 0, No scan of fish 11 at pos (2555,2056) light? false ... cropping in\nFor drone 1, No scan of fish 4 at pos (8248,2282) light? false ... cropping in\nFor drone 1, No scan of fish 10 at pos (8248,2282) light? false ... cropping in\nFor drone 3, No scan of fish 5 at pos (4434,2246) light? false ... cropping in\nFor drone 3, No scan of fish 11 at pos (4434,2246) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 28\n^ 1204 1205 1106 1207 1208 1209 1210 1211 1212 1213 1214 1115 1216 1217 3104 3205 3106 3207 3108 3209 3110 3211 3212 3113 3214 3115 3116 3117 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 0 / 0\nExpected for 10 : 0 / 0\nExpected for 11 : 0 / 0\nExpected for 100 : 0 / 0\nExpected for 101 : 0 / 0\nExpected for 110 : 0 / 0\nExpected for 111 : 0 / 0\nExpected for 1000 : 0 / 0\nExpected for 1001 : 0 / 0\nExpected for 1010 : 0 / 0\nExpected for 1011 : 0 / 0\nExpected for 1100 : 0 / 0\nExpected for 1101 : 0 / 0\nExpected for 1110 : 0 / 0\nExpected si il ramene tout maintenant et moi tout apres 96 / 0\n ------------ thinking for Drone: 1 (8331,2876)\nLooking for fish 15 with radar : (8331,7500)|1669,2500|\nBest speed= [83,594]\nShould light ? for drone 1\nRatio with fish 4 => 0.4831260185906892\nRatio with fish 10 => 0.4831260185906892\nA : DELTA MOVE : dx=83 dy=594 lamp = false\n----------------\n ------------ thinking for Drone: 3 (4579,2828)\nLooking for fish 8 with radar : (4579,7500)|3752,2500|\nBest speed= [195,567]\nShould light ? for drone 3\nRatio with fish 4 => 0.46380097784706165\nRatio with fish 5 => 0.38202034003630464\nRatio with fish 10 => 0.46380097784706165\nRatio with fish 11 => 0.38202034003630464\nA : DELTA MOVE : dx=195 dy=567 lamp = false\n----------------\n",
+      "summary": "$0's drone 0 scans 2 fish: 5,11\n",
+      "view": " 10\n{\"graphics\":\"12;4 7352 4377 40 398 1;5 2647 4377 125 380 1;6 8865 7010 141 141 0;7 1134 7010 -141 141 0;8 7805 8595 -177 92 0;9 2194 8595 177 92 0;10 7878 4744 -155 369 1;11 2121 4744 0 200 0;12 1943 6061 -200 0 0;13 8056 6061 200 0 0;14 1154 8054 -177 -92 0;15 8845 8054 177 -92 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2266 3220 1977 4250 25 1 0 0 0 Daneel01977.5;2;5;11;2;1 0;3 0;2 7215 3027 8151 4250 30 0 0 0 0 Giskard08151.5;0;0;0 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ _ _ _;0;1 8414 3470 8414 3470 30 0 0 0 0 ;0;0;3 4774 3395 4774 3395 30 0 0 0 0 ;0;0;0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 1314 6850 0 Daneel11314.0\nMOVE 8325 4421 1 Giskard08325.0\n",
+      "view": " 11\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 8497 4064 1\nMOVE 4969 3962 1\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 5\n^ 2428 2642 0 30 0 \n^ 8331 2876 0 30 0 \n^ 6851 2550 0 30 0 \n^ 4579 2828 0 30 0 \n\n^ 372688984123118051 386203334940033024 703694610404745355 703707108759568384 703703556985459171 703707108923408384 372688984123118051 386203334940033024 703707108759568384 703703556821619171 703707108923408384 703694610568585355 2167400270495744000 2167400270495744000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 8414 3470 0 30\n^ 3 4774 3395 0 30\n^ 2\n^ 0 2266 3220 0 25\n^ 2 7215 3027 0 30\n--- Current Scans ---\n^ 2 0 5 0 11 \nFor drone 0, New fish is 5 at pos (2428,2642) light? true ... cropping out \nFor drone 0, No scan of fish 7 at pos (2428,2642) light? true ... cropping in\nFor drone 0, New fish is 11 at pos (2428,2642) light? true ... cropping out \nFor drone 0, No scan of fish 12 at pos (2428,2642) light? true ... cropping in\nFor drone 1, No scan of fish 4 at pos (8331,2876) light? false ... cropping in\nFor drone 1, No scan of fish 10 at pos (8331,2876) light? false ... cropping in\nFor drone 3, No scan of fish 5 at pos (4579,2828) light? false ... cropping in\nFor drone 3, No scan of fish 11 at pos (4579,2828) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 28\n^ 1204 1205 1106 1207 1208 1209 1210 1211 1212 1213 1214 1115 1216 1217 3104 3205 3106 3207 3108 3209 3110 3211 3212 3113 3214 3115 3216 3117 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 0 / 0\nExpected for 10 : 0 / 0\nExpected for 11 : 0 / 0\nExpected for 100 : 0 / 4\nExpected for 101 : 0 / 4\nExpected for 110 : 0 / 4\nExpected for 111 : 0 / 4\nExpected for 1000 : 0 / 0\nExpected for 1001 : 0 / 0\nExpected for 1010 : 0 / 0\nExpected for 1011 : 0 / 0\nExpected for 1100 : 0 / 4\nExpected for 1101 : 0 / 4\nExpected for 1110 : 0 / 4\nExpected si il ramene tout maintenant et moi tout apres 94 / 4\n ------------ thinking for Drone: 1 (8414,3470)\nLooking for fish 15 with radar : (8414,7500)|1586,2500|\nBest speed= [83,594]\nShould light ? for drone 1\nRatio with fish 4 => 0.5494505494505495\nPotential match between 1 and any fish 4\nRatio with fish 6 => 0.188\nRatio with fish 10 => 0.5494505494505495\nPotential match between 1 and any fish 10\nRatio with fish 13 => 0.10329670329670329\nDrone 1 found 2 potential matches, turning the light ON\nA : DELTA MOVE : dx=83 dy=594 lamp = true\n----------------\n ------------ thinking for Drone: 3 (4774,3395)\nLooking for fish 8 with radar : (4774,7500)|3640,2500|\nBest speed= [195,567]\nShould light ? for drone 3\nRatio with fish 4 => 0.5494505494505495\nPotential match between 3 and any fish 4\nRatio with fish 5 => 0.373\nRatio with fish 7 => 0.03215516797859752\nRatio with fish 10 => 0.5494505494505495\nPotential match between 3 and any fish 10\nRatio with fish 11 => 0.373\nRatio with fish 12 => 0.03215516797859752\nRatio with fish 13 => 0.08681318681318681\nDrone 3 found 2 potential matches, turning the light ON\nA : DELTA MOVE : dx=195 dy=567 lamp = true\n----------------\n",
+      "summary": "$0's drone 2 scans 2 fish: 4,10\n$1's drone 1 scans 2 fish: 4,10\n",
+      "view": " 12\n{\"graphics\":\"12;4 7392 4775 -61 395 1;5 2772 4757 227 330 1;6 9006 7151 141 141 0;7 993 7151 -141 141 0;8 7628 8687 -177 92 0;9 2371 8687 177 92 0;10 7723 5000 -255 308 1;11 2121 4944 2 400 1;12 1743 6061 -200 0 0;13 8256 6061 200 0 0;14 977 7962 -177 -92 0;15 9022 7962 177 -92 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2114 3800 1314 6850 26 0 0 0 0 Daneel11314.0;0;2;1 0;3 0;2 7589 3496 8325 4421 25 1 0 0 0 Giskard08325.0;2;4;10;2;0 0;2 0;1 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ _ _ _;0;1 8497 4064 8497 4064 25 1 0 0 0 ;2;4;10;2;0 0;2 0;3 4969 3962 4969 3962 25 1 0 0 0 ;0;0;1 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 1233 6950 0 Daneel11233.0\nMOVE 8507 6950 0 Giskard18507.0\n",
+      "view": " 13\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 8580 4658 0\nMOVE 5184 4522 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 6\n^ 2266 3220 0 25 2080 \n^ 8414 3470 0 30 0 \n^ 7215 3027 0 30 0 \n^ 4774 3395 0 30 0 \n\n^ 205492366959579814 430673894463897866 703694253922459870 641783451416264704 703703075949122214 703707946442031104 205492366959579814 430673894463897866 641783451416264704 703703075785282214 703707946442031104 703694254086299870 2319396757884108800 2319396757884108800 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 8497 4064 0 25\n^ 3 4969 3962 0 25\n^ 2\n^ 0 2114 3800 0 26\n^ 2 7589 3496 0 25\n--- Current Scans ---\n^ 6 1 4 1 10 0 5 0 11 2 4 2 10 \nFor drone 1, New fish is 4 at pos (8414,3470) light? true ... cropping out \nFor drone 1, No scan of fish 6 at pos (8414,3470) light? true ... cropping in\nFor drone 1, New fish is 10 at pos (8414,3470) light? true ... cropping out \nFor drone 1, No scan of fish 13 at pos (8414,3470) light? true ... cropping in\nFor drone 2, New fish is 4 at pos (7215,3027) light? true ... cropping out \nFor drone 2, New fish is 10 at pos (7215,3027) light? true ... cropping out \nFor drone 3, No scan of fish 4 at pos (4774,3395) light? true ... cropping in\nFor drone 3, No scan of fish 5 at pos (4774,3395) light? true ... cropping in\nFor drone 3, No scan of fish 7 at pos (4774,3395) light? true ... cropping in\nFor drone 3, No scan of fish 10 at pos (4774,3395) light? true ... cropping in\nFor drone 3, No scan of fish 11 at pos (4774,3395) light? true ... cropping in\nFor drone 3, No scan of fish 12 at pos (4774,3395) light? true ... cropping in\n--- Fishes --- \n^ 2\n^ 4 7392 4775 -61 395\n^ 10 7723 5000 -255 308\n--- Blips --- \n^ 28\n^ 1204 1205 1106 1207 1208 1209 1210 1211 1212 1213 1214 1115 1216 1217 3104 3205 3106 3207 3108 3209 3110 3211 3212 3113 3214 3115 3216 3117 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 4 / 0\nExpected for 10 : 0 / 0\nExpected for 11 : 4 / 0\nExpected for 100 : 0 / 4\nExpected for 101 : 4 / 4\nExpected for 110 : 0 / 4\nExpected for 111 : 4 / 4\nExpected for 1000 : 0 / 4\nExpected for 1001 : 2 / 2\nExpected for 1010 : 0 / 4\nExpected for 1011 : 2 / 2\nExpected for 1100 : 0 / 16\nExpected for 1101 : 2 / 14\nExpected for 1110 : 0 / 16\nExpected si il ramene tout maintenant et moi tout apres 88 / 16\n ------------ thinking for Drone: 1 (8497,4064)\nLooking for fish 15 with radar : (8497,7500)|1503,2500|\nBest speed= [83,594]\nShould light ? for drone 1\nRatio with fish 6 => 0.0\nRatio with fish 13 => 0.0\nA : DELTA MOVE : dx=83 dy=594 lamp = false\n----------------\n ------------ thinking for Drone: 3 (4969,3962)\nLooking for fish 8 with radar : (4969,7500)|3528,2500|\nBest speed= [215,560]\nShould light ? for drone 3\nRatio with fish 5 => 0.02222970697204446\nRatio with fish 7 => 0.0\nRatio with fish 11 => 0.02222970697204446\nRatio with fish 12 => 0.0\nA : DELTA MOVE : dx=215 dy=560 lamp = false\n----------------\n",
+      "summary": "",
+      "view": " 14\n{\"graphics\":\"12;4 7331 5000 -163 365 1;5 2999 5000 344 204 1;6 9147 7292 -18 -199 0;7 852 7292 18 -199 0;8 7451 8779 -177 92 0;9 2548 8779 177 92 0;10 7468 5000 -114 383 1;11 2123 5000 106 386 1;12 1543 6061 -200 0 0;13 8456 6061 200 0 0;14 800 7870 -18 199 0;15 9199 7870 18 199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 1952 4378 1233 6950 27 0 0 0 0 Daneel11233.0;0;2;1 0;3 0;2 7743 4076 8507 6950 26 0 0 0 0 Giskard18507.0;0;2;0 0;2 0;1 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ _ _ _;0;1 8580 4658 8580 4658 26 0 0 0 0 ;0;2;0 0;2 0;3 5184 4522 5184 4522 26 0 0 0 0 ;0;0;1 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 1157 7050 0 Daneel11157.0\nMOVE 8694 7050 0 Giskard18694.0\n",
+      "view": " 15\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 8663 5252 0\nMOVE 5399 5082 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 7\n^ 2114 3800 0 26 2080 \n^ 8497 4064 0 25 1040 \n^ 7589 3496 0 25 1040 \n^ 4969 3962 0 25 0 \n\n^ 281479584619744 263473330225414210 404204522289766705 432929856264208384 703702594912785257 703708783960653824 4622655019 263473330225414210 432929856264208384 404213219598537577 703708783960653824 703693897604014385 2471393245272473600 2471393245272473600 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 8580 4658 0 26\n^ 3 5184 4522 0 26\n^ 2\n^ 0 1952 4378 0 27\n^ 2 7743 4076 0 26\n--- Current Scans ---\n^ 6 1 4 1 10 0 5 0 11 2 4 2 10 \n--- Fishes --- \n^ 0\n--- Blips --- \n^ 28\n^ 1204 1205 1106 1207 1208 1209 1210 1211 1212 1213 1214 1115 1216 1217 3104 3205 3106 3207 3108 3209 3110 3211 3212 3113 3214 3115 3216 3117 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 4 / 0\nExpected for 10 : 0 / 0\nExpected for 11 : 4 / 0\nExpected for 100 : 0 / 4\nExpected for 101 : 4 / 4\nExpected for 110 : 0 / 4\nExpected for 111 : 4 / 4\nExpected for 1000 : 0 / 4\nExpected for 1001 : 2 / 2\nExpected for 1010 : 0 / 4\nExpected for 1011 : 2 / 2\nExpected for 1100 : 0 / 16\nExpected for 1101 : 2 / 14\nExpected for 1110 : 0 / 16\nExpected si il ramene tout maintenant et moi tout apres 88 / 16\n ------------ thinking for Drone: 1 (8580,4658)\nLooking for fish 15 with radar : (8580,7500)|1420,2500|\nBest speed= [83,594]\nShould light ? for drone 1\nRatio with fish 6 => 0.48533007334963324\nRatio with fish 13 => 0.28582454260873574\nA : DELTA MOVE : dx=83 dy=594 lamp = false\n----------------\n ------------ thinking for Drone: 3 (5184,4522)\nLooking for fish 8 with radar : (5184,7500)|3396,2500|\nBest speed= [215,560]\nShould light ? for drone 3\nRatio with fish 5 => 0.015765069551777436\nRatio with fish 7 => 0.16792594428011018\nRatio with fish 11 => 0.015765069551777436\nRatio with fish 12 => 0.16792594428011018\nRatio with fish 13 => 0.23686719022235278\nA : DELTA MOVE : dx=215 dy=560 lamp = false\n----------------\n",
+      "summary": "",
+      "view": " 16\n{\"graphics\":\"12;4 7168 5000 -363 169 1;5 3343 5000 172 -102 0;6 9129 7093 -18 -199 0;7 870 7093 18 -199 0;8 7274 8871 -177 92 0;9 2725 8871 177 92 0;10 7354 5000 -340 210 1;11 2229 5000 398 42 1;12 1343 6061 -147 372 1;13 8656 6061 -3 400 1;14 782 8069 -18 199 0;15 9217 8069 18 199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 1781 4953 1157 7050 28 0 0 0 0 Daneel11157.0;0;2;1 0;3 0;2 7926 4647 8694 7050 27 0 0 0 0 Giskard18694.0;0;2;0 0;2 0;1 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ _ _ _;0;1 8663 5252 8663 5252 27 0 0 0 0 ;0;2;0 0;2 0;3 5399 5082 5399 5082 27 0 0 0 0 ;0;0;1 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 0 _ 0 _ 0 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 1076 7150 0 Daneel11076.0\nMOVE 8771 7150 0 Giskard18771.0\n",
+      "view": " 17\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 8767 5842 1\nMOVE 5643 5630 1\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 8\n^ 1952 4378 0 27 2080 \n^ 8580 4658 0 26 1040 \n^ 7743 4076 0 26 1040 \n^ 5184 4522 0 26 0 \n\n^ 89510765181148184 96278336559513600 460499161136505220 489225710586691584 703702027977102400 703709642954113024 56296717938597219 96278336559513600 489225710586691584 460507647991878720 703709642954113024 703693541121728900 2623389732660838400 2623389732660838400 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 8663 5252 0 27\n^ 3 5399 5082 0 27\n^ 2\n^ 0 1781 4953 0 28\n^ 2 7926 4647 0 27\n--- Current Scans ---\n^ 6 1 4 1 10 0 5 0 11 2 4 2 10 \nFor drone 0, No scan of fish 7 at pos (1952,4378) light? false ... cropping in\nFor drone 0, No scan of fish 12 at pos (1952,4378) light? false ... cropping in\nFor drone 1, No scan of fish 6 at pos (8580,4658) light? false ... cropping in\nFor drone 1, No scan of fish 13 at pos (8580,4658) light? false ... cropping in\nFor drone 3, No scan of fish 7 at pos (5184,4522) light? false ... cropping in\nFor drone 3, No scan of fish 12 at pos (5184,4522) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 28\n^ 1304 1305 1106 1207 1208 1209 1310 1311 1212 1213 1214 1115 1216 1217 3004 3305 3106 3207 3108 3209 3010 3311 3212 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 4 / 0\nExpected for 10 : 0 / 0\nExpected for 11 : 4 / 0\nExpected for 100 : 0 / 4\nExpected for 101 : 4 / 4\nExpected for 110 : 0 / 4\nExpected for 111 : 4 / 4\nExpected for 1000 : 0 / 4\nExpected for 1001 : 2 / 2\nExpected for 1010 : 0 / 4\nExpected for 1011 : 2 / 2\nExpected for 1100 : 0 / 16\nExpected for 1101 : 2 / 14\nExpected for 1110 : 0 / 16\nExpected si il ramene tout maintenant et moi tout apres 88 / 16\n ------------ thinking for Drone: 1 (8663,5252)\nLooking for fish 15 with radar : (8663,7500)|1337,2500|\nBest speed= [104,590]\nShould light ? for drone 1\nRatio with fish 6 => 0.8287292817679558\nPotential match between 1 and any fish 6\nRatio with fish 13 => 0.5077998050048749\nPotential match between 1 and any fish 13\nDrone 1 found 2 potential matches, turning the light ON\nA : DELTA MOVE : dx=104 dy=590 lamp = true\n----------------\n ------------ thinking for Drone: 3 (5399,5082)\nLooking for fish 8 with radar : (5399,7500)|3264,2500|\nBest speed= [244,548]\nShould light ? for drone 3\nRatio with fish 4 => 0.5081148564294632\nPotential match between 3 and any fish 4\nRatio with fish 5 => 0.010480349344978166\nRatio with fish 7 => 0.2791289604519063\nRatio with fish 10 => 0.09488139825218476\nRatio with fish 11 => 0.010480349344978166\nRatio with fish 12 => 0.2791289604519063\nRatio with fish 13 => 0.43586149929585094\nDrone 3 found 1 potential matches, turning the light ON\nA : DELTA MOVE : dx=244 dy=548 lamp = true\n----------------\n",
+      "summary": "$1's drone 1 scans 2 fish: 6,13\n$1's drone 3 scans 2 fish: 4,10\n",
+      "view": " 18\n{\"graphics\":\"12;4 6805 5000 352 -191 1;5 3515 4898 172 -102 0;6 9111 6894 124 380 1;7 888 6894 -111 166 0;8 7097 8963 -177 92 0;9 2902 8963 177 92 0;10 7014 5000 -393 -76 1;11 2627 5000 356 -182 1;12 1196 6433 -162 366 1;13 8653 6461 -72 393 1;14 764 8268 -18 199 0;15 9235 8268 18 199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 1598 5524 1076 7150 29 0 0 0 0 Daneel11076.0;0;2;1 0;3 0;2 8118 5215 8771 7150 28 0 0 0 0 Giskard18771.0;0;2;0 0;2 0;1 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ _ _ _;0;1 8767 5842 8767 5842 22 1 0 0 0 ;2;6;13;4;0 0;2 0;0 1;3 1;3 5643 5630 5643 5630 22 1 0 0 0 ;2;4;10;2;0 0;2 0;1 _ 1 _ 0 _ _ 0 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 0 _ 1 _ 0 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 990 7250 1 Daneel1990.5\nMOVE 8862 7250 0 Giskard18862.5\n",
+      "view": " 19\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 8912 6424 0\nMOVE 5906 6169 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 9\n^ 1781 4953 0 28 2080 \n^ 8663 5252 0 27 1040 \n^ 7926 4647 0 27 1040 \n^ 5399 5082 0 27 0 \n\n^ 152562877938146128 152574190881996800 407581509044937175 491759844369956864 703701461041419543 703710501947572224 112593431254539419 152574190881996800 491759844369956864 407589785446913303 703710501947572224 703693184639443415 2775386220049203200 2775386220049203200 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 8767 5842 0 22\n^ 3 5643 5630 0 22\n^ 2\n^ 0 1598 5524 0 29\n^ 2 8118 5215 0 28\n--- Current Scans ---\n^ 10 1 4 1 10 1 6 1 13 3 4 3 10 0 5 0 11 2 4 2 10 \nFor drone 0, No scan of fish 7 at pos (1781,4953) light? false ... cropping in\nFor drone 0, No scan of fish 12 at pos (1781,4953) light? false ... cropping in\nFor drone 1, New fish is 6 at pos (8663,5252) light? true ... cropping out \nFor drone 1, No scan of fish 8 at pos (8663,5252) light? true ... cropping in\nFor drone 1, New fish is 13 at pos (8663,5252) light? true ... cropping out \nFor drone 1, No scan of fish 15 at pos (8663,5252) light? true ... cropping in\nFor drone 2, No scan of fish 6 at pos (7926,4647) light? false ... cropping in\nFor drone 2, No scan of fish 13 at pos (7926,4647) light? false ... cropping in\nFor drone 3, New fish is 4 at pos (5399,5082) light? true ... cropping out \nFor drone 3, No scan of fish 7 at pos (5399,5082) light? true ... cropping in\nFor drone 3, No scan of fish 9 at pos (5399,5082) light? true ... cropping in\nFor drone 3, New fish is 10 at pos (5399,5082) light? true ... cropping out \nFor drone 3, No scan of fish 12 at pos (5399,5082) light? true ... cropping in\nFor drone 3, No scan of fish 13 at pos (5399,5082) light? true ... cropping in\nFor drone 3, No scan of fish 14 at pos (5399,5082) light? true ... cropping in\n--- Fishes --- \n^ 4\n^ 6 9111 6894 124 380\n^ 10 7014 5000 -393 -76\n^ 13 8653 6461 -72 393\n^ 4 6805 5000 352 -191\n--- Blips --- \n^ 28\n^ 1304 1305 1106 1207 1208 1209 1310 1311 1212 1213 1214 1115 1216 1217 3004 3305 3106 3207 3108 3209 3010 3311 3212 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 12 / 0\nExpected for 10 : 4 / 0\nExpected for 11 : 12 / 0\nExpected for 100 : 0 / 4\nExpected for 101 : 12 / 4\nExpected for 110 : 4 / 4\nExpected for 111 : 12 / 4\nExpected for 1000 : 0 / 4\nExpected for 1001 : 10 / 2\nExpected for 1010 : 2 / 2\nExpected for 1011 : 10 / 2\nExpected for 1100 : 0 / 16\nExpected for 1101 : 10 / 14\nExpected for 1110 : 2 / 14\nExpected si il ramene tout maintenant et moi tout apres 88 / 16\n ------------ thinking for Drone: 1 (8767,5842)\n>>>>> Drone: 1 (8767,5842) should kill the fish ! 6\nDrone: 1 (8767,5842) should chase the fish 6\nKill\tfish DISABLED !\nLooking for fish 15 with radar : (8767,7842)|1233,2158|\nBest speed= [145,582]\nShould light ? for drone 1\nRatio with fish 8 => 0.0\nRatio with fish 15 => 0.0\nA : DELTA MOVE : dx=145 dy=582 lamp = false\n----------------\n ------------ thinking for Drone: 3 (5643,5630)\nLooking for fish 8 with radar : (5643,7842)|3124,2158|\nBest speed= [263,539]\nShould light ? for drone 3\nRatio with fish 7 => 0.3458430597952954\nRatio with fish 9 => 0.01798383910935536\nRatio with fish 12 => 0.3458430597952954\nRatio with fish 14 => 0.01798383910935536\nA : DELTA MOVE : dx=263 dy=539 lamp = false\n----------------\n",
+      "summary": "$0's drone 0 scans 2 fish: 7,12\n",
+      "view": " 20\n{\"graphics\":\"12;4 7157 4809 196 -42 0;5 3687 4796 172 -102 0;6 9235 7274 142 374 1;7 777 7060 -216 337 1;8 6920 9055 -177 92 0;9 3079 9055 177 92 0;10 6621 4924 -196 42 0;11 2983 4818 178 -91 0;12 1034 6799 -183 356 1;13 8581 6854 -244 317 1;14 746 8467 -18 199 0;15 9253 8467 18 199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 1399 6090 990 7250 24 1 0 0 0 Daneel1990.5;2;7;12;4;1 0;3 0;1 1;2 1;2 8324 5779 8862 7250 29 0 0 0 0 Giskard18862.5;0;2;0 0;2 0;1 _ 0 _ 0 _ _ 1 _ 1 _ 0 _ _ 1 _ 1 _ 0 _ _ 1 _ 0 _ 0 _ _ _ _ _;0;1 8912 6424 8912 6424 23 0 0 0 0 ;0;4;0 0;2 0;0 1;3 1;3 5906 6169 5906 6169 23 0 0 0 0 ;0;2;0 0;2 0;1 _ 1 _ 0 _ _ 0 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 0 _ 1 _ 0 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 899 8649 0 Daneel2899.0\nMOVE 8958 7612 1 Giskard18958.5\n",
+      "view": " 21\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 9057 7006 1\nMOVE 6215 6683 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 10\n^ 1598 5524 0 29 2080 \n^ 8767 5842 0 22 9296 \n^ 8118 5215 0 28 1040 \n^ 5643 5630 0 22 1040 \n\n^ 4622654101 208870045204480000 281479723492247 331038491699052544 607436417733367307 703711360941031424 4622654310 208870045204480000 331038491699052544 281479695114701 703711360941031424 607428295950213695 2814792716779520000 2814792716779520000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 8912 6424 0 23\n^ 3 5906 6169 0 23\n^ 2\n^ 0 1399 6090 0 24\n^ 2 8324 5779 0 29\n--- Current Scans ---\n^ 12 1 4 1 10 1 6 1 13 3 4 3 10 0 5 0 11 0 7 0 12 2 4 2 10 \nFor drone 0, New fish is 7 at pos (1598,5524) light? true ... cropping out \nFor drone 0, No scan of fish 9 at pos (1598,5524) light? true ... cropping in\nFor drone 0, New fish is 12 at pos (1598,5524) light? true ... cropping out \nFor drone 0, No scan of fish 14 at pos (1598,5524) light? true ... cropping in\nFor drone 2, No scan of fish 13 at pos (8118,5215) light? false ... cropping in\n--- Fishes --- \n^ 1\n^ 13 8581 6854 -244 317\n--- Blips --- \n^ 28\n^ 1304 1305 1106 1207 1208 1209 1310 1311 1212 1213 1214 1115 1216 1217 3004 3305 3106 3207 3108 3209 3010 3311 3212 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 12 / 0\nExpected for 10 : 4 / 0\nExpected for 11 : 12 / 0\nExpected for 100 : 0 / 12\nExpected for 101 : 12 / 12\nExpected for 110 : 4 / 12\nExpected for 111 : 12 / 12\nExpected for 1000 : 0 / 4\nExpected for 1001 : 10 / 2\nExpected for 1010 : 2 / 2\nExpected for 1011 : 10 / 2\nExpected for 1100 : 0 / 24\nExpected for 1101 : 10 / 22\nExpected for 1110 : 2 / 22\nExpected si il ramene tout maintenant et moi tout apres 84 / 24\n ------------ thinking for Drone: 1 (8912,6424)\nLooking for fish 15 with radar : (8912,7642)|1088,2358|\nBest speed= [145,582]\nShould light ? for drone 1\nRatio with fish 8 => 0.22065002028738678\nRatio with fish 15 => 0.33163698049194235\nPotential match between 1 and Target FISH 15\nDrone 1 found 1 potential matches, turning the light ON\nA : DELTA MOVE : dx=145 dy=582 lamp = true\n----------------\n ------------ thinking for Drone: 3 (5906,6169)\nLooking for fish 8 with radar : (5906,7642)|3006,2358|\nBest speed= [309,514]\nShould light ? for drone 3\nRatio with fish 8 => 0.14869892671541282\nRatio with fish 9 => 0.013356911239800377\nRatio with fish 14 => 0.013356911239800377\nA : DELTA MOVE : dx=309 dy=514 lamp = false\n----------------\n",
+      "summary": "$0's drone 2 scans 2 fish: 6,13\n$1's drone 1 scans fish 15\n",
+      "view": " 22\n{\"graphics\":\"12;4 7353 4767 196 -42 0;5 3859 4694 172 -102 0;6 9377 7500 217 336 1;7 561 7397 -284 282 1;8 6743 9147 -177 92 0;9 3256 9147 177 92 0;10 6425 4966 -196 -42 0;11 3161 4727 178 -91 0;12 851 7155 -269 296 1;13 8337 7171 -390 89 1;14 728 8666 -18 199 0;15 9271 8666 18 199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 1284 6679 899 8649 25 0 0 0 0 Daneel2899.0;0;4;1 0;3 0;1 1;2 1;2 8520 6346 8958 7612 24 1 0 0 0 Giskard18958.5;2;6;13;4;0 0;2 0;0 1;3 1;1 _ 1 _ 0 _ _ 1 _ 1 _ 0 _ _ 1 _ 1 _ 0 _ _ 1 _ 1 _ 0 _ _ _ _ _;0;1 9057 7006 9057 7006 18 1 0 0 0 ;1;15;5;0 0;2 0;0 1;3 1;3 2;3 6215 6683 6215 6683 24 0 0 0 0 ;0;2;0 0;2 0;1 _ 1 _ 0 _ _ 0 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 0 _ 1 _ 1 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 799 8649 0 Daneel2799.5\nMOVE 9061 8649 0 Giskard29061.5\n",
+      "view": " 23\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 9057 6406 0\nMOVE 6478 7222 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 11\n^ 1399 6090 0 24 6304 \n^ 8912 6424 0 23 9296 \n^ 8324 5779 0 29 1040 \n^ 5906 6169 0 23 1040 \n\n^ 56296717938596301 265165899526963200 112873184086598352 302881673955508224 663730906256250642 537641983713869824 56296717938596510 265165899526963200 302881673955508224 281479720870277 537641983713869824 663722668508979920 2814792716779520000 2814792716779520000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 9057 7006 0 18\n^ 3 6215 6683 0 24\n^ 2\n^ 0 1284 6679 0 25\n^ 2 8520 6346 0 24\n--- Current Scans ---\n^ 15 1 4 1 10 1 6 1 13 1 15 3 4 3 10 0 5 0 11 0 7 0 12 2 4 2 10 2 6 2 13 \nFor drone 1, No scan of fish 8 at pos (8912,6424) light? true ... cropping in\nFor drone 1, New fish is 15 at pos (8912,6424) light? true ... cropping out \nFor drone 2, New fish is 6 at pos (8324,5779) light? true ... cropping out \nFor drone 2, New fish is 13 at pos (8324,5779) light? true ... cropping out \nFor drone 2, No scan of fish 15 at pos (8324,5779) light? true ... cropping in\n--- Fishes --- \n^ 3\n^ 6 9377 7500 217 336\n^ 13 8337 7171 -390 89\n^ 15 9271 8666 18 199\n--- Blips --- \n^ 28\n^ 1304 1305 1106 1207 1208 1209 1310 1311 1212 1213 1214 1115 1216 1217 3004 3305 3106 3207 3108 3209 3010 3311 3212 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 4 / 0\nExpected for 11 : 18 / 0\nExpected for 100 : 0 / 12\nExpected for 101 : 18 / 12\nExpected for 110 : 4 / 12\nExpected for 111 : 18 / 12\nExpected for 1000 : 0 / 12\nExpected for 1001 : 12 / 6\nExpected for 1010 : 2 / 10\nExpected for 1011 : 12 / 6\nExpected for 1100 : 0 / 40\nExpected for 1101 : 12 / 34\nExpected for 1110 : 2 / 38\nExpected si il ramene tout maintenant et moi tout apres 76 / 40\n ------------ thinking for Drone: 1 (9057,7006)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 1\nRatio with fish 8 => 0.0\n ------------ thinking for Drone: 3 (6215,6683)\nLooking for fish 8 with radar : (6215,9006)|2842,994|\nBest speed= [263,539]\nShould light ? for drone 3\nRatio with fish 9 => 0.11043805316409665\nRatio with fish 14 => 0.11043805316409665\nA : DELTA MOVE : dx=263 dy=539 lamp = false\n----------------\n",
+      "summary": "",
+      "view": " 24\n{\"graphics\":\"12;4 7549 4725 196 -42 0;5 4031 4592 172 -102 0;6 9594 7500 342 208 1;7 277 7500 -386 106 1;8 6566 9239 -177 92 0;9 3433 9239 177 92 0;10 6229 4924 -196 -42 0;11 3339 4636 178 -91 0;12 582 7451 -379 128 1;13 7947 7260 -363 169 1;14 710 8865 -18 199 0;15 9289 8865 18 199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 1141 7262 799 8649 26 0 0 0 0 Daneel2799.5;0;4;1 0;3 0;1 1;2 1;2 8657 6930 9061 8649 25 0 0 0 0 Giskard29061.5;0;4;0 0;2 0;0 1;3 1;1 _ 1 _ 0 _ _ 1 _ 1 _ 0 _ _ 1 _ 1 _ 0 _ _ 1 _ 1 _ 0 _ _ _ _ _;0;1 9057 6406 9057 6406 19 0 0 0 0 ;0;5;0 0;2 0;0 1;3 1;3 2;3 6478 7222 6478 7222 25 0 0 0 0 ;0;2;0 0;2 0;1 _ 1 _ 0 _ _ 0 _ 0 _ 0 _ _ 1 _ 0 _ 0 _ _ 0 _ 1 _ 1 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 742 8649 1 Daneel2742.0\nMOVE 9159 8649 1 Giskard29159.5\n",
+      "view": " 25\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 9057 5806 0\nMOVE 6787 7736 1\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 12\n^ 1284 6679 0 25 6304 \n^ 9057 7006 0 18 42064 \n^ 8520 6346 0 24 9296 \n^ 6215 6683 0 24 1040 \n\n^ 112593431254538501 321461753849446400 4786496673 139064096541507584 279798333737670727 593937838036353024 112593431254538710 321461753849446400 139064096541507584 281479741644945 593937838036353024 281479839622199 2814792716779520000 2814792716779520000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 9057 6406 0 19\n^ 3 6478 7222 0 25\n^ 2\n^ 0 1141 7262 0 26\n^ 2 8657 6930 0 25\n--- Current Scans ---\n^ 15 1 4 1 10 1 6 1 13 1 15 3 4 3 10 0 5 0 11 0 7 0 12 2 4 2 10 2 6 2 13 \nFor drone 0, No scan of fish 9 at pos (1284,6679) light? false ... cropping in\nFor drone 0, No scan of fish 14 at pos (1284,6679) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 28\n^ 1304 1305 1106 1207 1208 1209 1310 1311 1212 1213 1214 1115 1216 1217 3004 3305 3106 3207 3108 3209 3310 3311 3212 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 4 / 0\nExpected for 11 : 18 / 0\nExpected for 100 : 0 / 12\nExpected for 101 : 18 / 12\nExpected for 110 : 4 / 12\nExpected for 111 : 18 / 12\nExpected for 1000 : 0 / 12\nExpected for 1001 : 12 / 6\nExpected for 1010 : 2 / 10\nExpected for 1011 : 12 / 6\nExpected for 1100 : 0 / 40\nExpected for 1101 : 12 / 34\nExpected for 1110 : 2 / 38\nExpected si il ramene tout maintenant et moi tout apres 76 / 40\n ------------ thinking for Drone: 1 (9057,6406)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 1\n ------------ thinking for Drone: 3 (6478,7222)\nLooking for fish 8 with radar : (6478,8806)|2579,1194|\nBest speed= [309,514]\nShould light ? for drone 3\nRatio with fish 8 => 0.27018899590364903\nPotential match between 3 and Target FISH 8\nRatio with fish 9 => 0.16407146421544788\nRatio with fish 13 => 0.8503740648379052\nPotential match between 3 and any fish 13\nRatio with fish 14 => 0.16407146421544788\nDrone 3 found 2 potential matches, turning the light ON\nA : DELTA MOVE : dx=309 dy=514 lamp = true\n----------------\n",
+      "summary": "$0's drone 0 scans fish 14\n$0's drone 2 scans fish 15\n$1's drone 3 scans 2 fish: 8,13\n",
+      "view": " 26\n{\"graphics\":\"11;4 7745 4683 196 -42 0;5 4203 4490 172 -102 0;6 9936 7500 400 -2 1;8 6389 9331 -177 92 0;9 3610 9331 177 92 0;10 6033 4882 -196 -42 0;11 3517 4545 178 -91 0;12 203 7500 -366 -161 1;13 7584 7429 373 -144 1;14 692 9064 -90 390 1;15 9307 9064 18 199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 975 7839 742 8649 21 1 0 0 0 Daneel2742.0;1;14;5;1 0;3 0;1 1;2 1;2 2;2 8825 7506 9159 8649 20 1 0 0 0 Giskard29159.5;1;15;5;0 0;2 0;0 1;3 1;3 2;1 _ 1 _ 0 _ _ 1 _ 1 _ 0 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;0;1 9057 5806 9057 5806 20 0 0 0 0 ;0;5;0 0;2 0;0 1;3 1;3 2;3 6787 7736 6787 7736 20 1 0 0 0 ;2;8;13;4;0 0;2 0;0 2;3 1;1 _ 1 _ 1 _ _ 0 _ 3 _ 0 _ _ 1 _ 0 _ 0 _ _ 0 _ 1 _ 1 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2403 8649 1 Daneel22403.5\nMOVE 7523 8649 1 Giskard27523.0\n",
+      "view": " 27\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 9057 5206 0\nMOVE 6787 7136 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 13\n^ 1141 7262 0 26 6304 \n^ 9057 6406 0 19 42064 \n^ 8657 6930 0 25 9296 \n^ 6478 7222 0 25 1040 \n\n^ 168888972044409166 377757608171929600 56296718102438873 78266360579620864 336092199490296142 545525001046851584 168885261192665358 377757608171929600 78266360579620864 42222969261793225 545525001046851584 112873188497695599 2814792716779520000 2814792716779520000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 9057 5806 0 20\n^ 3 6787 7736 0 20\n^ 2\n^ 0 975 7839 0 21\n^ 2 8825 7506 0 20\n--- Current Scans ---\n^ 19 1 4 1 10 1 6 1 13 1 15 3 4 3 10 3 8 3 13 0 5 0 11 0 7 0 12 0 14 2 4 2 10 2 6 2 13 2 15 \nFor drone 0, No scan of fish 9 at pos (1141,7262) light? true ... cropping in\nFor drone 0, New fish is 14 at pos (1141,7262) light? true ... cropping out \nFor drone 2, No scan of fish 8 at pos (8657,6930) light? true ... cropping in\nFor drone 2, New fish is 15 at pos (8657,6930) light? true ... cropping out \nFor drone 3, New fish is 8 at pos (6478,7222) light? true ... cropping out \nFor drone 3, New fish is 13 at pos (6478,7222) light? true ... cropping out \n--- Fishes --- \n^ 2\n^ 8 6389 9331 -177 92\n^ 13 7584 7429 373 -144\n--- Blips --- \n^ 26\n^ 1304 1305 1106 1208 1209 1310 1311 1212 1213 1214 1115 1216 1217 3004 3305 3006 3208 3209 3310 3311 3312 3013 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 14 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 0 / 18\nExpected for 101 : 18 / 18\nExpected for 110 : 14 / 18\nExpected for 111 : 30 / 18\nExpected for 1000 : 0 / 18\nExpected for 1001 : 9 / 9\nExpected for 1010 : 10 / 14\nExpected for 1011 : 21 / 9\nExpected for 1100 : 0 / 64\nExpected for 1101 : 9 / 55\nExpected for 1110 : 10 / 60\nExpected si il ramene tout maintenant et moi tout apres 52 / 64\n ------------ thinking for Drone: 1 (9057,5806)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 1\n ------------ thinking for Drone: 3 (6787,7736)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 3\n",
+      "summary": "",
+      "view": " 28\n{\"graphics\":\"9;4 7941 4641 -357 -181 1;5 4375 4388 172 -102 0;8 6212 9423 -177 92 0;9 3787 9423 177 92 0;10 5837 4840 -196 -42 0;11 3695 4454 178 -91 0;13 7957 7285 -224 -331 1;14 602 9454 -45 195 0;15 9325 9263 18 199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 1497 8135 2403 8649 16 1 0 0 0 Daneel22403.5;0;5;1 0;3 0;1 1;2 1;2 2;2 8374 7902 7523 8649 15 1 0 0 0 Giskard27523.0;0;5;0 0;2 0;0 1;3 1;3 2;1 _ 1 _ 0 _ _ 1 _ 1 _ 0 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;0;1 9057 5206 9057 5206 21 0 0 0 0 ;0;5;0 0;2 0;0 1;3 1;3 2;3 6787 7136 6787 7136 21 0 0 0 0 ;0;4;0 0;2 0;0 2;3 1;1 _ 1 _ 1 _ _ 0 _ 3 _ 0 _ _ 1 _ 3 _ 0 _ _ 0 _ 1 _ 1 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2420 8819 1 Daneel22420.5\nMOVE 7507 8819 1 Giskard27507.0\n",
+      "view": " 29\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 9057 4606 0\nMOVE 6787 6536 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 14\n^ 975 7839 0 21 22688 \n^ 9057 5806 0 20 42064 \n^ 8825 7506 0 20 42064 \n^ 6787 7736 0 20 9488 \n\n^ 225183499221998211 434053462494412800 112593087820997473 190857210244235264 281479883200757 45344826541932544 225181974508607558 434053462494412800 134562214902104064 281479758552480 556488806999916544 225464098291852129 2814792716779520000 2814792716779520000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 9057 5206 0 21\n^ 3 6787 7136 0 21\n^ 2\n^ 0 1497 8135 0 16\n^ 2 8374 7902 0 15\n--- Current Scans ---\n^ 19 1 4 1 10 1 6 1 13 1 15 3 4 3 10 3 8 3 13 0 5 0 11 0 7 0 12 0 14 2 4 2 10 2 6 2 13 2 15 \nFor drone 0, No scan of fish 9 at pos (975,7839) light? true ... cropping in\nFor drone 2, No scan of fish 8 at pos (8825,7506) light? true ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1304 1305 1208 1209 1310 1311 1213 1214 1115 1216 1217 3004 3305 3208 3209 3310 3311 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 14 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 0 / 18\nExpected for 101 : 18 / 18\nExpected for 110 : 14 / 18\nExpected for 111 : 30 / 18\nExpected for 1000 : 0 / 18\nExpected for 1001 : 9 / 9\nExpected for 1010 : 10 / 14\nExpected for 1011 : 21 / 9\nExpected for 1100 : 0 / 64\nExpected for 1101 : 9 / 55\nExpected for 1110 : 10 / 60\nExpected si il ramene tout maintenant et moi tout apres 39 / 64\n ------------ thinking for Drone: 1 (9057,5206)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 1\n ------------ thinking for Drone: 3 (6787,7136)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 3\nRatio with fish 9 => 0.19283925151024017\n",
+      "summary": "",
+      "view": " 30\n{\"graphics\":\"9;4 7584 4460 -178 -90 0;5 4547 4286 172 -102 0;8 6035 9515 -177 92 0;9 3964 9515 177 92 0;10 5641 4798 -196 -42 0;11 3873 4363 178 -91 0;13 7733 6954 366 162 1;14 557 9649 -45 195 0;15 9343 9462 18 199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 1979 8492 2420 8819 11 1 0 0 0 Daneel22420.5;0;5;1 0;3 0;1 1;2 1;2 2;2 7962 8338 7507 8819 10 1 0 0 0 Giskard27507.0;0;5;0 0;2 0;0 1;3 1;3 2;1 _ 1 _ 0 _ _ 1 _ 1 _ 0 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;0;1 9057 4606 9057 4606 22 0 0 0 0 ;0;5;0 0;2 0;0 1;3 1;3 2;3 6787 6536 6787 6536 22 0 0 0 0 ;0;4;0 0;2 0;0 2;3 1;1 _ 1 _ 1 _ _ 0 _ 3 _ 0 _ _ 1 _ 3 _ 0 _ _ 0 _ 1 _ 1 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2781 8967 1 Daneel22781.5\nMOVE 7181 8967 1 Giskard27181.5\n",
+      "view": " 31\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 9057 4006 0\nMOVE 6787 5936 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 15\n^ 1497 8135 0 16 22688 \n^ 9057 5206 0 21 42064 \n^ 8374 7902 0 15 42064 \n^ 6787 7136 0 21 9488 \n\n^ 281479353544481411 490349316816896000 225184796479070873 303448059908849664 112873188541274157 703716592211197952 281478296982525822 490349316816896000 247153064566718464 76281441444240600 658102132572815360 338054947956466529 2814792716779520000 2814792716779520000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 9057 4606 0 22\n^ 3 6787 6536 0 22\n^ 2\n^ 0 1979 8492 0 11\n^ 2 7962 8338 0 10\n--- Current Scans ---\n^ 19 1 4 1 10 1 6 1 13 1 15 3 4 3 10 3 8 3 13 0 5 0 11 0 7 0 12 0 14 2 4 2 10 2 6 2 13 2 15 \nFor drone 0, No scan of fish 9 at pos (1497,8135) light? true ... cropping in\nFor drone 2, No scan of fish 8 at pos (8374,7902) light? true ... cropping in\nFor drone 2, No scan of fish 9 at pos (8374,7902) light? true ... cropping in\nFor drone 3, No scan of fish 9 at pos (6787,7136) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1304 1305 1208 1209 1210 1311 1213 1214 1115 1216 1217 3004 3305 3208 3209 3310 3311 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 14 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 0 / 18\nExpected for 101 : 18 / 18\nExpected for 110 : 14 / 18\nExpected for 111 : 30 / 18\nExpected for 1000 : 0 / 18\nExpected for 1001 : 9 / 9\nExpected for 1010 : 10 / 14\nExpected for 1011 : 21 / 9\nExpected for 1100 : 0 / 64\nExpected for 1101 : 9 / 55\nExpected for 1110 : 10 / 60\nExpected si il ramene tout maintenant et moi tout apres 39 / 64\n ------------ thinking for Drone: 1 (9057,4606)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 1\n ------------ thinking for Drone: 3 (6787,6536)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 3\nRatio with fish 5 => 4.489229856585139E-4\nRatio with fish 6 => 0.0967982129560685\nRatio with fish 9 => 0.2951566951566952\nRatio with fish 11 => 4.489229856585139E-4\n",
+      "summary": "$0's drone 0 scans fish 9\n$0's drone 2 scans fish 8\n",
+      "view": " 32\n{\"graphics\":\"9;4 7406 4370 -178 -90 0;5 4719 4184 172 -102 0;8 5858 9607 -177 92 0;9 4141 9607 177 92 0;10 5445 4756 -196 -42 0;11 4051 4272 178 -91 0;13 8099 7116 183 81 0;14 512 9844 -45 -195 0;15 9361 9661 18 199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 8798 2781 8967 6 1 0 0 0 Daneel22781.5;1;9;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 8714 7181 8967 5 1 0 0 0 Giskard27181.5;1;8;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;0;1 9057 4006 9057 4006 23 0 0 0 0 ;0;5;0 0;2 0;0 1;3 1;3 2;3 6787 5936 6787 5936 23 0 0 0 0 ;0;4;0 0;2 0;0 2;3 1;1 _ 1 _ 1 _ _ 0 _ 3 _ 0 _ _ 1 _ 3 _ 0 _ _ 0 _ 1 _ 1 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 33\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 9057 3406 0\nMOVE 6787 5336 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 16\n^ 1979 8492 0 11 22688 \n^ 9057 4606 0 22 42064 \n^ 7962 8338 0 10 42064 \n^ 6787 6536 0 22 9488 \n\n^ 226874067042966147 435744030315380736 337775740632965585 416038909573464064 225464884314445669 703699502536331147 110905320129042102 435744030315380736 359743914231332864 132578154760182800 703701937782784000 450645488383435617 2814792716779520000 2814792716779520000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 9057 4006 0 23\n^ 3 6787 5936 0 23\n^ 2\n^ 0 2495 8798 0 6\n^ 2 7495 8714 0 5\n--- Current Scans ---\n^ 21 1 4 1 10 1 6 1 13 1 15 3 4 3 10 3 8 3 13 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \nFor drone 0, New fish is 9 at pos (1979,8492) light? true ... cropping out \nFor drone 2, New fish is 8 at pos (7962,8338) light? true ... cropping out \n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1204 1205 1208 1209 1210 1211 1213 1214 1115 1216 1217 3004 3305 3208 3209 3310 3311 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 14 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 0 / 30\nExpected for 101 : 18 / 30\nExpected for 110 : 14 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 0 / 30\nExpected for 1001 : 9 / 21\nExpected for 1010 : 7 / 23\nExpected for 1011 : 15 / 15\nExpected for 1100 : 0 / 96\nExpected for 1101 : 9 / 87\nExpected for 1110 : 7 / 89\nExpected si il ramene tout maintenant et moi tout apres 29 / 96\n ------------ thinking for Drone: 1 (9057,4006)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 1\n ------------ thinking for Drone: 3 (6787,5936)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 3\nRatio with fish 5 => 0.04925521350546177\nRatio with fish 6 => 0.19194750486066106\nRatio with fish 11 => 0.04925521350546177\n",
+      "summary": "",
+      "view": " 34\n{\"graphics\":\"9;4 7228 4280 154 -369 1;5 4891 4082 172 -102 0;8 5681 9699 -177 92 0;9 4318 9699 177 92 0;10 5249 4714 -196 -42 0;11 4229 4181 178 -91 0;13 8282 7197 261 -304 1;14 467 9649 -45 -195 0;15 9379 9860 18 -199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 8198 2495 500 7 0 0 0 0 Daneel-12495;0;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 8114 7495 500 6 0 0 0 0 Giskard-17495;0;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;0;1 9057 3406 9057 3406 24 0 0 0 0 ;0;5;0 0;2 0;0 1;3 1;3 2;3 6787 5336 6787 5336 24 0 0 0 0 ;0;4;0 0;2 0;0 2;3 1;1 _ 1 _ 1 _ _ 0 _ 3 _ 0 _ _ 1 _ 3 _ 0 _ _ 0 _ 1 _ 1 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 35\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 9057 2806 0\nMOVE 6787 4736 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 17\n^ 2495 8798 0 6 285344 \n^ 9057 4006 0 23 42064 \n^ 7495 8714 0 5 173392 \n^ 6787 5936 0 23 9488 \n\n^ 225186076189661827 225201606791397376 450366590297579785 528629759238078464 338055733979059869 703690517464747715 167201174451525102 225201606791397376 472334763895947264 188874868076125000 703702796776243200 563235479054590817 2814792716779520000 2814792716779520000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 9057 3406 0 24\n^ 3 6787 5336 0 24\n^ 2\n^ 0 2495 8198 0 7\n^ 2 7495 8114 0 6\n--- Current Scans ---\n^ 21 1 4 1 10 1 6 1 13 1 15 3 4 3 10 3 8 3 13 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1204 1205 1208 1209 1210 1211 1213 1214 1115 1216 1217 3004 3305 3208 3209 3310 3311 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 14 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 0 / 30\nExpected for 101 : 18 / 30\nExpected for 110 : 14 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 0 / 30\nExpected for 1001 : 9 / 21\nExpected for 1010 : 7 / 23\nExpected for 1011 : 15 / 15\nExpected for 1100 : 0 / 96\nExpected for 1101 : 9 / 87\nExpected for 1110 : 7 / 89\nExpected si il ramene tout maintenant et moi tout apres 29 / 96\n ------------ thinking for Drone: 1 (9057,3406)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 1\n ------------ thinking for Drone: 3 (6787,5336)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 3\nRatio with fish 5 => 0.08557784145176696\nRatio with fish 6 => 0.15751004016064257\nRatio with fish 7 => 0.001222818406161219\nRatio with fish 11 => 0.08557784145176696\nRatio with fish 12 => 0.001340510264309556\n",
+      "summary": "",
+      "view": " 36\n{\"graphics\":\"9;4 7382 3911 234 -324 1;5 5063 3980 172 -102 0;8 5504 9791 -177 92 0;9 4495 9791 177 92 0;10 5053 4672 -196 -42 0;11 4407 4090 178 -91 0;13 8543 6893 344 -204 1;14 422 9454 -45 -195 0;15 9397 9661 18 -199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 7598 2495 500 8 0 0 0 0 Daneel-12495;0;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 7514 7495 500 7 0 0 0 0 Giskard-17495;0;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;0;1 9057 2806 9057 2806 25 0 0 0 0 ;0;5;0 0;2 0;0 1;3 1;3 2;3 6787 4736 6787 4736 25 0 0 0 0 ;0;4;0 0;2 0;0 2;3 1;1 _ 1 _ 1 _ _ 0 _ 3 _ 0 _ _ 1 _ 3 _ 0 _ _ 0 _ 1 _ 1 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 37\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 9057 2206 0\nMOVE 6787 4136 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 18\n^ 2495 8198 0 7 285344 \n^ 9057 3406 0 24 42064 \n^ 7495 8114 0 6 173392 \n^ 6787 5336 0 24 9488 \n\n^ 336088075994012291 336103606595747840 562957439962193985 641220608902692864 413491886717867477 703692235451665915 223497028774008102 336103606595747840 584925613560561664 245171568507165315 703703655769702400 666255320519811937 2814792716779520000 2814792716779520000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 9057 2806 0 25\n^ 3 6787 4736 0 25\n^ 2\n^ 0 2495 7598 0 8\n^ 2 7495 7514 0 7\n--- Current Scans ---\n^ 21 1 4 1 10 1 6 1 13 1 15 3 4 3 10 3 8 3 13 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1204 1205 1208 1209 1210 1211 1213 1214 1115 1216 1217 3004 3305 3208 3209 3310 3311 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 14 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 0 / 30\nExpected for 101 : 18 / 30\nExpected for 110 : 14 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 0 / 30\nExpected for 1001 : 9 / 21\nExpected for 1010 : 7 / 23\nExpected for 1011 : 15 / 15\nExpected for 1100 : 0 / 96\nExpected for 1101 : 9 / 87\nExpected for 1110 : 7 / 89\nExpected si il ramene tout maintenant et moi tout apres 29 / 96\n ------------ thinking for Drone: 1 (9057,2806)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 1\n ------------ thinking for Drone: 3 (6787,4736)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 3\nRatio with fish 5 => 0.11922723091076357\nRatio with fish 6 => 0.09956253216675244\nRatio with fish 7 => 0.011306817001936609\nRatio with fish 11 => 0.11922723091076357\nRatio with fish 12 => 0.012219393031148603\n",
+      "summary": "",
+      "view": " 38\n{\"graphics\":\"9;4 7616 3587 333 -221 1;5 5235 3878 172 -102 0;8 5327 9883 -177 92 0;9 4672 9883 177 92 0;10 4857 4630 -196 -42 0;11 4585 3999 178 -91 0;13 8887 6689 172 -102 0;14 377 9259 -45 -195 0;15 9415 9462 18 -199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 6998 2495 500 9 0 0 0 0 Daneel-12495;0;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 6914 7495 500 8 0 0 0 0 Giskard-17495;0;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;0;1 9057 2206 9057 2206 26 0 0 0 0 ;0;5;0 0;2 0;0 1;3 1;3 2;3 6787 4136 6787 4136 26 0 0 0 0 ;0;4;0 0;2 0;0 2;3 1;1 _ 1 _ 1 _ _ 0 _ 3 _ 0 _ _ 1 _ 3 _ 0 _ _ 0 _ 1 _ 1 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 39\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 9057 1606 0\nMOVE 6787 3536 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 19\n^ 2495 7598 0 8 285344 \n^ 9057 2806 0 25 42064 \n^ 7495 7514 0 7 173392 \n^ 6787 4736 0 25 9488 \n\n^ 318074536464882307 318090067066617856 675548289626808185 753811458567307264 469787741040350477 703693953438584115 205483489244877918 318090067066617856 697516463225176064 301467422829648515 703704514763161600 703691492422329185 2814792716779520000 2814792716779520000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 9057 2206 0 26\n^ 3 6787 4136 0 26\n^ 2\n^ 0 2495 6998 0 9\n^ 2 7495 6914 0 8\n--- Current Scans ---\n^ 21 1 4 1 10 1 6 1 13 1 15 3 4 3 10 3 8 3 13 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1204 1205 1208 1209 1210 1211 1213 1214 1115 1216 1217 3004 3305 3208 3209 3210 3311 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 14 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 0 / 30\nExpected for 101 : 18 / 30\nExpected for 110 : 14 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 0 / 30\nExpected for 1001 : 9 / 21\nExpected for 1010 : 7 / 23\nExpected for 1011 : 15 / 15\nExpected for 1100 : 0 / 96\nExpected for 1101 : 9 / 87\nExpected for 1110 : 7 / 89\nExpected si il ramene tout maintenant et moi tout apres 29 / 96\n ------------ thinking for Drone: 1 (9057,2206)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 1\n ------------ thinking for Drone: 3 (6787,4136)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 3\nRatio with fish 5 => 0.1504880212954747\nRatio with fish 6 => 0.036577561495900274\nRatio with fish 7 => 0.008084225723920268\nRatio with fish 11 => 0.1504880212954747\nRatio with fish 12 => 0.008646020423289292\n",
+      "summary": "",
+      "view": " 40\n{\"graphics\":\"9;4 7949 3366 396 -58 1;5 5407 3776 172 -102 0;8 5150 9975 200 0 0;9 4849 9975 -200 0 0;10 4661 4588 -196 -42 0;11 4763 3908 178 -91 0;13 9059 6587 172 -102 0;14 332 9064 -45 -195 0;15 9433 9263 18 -199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 6398 2495 500 10 0 0 0 0 Daneel-12495;0;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 6314 7495 500 9 0 0 0 0 Giskard-17495;0;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;0;1 9057 1606 9057 1606 27 0 0 0 0 ;0;5;0 0;2 0;0 1;3 1;3 2;3 6787 3536 6787 3536 27 0 0 0 0 ;0;4;0 0;2 0;0 2;3 1;1 _ 1 _ 1 _ _ 0 _ 3 _ 0 _ _ 1 _ 3 _ 0 _ _ 0 _ 1 _ 1 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 41\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 9057 1006 0\nMOVE 6787 2936 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 20\n^ 2495 6998 0 9 285344 \n^ 9057 2206 0 26 42064 \n^ 7495 6914 0 8 173392 \n^ 6787 4136 0 26 9488 \n\n^ 205485404760971907 205500935362707456 788139139291422385 866402308231921664 526083595362833477 703695671425502315 225187596616602518 205500935362707456 810107312889790464 357763277152131715 703705373756620800 703691492422329185 2814792716779520000 2814792716779520000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 9057 1606 0 27\n^ 3 6787 3536 0 27\n^ 2\n^ 0 2495 6398 0 10\n^ 2 7495 6314 0 9\n--- Current Scans ---\n^ 21 1 4 1 10 1 6 1 13 1 15 3 4 3 10 3 8 3 13 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1204 1205 1208 1209 1210 1211 1113 1214 1115 1216 1217 3004 3205 3208 3209 3210 3211 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 14 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 0 / 30\nExpected for 101 : 18 / 30\nExpected for 110 : 14 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 0 / 30\nExpected for 1001 : 9 / 21\nExpected for 1010 : 7 / 23\nExpected for 1011 : 15 / 15\nExpected for 1100 : 0 / 96\nExpected for 1101 : 9 / 87\nExpected for 1110 : 7 / 89\nExpected si il ramene tout maintenant et moi tout apres 29 / 96\n ------------ thinking for Drone: 1 (9057,1606)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 1\n ------------ thinking for Drone: 3 (6787,3536)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 3\nRatio with fish 5 => 0.17960582690659813\nRatio with fish 11 => 0.17960582690659813\n",
+      "summary": "",
+      "view": " 42\n{\"graphics\":\"9;4 8345 3308 198 -29 0;5 5579 3674 172 -102 0;8 5350 9975 200 0 0;9 4649 9975 -200 0 0;10 4465 4546 -196 -42 0;11 4941 3817 178 -91 0;13 9231 6485 172 -102 0;14 287 8869 -45 -195 0;15 9451 9064 18 -199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 5798 2495 500 11 0 0 0 0 Daneel-12495;0;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 5714 7495 500 10 0 0 0 0 Giskard-17495;0;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;0;1 9057 1006 9057 1006 28 0 0 0 0 ;0;5;0 0;2 0;0 1;3 1;3 2;3 6787 2936 6787 2936 28 0 0 0 0 ;0;4;0 0;2 0;0 2;3 1;1 _ 1 _ 1 _ _ 0 _ 3 _ 0 _ _ 1 _ 3 _ 0 _ _ 0 _ 1 _ 1 _ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 43\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 9057 406 0\nMOVE 6787 2336 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 21\n^ 2495 6398 0 10 285344 \n^ 9057 1606 0 27 42064 \n^ 7495 6314 0 9 173392 \n^ 6787 3536 0 27 9488 \n\n^ 92896273057061507 225205042734432256 900729988956036585 978993157896536064 582379449685316477 703697389412420515 299497849448567502 225205042734432256 922698162554404864 703691492258489185 703706232750080000 703691492422329185 2814792716779520000 2814792716779520000 \n^ 0 0\n*** TURN ***\n^ 0 0\nAlready scan : \n^0\n---\n^0\n^ 2\n^ 1 9057 1006 0 28\n^ 3 6787 2936 0 28\n^ 2\n^ 0 2495 5798 0 11\n^ 2 7495 5714 0 10\n--- Current Scans ---\n^ 21 1 4 1 10 1 6 1 13 1 15 3 4 3 10 3 8 3 13 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \nFor drone 3, No scan of fish 5 at pos (6787,3536) light? false ... cropping in\nFor drone 3, No scan of fish 11 at pos (6787,3536) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1204 1205 1208 1209 1210 1211 1113 1214 1115 1216 1217 3104 3205 3208 3209 3210 3211 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 0 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 14 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 0 / 30\nExpected for 101 : 18 / 30\nExpected for 110 : 14 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 0 / 30\nExpected for 1001 : 9 / 21\nExpected for 1010 : 7 / 23\nExpected for 1011 : 15 / 15\nExpected for 1100 : 0 / 96\nExpected for 1101 : 9 / 87\nExpected for 1110 : 7 / 89\nExpected si il ramene tout maintenant et moi tout apres 29 / 96\n ------------ thinking for Drone: 1 (9057,1006)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 1\n ------------ thinking for Drone: 3 (6787,2936)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 3\nRatio with fish 5 => 0.20679370339685169\nRatio with fish 11 => 0.20679370339685169\n",
+      "summary": "$1 was the first to save the scans of 5 creatures: 6, 13, 10, 4, 15\n",
+      "view": " 44\n{\"graphics\":\"9;4 8543 3279 198 -29 0;5 5751 3572 172 -102 0;8 5550 9975 200 0 0;9 4449 9975 -200 0 0;10 4269 4504 -196 -42 0;11 5119 3726 178 -91 0;13 9403 6383 172 -102 0;14 242 8674 -45 -195 0;15 9469 8865 18 -199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 5198 2495 500 12 0 0 0 0 Daneel-12495;0;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 5114 7495 500 11 0 0 0 0 Giskard-17495;0;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;18;1 9057 406 9057 406 29 0 0 0 1 ;0;0;3 6787 2336 6787 2336 29 0 0 0 0 ;0;1;0 2;2 @ 2 @ 1 _ _ 0 _ 3 _ 0 _ _ 2 @ 3 _ 0 _ _ 0 _ 2 @ 2 @ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 45\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 8748 920 0\nMOVE 6787 1736 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 22\n^ 2495 5798 0 11 285344 \n^ 9057 1006 0 28 42064 \n^ 7495 5714 0 10 173392 \n^ 6787 2936 0 28 9488 \n\n^ 205486482771548803 337795892399046656 1013320838620650785 1091584007561150464 638675304007799477 703699107399338715 355793703771050502 337795892399046656 1035289012219019264 703691492258489185 703707091743539200 703691492422329185 2814792716779520000 2814792716779520000 \n^ 0 0\n*** TURN ***\n^ 18 0\nAlready scan : \n^5 4 10 6 13 15\n---\n^0\n^ 2\n^ 1 9057 406 0 29\n^ 3 6787 2336 0 29\n^ 2\n^ 0 2495 5198 0 12\n^ 2 7495 5114 0 11\n--- Current Scans ---\n^ 13 3 8 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \nFor drone 3, No scan of fish 4 at pos (6787,2936) light? false ... cropping in\nFor drone 3, No scan of fish 5 at pos (6787,2936) light? false ... cropping in\nFor drone 3, No scan of fish 11 at pos (6787,2936) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1204 1205 1208 1209 1210 1211 1113 1214 1115 1216 1217 3104 3205 3208 3209 3210 3211 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 18 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 30 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 18 / 30\nExpected for 101 : 18 / 30\nExpected for 110 : 30 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 18 / 21\nExpected for 1001 : 18 / 21\nExpected for 1010 : 24 / 15\nExpected for 1011 : 24 / 15\nExpected for 1100 : 18 / 87\nExpected for 1101 : 18 / 87\nExpected for 1110 : 24 / 81\nExpected si il ramene tout maintenant et moi tout apres 43 / 87\n ------------ thinking for Drone: 1 (9057,406)\nLooking for fish 9 with radar : (2579,7500)|3116,2500|\nBest speed= [-309,514]\nShould light ? for drone 1\nA : DELTA MOVE : dx=-309 dy=514 lamp = false\n----------------\n ------------ thinking for Drone: 3 (6787,2336)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 3\nRatio with fish 5 => 0.17417802726543705\nRatio with fish 11 => 0.17417802726543705\n",
+      "summary": "",
+      "view": " 46\n{\"graphics\":\"9;4 8741 3250 198 -29 0;5 5923 3470 172 -102 0;8 5750 9975 200 0 0;9 4249 9975 -200 0 0;10 4073 4462 -196 -42 0;11 5297 3635 178 -91 0;13 9575 6281 172 -102 0;14 197 8479 -45 -195 0;15 9487 8666 18 -199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 4598 2495 500 13 0 0 0 0 Daneel-12495;0;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 4514 7495 500 12 0 0 0 0 Giskard-17495;0;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;18;1 8748 920 8748 920 30 0 0 0 0 ;0;0;3 6787 1736 6787 1736 30 0 0 0 0 ;0;1;0 2;2 @ 2 @ 1 _ _ 0 _ 3 _ 0 _ _ 2 @ 3 _ 0 _ _ 0 _ 2 @ 2 @ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 47\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 8439 1434 0\nMOVE 6787 1136 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 23\n^ 2495 5198 0 12 285344 \n^ 9057 406 0 29 0 \n^ 7495 5114 0 11 173392 \n^ 6787 2336 0 29 256 \n\n^ 225189731149814403 450386742063661056 1125911688285264985 1204174857225764864 694971158330282477 703700825386256915 412089558093533502 450386742063661056 1147879861883633664 703691492258489185 703707950736998400 703691492422329185 2814792716779520000 2814792716779520000 \n^ 180663504381008 0\n*** TURN ***\n^ 18 0\nAlready scan : \n^5 4 10 6 13 15\n---\n^0\n^ 2\n^ 1 8748 920 0 30\n^ 3 6787 1736 0 30\n^ 2\n^ 0 2495 4598 0 13\n^ 2 7495 4514 0 12\n--- Current Scans ---\n^ 13 3 8 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1204 1205 1208 1209 1210 1211 1113 1214 1115 1216 1217 3104 3205 3208 3209 3210 3211 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 18 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 30 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 18 / 30\nExpected for 101 : 18 / 30\nExpected for 110 : 30 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 18 / 21\nExpected for 1001 : 18 / 21\nExpected for 1010 : 24 / 15\nExpected for 1011 : 24 / 15\nExpected for 1100 : 18 / 87\nExpected for 1101 : 18 / 87\nExpected for 1110 : 24 / 81\nExpected si il ramene tout maintenant et moi tout apres 43 / 87\n ------------ thinking for Drone: 1 (8748,920)\nLooking for fish 9 with radar : (2379,7500)|3516,2500|\nBest speed= [-309,514]\nShould light ? for drone 1\nA : DELTA MOVE : dx=-309 dy=514 lamp = false\n----------------\n ------------ thinking for Drone: 3 (6787,1736)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 3\nRatio with fish 5 => 0.10243978243978244\nRatio with fish 11 => 0.10243978243978244\n",
+      "summary": "",
+      "view": " 48\n{\"graphics\":\"9;4 8939 3221 198 -29 0;5 6095 3368 172 -102 0;8 5950 9975 200 0 0;9 4049 9975 -200 0 0;10 3877 4420 -196 -42 0;11 5475 3544 178 -91 0;13 9747 6179 172 -102 0;14 152 8284 -45 -195 0;15 9505 8467 18 -199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 3998 2495 500 14 0 0 0 0 Daneel-12495;0;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 3914 7495 500 13 0 0 0 0 Giskard-17495;0;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;18;1 8439 1434 8439 1434 30 0 0 0 0 ;0;0;3 6787 1136 6787 1136 30 0 0 0 0 ;0;1;0 2;2 @ 2 @ 1 _ _ 0 _ 3 _ 0 _ _ 2 @ 3 _ 0 _ _ 0 _ 2 @ 2 @ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 49\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 8130 1948 0\nMOVE 6787 536 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 24\n^ 2495 4598 0 13 285344 \n^ 8748 920 0 30 0 \n^ 7495 4514 0 12 173392 \n^ 6787 1736 0 30 256 \n\n^ 337778394676075139 562977591728275456 1238502537949879185 1316765706890379264 703697741599740197 703702543373175115 468385412416016502 562977591728275456 1260470711548248064 703692351251948185 703708809730457600 703692351415788185 2814792716779520000 2814792716779520000 \n^ 180663504381008 0\n*** TURN ***\n^ 18 0\nAlready scan : \n^5 4 10 6 13 15\n---\n^0\n^ 2\n^ 1 8439 1434 0 30\n^ 3 6787 1136 0 30\n^ 2\n^ 0 2495 3998 0 14\n^ 2 7495 3914 0 13\n--- Current Scans ---\n^ 13 3 8 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1104 1205 1208 1209 1210 1211 1113 1214 1115 1216 1217 3104 3205 3208 3209 3210 3211 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 18 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 30 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 18 / 30\nExpected for 101 : 18 / 30\nExpected for 110 : 30 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 18 / 21\nExpected for 1001 : 18 / 21\nExpected for 1010 : 24 / 15\nExpected for 1011 : 24 / 15\nExpected for 1100 : 18 / 87\nExpected for 1101 : 18 / 87\nExpected for 1110 : 24 / 81\nExpected si il ramene tout maintenant et moi tout apres 43 / 87\n ------------ thinking for Drone: 1 (8439,1434)\nLooking for fish 9 with radar : (2179,7500)|3916,2500|\nBest speed= [-309,514]\nShould light ? for drone 1\nRatio with fish 5 => 0.00910739439901369\nRatio with fish 11 => 0.00910739439901369\nA : DELTA MOVE : dx=-309 dy=514 lamp = false\n----------------\n ------------ thinking for Drone: 3 (6787,1136)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 3\nRatio with fish 5 => 0.049209007804740364\nRatio with fish 11 => 0.049209007804740364\n",
+      "summary": "",
+      "view": " 50\n{\"graphics\":\"9;4 9137 3192 198 -29 0;5 6267 3266 -400 -16 1;8 6150 9975 200 0 0;9 3849 9975 -200 0 0;10 3681 4378 -196 -42 0;11 5653 3453 178 -91 0;13 9919 6077 -172 -102 0;14 107 8089 -45 -195 0;15 9523 8268 18 -199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 3398 2495 500 15 0 0 0 0 Daneel-12495;0;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 3314 7495 500 14 0 0 0 0 Giskard-17495;0;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;18;1 8130 1948 8130 1948 30 0 0 0 0 ;0;0;3 6787 536 6787 536 30 0 0 0 0 ;0;1;0 2;2 @ 2 @ 1 _ _ 0 _ 3 _ 0 _ _ 2 @ 3 _ 0 _ _ 0 _ 2 @ 2 @ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 51\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 7821 2462 0\nMOVE 6787 -64 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 25\n^ 2495 3998 0 14 285344 \n^ 8439 1434 0 30 0 \n^ 7495 3914 0 13 173392 \n^ 6787 1136 0 30 256 \n\n^ 450362149054718199 637287844560240640 1351093387614493385 1429356556554993664 703698600593199197 703704261360093315 524681266738499502 637287844560240640 1373061561212862464 703693210245407185 703709668723916800 703693210409247185 2814792716779520000 2814792716779520000 \n^ 180663504381008 0\n*** TURN ***\n^ 18 0\nAlready scan : \n^5 4 10 6 13 15\n---\n^0\n^ 2\n^ 1 8130 1948 0 30\n^ 3 6787 536 0 30\n^ 2\n^ 0 2495 3398 0 15\n^ 2 7495 3314 0 14\n--- Current Scans ---\n^ 13 3 8 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \nFor drone 1, No scan of fish 4 at pos (8439,1434) light? false ... cropping in\nFor drone 2, No scan of fish 5 at pos (7495,3914) light? false ... cropping in\nFor drone 2, No scan of fish 11 at pos (7495,3914) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1104 1205 1208 1209 1210 1211 1113 1214 1115 1216 1217 3104 3205 3208 3209 3210 3211 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 18 / 0\nExpected for 1 : 18 / 0\nExpected for 10 : 30 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 18 / 30\nExpected for 101 : 18 / 30\nExpected for 110 : 30 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 18 / 21\nExpected for 1001 : 18 / 21\nExpected for 1010 : 24 / 15\nExpected for 1011 : 24 / 15\nExpected for 1100 : 18 / 87\nExpected for 1101 : 18 / 87\nExpected for 1110 : 24 / 81\nExpected si il ramene tout maintenant et moi tout apres 43 / 87\n ------------ thinking for Drone: 1 (8130,1948)\nLooking for fish 9 with radar : (1979,7500)|4316,2500|\nBest speed= [-309,514]\nShould light ? for drone 1\nRatio with fish 5 => 0.04836061996256171\nRatio with fish 11 => 0.04836061996256171\nA : DELTA MOVE : dx=-309 dy=514 lamp = false\n----------------\n ------------ thinking for Drone: 3 (6787,536)\nGoing up ... looking for best angle\nBest speed: [0,-600]\nShould light ? for drone 3\nRatio with fish 5 => 0.0\nRatio with fish 11 => 0.0\n",
+      "summary": "$1 was the first to save the scan of creature 8\n$1 has saved the scans of every 0 colored (pink) creature first\n",
+      "view": " 52\n{\"graphics\":\"9;4 9335 3163 198 -29 0;5 5867 3250 61 -190 0;8 6350 9975 200 0 0;9 3649 9975 -200 0 0;10 3485 4336 -196 -42 0;11 5831 3362 -61 190 0;13 9747 5975 -172 -102 0;14 62 7894 -45 -195 0;15 9541 8069 18 -199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 2798 2495 500 16 0 0 0 0 Daneel-12495;0;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 2714 7495 500 15 0 0 0 0 Giskard-17495;0;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;30;1 7821 2462 7821 2462 30 0 0 0 0 ;0;0;3 6787 0 6787 -64 30 0 0 0 1 ;0;0;2 @ 2 @ 2 @ @ 0 _ 3 _ 0 _ _ 2 @ 3 _ 0 _ _ 0 _ 2 @ 2 @ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 53\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 7512 2976 0\nMOVE 6543 548 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 26\n^ 2495 3398 0 15 285344 \n^ 8130 1948 0 30 0 \n^ 7495 3314 0 14 173392 \n^ 6787 536 0 30 256 \n\n^ 562953857712791599 693583097587302400 1463684237279107585 1513799908548542464 703699459586658197 703705979347011515 580977121060982502 693583097587302400 1485652410877476864 703694069238866185 703710527717376000 703694069402706185 2814792716779520000 2814792716779520000 \n^ 180663504381008 0\n*** TURN ***\n^ 30 0\nAlready scan : \n^6 4 10 6 13 15 8\n---\n^0\n^ 2\n^ 1 7821 2462 0 30\n^ 3 6787 0 0 30\n^ 2\n^ 0 2495 2798 0 16\n^ 2 7495 2714 0 15\n--- Current Scans ---\n^ 12 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \nFor drone 1, No scan of fish 4 at pos (8130,1948) light? false ... cropping in\nFor drone 2, No scan of fish 5 at pos (7495,3314) light? false ... cropping in\nFor drone 2, No scan of fish 11 at pos (7495,3314) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1104 1205 1208 1209 1210 1211 1113 1214 1115 1216 1217 3104 3205 3208 3209 3210 3211 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 30 / 0\nExpected for 1 : 30 / 0\nExpected for 10 : 30 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 30 / 30\nExpected for 101 : 30 / 30\nExpected for 110 : 30 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 30 / 15\nExpected for 1001 : 30 / 15\nExpected for 1010 : 30 / 15\nExpected for 1011 : 30 / 15\nExpected for 1100 : 30 / 81\nExpected for 1101 : 30 / 81\nExpected for 1110 : 30 / 81\nExpected si il ramene tout maintenant et moi tout apres 49 / 81\n ------------ thinking for Drone: 1 (7821,2462)\nLooking for fish 9 with radar : (1779,7500)|4716,2500|\nBest speed= [-309,514]\nShould light ? for drone 1\nRatio with fish 5 => 0.10245185959671396\nRatio with fish 7 => 8.454403084096697E-4\nRatio with fish 11 => 0.10245185959671396\nRatio with fish 12 => 8.454403084096697E-4\nA : DELTA MOVE : dx=-309 dy=514 lamp = false\n----------------\n ------------ thinking for Drone: 3 (6787,0)\nLooking for fish 14 with radar : (0,7500)|5575,2500|\nBest speed= [-244,548]\nShould light ? for drone 3\nA : DELTA MOVE : dx=-244 dy=548 lamp = false\n----------------\n",
+      "summary": "",
+      "view": " 54\n{\"graphics\":\"9;4 9533 3134 198 -29 0;5 5928 3060 61 -190 0;8 6550 9975 200 0 0;9 3449 9975 -200 0 0;10 3289 4294 -196 -42 0;11 5770 3552 -61 190 0;13 9575 5873 -172 -102 0;14 17 7699 45 -195 0;15 9559 7870 18 -199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 2198 2495 500 17 0 0 0 0 Daneel-12495;0;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 2114 7495 500 16 0 0 0 0 Giskard-17495;0;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;30;1 7512 2976 7512 2976 30 0 0 0 0 ;0;0;3 6543 548 6543 548 30 0 0 0 0 ;0;0;2 @ 2 @ 2 @ @ 0 _ 3 _ 0 _ _ 2 @ 3 _ 0 _ _ 0 _ 2 @ 2 @ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 55\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 7203 3490 0\nMOVE 6299 1096 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 27\n^ 2495 2798 0 16 285344 \n^ 7821 2462 0 30 0 \n^ 7495 2714 0 15 173392 \n^ 6787 0 0 30 0 \n\n^ 629381170530099629 703716196746526720 1548127589272656185 1570095762871025664 703700318580117197 703707697333929715 637272975383465502 703716196746526720 1570095762871025664 703694928232325185 703711386710835200 703694928396165185 2814792716779520000 2814792716779520000 \n^ 744712969561424 0\n*** TURN ***\n^ 30 0\nAlready scan : \n^6 4 10 6 13 15 8\n---\n^0\n^ 2\n^ 1 7512 2976 0 30\n^ 3 6543 548 0 30\n^ 2\n^ 0 2495 2198 0 17\n^ 2 7495 2114 0 16\n--- Current Scans ---\n^ 12 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \nFor drone 1, No scan of fish 5 at pos (7821,2462) light? false ... cropping in\nFor drone 1, No scan of fish 10 at pos (7821,2462) light? false ... cropping in\nFor drone 1, No scan of fish 11 at pos (7821,2462) light? false ... cropping in\nFor drone 2, No scan of fish 5 at pos (7495,2714) light? false ... cropping in\nFor drone 2, No scan of fish 11 at pos (7495,2714) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1104 1205 1208 1209 1210 1211 1113 1214 1115 1216 1217 3104 3205 3108 3209 3210 3211 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 30 / 0\nExpected for 1 : 30 / 0\nExpected for 10 : 30 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 30 / 30\nExpected for 101 : 30 / 30\nExpected for 110 : 30 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 30 / 15\nExpected for 1001 : 30 / 15\nExpected for 1010 : 30 / 15\nExpected for 1011 : 30 / 15\nExpected for 1100 : 30 / 81\nExpected for 1101 : 30 / 81\nExpected for 1110 : 30 / 81\nExpected si il ramene tout maintenant et moi tout apres 49 / 81\n ------------ thinking for Drone: 1 (7512,2976)\nLooking for fish 9 with radar : (1579,7500)|4964,2500|\nBest speed= [-309,514]\nShould light ? for drone 1\nRatio with fish 5 => 0.15570452446237387\nRatio with fish 7 => 0.02470172679782944\nRatio with fish 11 => 0.15570452446237387\nRatio with fish 12 => 0.02470172679782944\nA : DELTA MOVE : dx=-309 dy=514 lamp = false\n----------------\n ------------ thinking for Drone: 3 (6543,548)\nLooking for fish 14 with radar : (0,7500)|5775,2500|\nBest speed= [-244,548]\nShould light ? for drone 3\nA : DELTA MOVE : dx=-244 dy=548 lamp = false\n----------------\n",
+      "summary": "",
+      "view": " 56\n{\"graphics\":\"9;4 9731 3105 198 -29 0;5 5989 2870 -356 -182 1;8 6750 9975 200 0 0;9 3249 9975 -200 0 0;10 3093 4252 -196 -42 0;11 5709 3742 -61 190 0;13 9403 5771 -172 -102 0;14 62 7504 45 195 0;15 9577 7671 18 199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 1598 2495 500 18 0 0 0 0 Daneel-12495;0;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 1514 7495 500 17 0 0 0 0 Giskard-17495;0;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;30;1 7203 3490 7203 3490 30 0 0 0 0 ;0;0;3 6299 1096 6299 1096 30 0 0 0 0 ;0;0;2 @ 2 @ 2 @ @ 0 _ 3 _ 0 _ _ 2 @ 3 _ 0 _ _ 0 _ 2 @ 2 @ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 57\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 6894 4004 0\nMOVE 6055 1644 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 28\n^ 2495 2198 0 17 285344 \n^ 7512 2976 0 30 0 \n^ 7495 2114 0 16 173392 \n^ 6543 548 0 30 0 \n\n^ 551695794976071909 569733455028420608 1604423443595139185 1626391617193508864 703689349233645967 703708762485818923 569718792010075478 569733455028420608 1626391617193508864 703695787225784185 703712245704294400 703695787389624185 2814792716779520000 2814792716779520000 \n^ 744712969561424 0\n*** TURN ***\n^ 30 0\nAlready scan : \n^6 4 10 6 13 15 8\n---\n^0\n^ 2\n^ 1 7203 3490 0 30\n^ 3 6299 1096 0 30\n^ 2\n^ 0 2495 1598 0 18\n^ 2 7495 1514 0 17\n--- Current Scans ---\n^ 12 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \nFor drone 1, No scan of fish 5 at pos (7512,2976) light? false ... cropping in\nFor drone 1, No scan of fish 6 at pos (7512,2976) light? false ... cropping in\nFor drone 1, No scan of fish 7 at pos (7512,2976) light? false ... cropping in\nFor drone 1, No scan of fish 10 at pos (7512,2976) light? false ... cropping in\nFor drone 1, No scan of fish 11 at pos (7512,2976) light? false ... cropping in\nFor drone 1, No scan of fish 12 at pos (7512,2976) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1004 1305 1208 1209 1210 1211 1113 1214 1115 1216 1217 3104 3205 3108 3209 3210 3211 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 30 / 0\nExpected for 1 : 30 / 0\nExpected for 10 : 30 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 30 / 30\nExpected for 101 : 30 / 30\nExpected for 110 : 30 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 30 / 15\nExpected for 1001 : 30 / 15\nExpected for 1010 : 30 / 15\nExpected for 1011 : 30 / 15\nExpected for 1100 : 30 / 81\nExpected for 1101 : 30 / 81\nExpected for 1110 : 30 / 81\nExpected si il ramene tout maintenant et moi tout apres 49 / 81\n ------------ thinking for Drone: 1 (7203,3490)\nLooking for fish 9 with radar : (1379,7500)|4920,2500|\nBest speed= [-309,514]\nShould light ? for drone 1\nRatio with fish 5 => 0.17399587236069217\nRatio with fish 7 => 0.0630144984149387\nRatio with fish 11 => 0.17399587236069217\nRatio with fish 12 => 0.0630144984149387\nA : DELTA MOVE : dx=-309 dy=514 lamp = false\n----------------\n ------------ thinking for Drone: 3 (6299,1096)\nLooking for fish 14 with radar : (0,7500)|5975,2500|\nBest speed= [-244,548]\nShould light ? for drone 3\nRatio with fish 5 => 0.14230172145060596\nA : DELTA MOVE : dx=-244 dy=548 lamp = false\n----------------\n",
+      "summary": "",
+      "view": " 58\n{\"graphics\":\"9;4 9929 3076 -198 -29 0;5 5633 2688 -150 371 1;8 6950 9975 200 0 0;9 3049 9975 -200 0 0;10 2897 4210 -196 -42 0;11 5648 3932 -399 -23 1;13 9231 5669 -172 -102 0;14 107 7699 45 195 0;15 9595 7870 18 199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;0;0 2495 998 2495 500 19 0 0 0 0 Daneel-12495;0;6;1 0;3 0;1 1;2 1;2 2;1 2;2 7495 914 7495 500 18 0 0 0 0 Giskard-17495;0;6;0 0;2 0;0 1;3 1;3 2;0 2;1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ 1 _ 1 _ 1 _ _ _ _ _;30;1 6894 4004 6894 4004 30 0 0 0 0 ;0;0;3 6055 1644 6055 1644 30 0 0 0 0 ;0;0;2 @ 2 @ 2 @ @ 0 _ 3 _ 0 _ _ 2 @ 3 _ 0 _ _ 0 _ 2 @ 2 @ _ _ _ _\"}\n",
+      "keyframe": true,
+      "agentId": 1
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 2495 500 0 Daneel-12495\nMOVE 7495 500 0 Giskard-17495\n",
+      "view": " 59\n",
+      "keyframe": false,
+      "agentId": 0
+    },
+    {
+      "gameInformation": "",
+      "stdout": "MOVE 6550 4495 0\nMOVE 5811 2192 0\n",
+      "stderr": "*** INIT ***\n^ 14 4 105 1006 1107 2008 2109 210 311 1212 1313 2214 2315 3416 3417 \n*** OPTIONAL ***\n^ 29\n^ 2495 1598 0 18 285344 \n^ 7203 3490 0 30 0 \n^ 7495 1514 0 17 173392 \n^ 6299 1096 0 30 0 \n\n^ 200979691968405533 201000187552333824 1607239052355049385 1682687471515992064 703691067220564167 703708573507257699 425040465035922574 425054269060808704 1682687471515992064 703696646219243185 703713104697753600 703696646383083185 2814792716779520000 2814792716779520000 \n^ 744712969561424 0\n*** TURN ***\n^ 30 0\nAlready scan : \n^6 4 10 6 13 15 8\n---\n^0\n^ 2\n^ 1 6894 4004 0 30\n^ 3 6055 1644 0 30\n^ 2\n^ 0 2495 998 0 19\n^ 2 7495 914 0 18\n--- Current Scans ---\n^ 12 0 5 0 11 0 7 0 12 0 14 0 9 2 4 2 10 2 6 2 13 2 15 2 8 \nFor drone 1, No scan of fish 5 at pos (7203,3490) light? false ... cropping in\nFor drone 1, No scan of fish 6 at pos (7203,3490) light? false ... cropping in\nFor drone 1, No scan of fish 7 at pos (7203,3490) light? false ... cropping in\nFor drone 1, No scan of fish 10 at pos (7203,3490) light? false ... cropping in\nFor drone 1, No scan of fish 11 at pos (7203,3490) light? false ... cropping in\nFor drone 1, No scan of fish 12 at pos (7203,3490) light? false ... cropping in\nFor drone 1, No scan of fish 13 at pos (7203,3490) light? false ... cropping in\n--- Fishes --- \n^ 0\n--- Blips --- \n^ 22\n^ 1004 1305 1108 1209 1210 1311 1113 1214 1115 1216 1217 3104 3205 3108 3209 3210 3211 3113 3214 3115 3216 3217 \n*** END ***\n ------------------------ AI -----------------------\nExpected for 0 : 30 / 0\nExpected for 1 : 30 / 0\nExpected for 10 : 30 / 0\nExpected for 11 : 30 / 0\nExpected for 100 : 30 / 30\nExpected for 101 : 30 / 30\nExpected for 110 : 30 / 30\nExpected for 111 : 30 / 30\nExpected for 1000 : 30 / 15\nExpected for 1001 : 30 / 15\nExpected for 1010 : 30 / 15\nExpected for 1011 : 30 / 15\nExpected for 1100 : 30 / 81\nExpected for 1101 : 30 / 81\nExpected for 1110 : 30 / 81\nExpected si il ramene tout maintenant et moi tout apres 49 / 81\n ------------ thinking for Drone: 1 (6894,4004)\nLooking for fish 9 with radar : (1179,7500)|4876,2500|\nBest speed= [-344,491]\nShould light ? for drone 1\nRatio with fish 5 => 0.19174236168455822\nRatio with fish 7 => 0.0695481590190076\nRatio with fish 11 => 0.19174236168455822\nRatio with fish 12 => 0.0695481590190076\nA : DELTA MOVE : dx=-344 dy=491 lamp = false\n----------------\n ------------ thinking for Drone: 3 (6055,1644)\nLooking for fish 14 with radar : (0,7500)|6055,2500|\nBest speed= [-244,548]\nShould light ? for drone 3\nRatio with fish 5 => 0.31666634545392547\nRatio with fish 11 => 0.16376492793649253\nA : DELTA MOVE : dx=-244 dy=548 lamp = false\n----------------\n",
+      "summary": "$0 was the first to save the scans of 6 creatures: 7, 12, 14, 5, 9, 11\n$0 saved the scans of every color of 1 (fish) first\n$0 saved the scans of every color of 0 (jelly) first\n$0 saved the scans of every color of 2 (crab) first\n$0 has saved the scans of every 1 colored (yellow) creature first\n$0 has saved the scans of every 2 colored (green) creature first\n$0 has saved the scans of every 3 colored (blue) creature first\n",
+      "view": " 60\n{\"graphics\":\"9;4 9731 3047 -198 -29 0;5 5483 3059 -142 374 1;8 7150 9975 200 0 0;9 2849 9975 -200 0 0;10 2701 4168 -196 -42 0;11 5249 3909 -200 -12 0;13 9059 5567 -172 -102 0;14 152 7894 45 195 0;15 9613 8069 18 199 0;16 4644 9563 0 0 0;17 5355 9563 0 0 0;81;0 2495 500 2495 500 20 0 0 0 1 Daneel-12495;0;0;2 7495 500 7495 500 19 0 0 0 1 Giskard-17495;0;0;2 _ 2 _ 2 _ _ 2 @ 2 @ 2 @ @ 2 _ 2 @ 2 @ @ 2 @ 2 _ 2 _ @ @ @ @;30;1 6550 4495 6550 4495 30 0 0 0 0 ;0;0;3 5811 2192 5811 2192 30 0 0 0 0 ;0;0;2 @ 2 @ 2 @ @ 0 _ 3 _ 0 _ _ 2 @ 3 _ 0 _ _ 0 _ 2 @ 2 @ _ _ _ _\",\"endScreen\":[[81,30],\"logo.png\",null]}\n",
+      "keyframe": true,
+      "agentId": 1
+    }
+  ],
+  "gameId": 756020443,
+  "refereeInput": "seed=6919471936659577000\n",
+  "scores": [
+    81,
+    30
+  ],
+  "ranks": [
+    0,
+    1
+  ],
+  "tooltips": [
+    "{\"turn\":44,\"text\":\"$1 reports their findings.\",\"event\":1}",
+    "{\"turn\":52,\"text\":\"$1 reports their findings.\",\"event\":1}",
+    "{\"turn\":60,\"text\":\"$0 reports their findings.\",\"event\":0}"
+  ],
+  "metadata": {
+    "turnFishWasSaved_0_0": 30,
+    "turnFishWasSaved_1_0": 22,
+    "turnFishWasSaved_1_1": 22,
+    "turnFishWasSaved_0_2": 30,
+    "turnFishWasSaved_0_1": 30,
+    "turnFishWasSaved_0_4": 30,
+    "turnFishWasSaved_1_4": -1,
+    "turnFishWasSaved_0_3": 30,
+    "turnFishWasSaved_1_5": -1,
+    "turnFishWasSaved_0_6": 30,
+    "turnFishWasSaved_1_2": 26,
+    "turnFishWasSaved_0_5": 30,
+    "turnFishWasSaved_1_3": -1,
+    "turnFishWasSaved_0_8": 30,
+    "turnFishWasSaved_1_8": -1,
+    "chasedFishCount_0": 3,
+    "turnFishWasSaved_0_7": 30,
+    "turnFishWasSaved_1_9": -1,
+    "chasedFishCount_1": 0,
+    "turnFishWasSaved_1_6": 22,
+    "turnFishWasSaved_0_9": 30,
+    "turnFishWasSaved_1_7": -1,
+    "turnFishWasSaved_1_11": 22,
+    "turnFishWasSaved_1_10": 22,
+    "gameLength": 30,
+    "dronesEaten": 0,
+    "fishSavedPerSave_1_1": 1,
+    "maxY_1": 7736,
+    "fishSavedPerSave_0_1": 6,
+    "fishSavedPerSave_1_0": 5,
+    "maxY_0": 8798,
+    "fishSavedPerSave_0_0": 6,
+    "fishScanned": 18,
+    "timesAggroed_1": 0,
+    "maxTurnsSpentWithScan_0": 25,
+    "timesAggroed_0": 0,
+    "maxTurnsSpentWithScan_1": 17,
+    "turnFishWasSaved_0_11": 30,
+    "turnFishWasSaved_0_10": 30
+  }
+}

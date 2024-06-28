@@ -1,0 +1,23 @@
+== OOC - ce qui a bien été et pas
+
+== les positifs
+* Utilisation du fichier ranking pour suivre, meme si le copier/coller etait pas top
+* le plugin qui supprime maintenant les espaces+commentaire pour gagner de la place
+* le code vraiment plus modulaire (level++ des dernieres lectures sur le sujet ?)
+* La gestion des logs avec PROD = true 
+  => améliorer encore en faisant le contraire ?(DEBUG = true)
+* utilisation des List java plutot que mes arrays 'c-like' => pas de pb de perfs ?
+* le debug de la carte ... à la carte, c'etait top
+
+== A améliorer
+* trop de temps investi pour des versions intermediaires 
+  => tout de suite aller vers la solution définitive ?
+* les T.U ont été lachés  trop tot
+* Coder des trucs sans les vérifier
+  => il faut vraiment avoir des cas de tests (TU ou ingame) qui prouvent que ce que je fais est correct
+* Penser encore plus out of the box (cas des formes des déplacements donnent de l'info sur les iles par exemple)
+* Aucun type de benchmark pour tester une 'amélioration'
+* Aucune récupération des données des parties jouées pour analyses (je try-hard pas assez pour ça?)
+* coder fatigué, je pense que ca amene des erreurs si pas de tests
+* j'ai pas regarder les TODO ...
+
