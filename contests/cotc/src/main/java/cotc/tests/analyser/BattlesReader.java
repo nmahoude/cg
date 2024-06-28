@@ -42,9 +42,7 @@ public class BattlesReader {
     WebTarget target = client.target(SINGLE_BATTLE_URL);
     
     Response response = target.request()
-        .cookie("JSESSIONID","487C3D7182C33D9F543DD11865712BA9")
-        .cookie("AWSELB", "43AD292116245448CF7264593C17D198824F648E2931D95E0E9D495978F5CE53423E78B1A05DF11190548DA1886E0174871868268818AE4BC1172FEF56EE628F8CEE80E7E6")
-        .post(Entity.text("["+battleId+", 335954]"));
+        .post(Entity.text("["+battleId+", xxxx]"));
 
     JsonObject battle = response.readEntity(JsonObject.class);
     

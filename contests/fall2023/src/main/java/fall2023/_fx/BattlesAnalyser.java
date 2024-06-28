@@ -17,8 +17,8 @@ import fall2023._fx.BattlesReader.Player;
 import fast.read.FastReader;
 
 public class BattlesAnalyser {
-  private static final String REMEMBER_ME = "3359544cac158596f273ed5ebc3cd0a1a43eb1";
-  private static final String MY_USER_ID = "335954";
+  private static final String REMEMBER_ME = System.getProperty("REMEMBER_ME");
+  private static final String MY_USER_ID = System.getProperty("MY_USER_ID");
 
   private static final Player me = new Player("nmahoude", "whatever");
   private static final Path base = Paths.get(new File("target/battleAnalyser").getAbsolutePath());
