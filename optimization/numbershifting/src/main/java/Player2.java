@@ -2,7 +2,7 @@
 
 import java.util.Scanner;
 
-class Player {
+class Player2 {
   static int turn = 0;
   
   public static void main(String args[]) {
