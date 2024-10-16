@@ -47,11 +47,11 @@ public class AppVis extends Application  {
     //mars.readInput (new Scanner("20 0 1000 300 1500 350 1400 500 2100 1500 2100 2000 200 2500 500 2900 300 3000 200 3200 1000 3500 500 3800 800 4000 200 4200 800 4800 600 5000 1200 5500 900 6000 500 6500 300 6999 500"));
     
     MarsLander lander = new MarsLander();
-    lander.readInput(new Scanner("0 200 0 0 550 0 0"));
+    //lander.readInput(new Scanner("0 200 0 0 550 0 0"));
     //lander.readInput(new Scanner("6500 2800 -100 0 600 90 0"));
     //lander.readInput(new Scanner("6500 2800 -90 0 750 90 0"));
     //lander.readInput(new Scanner("500 2700 100 0 800 -90 0"));
-    //lander.readInput(new Scanner("6500 2700 -50 0 1000 90 0"));
+    lander.readInput(new Scanner("6500 2700 -50 0 1000 90 0"));
 
     ag = new AG(mars, lander);
     TrajectoryOptimizer to = new TrajectoryOptimizer();

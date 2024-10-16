@@ -38,9 +38,9 @@ public class Biconnected {
           }
           if (dfn[w] < 0) { // w is a child of check
               bicon(w, check);
-              // check¥i¥Ñw¦^¨ì§ó¤W¼h?
+              // check
               low[check] = (low[check] < low[w]) ? low[check] : low[w];
-              if (parent >=0 && low[w] >= dfn[check]) { // ¦pªGcheckÂ_±¼,w´N¨S¦³¸ô¦^¨ì¤W¼h¤F
+              if (parent >=0 && low[w] >= dfn[check]) { // ï¿½pï¿½Gcheckï¿½_ï¿½ï¿½,wï¿½Nï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½^ï¿½ï¿½Wï¿½hï¿½F
                   do {
                       tt = stack.pop();
                       System.out.print(" <"+tt[0]+","+tt[1]+">");
