@@ -44,6 +44,7 @@
   	<module>spaceShooter</module>
   	<module>clashofbots</module>
 	<module>hypersonic2</module>
+    <module>hypersonic-yt</module>
   </modules>
   
 </project>
